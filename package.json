@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "start": "electron-forge start",
+    "start:debug": "electron-forge start -- --remote-debugging-port=9222",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -15,7 +16,7 @@
   "keywords": [],
   "author": {
     "name": "CorentinGC",
-    "email": "corentingc@gmail.com"
+    "email": "contact@eden-solutions.pro"
   },
   "license": "MIT",
   "devDependencies": {
@@ -29,7 +30,9 @@
     "@electron-forge/plugin-vite": "^7.11.1",
     "@electron/fuses": "^1.8.0",
     "@tailwindcss/vite": "^4.2.1",
+    "@types/chokidar": "^1.7.5",
     "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/geoip-lite": "^1.4.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
@@ -45,11 +48,15 @@
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.19",
+    "chokidar": "^5.0.0",
     "clsx": "^2.1.1",
     "electron-squirrel-startup": "^1.0.1",
+    "geoip-lite": "^1.4.10",
+    "i18next": "^25.8.14",
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-i18next": "^16.5.4",
     "tailwind-merge": "^3.5.0",
     "zustand": "^5.0.11"
   }

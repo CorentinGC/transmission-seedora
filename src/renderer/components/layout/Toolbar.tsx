@@ -6,6 +6,7 @@ import {
   CheckCircle,
   Search,
   Settings,
+  Sliders,
   PlayCircle,
   StopCircle,
   PanelBottom,
@@ -15,10 +16,12 @@ import { useState } from 'react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useServerStore } from '../../stores/server-store';
 import { useUiStore } from '../../stores/ui-store';
+import { useMenuEvents } from '../../hooks/useMenuEvents';
 import { ServerSwitcher } from '../server/ServerSwitcher';
 import { AddTorrentDialog } from '../torrent/AddTorrentDialog';
 import { RemoveTorrentDialog } from '../torrent/RemoveTorrentDialog';
 import { SettingsDialog } from '../settings/SettingsDialog';
+import { AppPrefsDialog } from '../settings/AppPrefsDialog';
 
 export function Toolbar() {
   const selectedIds = useTorrentStore((s) => s.selectedIds);
@@ -36,6 +39,16 @@ export function Toolbar() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showPrefs, setShowPrefs] = useState(false);
+
+  // Native menu events
+  useMenuEvents({
+    onAddTorrent: () => setShowAddDialog(true),
+    onAddMagnet: () => setShowAddDialog(true),
+    onOpenSettings: () => setShowSettings(true),
+    onOpenPreferences: () => setShowPrefs(true),
+    onRemoveTorrent: () => setShowRemoveDialog(true),
+  });
 
   const ids = Array.from(selectedIds);
   const hasSelection = ids.length > 0;
@@ -126,8 +139,13 @@ export function Toolbar() {
         <div className="w-px h-6 bg-border mx-1" />
 
         <ToolbarButton
+          icon={<Sliders size={16} />}
+          title="Preferences"
+          onClick={() => setShowPrefs(true)}
+        />
+        <ToolbarButton
           icon={<Settings size={16} />}
-          title="Settings"
+          title="Server Settings"
           onClick={() => setShowSettings(true)}
           disabled={!isConnected}
         />
@@ -136,6 +154,7 @@ export function Toolbar() {
       {showAddDialog && <AddTorrentDialog onClose={() => setShowAddDialog(false)} />}
       {showRemoveDialog && <RemoveTorrentDialog ids={ids} onClose={() => setShowRemoveDialog(false)} />}
       {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
+      {showPrefs && <AppPrefsDialog onClose={() => setShowPrefs(false)} />}
     </>
   );
 }

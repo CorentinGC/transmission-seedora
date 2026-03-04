@@ -46,6 +46,18 @@ export const IPC = {
   // File dialog
   DIALOG_OPEN_FILE: 'dialog:open-file',
   DIALOG_OPEN_DIRECTORY: 'dialog:open-directory',
+
+  // Tray
+  TRAY_UPDATE: 'tray:update',
+
+  // Notifications
+  NOTIFICATION_SHOW: 'notification:show',
+
+  // Watcher
+  WATCHER_RESTART: 'watcher:restart',
+
+  // GeoIP
+  GEOIP_LOOKUP: 'geoip:lookup',
 } as const;
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC];
