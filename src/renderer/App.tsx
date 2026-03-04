@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import i18n from './lib/i18n';
 import { AppShell } from './components/layout/AppShell';
 import { useServerStore } from './stores/server-store';
 import { useUiStore } from './stores/ui-store';
@@ -10,19 +11,29 @@ export function App() {
   const activeServerId = useServerStore((s) => s.activeServerId);
   const setActiveServer = useServerStore((s) => s.setActiveServer);
   const theme = useUiStore((s) => s.theme);
+  const setTheme = useUiStore((s) => s.setTheme);
+  const setPollingInterval = useUiStore((s) => s.setPollingInterval);
+  const setRelativeDates = useUiStore((s) => s.setRelativeDates);
+  const setConfirmOnAdd = useUiStore((s) => s.setConfirmOnAdd);
 
   // Tray updates + completion notifications
   useTrayAndNotifications();
 
+  // Load saved preferences on startup
   useEffect(() => {
-    fetchServers().then(() => {
-      window.api.prefsGet().then((res) => {
-        if (res.success && res.data) {
-          // Load preferences on startup
+    fetchServers();
+    window.api.prefsGet().then((res) => {
+      if (res.success && res.data) {
+        setTheme(res.data.theme);
+        setPollingInterval(res.data.pollingInterval);
+        setRelativeDates(res.data.relativeDates);
+        setConfirmOnAdd(res.data.confirmOnAdd);
+        if (res.data.language && res.data.language !== i18n.language) {
+          i18n.changeLanguage(res.data.language);
         }
-      });
+      }
     });
-  }, [fetchServers]);
+  }, [fetchServers, setTheme, setPollingInterval, setRelativeDates, setConfirmOnAdd]);
 
   // Auto-connect to the first server after servers are loaded
   useEffect(() => {

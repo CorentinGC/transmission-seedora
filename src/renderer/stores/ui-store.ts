@@ -14,6 +14,9 @@ interface UiStore {
 
   // Preferences
   theme: 'light' | 'dark' | 'system';
+  pollingInterval: number;
+  relativeDates: boolean;
+  confirmOnAdd: boolean;
 
   // Actions
   toggleDetailsPanel: () => void;
@@ -24,6 +27,9 @@ interface UiStore {
   setColumnSizing: (sizing: Record<string, number>) => void;
   setColumnOrder: (order: string[]) => void;
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
+  setPollingInterval: (interval: number) => void;
+  setRelativeDates: (value: boolean) => void;
+  setConfirmOnAdd: (value: boolean) => void;
 }
 
 export const useUiStore = create<UiStore>((set) => ({
@@ -37,6 +43,9 @@ export const useUiStore = create<UiStore>((set) => ({
   columnOrder: [],
 
   theme: 'system',
+  pollingInterval: 3000,
+  relativeDates: false,
+  confirmOnAdd: true,
 
   toggleDetailsPanel: () =>
     set((state) => ({ detailsPanelVisible: !state.detailsPanelVisible })),
@@ -48,4 +57,7 @@ export const useUiStore = create<UiStore>((set) => ({
   setColumnSizing: (sizing) => set({ columnSizing: sizing }),
   setColumnOrder: (order) => set({ columnOrder: order }),
   setTheme: (theme) => set({ theme }),
+  setPollingInterval: (interval) => set({ pollingInterval: interval }),
+  setRelativeDates: (value) => set({ relativeDates: value }),
+  setConfirmOnAdd: (value) => set({ confirmOnAdd: value }),
 }));
