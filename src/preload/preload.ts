@@ -84,6 +84,29 @@ const api = {
     ipcRenderer.invoke(IPC.DIALOG_OPEN_FILE, options),
   dialogOpenDirectory: (): Promise<IpcResponse<string | null>> =>
     ipcRenderer.invoke(IPC.DIALOG_OPEN_DIRECTORY),
+
+  // Tray
+  trayUpdate: (state: { downloadSpeed: number; uploadSpeed: number; activeCount: number; altSpeedEnabled: boolean }): void =>
+    ipcRenderer.send(IPC.TRAY_UPDATE, state),
+
+  // Notifications
+  notificationShow: (title: string, body: string): void =>
+    ipcRenderer.send(IPC.NOTIFICATION_SHOW, { title, body }),
+
+  // Watcher
+  watcherRestart: (): void =>
+    ipcRenderer.send(IPC.WATCHER_RESTART),
+
+  // GeoIP
+  geoipLookup: (ips: string[]): Promise<IpcResponse<Record<string, { country: string; region: string; city: string } | null>>> =>
+    ipcRenderer.invoke(IPC.GEOIP_LOOKUP, ips),
+
+  // Menu events (renderer listens)
+  onMenuEvent: (channel: string, callback: (...args: unknown[]) => void): (() => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);
+    ipcRenderer.on(channel, listener);
+    return () => ipcRenderer.removeListener(channel, listener);
+  },
 };
 
 export type ElectronApi = typeof api;
