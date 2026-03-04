@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
 
@@ -8,13 +7,12 @@ interface Props {
 }
 
 export function RemoveTorrentDialog({ ids, onClose }: Props) {
-  const [deleteData, setDeleteData] = useState(false);
   const removeTorrents = useTorrentStore((s) => s.removeTorrents);
   const torrents = useTorrentStore((s) => s.torrents);
 
   const names = ids.map((id) => torrents.get(id)?.name ?? `#${id}`);
 
-  const handleRemove = async () => {
+  const handleRemove = async (deleteData: boolean) => {
     await removeTorrents(ids, deleteData);
     onClose();
   };
@@ -41,11 +39,6 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
               <div key={i} className="truncate">{name}</div>
             ))}
           </div>
-
-          <label className="flex items-center gap-2 text-sm text-destructive">
-            <input type="checkbox" checked={deleteData} onChange={(e) => setDeleteData(e.target.checked)} />
-            Also delete local data
-          </label>
         </div>
 
         <div className="flex items-center justify-end gap-2 p-4 border-t">
@@ -53,10 +46,16 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
             Cancel
           </button>
           <button
-            className="h-8 px-4 text-sm rounded bg-destructive text-destructive-foreground hover:opacity-90"
-            onClick={handleRemove}
+            className="h-8 px-3 text-sm rounded border hover:bg-accent"
+            onClick={() => handleRemove(false)}
           >
-            Remove
+            Remove torrent
+          </button>
+          <button
+            className="h-8 px-3 text-sm rounded bg-destructive text-destructive-foreground hover:opacity-90"
+            onClick={() => handleRemove(true)}
+          >
+            Remove with data
           </button>
         </div>
       </div>
