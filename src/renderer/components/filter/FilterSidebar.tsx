@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   List,
   ArrowDown,
@@ -12,6 +12,8 @@ import {
   Tag,
   Globe,
   FolderOpen,
+  ChevronRight,
+  ChevronDown,
 } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { matchesStatusFilter, type StatusFilter } from '../../lib/constants';
@@ -32,6 +34,31 @@ const STATUS_ITEMS: { filter: StatusFilter; label: string; icon: React.ReactNode
   { filter: 'error', label: 'Error', icon: <AlertCircle size={14} /> },
   { filter: 'waiting', label: 'Waiting', icon: <Clock size={14} /> },
 ];
+
+function CollapsibleSection({
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-t py-1">
+      <button
+        className="w-full flex items-center gap-1 px-3 py-1 text-xs font-medium text-muted-foreground uppercase hover:text-foreground"
+        onClick={() => setOpen(!open)}
+      >
+        {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+        {title}
+      </button>
+      {open && children}
+    </div>
+  );
+}
 
 export function FilterSidebar({ torrents }: Props) {
   const statusFilter = useTorrentStore((s) => s.statusFilter);
@@ -120,8 +147,7 @@ export function FilterSidebar({ torrents }: Props) {
 
       {/* Labels */}
       {labels.length > 0 && (
-        <div className="border-t py-1">
-          <div className="px-3 py-1 text-xs font-medium text-muted-foreground uppercase">Labels</div>
+        <CollapsibleSection title="Labels">
           {labels.map(([label, count]) => (
             <button
               key={label}
@@ -139,37 +165,12 @@ export function FilterSidebar({ torrents }: Props) {
               <span className="text-xs text-muted-foreground">{count}</span>
             </button>
           ))}
-        </div>
+        </CollapsibleSection>
       )}
 
-      {/* Trackers */}
-      {trackers.length > 0 && (
-        <div className="border-t py-1">
-          <div className="px-3 py-1 text-xs font-medium text-muted-foreground uppercase">Trackers</div>
-          {trackers.map(([tracker, count]) => (
-            <button
-              key={tracker}
-              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent ${
-                trackerFilter === tracker ? 'bg-accent font-medium' : ''
-              }`}
-              onClick={() => {
-                setTrackerFilter(trackerFilter === tracker ? null : tracker);
-                setLabelFilter(null);
-                setFolderFilter(null);
-              }}
-            >
-              <Globe size={14} />
-              <span className="flex-1 text-left truncate">{tracker}</span>
-              <span className="text-xs text-muted-foreground">{count}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Folders */}
+      {/* Folders (before Trackers) */}
       {folders.length > 0 && (
-        <div className="border-t py-1">
-          <div className="px-3 py-1 text-xs font-medium text-muted-foreground uppercase">Folders</div>
+        <CollapsibleSection title="Folders">
           {folders.map(([folder, count]) => (
             <button
               key={folder}
@@ -187,7 +188,30 @@ export function FilterSidebar({ torrents }: Props) {
               <span className="text-xs text-muted-foreground">{count}</span>
             </button>
           ))}
-        </div>
+        </CollapsibleSection>
+      )}
+
+      {/* Trackers (collapsed by default) */}
+      {trackers.length > 0 && (
+        <CollapsibleSection title="Trackers" defaultOpen={false}>
+          {trackers.map(([tracker, count]) => (
+            <button
+              key={tracker}
+              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent ${
+                trackerFilter === tracker ? 'bg-accent font-medium' : ''
+              }`}
+              onClick={() => {
+                setTrackerFilter(trackerFilter === tracker ? null : tracker);
+                setLabelFilter(null);
+                setFolderFilter(null);
+              }}
+            >
+              <Globe size={14} />
+              <span className="flex-1 text-left truncate">{tracker}</span>
+              <span className="text-xs text-muted-foreground">{count}</span>
+            </button>
+          ))}
+        </CollapsibleSection>
       )}
     </div>
   );
