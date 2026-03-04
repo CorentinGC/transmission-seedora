@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Torrent, TorrentPeer } from '../../types/torrent';
 import { formatSpeed, formatPercent } from '../../lib/format';
 
@@ -18,6 +19,7 @@ function countryToFlag(countryCode: string): string {
 type GeoInfo = { country: string; region: string; city: string } | null;
 
 export function PeersTab({ torrent }: Props) {
+  const { t } = useTranslation();
   const [peers, setPeers] = useState<TorrentPeer[]>([]);
   const [geoData, setGeoData] = useState<Record<string, GeoInfo>>({});
 
@@ -46,19 +48,19 @@ export function PeersTab({ torrent }: Props) {
   }, [torrent.id]);
 
   if (peers.length === 0) {
-    return <div className="text-muted-foreground text-xs">No peers connected</div>;
+    return <div className="text-muted-foreground text-xs">{t('details.noPeers')}</div>;
   }
 
   return (
     <div className="text-xs">
       <div className="flex items-center gap-2 px-1 py-1 font-medium text-muted-foreground border-b">
         <span className="w-8"></span>
-        <span className="w-36">Address</span>
-        <span className="w-32">Client</span>
-        <span className="w-12">Flags</span>
-        <span className="w-14 text-right">Progress</span>
-        <span className="w-20 text-right">Down</span>
-        <span className="w-20 text-right">Up</span>
+        <span className="w-36">{t('peersTab.address')}</span>
+        <span className="w-32">{t('peersTab.client')}</span>
+        <span className="w-12">{t('peersTab.flags')}</span>
+        <span className="w-14 text-right">{t('peersTab.progress')}</span>
+        <span className="w-20 text-right">{t('peersTab.down')}</span>
+        <span className="w-20 text-right">{t('peersTab.up')}</span>
       </div>
       {peers.map((peer, i) => {
         const geo = geoData[peer.address];

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Loader2 } from 'lucide-react';
 import { useServerStore } from '../../stores/server-store';
 import type { ServerConfig, NewServerConfig } from '../../types/server';
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function ServerFormDialog({ server, onClose }: Props) {
+  const { t } = useTranslation();
   const addServer = useServerStore((s) => s.addServer);
   const updateServer = useServerStore((s) => s.updateServer);
   const testConnection = useServerStore((s) => s.testConnection);
@@ -70,7 +72,7 @@ export function ServerFormDialog({ server, onClose }: Props) {
       <div className="bg-card border rounded-lg shadow-xl w-[480px] max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">
-            {server ? 'Edit Server' : 'Add Server'}
+            {server ? t('server.editServer') : t('server.addServerTitle')}
           </h2>
           <button onClick={onClose} className="hover:bg-accent rounded p-1">
             <X size={16} />
@@ -78,46 +80,46 @@ export function ServerFormDialog({ server, onClose }: Props) {
         </div>
 
         <div className="p-4 space-y-4">
-          <Field label="Name" value={name} onChange={setName} placeholder="My Server" />
+          <Field label={t('server.serverName')} value={name} onChange={setName} placeholder={t('server.serverNamePlaceholder')} />
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Host" value={host} onChange={setHost} />
-            <Field label="Port" value={String(port)} onChange={(v) => setPort(Number(v))} type="number" />
+            <Field label={t('server.host')} value={host} onChange={setHost} />
+            <Field label={t('server.port')} value={String(port)} onChange={(v) => setPort(Number(v))} type="number" />
           </div>
-          <Field label="RPC Path" value={path} onChange={setPath} />
+          <Field label={t('server.path')} value={path} onChange={setPath} />
 
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={useSSL} onChange={(e) => setUseSSL(e.target.checked)} />
-            Use SSL/TLS
+            {t('server.useSSL')}
           </label>
 
           <div className="border-t pt-3">
-            <h3 className="text-sm font-medium mb-2">Authentication</h3>
+            <h3 className="text-sm font-medium mb-2">{t('server.authentication')}</h3>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Username" value={username} onChange={setUsername} />
-              <Field label="Password" value={password} onChange={setPassword} type="password" />
+              <Field label={t('server.username')} value={username} onChange={setUsername} />
+              <Field label={t('server.password')} value={password} onChange={setPassword} type="password" />
             </div>
           </div>
 
           <div className="border-t pt-3">
-            <h3 className="text-sm font-medium mb-2">Proxy</h3>
+            <h3 className="text-sm font-medium mb-2">{t('server.proxy')}</h3>
             <select
               className="w-full h-8 px-2 text-sm rounded border bg-background"
               value={proxyType}
               onChange={(e) => setProxyType(e.target.value as 'none' | 'http' | 'socks5')}
             >
-              <option value="none">No proxy</option>
-              <option value="http">HTTP Proxy</option>
-              <option value="socks5">SOCKS5 Proxy</option>
+              <option value="none">{t('server.proxyNone')}</option>
+              <option value="http">{t('server.proxyHTTP')}</option>
+              <option value="socks5">{t('server.proxySOCKS5')}</option>
             </select>
             {proxyType !== 'none' && (
               <div className="mt-2 space-y-2">
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Proxy Host" value={proxyHost} onChange={setProxyHost} />
-                  <Field label="Proxy Port" value={String(proxyPort)} onChange={(v) => setProxyPort(Number(v))} type="number" />
+                  <Field label={t('server.proxyHost')} value={proxyHost} onChange={setProxyHost} />
+                  <Field label={t('server.proxyPort')} value={String(proxyPort)} onChange={(v) => setProxyPort(Number(v))} type="number" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Proxy Username" value={proxyUsername} onChange={setProxyUsername} />
-                  <Field label="Proxy Password" value={proxyPassword} onChange={setProxyPassword} type="password" />
+                  <Field label={t('server.proxyUsername')} value={proxyUsername} onChange={setProxyUsername} />
+                  <Field label={t('server.proxyPassword')} value={proxyPassword} onChange={setProxyPassword} type="password" />
                 </div>
               </div>
             )}
@@ -131,24 +133,24 @@ export function ServerFormDialog({ server, onClose }: Props) {
               onClick={handleTest}
               disabled={testing}
             >
-              {testing ? <Loader2 size={14} className="animate-spin" /> : 'Test Connection'}
+              {testing ? <Loader2 size={14} className="animate-spin" /> : t('dialog.test')}
             </button>
             {testResult !== null && (
               <span className={`text-sm ${testResult ? 'text-green-500' : 'text-red-500'}`}>
-                {testResult ? 'Success' : 'Failed'}
+                {testResult ? t('server.testSuccess') : t('server.testFailed')}
               </span>
             )}
           </div>
           <div className="flex items-center gap-2">
             <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={onClose}>
-              Cancel
+              {t('dialog.cancel')}
             </button>
             <button
               className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
               onClick={handleSave}
               disabled={saving || !host}
             >
-              {saving ? <Loader2 size={14} className="animate-spin" /> : 'Save'}
+              {saving ? <Loader2 size={14} className="animate-spin" /> : t('dialog.save')}
             </button>
           </div>
         </div>

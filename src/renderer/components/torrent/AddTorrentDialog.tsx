@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Loader2, Upload, Link } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useSessionStore } from '../../stores/session-store';
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function AddTorrentDialog({ onClose }: Props) {
+  const { t } = useTranslation();
   const addTorrent = useTorrentStore((s) => s.addTorrent);
   const settings = useSessionStore((s) => s.settings);
   const freeSpace = useSessionStore((s) => s.freeSpace);
@@ -59,7 +61,7 @@ export function AddTorrentDialog({ onClose }: Props) {
     } else if (mode === 'url' && url.trim()) {
       params.filename = url.trim();
     } else {
-      setError('Please provide a torrent file or URL/magnet link');
+      setError(t('dialog.errorNoInput'));
       setSaving(false);
       return;
     }
@@ -68,7 +70,7 @@ export function AddTorrentDialog({ onClose }: Props) {
     if (result.success) {
       onClose();
     } else {
-      setError(result.error ?? 'Failed to add torrent');
+      setError(result.error ?? t('dialog.errorAddFailed'));
     }
     setSaving(false);
   };
@@ -77,7 +79,7 @@ export function AddTorrentDialog({ onClose }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-card border rounded-lg shadow-xl w-[500px]">
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">Add Torrent</h2>
+          <h2 className="text-lg font-semibold">{t('dialog.addTorrent')}</h2>
           <button onClick={onClose} className="hover:bg-accent rounded p-1">
             <X size={16} />
           </button>
@@ -91,49 +93,49 @@ export function AddTorrentDialog({ onClose }: Props) {
               onClick={() => setMode('url')}
             >
               <Link size={14} />
-              URL / Magnet
+              {t('dialog.urlMagnet')}
             </button>
             <button
               className={`flex items-center gap-1 h-8 px-3 text-sm rounded border ${mode === 'file' ? 'bg-primary text-primary-foreground' : ''}`}
               onClick={() => setMode('file')}
             >
               <Upload size={14} />
-              File
+              {t('dialog.file')}
             </button>
           </div>
 
           {mode === 'url' ? (
             <div>
-              <label className="text-xs text-muted-foreground">URL or Magnet Link</label>
+              <label className="text-xs text-muted-foreground">{t('dialog.urlOrMagnet')}</label>
               <input
                 type="text"
                 className="w-full h-8 px-2 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="magnet:?xt= or https://..."
+                placeholder={t('dialog.urlPlaceholder')}
                 autoFocus
               />
             </div>
           ) : (
             <div>
-              <label className="text-xs text-muted-foreground">Torrent File</label>
+              <label className="text-xs text-muted-foreground">{t('dialog.torrentFile')}</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   className="flex-1 h-8 px-2 text-sm rounded border bg-background"
                   value={filePath}
                   readOnly
-                  placeholder="Select a .torrent file..."
+                  placeholder={t('dialog.selectTorrentFile')}
                 />
                 <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={handleBrowseFile}>
-                  Browse...
+                  {t('dialog.browse')}
                 </button>
               </div>
             </div>
           )}
 
           <div>
-            <label className="text-xs text-muted-foreground">Download Directory</label>
+            <label className="text-xs text-muted-foreground">{t('dialog.downloadDirectory')}</label>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -142,44 +144,44 @@ export function AddTorrentDialog({ onClose }: Props) {
                 onChange={(e) => setDownloadDir(e.target.value)}
               />
               <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={handleBrowseDir}>
-                Browse...
+                {t('dialog.browse')}
               </button>
             </div>
             {freeSpace !== null && (
               <div className="text-xs text-muted-foreground mt-1">
-                Free space: {formatBytes(freeSpace)}
+                {t('dialog.freeSpace', { space: formatBytes(freeSpace) })}
               </div>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Labels</label>
+              <label className="text-xs text-muted-foreground">{t('torrent.labels')}</label>
               <input
                 type="text"
                 className="w-full h-8 px-2 text-sm rounded border bg-background"
                 value={labels}
                 onChange={(e) => setLabels(e.target.value)}
-                placeholder="label1, label2"
+                placeholder={t('optionsTab.labelsPlaceholder')}
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Priority</label>
+              <label className="text-xs text-muted-foreground">{t('torrent.priority')}</label>
               <select
                 className="w-full h-8 px-2 text-sm rounded border bg-background"
                 value={priority}
                 onChange={(e) => setPriority(Number(e.target.value))}
               >
-                <option value={-1}>Low</option>
-                <option value={0}>Normal</option>
-                <option value={1}>High</option>
+                <option value={-1}>{t('priority.low')}</option>
+                <option value={0}>{t('priority.normal')}</option>
+                <option value={1}>{t('priority.high')}</option>
               </select>
             </div>
           </div>
 
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={paused} onChange={(e) => setPaused(e.target.checked)} />
-            Start paused
+            {t('dialog.startPaused')}
           </label>
 
           {error && (
@@ -191,14 +193,14 @@ export function AddTorrentDialog({ onClose }: Props) {
 
         <div className="flex items-center justify-end gap-2 p-4 border-t">
           <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={onClose}>
-            Cancel
+            {t('dialog.cancel')}
           </button>
           <button
             className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
             onClick={handleAdd}
             disabled={saving}
           >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : 'Add'}
+            {saving ? <Loader2 size={14} className="animate-spin" /> : t('dialog.add')}
           </button>
         </div>
       </div>

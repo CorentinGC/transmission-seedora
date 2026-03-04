@@ -1,9 +1,11 @@
 import { ArrowDown, ArrowUp, HardDrive, Turtle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
 import { useServerStore } from '../../stores/server-store';
 import { formatSpeed, formatBytes } from '../../lib/format';
 
 export function StatusBar() {
+  const { t } = useTranslation();
   const stats = useSessionStore((s) => s.stats);
   const settings = useSessionStore((s) => s.settings);
   const freeSpace = useSessionStore((s) => s.freeSpace);
@@ -21,7 +23,7 @@ export function StatusBar() {
             isConnected ? 'bg-green-500' : connectionStatus === 'error' ? 'bg-red-500' : 'bg-gray-400'
           }`}
         />
-        <span>{isConnected ? 'Connected' : connectionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}</span>
+        <span>{isConnected ? t('statusBar.connected') : connectionStatus === 'connecting' ? t('statusBar.connecting') : t('statusBar.disconnected')}</span>
       </div>
 
       {isConnected && stats && (
@@ -35,16 +37,16 @@ export function StatusBar() {
             <span>{formatSpeed(stats.uploadSpeed)}</span>
           </div>
           <div className="text-muted-foreground">
-            {stats.activeTorrentCount} active / {stats.torrentCount} total
+            {t('statusBar.activeTotal', { active: stats.activeTorrentCount, total: stats.torrentCount })}
           </div>
 
           <button
             className={`flex items-center gap-1 px-1 rounded hover:bg-accent ${altSpeedEnabled ? 'text-blue-500' : ''}`}
             onClick={toggleAltSpeed}
-            title={altSpeedEnabled ? 'Disable alt speed' : 'Enable alt speed'}
+            title={altSpeedEnabled ? t('statusBar.disableAltSpeed') : t('statusBar.enableAltSpeed')}
           >
             <Turtle size={12} />
-            <span>{altSpeedEnabled ? 'Alt' : ''}</span>
+            <span>{altSpeedEnabled ? t('statusBar.alt') : ''}</span>
           </button>
 
           <div className="flex-1" />
@@ -52,7 +54,7 @@ export function StatusBar() {
           {freeSpace !== null && (
             <div className="flex items-center gap-1">
               <HardDrive size={12} />
-              <span>{formatBytes(freeSpace)} free</span>
+              <span>{t('statusBar.freeSpace', { space: formatBytes(freeSpace) })}</span>
             </div>
           )}
         </>

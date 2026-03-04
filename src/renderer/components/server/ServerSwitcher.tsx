@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Server, Plus, ChevronDown } from 'lucide-react';
 import { useServerStore } from '../../stores/server-store';
 import { ServerFormDialog } from './ServerFormDialog';
 
 export function ServerSwitcher() {
+  const { t } = useTranslation();
   const servers = useServerStore((s) => s.servers);
   const activeServerId = useServerStore((s) => s.activeServerId);
   const connectionStatus = useServerStore((s) => s.connectionStatus);
@@ -27,7 +29,7 @@ export function ServerSwitcher() {
       >
         <Server size={14} />
         <span className="max-w-32 truncate">
-          {activeServer?.name ?? 'No server'}
+          {activeServer?.name ?? t('server.noServer')}
         </span>
         <span
           className={`w-2 h-2 rounded-full ${
@@ -72,7 +74,7 @@ export function ServerSwitcher() {
               }}
             >
               <Plus size={14} />
-              <span>Add Server...</span>
+              <span>{t('server.addServer')}</span>
             </button>
           </div>
         </>

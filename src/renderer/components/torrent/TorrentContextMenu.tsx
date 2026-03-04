@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Play,
   Zap,
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export function TorrentContextMenu({ x, y, torrentIds, onClose }: Props) {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const startTorrents = useTorrentStore((s) => s.startTorrents);
   const startNowTorrents = useTorrentStore((s) => s.startNowTorrents);
@@ -76,35 +78,35 @@ export function TorrentContextMenu({ x, y, torrentIds, onClose }: Props) {
       className="fixed z-50 w-56 rounded-md border bg-popover shadow-lg py-1 text-sm"
       style={{ left: x, top: y }}
     >
-      <MenuItem icon={<Play size={14} />} label="Start" onClick={() => act(() => startTorrents(torrentIds))} />
-      <MenuItem icon={<Zap size={14} />} label="Force Start" onClick={() => act(() => startNowTorrents(torrentIds))} />
-      <MenuItem icon={<Pause size={14} />} label="Stop" onClick={() => act(() => stopTorrents(torrentIds))} />
+      <MenuItem icon={<Play size={14} />} label={t('contextMenu.start')} onClick={() => act(() => startTorrents(torrentIds))} />
+      <MenuItem icon={<Zap size={14} />} label={t('contextMenu.forceStart')} onClick={() => act(() => startNowTorrents(torrentIds))} />
+      <MenuItem icon={<Pause size={14} />} label={t('contextMenu.stop')} onClick={() => act(() => stopTorrents(torrentIds))} />
       <Separator />
-      <MenuItem icon={<CheckCircle size={14} />} label="Verify" onClick={() => act(() => verifyTorrents(torrentIds))} />
-      <MenuItem icon={<RefreshCw size={14} />} label="Reannounce" onClick={() => act(() => reannounceTorrents(torrentIds))} />
+      <MenuItem icon={<CheckCircle size={14} />} label={t('contextMenu.verify')} onClick={() => act(() => verifyTorrents(torrentIds))} />
+      <MenuItem icon={<RefreshCw size={14} />} label={t('contextMenu.reannounce')} onClick={() => act(() => reannounceTorrents(torrentIds))} />
       <Separator />
-      <MenuItem icon={<FolderOpen size={14} />} label="Set Location..." onClick={() => setShowLocation(true)} />
+      <MenuItem icon={<FolderOpen size={14} />} label={t('contextMenu.setLocation')} onClick={() => setShowLocation(true)} />
       {singleTorrent && (
-        <MenuItem icon={<Edit3 size={14} />} label="Rename..." onClick={() => setShowRename(true)} />
+        <MenuItem icon={<Edit3 size={14} />} label={t('contextMenu.rename')} onClick={() => setShowRename(true)} />
       )}
       {singleTorrent && (
-        <MenuItem icon={<Copy size={14} />} label="Copy Magnet Link" onClick={copyMagnet} />
+        <MenuItem icon={<Copy size={14} />} label={t('contextMenu.copyMagnet')} onClick={copyMagnet} />
       )}
       <Separator />
       {/* Priority submenu */}
-      <div className="px-2 py-1 text-xs text-muted-foreground">Priority</div>
-      <MenuItem label="High" onClick={() => act(() => setTorrentProps(torrentIds, { bandwidthPriority: 1 }))} indent />
-      <MenuItem label="Normal" onClick={() => act(() => setTorrentProps(torrentIds, { bandwidthPriority: 0 }))} indent />
-      <MenuItem label="Low" onClick={() => act(() => setTorrentProps(torrentIds, { bandwidthPriority: -1 }))} indent />
+      <div className="px-2 py-1 text-xs text-muted-foreground">{t('contextMenu.priority')}</div>
+      <MenuItem label={t('priority.high')} onClick={() => act(() => setTorrentProps(torrentIds, { bandwidthPriority: 1 }))} indent />
+      <MenuItem label={t('priority.normal')} onClick={() => act(() => setTorrentProps(torrentIds, { bandwidthPriority: 0 }))} indent />
+      <MenuItem label={t('priority.low')} onClick={() => act(() => setTorrentProps(torrentIds, { bandwidthPriority: -1 }))} indent />
       <Separator />
       {/* Queue submenu */}
-      <div className="px-2 py-1 text-xs text-muted-foreground">Queue</div>
-      <MenuItem icon={<ChevronsUp size={14} />} label="Move to Top" onClick={() => act(() => queueMove(torrentIds, 'top'))} indent />
-      <MenuItem icon={<ArrowUp size={14} />} label="Move Up" onClick={() => act(() => queueMove(torrentIds, 'up'))} indent />
-      <MenuItem icon={<ArrowDown size={14} />} label="Move Down" onClick={() => act(() => queueMove(torrentIds, 'down'))} indent />
-      <MenuItem icon={<ChevronsDown size={14} />} label="Move to Bottom" onClick={() => act(() => queueMove(torrentIds, 'bottom'))} indent />
+      <div className="px-2 py-1 text-xs text-muted-foreground">{t('contextMenu.queue')}</div>
+      <MenuItem icon={<ChevronsUp size={14} />} label={t('contextMenu.moveToTop')} onClick={() => act(() => queueMove(torrentIds, 'top'))} indent />
+      <MenuItem icon={<ArrowUp size={14} />} label={t('contextMenu.moveUp')} onClick={() => act(() => queueMove(torrentIds, 'up'))} indent />
+      <MenuItem icon={<ArrowDown size={14} />} label={t('contextMenu.moveDown')} onClick={() => act(() => queueMove(torrentIds, 'down'))} indent />
+      <MenuItem icon={<ChevronsDown size={14} />} label={t('contextMenu.moveToBottom')} onClick={() => act(() => queueMove(torrentIds, 'bottom'))} indent />
       <Separator />
-      <MenuItem icon={<Trash2 size={14} />} label="Remove..." onClick={() => setShowRemove(true)} className="text-destructive" />
+      <MenuItem icon={<Trash2 size={14} />} label={t('contextMenu.remove')} onClick={() => setShowRemove(true)} className="text-destructive" />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Torrent, TorrentTrackerStats } from '../../types/torrent';
 import { useTorrentStore } from '../../stores/torrent-store';
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function TrackersTab({ torrent }: Props) {
+  const { t } = useTranslation();
   const [trackerStats, setTrackerStats] = useState<TorrentTrackerStats[]>([]);
   const [newTracker, setNewTracker] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -64,11 +66,11 @@ export function TrackersTab({ torrent }: Props) {
   return (
     <div className="text-xs space-y-2">
       <div className="flex items-center gap-2 px-1 py-1 font-medium text-muted-foreground border-b">
-        <span className="w-8">Tier</span>
-        <span className="flex-1">Announce URL</span>
-        <span className="w-16 text-right">Seeds</span>
-        <span className="w-16 text-right">Leechers</span>
-        <span className="w-20">Status</span>
+        <span className="w-8">{t('trackersTab.tier')}</span>
+        <span className="flex-1">{t('trackersTab.announceUrl')}</span>
+        <span className="w-16 text-right">{t('trackersTab.seeds')}</span>
+        <span className="w-16 text-right">{t('trackersTab.leechers')}</span>
+        <span className="w-20">{t('trackersTab.status')}</span>
         <span className="w-24" />
       </div>
       {trackerStats.map((ts) => (
@@ -91,13 +93,13 @@ export function TrackersTab({ torrent }: Props) {
                 className="text-green-500 hover:underline"
                 onClick={() => saveEdit(ts.announce)}
               >
-                Save
+                {t('trackersTab.save')}
               </button>
               <button
                 className="text-muted-foreground hover:underline"
                 onClick={cancelEdit}
               >
-                Cancel
+                {t('trackersTab.cancel')}
               </button>
             </div>
           ) : (
@@ -105,27 +107,27 @@ export function TrackersTab({ torrent }: Props) {
               <span
                 className="flex-1 truncate cursor-pointer hover:underline"
                 onDoubleClick={() => startEdit(ts)}
-                title="Double-click to edit"
+                title={t('details.doubleClickEdit')}
               >
                 {ts.announce}
               </span>
               <span className="w-16 text-right">{ts.seederCount >= 0 ? ts.seederCount : '-'}</span>
               <span className="w-16 text-right">{ts.leecherCount >= 0 ? ts.leecherCount : '-'}</span>
               <span className="w-20">
-                {ts.lastAnnounceSucceeded ? 'OK' : ts.lastAnnounceResult || 'N/A'}
+                {ts.lastAnnounceSucceeded ? t('trackersTab.ok') : ts.lastAnnounceResult || t('trackersTab.na')}
               </span>
               <div className="w-24 flex gap-1">
                 <button
                   className="text-blue-500 hover:underline"
                   onClick={() => startEdit(ts)}
                 >
-                  Edit
+                  {t('trackersTab.edit')}
                 </button>
                 <button
                   className="text-red-500 hover:underline"
                   onClick={() => removeTracker(ts.announce)}
                 >
-                  Remove
+                  {t('trackersTab.remove')}
                 </button>
               </div>
             </>
@@ -136,7 +138,7 @@ export function TrackersTab({ torrent }: Props) {
       <div className="flex items-center gap-2 pt-2 border-t">
         <input
           type="text"
-          placeholder="Add tracker URL..."
+          placeholder={t('trackersTab.addPlaceholder')}
           value={newTracker}
           onChange={(e) => setNewTracker(e.target.value)}
           className="flex-1 h-7 px-2 text-xs rounded border bg-background"
@@ -146,7 +148,7 @@ export function TrackersTab({ torrent }: Props) {
           className="h-7 px-3 text-xs rounded border hover:bg-accent"
           onClick={addTracker}
         >
-          Add
+          {t('trackersTab.add')}
         </button>
       </div>
     </div>

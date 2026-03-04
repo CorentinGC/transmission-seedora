@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   List,
   ArrowDown,
@@ -23,16 +24,16 @@ interface Props {
   torrents: Torrent[];
 }
 
-const STATUS_ITEMS: { filter: StatusFilter; label: string; icon: React.ReactNode }[] = [
-  { filter: 'all', label: 'All', icon: <List size={14} /> },
-  { filter: 'downloading', label: 'Downloading', icon: <ArrowDown size={14} /> },
-  { filter: 'seeding', label: 'Seeding', icon: <ArrowUp size={14} /> },
-  { filter: 'completed', label: 'Completed', icon: <CheckCircle2 size={14} /> },
-  { filter: 'active', label: 'Active', icon: <Activity size={14} /> },
-  { filter: 'inactive', label: 'Inactive', icon: <Moon size={14} /> },
-  { filter: 'stopped', label: 'Stopped', icon: <Square size={14} /> },
-  { filter: 'error', label: 'Error', icon: <AlertCircle size={14} /> },
-  { filter: 'waiting', label: 'Waiting', icon: <Clock size={14} /> },
+const STATUS_ITEMS: { filter: StatusFilter; labelKey: string; icon: React.ReactNode }[] = [
+  { filter: 'all', labelKey: 'filter.all', icon: <List size={14} /> },
+  { filter: 'downloading', labelKey: 'filter.downloading', icon: <ArrowDown size={14} /> },
+  { filter: 'seeding', labelKey: 'filter.seeding', icon: <ArrowUp size={14} /> },
+  { filter: 'completed', labelKey: 'filter.completed', icon: <CheckCircle2 size={14} /> },
+  { filter: 'active', labelKey: 'filter.active', icon: <Activity size={14} /> },
+  { filter: 'inactive', labelKey: 'filter.inactive', icon: <Moon size={14} /> },
+  { filter: 'stopped', labelKey: 'filter.stopped', icon: <Square size={14} /> },
+  { filter: 'error', labelKey: 'filter.error', icon: <AlertCircle size={14} /> },
+  { filter: 'waiting', labelKey: 'filter.waiting', icon: <Clock size={14} /> },
 ];
 
 function CollapsibleSection({
@@ -61,6 +62,7 @@ function CollapsibleSection({
 }
 
 export function FilterSidebar({ torrents }: Props) {
+  const { t } = useTranslation();
   const statusFilter = useTorrentStore((s) => s.statusFilter);
   const setStatusFilter = useTorrentStore((s) => s.setStatusFilter);
   const labelFilter = useTorrentStore((s) => s.labelFilter);
@@ -125,7 +127,7 @@ export function FilterSidebar({ torrents }: Props) {
     <div className="w-full h-full overflow-y-auto overflow-x-hidden bg-card select-none text-sm">
       {/* Status filters */}
       <div className="py-1">
-        {STATUS_ITEMS.map(({ filter, label, icon }) => (
+        {STATUS_ITEMS.map(({ filter, labelKey, icon }) => (
           <button
             key={filter}
             className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
@@ -139,7 +141,7 @@ export function FilterSidebar({ torrents }: Props) {
             }}
           >
             <span className="flex-shrink-0">{icon}</span>
-            <span className="flex-1 text-left truncate min-w-0">{label}</span>
+            <span className="flex-1 text-left truncate min-w-0">{t(labelKey)}</span>
             <span className="text-xs text-muted-foreground flex-shrink-0">{statusCounts[filter]}</span>
           </button>
         ))}
@@ -147,7 +149,7 @@ export function FilterSidebar({ torrents }: Props) {
 
       {/* Labels */}
       {labels.length > 0 && (
-        <CollapsibleSection title="Labels">
+        <CollapsibleSection title={t('filter.labels')}>
           {labels.map(([label, count]) => (
             <button
               key={label}
@@ -171,7 +173,7 @@ export function FilterSidebar({ torrents }: Props) {
 
       {/* Folders (before Trackers) */}
       {folders.length > 0 && (
-        <CollapsibleSection title="Folders">
+        <CollapsibleSection title={t('filter.folders')}>
           {folders.map(([folder, count]) => (
             <button
               key={folder}
@@ -195,7 +197,7 @@ export function FilterSidebar({ torrents }: Props) {
 
       {/* Trackers (collapsed by default) */}
       {trackers.length > 0 && (
-        <CollapsibleSection title="Trackers" defaultOpen={false}>
+        <CollapsibleSection title={t('filter.trackers')} defaultOpen={false}>
           {trackers.map(([tracker, count]) => (
             <button
               key={tracker}

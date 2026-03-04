@@ -1,50 +1,52 @@
+import { useTranslation } from 'react-i18next';
 import type { Torrent } from '../../types/torrent';
 import { formatBytes, formatSpeed, formatRatio, formatDate, formatEta } from '../../lib/format';
-import { getStatusLabel } from '../../lib/constants';
+import { getStatusLabelKey } from '../../lib/constants';
 import { useUiStore } from '../../stores/ui-store';
 
 interface Props {
   torrent: Torrent;
 }
 
-export function GeneralTab({ torrent: t }: Props) {
+export function GeneralTab({ torrent: tor }: Props) {
+  const { t } = useTranslation();
   const relativeDates = useUiStore((s) => s.relativeDates);
   const copyMagnet = () => {
-    navigator.clipboard.writeText(t.magnetLink);
+    navigator.clipboard.writeText(tor.magnetLink);
   };
 
   return (
     <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
-      <InfoRow label="Name" value={t.name} />
-      <InfoRow label="Status" value={getStatusLabel(t.status, t.error)} />
-      <InfoRow label="Hash" value={t.hashString} />
-      <InfoRow label="Size" value={formatBytes(t.totalSize)} />
-      <InfoRow label="Downloaded" value={formatBytes(t.downloadedEver)} />
-      <InfoRow label="Uploaded" value={formatBytes(t.uploadedEver)} />
-      <InfoRow label="Ratio" value={formatRatio(t.uploadRatio)} />
-      <InfoRow label="Wasted" value={formatBytes(t.corruptEver)} />
-      <InfoRow label="Download Speed" value={formatSpeed(t.rateDownload)} />
-      <InfoRow label="Upload Speed" value={formatSpeed(t.rateUpload)} />
-      <InfoRow label="ETA" value={formatEta(t.eta)} />
-      <InfoRow label="Seeds" value={`${t.peersSendingToUs} connected`} />
-      <InfoRow label="Peers" value={`${t.peersGettingFromUs} connected`} />
-      <InfoRow label="Location" value={t.downloadDir} />
-      <InfoRow label="Added" value={formatDate(t.addedDate, relativeDates)} />
-      <InfoRow label="Completed" value={formatDate(t.doneDate, relativeDates)} />
-      <InfoRow label="Last Active" value={formatDate(t.activityDate, relativeDates)} />
-      <InfoRow label="Created" value={formatDate(t.dateCreated, relativeDates)} />
-      <InfoRow label="Pieces" value={`${t.pieceCount} x ${formatBytes(t.pieceSize)}`} />
-      <InfoRow label="Comment" value={t.comment} />
-      <InfoRow label="Creator" value={t.creator} />
-      {t.errorString && (
-        <InfoRow label="Error" value={t.errorString} className="text-red-500" />
+      <InfoRow label={t('torrent.name')} value={tor.name} />
+      <InfoRow label={t('torrent.status')} value={t(getStatusLabelKey(tor.status, tor.error))} />
+      <InfoRow label={t('details.hash')} value={tor.hashString} />
+      <InfoRow label={t('torrent.size')} value={formatBytes(tor.totalSize)} />
+      <InfoRow label={t('torrent.downloaded')} value={formatBytes(tor.downloadedEver)} />
+      <InfoRow label={t('torrent.uploaded')} value={formatBytes(tor.uploadedEver)} />
+      <InfoRow label={t('torrent.ratio')} value={formatRatio(tor.uploadRatio)} />
+      <InfoRow label={t('details.wasted')} value={tor.corruptEver > 0 ? formatBytes(tor.corruptEver) : ''} />
+      <InfoRow label={t('details.downloadSpeed')} value={formatSpeed(tor.rateDownload)} />
+      <InfoRow label={t('details.uploadSpeed')} value={formatSpeed(tor.rateUpload)} />
+      <InfoRow label={t('torrent.eta')} value={formatEta(tor.eta)} />
+      <InfoRow label={t('torrent.seeds')} value={`${tor.peersSendingToUs} ${t('details.connected')}`} />
+      <InfoRow label={t('torrent.peers')} value={`${tor.peersGettingFromUs} ${t('details.connected')}`} />
+      <InfoRow label={t('details.location')} value={tor.downloadDir} />
+      <InfoRow label={t('torrent.added')} value={formatDate(tor.addedDate, relativeDates)} />
+      <InfoRow label={t('torrent.completed')} value={formatDate(tor.doneDate, relativeDates)} />
+      <InfoRow label={t('torrent.lastActive')} value={formatDate(tor.activityDate, relativeDates)} />
+      <InfoRow label={t('details.created')} value={formatDate(tor.dateCreated, relativeDates)} />
+      <InfoRow label={t('details.pieces')} value={tor.pieceCount > 0 && tor.pieceSize > 0 ? t('details.piecesFormat', { count: tor.pieceCount, size: formatBytes(tor.pieceSize) }) : ''} />
+      <InfoRow label={t('details.comment')} value={tor.comment} />
+      <InfoRow label={t('details.creator')} value={tor.creator} />
+      {tor.errorString && (
+        <InfoRow label={t('status.error')} value={tor.errorString} className="text-red-500" />
       )}
       <div className="col-span-2 mt-2">
         <button
           className="text-xs text-blue-500 hover:underline"
           onClick={copyMagnet}
         >
-          Copy Magnet Link
+          {t('details.copyMagnet')}
         </button>
       </div>
     </div>

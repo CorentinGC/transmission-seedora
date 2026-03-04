@@ -13,6 +13,7 @@ import {
   PanelLeft,
 } from 'lucide-react';
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useServerStore } from '../../stores/server-store';
 import { useUiStore } from '../../stores/ui-store';
@@ -24,6 +25,7 @@ import { SettingsDialog } from '../settings/SettingsDialog';
 import { AppPrefsDialog } from '../settings/AppPrefsDialog';
 
 export function Toolbar() {
+  const { t } = useTranslation();
   const selectedIds = useTorrentStore((s) => s.selectedIds);
   const startTorrents = useTorrentStore((s) => s.startTorrents);
   const stopTorrents = useTorrentStore((s) => s.stopTorrents);
@@ -63,7 +65,7 @@ export function Toolbar() {
 
         <ToolbarButton
           icon={<Plus size={16} />}
-          tooltip="Add Torrent"
+          tooltip={t('toolbar.addTorrent')}
           onClick={() => setShowAddDialog(true)}
           disabled={!isConnected}
           colorClass="text-blue-400/80"
@@ -73,28 +75,28 @@ export function Toolbar() {
 
         <ToolbarButton
           icon={<Play size={16} />}
-          tooltip="Start"
+          tooltip={t('toolbar.start')}
           onClick={() => hasSelection && startTorrents(ids)}
           disabled={!hasSelection || !isConnected}
           colorClass="text-green-400/80"
         />
         <ToolbarButton
           icon={<Pause size={16} />}
-          tooltip="Stop"
+          tooltip={t('toolbar.stop')}
           onClick={() => hasSelection && stopTorrents(ids)}
           disabled={!hasSelection || !isConnected}
           colorClass="text-amber-400/80"
         />
         <ToolbarButton
           icon={<Trash2 size={16} />}
-          tooltip="Remove"
+          tooltip={t('toolbar.remove')}
           onClick={() => setShowRemoveDialog(true)}
           disabled={!hasSelection || !isConnected}
           colorClass="text-red-400/70"
         />
         <ToolbarButton
           icon={<CheckCircle size={16} />}
-          tooltip="Verify"
+          tooltip={t('toolbar.verify')}
           onClick={() => hasSelection && verifyTorrents(ids)}
           disabled={!hasSelection || !isConnected}
           colorClass="text-cyan-400/70"
@@ -104,14 +106,14 @@ export function Toolbar() {
 
         <ToolbarButton
           icon={<PlayCircle size={16} />}
-          tooltip="Start All"
+          tooltip={t('toolbar.startAll')}
           onClick={startAll}
           disabled={!isConnected}
           colorClass="text-green-400/80"
         />
         <ToolbarButton
           icon={<StopCircle size={16} />}
-          tooltip="Stop All"
+          tooltip={t('toolbar.stopAll')}
           onClick={stopAll}
           disabled={!isConnected}
           colorClass="text-amber-400/80"
@@ -121,12 +123,12 @@ export function Toolbar() {
 
         <ToolbarButton
           icon={<PanelLeft size={16} />}
-          tooltip="Toggle Filter Panel"
+          tooltip={t('toolbar.filterPanel')}
           onClick={toggleFilterPanel}
         />
         <ToolbarButton
           icon={<PanelBottom size={16} />}
-          tooltip="Toggle Details Panel"
+          tooltip={t('toolbar.detailsPanel')}
           onClick={toggleDetailsPanel}
         />
 
@@ -136,7 +138,7 @@ export function Toolbar() {
           <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search torrents..."
+            placeholder={t('toolbar.searchPlaceholder')}
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="h-7 pl-7 pr-2 w-48 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
@@ -147,13 +149,13 @@ export function Toolbar() {
 
         <ToolbarButton
           icon={<Sliders size={16} />}
-          tooltip="Preferences"
+          tooltip={t('toolbar.preferences')}
           onClick={() => setShowPrefs(true)}
           colorClass="text-muted-foreground"
         />
         <ToolbarButton
           icon={<Settings size={16} />}
-          tooltip="Server Settings"
+          tooltip={t('toolbar.serverSettings')}
           onClick={() => setShowSettings(true)}
           disabled={!isConnected}
           colorClass="text-muted-foreground"

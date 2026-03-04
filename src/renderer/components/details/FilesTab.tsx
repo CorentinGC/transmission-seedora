@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronDown, Folder, File } from 'lucide-react';
 import type { Torrent, TorrentFile, TorrentFileStat } from '../../types/torrent';
 import { formatBytes, formatPercent } from '../../lib/format';
@@ -123,6 +124,7 @@ function FileTreeRow({
   toggleWanted: (index: number, wanted: boolean) => void;
   setPriority: (index: number, priority: number) => void;
 }) {
+  const { t } = useTranslation();
   const isExpanded = expandedPaths.has(node.path);
   const progress = node.totalSize > 0 ? node.completedSize / node.totalSize : 0;
 
@@ -183,15 +185,16 @@ function FileTreeRow({
         value={priority}
         onChange={(e) => node.fileIndex !== undefined && setPriority(node.fileIndex, Number(e.target.value))}
       >
-        <option value={-1}>Low</option>
-        <option value={0}>Normal</option>
-        <option value={1}>High</option>
+        <option value={-1}>{t('priority.low')}</option>
+        <option value={0}>{t('priority.normal')}</option>
+        <option value={1}>{t('priority.high')}</option>
       </select>
     </div>
   );
 }
 
 export function FilesTab({ torrent }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<DetailedTorrentData | null>(null);
   const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set());
   const setTorrentProps = useTorrentStore((s) => s.setTorrentProps);
@@ -250,16 +253,16 @@ export function FilesTab({ torrent }: Props) {
   );
 
   if (!data?.files || !tree) {
-    return <div className="text-muted-foreground">Loading files...</div>;
+    return <div className="text-muted-foreground">{t('details.loadingFiles')}</div>;
   }
 
   return (
     <div className="text-xs">
       <div className="flex items-center gap-1 px-1 py-1 font-medium text-muted-foreground border-b">
-        <span className="flex-1">Name</span>
-        <span className="w-20 text-right">Size</span>
-        <span className="w-16 text-right">Done</span>
-        <span className="w-16 text-right">Priority</span>
+        <span className="flex-1">{t('torrent.name')}</span>
+        <span className="w-20 text-right">{t('torrent.size')}</span>
+        <span className="w-16 text-right">{t('torrent.done')}</span>
+        <span className="w-16 text-right">{t('torrent.priority')}</span>
       </div>
       {tree.isFolder ? (
         tree.children.map((child) => (
