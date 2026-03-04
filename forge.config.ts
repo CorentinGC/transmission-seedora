@@ -10,7 +10,9 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 
 const config: ForgeConfig = {
   packagerConfig: {
-    asar: true,
+    asar: {
+      unpack: '**/node_modules/geoip-lite/**',
+    },
     name: 'Transmission Remote',
     executableName: 'transmission-remote',
     appBundleId: 'com.transmission-remote.app',
