@@ -1,8 +1,8 @@
 {
   "name": "transmission-remote-rework",
-  "productName": "transmission-remote-rework",
+  "productName": "Transmission Remote",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Cross-platform remote GUI for Transmission BitTorrent daemon",
   "main": ".vite/build/index.js",
   "private": true,
   "scripts": {
@@ -22,6 +22,7 @@
   "devDependencies": {
     "@electron-forge/cli": "^7.11.1",
     "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-dmg": "^7.11.1",
     "@electron-forge/maker-rpm": "^7.11.1",
     "@electron-forge/maker-squirrel": "^7.11.1",
     "@electron-forge/maker-zip": "^7.11.1",
