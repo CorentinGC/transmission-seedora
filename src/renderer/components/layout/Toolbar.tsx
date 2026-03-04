@@ -12,7 +12,7 @@ import {
   PanelBottom,
   PanelLeft,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useServerStore } from '../../stores/server-store';
 import { useUiStore } from '../../stores/ui-store';
@@ -63,63 +63,70 @@ export function Toolbar() {
 
         <ToolbarButton
           icon={<Plus size={16} />}
-          title="Add Torrent"
+          tooltip="Add Torrent"
           onClick={() => setShowAddDialog(true)}
           disabled={!isConnected}
+          colorClass="text-blue-400/80"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
 
         <ToolbarButton
           icon={<Play size={16} />}
-          title="Start"
+          tooltip="Start"
           onClick={() => hasSelection && startTorrents(ids)}
           disabled={!hasSelection || !isConnected}
+          colorClass="text-green-400/80"
         />
         <ToolbarButton
           icon={<Pause size={16} />}
-          title="Stop"
+          tooltip="Stop"
           onClick={() => hasSelection && stopTorrents(ids)}
           disabled={!hasSelection || !isConnected}
+          colorClass="text-amber-400/80"
         />
         <ToolbarButton
           icon={<Trash2 size={16} />}
-          title="Remove"
+          tooltip="Remove"
           onClick={() => setShowRemoveDialog(true)}
           disabled={!hasSelection || !isConnected}
+          colorClass="text-red-400/70"
         />
         <ToolbarButton
           icon={<CheckCircle size={16} />}
-          title="Verify"
+          tooltip="Verify"
           onClick={() => hasSelection && verifyTorrents(ids)}
           disabled={!hasSelection || !isConnected}
+          colorClass="text-cyan-400/70"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
 
         <ToolbarButton
           icon={<PlayCircle size={16} />}
-          title="Start All"
+          tooltip="Start All"
           onClick={startAll}
           disabled={!isConnected}
+          colorClass="text-green-400/80"
         />
         <ToolbarButton
           icon={<StopCircle size={16} />}
-          title="Stop All"
+          tooltip="Stop All"
           onClick={stopAll}
           disabled={!isConnected}
+          colorClass="text-amber-400/80"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
 
         <ToolbarButton
           icon={<PanelLeft size={16} />}
-          title="Toggle Filter Panel"
+          tooltip="Toggle Filter Panel"
           onClick={toggleFilterPanel}
         />
         <ToolbarButton
           icon={<PanelBottom size={16} />}
-          title="Toggle Details Panel"
+          tooltip="Toggle Details Panel"
           onClick={toggleDetailsPanel}
         />
 
@@ -140,14 +147,16 @@ export function Toolbar() {
 
         <ToolbarButton
           icon={<Sliders size={16} />}
-          title="Preferences"
+          tooltip="Preferences"
           onClick={() => setShowPrefs(true)}
+          colorClass="text-muted-foreground"
         />
         <ToolbarButton
           icon={<Settings size={16} />}
-          title="Server Settings"
+          tooltip="Server Settings"
           onClick={() => setShowSettings(true)}
           disabled={!isConnected}
+          colorClass="text-muted-foreground"
         />
       </div>
 
@@ -161,23 +170,47 @@ export function Toolbar() {
 
 function ToolbarButton({
   icon,
-  title,
+  tooltip,
   onClick,
   disabled,
+  colorClass,
 }: {
   icon: React.ReactNode;
-  title: string;
+  tooltip: string;
   onClick: () => void;
   disabled?: boolean;
+  colorClass?: string;
 }) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const handleMouseEnter = useCallback(() => {
+    timerRef.current = setTimeout(() => setShowTooltip(true), 800);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    clearTimeout(timerRef.current);
+    setShowTooltip(false);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
+
   return (
-    <button
-      className="inline-flex items-center justify-center h-7 w-7 rounded hover:bg-accent disabled:opacity-40 disabled:pointer-events-none"
-      title={title}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {icon}
-    </button>
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <button
+        className={`inline-flex items-center justify-center h-7 w-7 rounded hover:bg-accent disabled:opacity-40 disabled:pointer-events-none ${colorClass ?? ''}`}
+        onClick={onClick}
+        disabled={disabled}
+      >
+        {icon}
+      </button>
+      {showTooltip && (
+        <div className="absolute z-50 top-full mt-1 left-1/2 -translate-x-1/2 px-2 py-1 text-xs rounded bg-popover text-popover-foreground border shadow-md whitespace-nowrap pointer-events-none">
+          {tooltip}
+        </div>
+      )}
+    </div>
   );
 }
