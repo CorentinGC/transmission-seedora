@@ -122,7 +122,7 @@ export function FilterSidebar({ torrents }: Props) {
   }, [torrents]);
 
   return (
-    <div className="w-48 border-r overflow-y-auto bg-card flex-shrink-0 select-none text-sm">
+    <div className="w-full h-full overflow-y-auto bg-card select-none text-sm">
       {/* Status filters */}
       <div className="py-1">
         {STATUS_ITEMS.map(({ filter, label, icon }) => (
@@ -156,6 +156,7 @@ export function FilterSidebar({ torrents }: Props) {
               }`}
               onClick={() => {
                 setLabelFilter(labelFilter === label ? null : label);
+                setStatusFilter('all');
                 setTrackerFilter(null);
                 setFolderFilter(null);
               }}
@@ -179,6 +180,7 @@ export function FilterSidebar({ torrents }: Props) {
               }`}
               onClick={() => {
                 setFolderFilter(folderFilter === folder ? null : folder);
+                setStatusFilter('all');
                 setLabelFilter(null);
                 setTrackerFilter(null);
               }}
@@ -202,6 +204,7 @@ export function FilterSidebar({ torrents }: Props) {
               }`}
               onClick={() => {
                 setTrackerFilter(trackerFilter === tracker ? null : tracker);
+                setStatusFilter('all');
                 setLabelFilter(null);
                 setFolderFilter(null);
               }}
