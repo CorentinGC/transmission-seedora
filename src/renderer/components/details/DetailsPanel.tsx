@@ -17,7 +17,7 @@ export function DetailsPanel({ torrent }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('General');
 
   return (
-    <div className="border-t h-64 flex flex-col flex-shrink-0 bg-card">
+    <div className="flex flex-col h-full bg-card">
       <div className="flex border-b select-none">
         {TABS.map((tab) => (
           <button

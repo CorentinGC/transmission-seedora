@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback, useRef, useEffect } from 'react';
 import { Toolbar } from './Toolbar';
 import { StatusBar } from './StatusBar';
 import { FilterSidebar } from '../filter/FilterSidebar';
@@ -11,9 +11,66 @@ import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { matchesStatusFilter } from '../../lib/constants';
 
+function useResizable(
+  direction: 'horizontal' | 'vertical',
+  initialSize: number,
+  onSizeChange?: (size: number) => void,
+  minSize = 100,
+  maxSize = 600,
+) {
+  const sizeRef = useRef(initialSize);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    sizeRef.current = initialSize;
+  }, [initialSize]);
+
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      const startPos = direction === 'horizontal' ? e.clientX : e.clientY;
+      const startSize = sizeRef.current;
+
+      const onMouseMove = (ev: MouseEvent) => {
+        const currentPos = direction === 'horizontal' ? ev.clientX : ev.clientY;
+        const diff = direction === 'vertical' ? startPos - currentPos : currentPos - startPos;
+        const newSize = Math.max(minSize, Math.min(maxSize, startSize + diff));
+        sizeRef.current = newSize;
+        if (containerRef.current) {
+          if (direction === 'horizontal') {
+            containerRef.current.style.width = `${newSize}px`;
+          } else {
+            containerRef.current.style.height = `${newSize}px`;
+          }
+        }
+      };
+
+      const onMouseUp = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        onSizeChange?.(sizeRef.current);
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = direction === 'horizontal' ? 'col-resize' : 'row-resize';
+      document.body.style.userSelect = 'none';
+    },
+    [direction, minSize, maxSize, onSizeChange],
+  );
+
+  return { containerRef, onMouseDown };
+}
+
 export function AppShell() {
   const filterPanelVisible = useUiStore((s) => s.filterPanelVisible);
   const detailsPanelVisible = useUiStore((s) => s.detailsPanelVisible);
+  const filterPanelSize = useUiStore((s) => s.filterPanelSize);
+  const detailsPanelSize = useUiStore((s) => s.detailsPanelSize);
+  const setFilterPanelSize = useUiStore((s) => s.setFilterPanelSize);
+  const setDetailsPanelSize = useUiStore((s) => s.setDetailsPanelSize);
 
   useTorrents(3000);
   useSessionStats(5000);
@@ -70,17 +127,54 @@ export function AppShell() {
     return s.torrents.get(id) ?? null;
   });
 
+  const sidebar = useResizable('horizontal', filterPanelSize, setFilterPanelSize, 120, 400);
+  const details = useResizable('vertical', detailsPanelSize, setDetailsPanelSize, 100, 500);
+
   return (
     <div className="flex flex-col h-screen">
       <Toolbar />
       <div className="flex flex-1 overflow-hidden">
         {filterPanelVisible && (
-          <FilterSidebar torrents={Array.from(torrents.values())} />
+          <>
+            <div
+              ref={sidebar.containerRef}
+              style={{ width: filterPanelSize }}
+              className="flex-shrink-0 overflow-hidden"
+            >
+              <FilterSidebar torrents={Array.from(torrents.values())} />
+            </div>
+            <div
+              className="w-1 cursor-col-resize bg-border hover:bg-primary/30 flex-shrink-0"
+              onMouseDown={sidebar.onMouseDown}
+            />
+          </>
         )}
         <div className="flex flex-col flex-1 overflow-hidden">
           <TorrentTable torrents={filteredTorrents} />
-          {detailsPanelVisible && selectedTorrent && (
-            <DetailsPanel torrent={selectedTorrent} />
+          {detailsPanelVisible && (
+            <>
+              <div
+                className="h-1 cursor-row-resize bg-border hover:bg-primary/30 flex-shrink-0"
+                onMouseDown={details.onMouseDown}
+              />
+              {selectedTorrent ? (
+                <div
+                  ref={details.containerRef}
+                  style={{ height: detailsPanelSize }}
+                  className="flex-shrink-0 overflow-hidden"
+                >
+                  <DetailsPanel torrent={selectedTorrent} />
+                </div>
+              ) : (
+                <div
+                  ref={details.containerRef}
+                  style={{ height: detailsPanelSize }}
+                  className="flex items-center justify-center flex-shrink-0 bg-card text-muted-foreground text-sm"
+                >
+                  Select a torrent to view details
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
