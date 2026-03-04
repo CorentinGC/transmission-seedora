@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Toolbar } from './Toolbar';
 import { StatusBar } from './StatusBar';
 import { FilterSidebar } from '../filter/FilterSidebar';
@@ -65,6 +66,7 @@ function useResizable(
 }
 
 export function AppShell() {
+  const { t } = useTranslation();
   const filterPanelVisible = useUiStore((s) => s.filterPanelVisible);
   const detailsPanelVisible = useUiStore((s) => s.detailsPanelVisible);
   const filterPanelSize = useUiStore((s) => s.filterPanelSize);
@@ -172,7 +174,7 @@ export function AppShell() {
                   style={{ height: detailsPanelSize }}
                   className="flex items-center justify-center flex-shrink-0 bg-card text-muted-foreground text-sm"
                 >
-                  Select a torrent to view details
+                  {t('app.selectTorrent')}
                 </div>
               )}
             </>

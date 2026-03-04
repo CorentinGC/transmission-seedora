@@ -2,23 +2,24 @@ const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 const SPEED_UNITS = ['B/s', 'KB/s', 'MB/s', 'GB/s'];
 
 export function formatBytes(bytes: number): string {
+  if (bytes == null || isNaN(bytes)) return '';
   if (bytes === 0) return '0 B';
-  if (bytes < 0) return 'Unknown';
+  if (bytes < 0) return '';
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   const index = Math.min(i, BYTE_UNITS.length - 1);
   return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 2)} ${BYTE_UNITS[index]}`;
 }
 
 export function formatSpeed(bytesPerSecond: number): string {
-  if (bytesPerSecond === 0) return '';
-  if (bytesPerSecond < 0) return 'Unknown';
+  if (bytesPerSecond == null || isNaN(bytesPerSecond) || bytesPerSecond === 0) return '';
+  if (bytesPerSecond < 0) return '';
   const i = Math.floor(Math.log(bytesPerSecond) / Math.log(1024));
   const index = Math.min(i, SPEED_UNITS.length - 1);
   return `${(bytesPerSecond / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${SPEED_UNITS[index]}`;
 }
 
 export function formatEta(seconds: number): string {
-  if (seconds < 0) return '';
+  if (seconds == null || isNaN(seconds) || seconds < 0) return '';
   if (seconds === 0) return 'Done';
 
   const days = Math.floor(seconds / 86400);
@@ -37,13 +38,14 @@ export function formatPercent(ratio: number): string {
 }
 
 export function formatRatio(ratio: number): string {
-  if (ratio < 0) return '';
+  if (ratio == null || isNaN(ratio) || ratio < 0) return '';
   return ratio.toFixed(2);
 }
 
 export function formatDate(timestamp: number, relative = false): string {
-  if (timestamp === 0) return '';
+  if (timestamp == null || timestamp <= 0) return '';
   const date = new Date(timestamp * 1000);
+  if (isNaN(date.getTime())) return '';
 
   if (relative) {
     return formatRelativeDate(date);

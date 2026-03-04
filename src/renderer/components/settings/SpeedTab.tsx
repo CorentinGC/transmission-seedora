@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
 import type { SessionSettings } from '../../types/session';
 
@@ -6,9 +7,10 @@ interface Props {
   settings: SessionSettings;
 }
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DAY_KEYS = ['speedTab.sun', 'speedTab.mon', 'speedTab.tue', 'speedTab.wed', 'speedTab.thu', 'speedTab.fri', 'speedTab.sat'];
 
 export function SpeedTab({ settings: s }: Props) {
+  const { t } = useTranslation();
   const updateSettings = useSessionStore((st) => st.updateSettings);
 
   const [speedLimitDownEnabled, setSpeedLimitDownEnabled] = useState(s.speedLimitDownEnabled);
@@ -51,52 +53,52 @@ export function SpeedTab({ settings: s }: Props) {
   return (
     <div className="space-y-4 text-sm">
       <div>
-        <h3 className="font-medium mb-2">Speed Limits</h3>
+        <h3 className="font-medium mb-2">{t('speedTab.speedLimits')}</h3>
         <div className="space-y-2">
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={speedLimitDownEnabled} onChange={(e) => setSpeedLimitDownEnabled(e.target.checked)} />
-            Limit download speed (KB/s):
+            {t('speedTab.limitDownload')}
             <input type="number" className="w-24 h-7 px-2 rounded border bg-background" value={speedLimitDown} onChange={(e) => setSpeedLimitDown(Number(e.target.value))} disabled={!speedLimitDownEnabled} />
           </label>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={speedLimitUpEnabled} onChange={(e) => setSpeedLimitUpEnabled(e.target.checked)} />
-            Limit upload speed (KB/s):
+            {t('speedTab.limitUpload')}
             <input type="number" className="w-24 h-7 px-2 rounded border bg-background" value={speedLimitUp} onChange={(e) => setSpeedLimitUp(Number(e.target.value))} disabled={!speedLimitUpEnabled} />
           </label>
         </div>
       </div>
 
       <div className="border-t pt-4">
-        <h3 className="font-medium mb-2">Alternative Speed Limits (Turtle Mode)</h3>
+        <h3 className="font-medium mb-2">{t('speedTab.altSpeedLimits')}</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            Download (KB/s):
+            {t('speedTab.altDownload')}
             <input type="number" className="w-24 h-7 px-2 rounded border bg-background" value={altSpeedDown} onChange={(e) => setAltSpeedDown(Number(e.target.value))} />
           </div>
           <div className="flex items-center gap-2">
-            Upload (KB/s):
+            {t('speedTab.altUpload')}
             <input type="number" className="w-24 h-7 px-2 rounded border bg-background" value={altSpeedUp} onChange={(e) => setAltSpeedUp(Number(e.target.value))} />
           </div>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={altSpeedTimeEnabled} onChange={(e) => setAltSpeedTimeEnabled(e.target.checked)} />
-            Schedule:
+            {t('speedTab.schedule')}
           </label>
           {altSpeedTimeEnabled && (
             <div className="ml-6 space-y-2">
               <div className="flex items-center gap-2">
-                From:
+                {t('speedTab.from')}
                 <input type="time" className="h-7 px-2 rounded border bg-background" value={formatTime(altSpeedTimeBegin)} onChange={(e) => setAltSpeedTimeBegin(parseTime(e.target.value))} />
-                To:
+                {t('speedTab.to')}
                 <input type="time" className="h-7 px-2 rounded border bg-background" value={formatTime(altSpeedTimeEnd)} onChange={(e) => setAltSpeedTimeEnd(parseTime(e.target.value))} />
               </div>
               <div className="flex items-center gap-2">
-                Days:
+                {t('speedTab.days')}
                 <select className="h-7 px-2 rounded border bg-background" value={altSpeedTimeDay} onChange={(e) => setAltSpeedTimeDay(Number(e.target.value))}>
-                  <option value={127}>Every day</option>
-                  <option value={62}>Weekdays</option>
-                  <option value={65}>Weekends</option>
-                  {DAYS.map((d, i) => (
-                    <option key={d} value={1 << i}>{d}</option>
+                  <option value={127}>{t('speedTab.everyDay')}</option>
+                  <option value={62}>{t('speedTab.weekdays')}</option>
+                  <option value={65}>{t('speedTab.weekends')}</option>
+                  {DAY_KEYS.map((key, i) => (
+                    <option key={key} value={1 << i}>{t(key)}</option>
                   ))}
                 </select>
               </div>
@@ -107,7 +109,7 @@ export function SpeedTab({ settings: s }: Props) {
 
       <div className="border-t pt-4">
         <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={apply}>
-          Apply
+          {t('dialog.apply')}
         </button>
       </div>
     </div>

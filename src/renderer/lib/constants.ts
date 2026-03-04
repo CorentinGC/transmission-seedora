@@ -1,18 +1,18 @@
 import { TorrentStatus } from '../types/torrent';
 
-export const STATUS_LABELS: Record<number, string> = {
-  [TorrentStatus.STOPPED]: 'Stopped',
-  [TorrentStatus.CHECK_WAIT]: 'Queued for verification',
-  [TorrentStatus.CHECK]: 'Verifying',
-  [TorrentStatus.DOWNLOAD_WAIT]: 'Queued',
-  [TorrentStatus.DOWNLOAD]: 'Downloading',
-  [TorrentStatus.SEED_WAIT]: 'Queued for seeding',
-  [TorrentStatus.SEED]: 'Seeding',
+export const STATUS_LABEL_KEYS: Record<number, string> = {
+  [TorrentStatus.STOPPED]: 'status.stopped',
+  [TorrentStatus.CHECK_WAIT]: 'status.checkWait',
+  [TorrentStatus.CHECK]: 'status.check',
+  [TorrentStatus.DOWNLOAD_WAIT]: 'status.downloadWait',
+  [TorrentStatus.DOWNLOAD]: 'status.download',
+  [TorrentStatus.SEED_WAIT]: 'status.seedWait',
+  [TorrentStatus.SEED]: 'status.seed',
 };
 
-export function getStatusLabel(status: number, error: number): string {
-  if (error > 0) return 'Error';
-  return STATUS_LABELS[status] ?? 'Unknown';
+export function getStatusLabelKey(status: number, error: number): string {
+  if (error > 0) return 'status.error';
+  return STATUS_LABEL_KEYS[status] ?? 'status.unknown';
 }
 
 export type StatusFilter = 'all' | 'downloading' | 'seeding' | 'completed' | 'active' | 'inactive' | 'stopped' | 'error' | 'waiting';

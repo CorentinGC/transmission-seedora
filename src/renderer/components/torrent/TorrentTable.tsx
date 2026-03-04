@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   useReactTable,
   getCoreRowModel,
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function TorrentTable({ torrents }: Props) {
+  const { t } = useTranslation();
   const sortingState = useTorrentStore((s) => s.sortingState);
   const setSortingState = useTorrentStore((s) => s.setSortingState);
   const selectedIds = useTorrentStore((s) => s.selectedIds);
@@ -31,7 +33,7 @@ export function TorrentTable({ torrents }: Props) {
   const setColumnSizing = useUiStore((s) => s.setColumnSizing);
   const relativeDates = useUiStore((s) => s.relativeDates);
 
-  const columns = useMemo(() => createTorrentColumns(relativeDates), [relativeDates]);
+  const columns = useMemo(() => createTorrentColumns(relativeDates, t), [relativeDates, t]);
 
   const parentRef = useRef<HTMLDivElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; ids: number[] } | null>(null);
@@ -161,7 +163,7 @@ export function TorrentTable({ torrents }: Props) {
 
         {torrents.length === 0 && (
           <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
-            No torrents
+            {t('app.noTorrents')}
           </div>
         )}
       </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Torrent } from '../../types/torrent';
 import { GeneralTab } from './GeneralTab';
 import { FilesTab } from './FilesTab';
@@ -10,10 +11,17 @@ interface Props {
   torrent: Torrent;
 }
 
-const TABS = ['General', 'Files', 'Peers', 'Trackers', 'Options'] as const;
-type Tab = (typeof TABS)[number];
+const TABS = [
+  { id: 'General', labelKey: 'details.general' },
+  { id: 'Files', labelKey: 'details.files' },
+  { id: 'Peers', labelKey: 'details.peers' },
+  { id: 'Trackers', labelKey: 'details.trackers' },
+  { id: 'Options', labelKey: 'details.options' },
+] as const;
+type Tab = (typeof TABS)[number]['id'];
 
 export function DetailsPanel({ torrent }: Props) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('General');
 
   return (
@@ -21,15 +29,15 @@ export function DetailsPanel({ torrent }: Props) {
       <div className="flex border-b select-none">
         {TABS.map((tab) => (
           <button
-            key={tab}
+            key={tab.id}
             className={`px-3 py-1.5 text-xs font-medium ${
-              activeTab === tab
+              activeTab === tab.id
                 ? 'border-b-2 border-primary text-foreground'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => setActiveTab(tab.id)}
           >
-            {tab}
+            {t(tab.labelKey)}
           </button>
         ))}
         <div className="flex-1" />
