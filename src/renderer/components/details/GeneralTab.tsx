@@ -1,12 +1,14 @@
 import type { Torrent } from '../../types/torrent';
 import { formatBytes, formatSpeed, formatRatio, formatDate, formatEta } from '../../lib/format';
 import { getStatusLabel } from '../../lib/constants';
+import { useUiStore } from '../../stores/ui-store';
 
 interface Props {
   torrent: Torrent;
 }
 
 export function GeneralTab({ torrent: t }: Props) {
+  const relativeDates = useUiStore((s) => s.relativeDates);
   const copyMagnet = () => {
     navigator.clipboard.writeText(t.magnetLink);
   };
@@ -27,10 +29,10 @@ export function GeneralTab({ torrent: t }: Props) {
       <InfoRow label="Seeds" value={`${t.peersSendingToUs} connected`} />
       <InfoRow label="Peers" value={`${t.peersGettingFromUs} connected`} />
       <InfoRow label="Location" value={t.downloadDir} />
-      <InfoRow label="Added" value={formatDate(t.addedDate)} />
-      <InfoRow label="Completed" value={formatDate(t.doneDate)} />
-      <InfoRow label="Last Active" value={formatDate(t.activityDate, true)} />
-      <InfoRow label="Created" value={formatDate(t.dateCreated)} />
+      <InfoRow label="Added" value={formatDate(t.addedDate, relativeDates)} />
+      <InfoRow label="Completed" value={formatDate(t.doneDate, relativeDates)} />
+      <InfoRow label="Last Active" value={formatDate(t.activityDate, relativeDates)} />
+      <InfoRow label="Created" value={formatDate(t.dateCreated, relativeDates)} />
       <InfoRow label="Pieces" value={`${t.pieceCount} x ${formatBytes(t.pieceSize)}`} />
       <InfoRow label="Comment" value={t.comment} />
       <InfoRow label="Creator" value={t.creator} />

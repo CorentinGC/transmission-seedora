@@ -9,7 +9,7 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useUiStore } from '../../stores/ui-store';
-import { torrentColumns, DEFAULT_VISIBLE_COLUMNS } from './TorrentColumns';
+import { createTorrentColumns, DEFAULT_VISIBLE_COLUMNS } from './TorrentColumns';
 import { TorrentContextMenu } from './TorrentContextMenu';
 import type { Torrent } from '../../types/torrent';
 import { ArrowUp, ArrowDown } from 'lucide-react';
@@ -29,6 +29,9 @@ export function TorrentTable({ torrents }: Props) {
   const columnVisibility = useUiStore((s) => s.columnVisibility);
   const columnSizing = useUiStore((s) => s.columnSizing);
   const setColumnSizing = useUiStore((s) => s.setColumnSizing);
+  const relativeDates = useUiStore((s) => s.relativeDates);
+
+  const columns = useMemo(() => createTorrentColumns(relativeDates), [relativeDates]);
 
   const parentRef = useRef<HTMLDivElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; ids: number[] } | null>(null);
@@ -40,7 +43,7 @@ export function TorrentTable({ torrents }: Props) {
 
   const table = useReactTable({
     data: torrents,
-    columns: torrentColumns as ColumnDef<Torrent, unknown>[],
+    columns: columns as ColumnDef<Torrent, unknown>[],
     state: {
       sorting: sortingState,
       columnVisibility: effectiveVisibility,

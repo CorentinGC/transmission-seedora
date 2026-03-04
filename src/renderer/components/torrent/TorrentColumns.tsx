@@ -5,7 +5,8 @@ import { getStatusLabel } from '../../lib/constants';
 
 const col = createColumnHelper<Torrent>();
 
-export const torrentColumns = [
+export function createTorrentColumns(relativeDates: boolean) {
+  return [
   col.accessor('queuePosition', {
     header: '#',
     size: 40,
@@ -97,19 +98,19 @@ export const torrentColumns = [
     header: 'Added',
     size: 130,
     minSize: 80,
-    cell: (info) => formatDate(info.getValue()),
+    cell: (info) => formatDate(info.getValue(), relativeDates),
   }),
   col.accessor('doneDate', {
     header: 'Completed',
     size: 130,
     minSize: 80,
-    cell: (info) => formatDate(info.getValue()),
+    cell: (info) => formatDate(info.getValue(), relativeDates),
   }),
   col.accessor('activityDate', {
     header: 'Last Active',
     size: 130,
     minSize: 80,
-    cell: (info) => formatDate(info.getValue(), true),
+    cell: (info) => formatDate(info.getValue(), relativeDates),
   }),
   col.accessor('downloadDir', {
     header: 'Path',
@@ -145,7 +146,8 @@ export const torrentColumns = [
     minSize: 45,
     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
   }),
-];
+  ];
+}
 
 // Default visible columns
 export const DEFAULT_VISIBLE_COLUMNS: Record<string, boolean> = {

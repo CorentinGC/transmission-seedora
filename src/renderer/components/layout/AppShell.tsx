@@ -72,8 +72,9 @@ export function AppShell() {
   const setFilterPanelSize = useUiStore((s) => s.setFilterPanelSize);
   const setDetailsPanelSize = useUiStore((s) => s.setDetailsPanelSize);
 
-  useTorrents(3000);
-  useSessionStats(5000);
+  const pollingInterval = useUiStore((s) => s.pollingInterval);
+  useTorrents(pollingInterval);
+  useSessionStats(pollingInterval + 2000);
 
   const torrents = useTorrentStore((s) => s.torrents);
   const globalFilter = useTorrentStore((s) => s.globalFilter);

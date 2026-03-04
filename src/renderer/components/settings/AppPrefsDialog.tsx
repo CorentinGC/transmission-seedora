@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { AppPreferences, PathMapping } from '@shared/types';
+import { useUiStore } from '../../stores/ui-store';
 
 interface Props {
   onClose: () => void;
@@ -9,6 +11,11 @@ interface Props {
 export function AppPrefsDialog({ onClose }: Props) {
   const [prefs, setPrefs] = useState<AppPreferences | null>(null);
   const [loading, setLoading] = useState(true);
+  const { i18n } = useTranslation();
+  const setTheme = useUiStore((s) => s.setTheme);
+  const setPollingInterval = useUiStore((s) => s.setPollingInterval);
+  const setRelativeDates = useUiStore((s) => s.setRelativeDates);
+  const setConfirmOnAdd = useUiStore((s) => s.setConfirmOnAdd);
 
   useEffect(() => {
     window.api.prefsGet().then((res) => {
@@ -22,6 +29,17 @@ export function AppPrefsDialog({ onClose }: Props) {
   const save = async () => {
     if (!prefs) return;
     await window.api.prefsSet(prefs);
+
+    // Apply all preferences immediately
+    setTheme(prefs.theme);
+    setPollingInterval(prefs.pollingInterval);
+    setRelativeDates(prefs.relativeDates);
+    setConfirmOnAdd(prefs.confirmOnAdd);
+
+    if (i18n.language !== prefs.language) {
+      i18n.changeLanguage(prefs.language);
+    }
+
     // Restart watcher if watch folder settings changed
     window.api.watcherRestart();
     onClose();
