@@ -3,6 +3,7 @@ import { MakerSquirrel } from '@electron-forge/maker-squirrel';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerRpm } from '@electron-forge/maker-rpm';
+import { MakerDMG } from '@electron-forge/maker-dmg';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
@@ -10,13 +11,39 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    name: 'Transmission Remote',
+    executableName: 'transmission-remote',
+    appBundleId: 'com.transmission-remote.app',
+    appCategoryType: 'public.app-category.utilities',
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerDMG({
+      format: 'ULFO',
+    }),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    new MakerSquirrel({
+      name: 'TransmissionRemote',
+      setupExe: 'TransmissionRemote-Setup.exe',
+    }),
+    new MakerDeb({
+      options: {
+        name: 'transmission-remote',
+        productName: 'Transmission Remote',
+        genericName: 'BitTorrent Client',
+        description: 'Remote GUI for Transmission daemon',
+        categories: ['Network', 'P2P'],
+        mimeType: ['application/x-bittorrent', 'x-scheme-handler/magnet'],
+      },
+    }),
+    new MakerRpm({
+      options: {
+        name: 'transmission-remote',
+        productName: 'Transmission Remote',
+        description: 'Remote GUI for Transmission daemon',
+        categories: ['Network', 'P2P'],
+      },
+    }),
   ],
   plugins: [
     new VitePlugin({
