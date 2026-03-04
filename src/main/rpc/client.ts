@@ -1,4 +1,6 @@
 import type { ServerConfig } from '@shared/types';
+import http from 'node:http';
+import https from 'node:https';
 
 interface RpcRequest {
   method: string;
@@ -14,6 +16,7 @@ export class TransmissionRpcClient {
   private sessionId = '';
   private readonly baseUrl: string;
   private readonly authHeader?: string;
+  private agent?: http.Agent;
 
   constructor(private readonly config: ServerConfig) {
     const protocol = config.useSSL ? 'https' : 'http';
@@ -23,6 +26,32 @@ export class TransmissionRpcClient {
     if (config.username) {
       const credentials = Buffer.from(`${config.username}:${config.password ?? ''}`).toString('base64');
       this.authHeader = `Basic ${credentials}`;
+    }
+
+    this.initProxy();
+  }
+
+  private initProxy(): void {
+    const { proxyType, proxyHost, proxyPort, proxyUsername, proxyPassword } = this.config;
+    if (!proxyType || proxyType === 'none' || !proxyHost || !proxyPort) return;
+
+    const proxyAuth = proxyUsername ? `${proxyUsername}:${proxyPassword ?? ''}@` : '';
+
+    if (proxyType === 'http') {
+      const proxyUrl = `http://${proxyAuth}${proxyHost}:${proxyPort}`;
+      // Dynamic import to avoid bundling issues
+      import('https-proxy-agent').then(({ HttpsProxyAgent }) => {
+        this.agent = new HttpsProxyAgent(proxyUrl);
+      }).catch((err) => {
+        console.error('[RPC] Failed to init HTTP proxy:', err);
+      });
+    } else if (proxyType === 'socks5') {
+      const proxyUrl = `socks5://${proxyAuth}${proxyHost}:${proxyPort}`;
+      import('socks-proxy-agent').then(({ SocksProxyAgent }) => {
+        this.agent = new SocksProxyAgent(proxyUrl);
+      }).catch((err) => {
+        console.error('[RPC] Failed to init SOCKS5 proxy:', err);
+      });
     }
   }
 
@@ -67,10 +96,61 @@ export class TransmissionRpcClient {
       headers['Authorization'] = this.authHeader;
     }
 
-    return fetch(this.baseUrl, {
+    const fetchOptions: RequestInit & { dispatcher?: unknown } = {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
+    };
+
+    // Node.js fetch supports custom agents via dispatcher (undici)
+    // but for proxy agents we use the http/https agent approach
+    if (this.agent) {
+      // Use node:http/https request with proxy agent
+      return this.doFetchWithAgent(headers, JSON.stringify(body));
+    }
+
+    return fetch(this.baseUrl, fetchOptions);
+  }
+
+  private doFetchWithAgent(headers: Record<string, string>, body: string): Promise<Response> {
+    return new Promise((resolve, reject) => {
+      const url = new URL(this.baseUrl);
+      const isHttps = url.protocol === 'https:';
+      const requestFn = isHttps ? https.request : http.request;
+
+      const req = requestFn(
+        {
+          hostname: url.hostname,
+          port: url.port || (isHttps ? 443 : 80),
+          path: url.pathname,
+          method: 'POST',
+          headers: {
+            ...headers,
+            'Content-Length': Buffer.byteLength(body),
+          },
+          agent: this.agent,
+        },
+        (res) => {
+          const chunks: Buffer[] = [];
+          res.on('data', (chunk: Buffer) => chunks.push(chunk));
+          res.on('end', () => {
+            const responseBody = Buffer.concat(chunks).toString('utf-8');
+            const responseHeaders = new Headers();
+            for (const [key, value] of Object.entries(res.headers)) {
+              if (value) responseHeaders.set(key, Array.isArray(value) ? value[0] : value);
+            }
+            resolve(new Response(responseBody, {
+              status: res.statusCode ?? 500,
+              statusText: res.statusMessage ?? '',
+              headers: responseHeaders,
+            }));
+          });
+        },
+      );
+
+      req.on('error', reject);
+      req.write(body);
+      req.end();
     });
   }
 
