@@ -127,7 +127,7 @@ export function AppShell() {
     return s.torrents.get(id) ?? null;
   });
 
-  const sidebar = useResizable('horizontal', filterPanelSize, setFilterPanelSize, 120, 400);
+  const sidebar = useResizable('horizontal', filterPanelSize, setFilterPanelSize, 80, 400);
   const details = useResizable('vertical', detailsPanelSize, setDetailsPanelSize, 100, 500);
 
   return (

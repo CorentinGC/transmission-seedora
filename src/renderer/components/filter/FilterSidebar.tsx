@@ -49,11 +49,11 @@ function CollapsibleSection({
   return (
     <div className="border-t py-1">
       <button
-        className="w-full flex items-center gap-1 px-3 py-1 text-xs font-medium text-muted-foreground uppercase hover:text-foreground"
+        className="w-full flex items-center gap-1 px-3 py-1 text-xs font-medium text-muted-foreground uppercase hover:text-foreground min-w-0"
         onClick={() => setOpen(!open)}
       >
-        {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-        {title}
+        <span className="flex-shrink-0">{open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}</span>
+        <span className="truncate">{title}</span>
       </button>
       {open && children}
     </div>
@@ -122,13 +122,13 @@ export function FilterSidebar({ torrents }: Props) {
   }, [torrents]);
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-card select-none text-sm">
+    <div className="w-full h-full overflow-y-auto overflow-x-hidden bg-card select-none text-sm">
       {/* Status filters */}
       <div className="py-1">
         {STATUS_ITEMS.map(({ filter, label, icon }) => (
           <button
             key={filter}
-            className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent ${
+            className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
               statusFilter === filter && !labelFilter && !trackerFilter && !folderFilter ? 'bg-accent font-medium' : ''
             }`}
             onClick={() => {
@@ -138,9 +138,9 @@ export function FilterSidebar({ torrents }: Props) {
               setFolderFilter(null);
             }}
           >
-            {icon}
-            <span className="flex-1 text-left">{label}</span>
-            <span className="text-xs text-muted-foreground">{statusCounts[filter]}</span>
+            <span className="flex-shrink-0">{icon}</span>
+            <span className="flex-1 text-left truncate min-w-0">{label}</span>
+            <span className="text-xs text-muted-foreground flex-shrink-0">{statusCounts[filter]}</span>
           </button>
         ))}
       </div>
@@ -151,7 +151,7 @@ export function FilterSidebar({ torrents }: Props) {
           {labels.map(([label, count]) => (
             <button
               key={label}
-              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent ${
+              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
                 labelFilter === label ? 'bg-accent font-medium' : ''
               }`}
               onClick={() => {
@@ -161,9 +161,9 @@ export function FilterSidebar({ torrents }: Props) {
                 setFolderFilter(null);
               }}
             >
-              <Tag size={14} />
-              <span className="flex-1 text-left truncate">{label}</span>
-              <span className="text-xs text-muted-foreground">{count}</span>
+              <Tag size={14} className="flex-shrink-0" />
+              <span className="flex-1 text-left truncate min-w-0">{label}</span>
+              <span className="text-xs text-muted-foreground flex-shrink-0">{count}</span>
             </button>
           ))}
         </CollapsibleSection>
@@ -175,7 +175,7 @@ export function FilterSidebar({ torrents }: Props) {
           {folders.map(([folder, count]) => (
             <button
               key={folder}
-              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent ${
+              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
                 folderFilter === folder ? 'bg-accent font-medium' : ''
               }`}
               onClick={() => {
@@ -185,9 +185,9 @@ export function FilterSidebar({ torrents }: Props) {
                 setTrackerFilter(null);
               }}
             >
-              <FolderOpen size={14} />
-              <span className="flex-1 text-left truncate">{folder.split('/').pop()}</span>
-              <span className="text-xs text-muted-foreground">{count}</span>
+              <FolderOpen size={14} className="flex-shrink-0" />
+              <span className="flex-1 text-left truncate min-w-0">{folder.split('/').pop()}</span>
+              <span className="text-xs text-muted-foreground flex-shrink-0">{count}</span>
             </button>
           ))}
         </CollapsibleSection>
@@ -199,7 +199,7 @@ export function FilterSidebar({ torrents }: Props) {
           {trackers.map(([tracker, count]) => (
             <button
               key={tracker}
-              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent ${
+              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
                 trackerFilter === tracker ? 'bg-accent font-medium' : ''
               }`}
               onClick={() => {
@@ -209,9 +209,9 @@ export function FilterSidebar({ torrents }: Props) {
                 setFolderFilter(null);
               }}
             >
-              <Globe size={14} />
-              <span className="flex-1 text-left truncate">{tracker}</span>
-              <span className="text-xs text-muted-foreground">{count}</span>
+              <Globe size={14} className="flex-shrink-0" />
+              <span className="flex-1 text-left truncate min-w-0">{tracker}</span>
+              <span className="text-xs text-muted-foreground flex-shrink-0">{count}</span>
             </button>
           ))}
         </CollapsibleSection>
