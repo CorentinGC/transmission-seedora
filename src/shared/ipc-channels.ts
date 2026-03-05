@@ -44,6 +44,7 @@ export const IPC = {
   PREFS_SET: 'prefs:set',
 
   // File dialog
+  READ_FILE_BASE64: 'file:read-base64',
   DIALOG_OPEN_FILE: 'dialog:open-file',
   DIALOG_OPEN_DIRECTORY: 'dialog:open-directory',
 

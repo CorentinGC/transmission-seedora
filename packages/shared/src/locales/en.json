@@ -234,7 +234,11 @@
     "freeSpace": "Free space: {{space}}",
     "startPaused": "Start paused",
     "errorNoInput": "Please provide a torrent file or URL/magnet link",
-    "errorAddFailed": "Failed to add torrent"
+    "errorAddFailed": "Failed to add torrent",
+    "errorDuplicate": "This torrent already exists: {{name}}",
+    "updateTrackers": "Update trackers",
+    "errorNoTrackers": "No trackers found in the torrent file",
+    "errorTrackersAlreadyPresent": "All trackers are already present on this torrent"
   },
   "server": {
     "addServer": "Add Server...",

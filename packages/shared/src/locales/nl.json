@@ -199,7 +199,11 @@
     "freeSpace": "Vrije ruimte: {{space}}",
     "startPaused": "Gepauzeerd starten",
     "errorNoInput": "Geef een torrentbestand of URL/magnet-link op",
-    "errorAddFailed": "Torrent toevoegen mislukt"
+    "errorAddFailed": "Torrent toevoegen mislukt",
+    "errorDuplicate": "Deze torrent bestaat al: {{name}}",
+    "updateTrackers": "Trackers bijwerken",
+    "errorNoTrackers": "Geen trackers gevonden in het torrentbestand",
+    "errorTrackersAlreadyPresent": "Alle trackers zijn al aanwezig op deze torrent"
   },
   "server": {
     "addServer": "Server toevoegen...",

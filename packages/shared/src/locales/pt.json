@@ -199,7 +199,11 @@
     "freeSpace": "Espaço livre: {{space}}",
     "startPaused": "Iniciar pausado",
     "errorNoInput": "Forneça um arquivo torrent ou URL/link Magnet",
-    "errorAddFailed": "Falha ao adicionar o torrent"
+    "errorAddFailed": "Falha ao adicionar o torrent",
+    "errorDuplicate": "Este torrent já existe: {{name}}",
+    "updateTrackers": "Atualizar trackers",
+    "errorNoTrackers": "Nenhum tracker encontrado no arquivo torrent",
+    "errorTrackersAlreadyPresent": "Todos os trackers já estão presentes neste torrent"
   },
   "server": {
     "addServer": "Adicionar servidor...",

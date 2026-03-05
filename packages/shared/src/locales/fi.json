@@ -199,7 +199,11 @@
     "freeSpace": "Vapaata tilaa: {{space}}",
     "startPaused": "Käynnistä tauotettuna",
     "errorNoInput": "Anna torrent-tiedosto tai URL/Magnet-linkki",
-    "errorAddFailed": "Torrentin lisääminen epäonnistui"
+    "errorAddFailed": "Torrentin lisääminen epäonnistui",
+    "errorDuplicate": "Tämä torrent on jo olemassa: {{name}}",
+    "updateTrackers": "Päivitä trackerit",
+    "errorNoTrackers": "Torrent-tiedostosta ei löytynyt trackereita",
+    "errorTrackersAlreadyPresent": "Kaikki trackerit ovat jo tässä torrentissa"
   },
   "server": {
     "addServer": "Lisää palvelin...",

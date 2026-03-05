@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Loader2, Upload, Link } from 'lucide-react';
+import { X, Loader2, Upload, Link, RefreshCw } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useSessionStore } from '../../stores/session-store';
 import { useApi } from '../../platform/api-context';
 import { formatBytes } from '../../lib/format';
+import { extractTrackersFromBase64 } from '../../lib/torrent-parser';
 
 interface Props {
   onClose: () => void;
@@ -20,21 +21,53 @@ export function AddTorrentDialog({ onClose }: Props) {
   const [mode, setMode] = useState<'file' | 'url'>('url');
   const [url, setUrl] = useState('');
   const [filePath, setFilePath] = useState('');
+  const [fileBase64, setFileBase64] = useState('');
   const [downloadDir, setDownloadDir] = useState(settings?.downloadDir ?? '');
   const [paused, setPaused] = useState(false);
   const [labels, setLabels] = useState('');
   const [priority, setPriority] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [duplicateId, setDuplicateId] = useState<number | null>(null);
+  const [updatingTrackers, setUpdatingTrackers] = useState(false);
   const api = useApi();
+  const setTorrentProps = useTorrentStore((s) => s.setTorrentProps);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleBrowseFile = async () => {
-    if (!api.dialogOpenFile) return;
-    const res = await api.dialogOpenFile();
-    if (res.success && res.data && res.data.length > 0) {
-      setFilePath(res.data[0]);
-      setMode('file');
+    // Electron: use native dialog + read file as base64
+    if (api.dialogOpenFile) {
+      const res = await api.dialogOpenFile();
+      if (res.success && res.data && res.data.length > 0) {
+        const selectedPath = res.data[0];
+        setFilePath(selectedPath);
+        setMode('file');
+        // Read file content as base64 for metainfo
+        if (api.readFileBase64) {
+          const contentRes = await api.readFileBase64(selectedPath);
+          if (contentRes.success && contentRes.data) {
+            setFileBase64(contentRes.data);
+          }
+        }
+      }
+      return;
     }
+    // Web: trigger hidden file input
+    fileInputRef.current?.click();
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFilePath(file.name);
+    setMode('file');
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      setFileBase64(base64);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const handleBrowseDir = async () => {
@@ -60,7 +93,9 @@ export function AddTorrentDialog({ onClose }: Props) {
       params.labels = labels.split(',').map((l) => l.trim()).filter(Boolean);
     }
 
-    if (mode === 'file' && filePath) {
+    if (mode === 'file' && filePath && fileBase64) {
+      params.metainfo = fileBase64;
+    } else if (mode === 'file' && filePath) {
       params.filename = filePath;
     } else if (mode === 'url' && url.trim()) {
       params.filename = url.trim();
@@ -73,10 +108,51 @@ export function AddTorrentDialog({ onClose }: Props) {
     const result = await addTorrent(params);
     if (result.success) {
       onClose();
+    } else if (result.duplicate) {
+      setDuplicateId(result.duplicateId ?? null);
+      setError(t('dialog.errorDuplicate', { name: result.torrentName ?? '' }));
     } else {
       setError(result.error ?? t('dialog.errorAddFailed'));
     }
     setSaving(false);
+  };
+
+  const handleUpdateTrackers = async () => {
+    if (!duplicateId || !fileBase64) return;
+    setUpdatingTrackers(true);
+    try {
+      const newTrackers = extractTrackersFromBase64(fileBase64);
+      if (newTrackers.length === 0) {
+        setError(t('dialog.errorNoTrackers'));
+        setUpdatingTrackers(false);
+        return;
+      }
+      // Get existing torrent's trackerList
+      const getRes = await api.rpcTorrentGet(['trackerList'], [duplicateId]);
+      const torrents = (getRes.data as Record<string, unknown>)?.torrents as Record<string, unknown>[] | undefined;
+      const existing = (torrents?.[0]?.trackerList as string) ?? '';
+      const existingUrls = existing.split('\n').map((s) => s.trim()).filter(Boolean);
+      // Merge: add new trackers that don't already exist
+      const merged = [...existingUrls];
+      let added = 0;
+      for (const url of newTrackers) {
+        if (!merged.includes(url)) {
+          merged.push(url);
+          added++;
+        }
+      }
+      if (added === 0) {
+        setError(t('dialog.errorTrackersAlreadyPresent'));
+        setUpdatingTrackers(false);
+        return;
+      }
+      // Update the torrent's tracker list
+      await setTorrentProps([duplicateId], { trackerList: merged.join('\n') + '\n' });
+      onClose();
+    } catch {
+      setError(t('dialog.errorAddFailed'));
+    }
+    setUpdatingTrackers(false);
   };
 
   return (
@@ -134,6 +210,13 @@ export function AddTorrentDialog({ onClose }: Props) {
                 <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={handleBrowseFile}>
                   {t('dialog.browse')}
                 </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".torrent"
+                  className="hidden"
+                  onChange={handleFileInputChange}
+                />
               </div>
             </div>
           )}
@@ -190,7 +273,17 @@ export function AddTorrentDialog({ onClose }: Props) {
 
           {error && (
             <div className="text-sm text-red-500 bg-red-50 dark:bg-red-950 p-2 rounded">
-              {error}
+              <p>{error}</p>
+              {duplicateId && fileBase64 && (
+                <button
+                  className="mt-2 flex items-center gap-1 h-7 px-3 text-xs rounded border border-red-300 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-900 disabled:opacity-50"
+                  onClick={handleUpdateTrackers}
+                  disabled={updatingTrackers}
+                >
+                  {updatingTrackers ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+                  {t('dialog.updateTrackers')}
+                </button>
+              )}
             </div>
           )}
         </div>
