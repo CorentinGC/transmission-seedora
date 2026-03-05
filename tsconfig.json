@@ -15,10 +15,10 @@
     "jsx": "react-jsx",
     "types": ["vite/client"],
     "paths": {
-      "@shared/*": ["src/shared/*"],
+      "@shared/*": ["packages/shared/src/*", "src/shared/*"],
       "@/*": ["src/renderer/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "packages/**/*"],
   "exclude": ["node_modules", "dist", ".vite"]
 }

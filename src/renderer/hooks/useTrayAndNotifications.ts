@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { useTorrentStore } from '../stores/torrent-store';
-import { useSessionStore } from '../stores/session-store';
-import type { Torrent } from '../types/torrent';
+import { useTorrentStore } from '@shared/stores/torrent-store';
+import { useSessionStore } from '@shared/stores/session-store';
+import type { Torrent } from '@shared/types/torrent';
+import { useApi } from '@shared/platform/api-context';
 
 export function useTrayAndNotifications() {
   const torrents = useTorrentStore((s) => s.torrents);
@@ -9,10 +10,11 @@ export function useTrayAndNotifications() {
   const settings = useSessionStore((s) => s.settings);
   const prevTorrentsRef = useRef<Map<number, Torrent>>(new Map());
   const initializedRef = useRef(false);
+  const api = useApi();
 
   // Update tray with current speeds
   useEffect(() => {
-    if (!stats || !window.api.trayUpdate) return;
+    if (!stats || !api.trayUpdate) return;
 
     const cumStats = stats as unknown as {
       downloadSpeed?: number;
@@ -20,18 +22,17 @@ export function useTrayAndNotifications() {
       activeTorrentCount?: number;
     };
 
-    window.api.trayUpdate({
+    api.trayUpdate({
       downloadSpeed: cumStats.downloadSpeed ?? 0,
       uploadSpeed: cumStats.uploadSpeed ?? 0,
       activeCount: cumStats.activeTorrentCount ?? 0,
       altSpeedEnabled: settings?.altSpeedEnabled ?? false,
     });
-  }, [stats, settings]);
+  }, [stats, settings, api]);
 
   // Detect torrent completions → send notification
   useEffect(() => {
     if (!initializedRef.current) {
-      // Skip first render to avoid notifying for already-complete torrents
       prevTorrentsRef.current = new Map(torrents);
       initializedRef.current = true;
       return;
@@ -42,7 +43,7 @@ export function useTrayAndNotifications() {
     for (const [id, torrent] of torrents) {
       const prevTorrent = prev.get(id);
       if (prevTorrent && prevTorrent.percentDone < 1 && torrent.percentDone >= 1) {
-        window.api.notificationShow(
+        api.notificationShow?.(
           'Download Complete',
           torrent.name,
         );
@@ -50,5 +51,5 @@ export function useTrayAndNotifications() {
     }
 
     prevTorrentsRef.current = new Map(torrents);
-  }, [torrents]);
+  }, [torrents, api]);
 }

@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { useTorrentStore } from '@shared/stores/torrent-store';
-import { useSessionStore } from '@shared/stores/session-store';
-import { useUiStore } from '@shared/stores/ui-store';
-import { useApi } from '@shared/platform/api-context';
+import { useTorrentStore } from '../stores/torrent-store';
+import { useSessionStore } from '../stores/session-store';
+import { useUiStore } from '../stores/ui-store';
+import { useApi } from '../platform/api-context';
 
 interface MenuEventHandlers {
   onAddTorrent?: () => void;

@@ -1,12 +1,13 @@
+'use client';
+
 import { useEffect } from 'react';
-import i18n from '@shared/lib/i18n';
+import i18n from './i18n';
 import { AppShell } from '@shared/components/layout/AppShell';
 import { useServerStore } from '@shared/stores/server-store';
 import { useUiStore } from '@shared/stores/ui-store';
-import { useTrayAndNotifications } from './hooks/useTrayAndNotifications';
 import { useApi } from '@shared/platform/api-context';
 
-export function App() {
+export function WebApp() {
   const fetchServers = useServerStore((s) => s.fetchServers);
   const servers = useServerStore((s) => s.servers);
   const activeServerId = useServerStore((s) => s.activeServerId);
@@ -16,9 +17,6 @@ export function App() {
   const setPollingInterval = useUiStore((s) => s.setPollingInterval);
   const setRelativeDates = useUiStore((s) => s.setRelativeDates);
   const setConfirmOnAdd = useUiStore((s) => s.setConfirmOnAdd);
-
-  // Tray updates + completion notifications
-  useTrayAndNotifications();
 
   const api = useApi();
 
