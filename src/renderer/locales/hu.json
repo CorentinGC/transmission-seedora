@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Transmission Remote",
+    "name": "Seedora",
     "loading": "Betöltés...",
     "selectTorrent": "Válasszon egy torrentet a részletek megtekintéséhez",
     "noTorrents": "Nincsenek torrentek",

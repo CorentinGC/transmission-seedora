@@ -57,7 +57,7 @@ export function ServerSwitcher() {
     const res = await window.api.configExport({ servers: true });
     if (res.success && res.data) {
       const json = JSON.stringify(res.data, null, 2);
-      await window.api.dialogSaveFile({ defaultPath: 'transmission-remote-servers.json' }, json);
+      await window.api.dialogSaveFile({ defaultPath: 'seedora-servers.json' }, json);
     }
     setOpen(false);
   };

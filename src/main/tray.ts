@@ -31,7 +31,7 @@ export function createTray(mainWindow: BrowserWindow): Tray {
     : icon.resize({ width: 16, height: 16 });
 
   tray = new Tray(trayIcon);
-  tray.setToolTip('Transmission Remote');
+  tray.setToolTip('Seedora');
 
   updateTrayMenu(mainWindow, {
     downloadSpeed: 0,
@@ -93,7 +93,7 @@ export function updateTrayMenu(mainWindow: BrowserWindow, state: TrayState): voi
 
   tray.setContextMenu(contextMenu);
   tray.setToolTip(
-    `Transmission Remote\n↓ ${formatSpeed(state.downloadSpeed)}  ↑ ${formatSpeed(state.uploadSpeed)}`,
+    `Seedora\n↓ ${formatSpeed(state.downloadSpeed)}  ↑ ${formatSpeed(state.uploadSpeed)}`,
   );
 }
 

@@ -1,4 +1,4 @@
-# Transmission Remote - Project Instructions
+# Seedora - Project Instructions
 
 ## UI Verification (MANDATORY)
 

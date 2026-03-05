@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Transmission Remote",
+    "name": "Seedora",
     "loading": "Loading...",
     "selectTorrent": "Select a torrent to view details",
     "noTorrents": "No torrents",
