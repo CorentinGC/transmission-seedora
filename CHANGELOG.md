@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.2.0...seedora-v1.2.1) (2026-03-05)
+
+
+### Bug Fixes
+
+* torrent file upload + duplicate detection + tracker merge ([1a8810d](https://github.com/CorentinGC/transmission-seedora/commit/1a8810dcadba935c5206147f0851c8c1861dcec7))
+* torrent file upload on both Electron and web app ([3807f25](https://github.com/CorentinGC/transmission-seedora/commit/3807f25bfb6b46df036bb93c75f2cc87683bd8f7))
+
 ## [1.2.0](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.1.0...seedora-v1.2.0) (2026-03-05)
 
 
