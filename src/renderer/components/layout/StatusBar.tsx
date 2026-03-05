@@ -1,19 +1,29 @@
-import { ArrowDown, ArrowUp, HardDrive, Turtle } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowDown, ArrowUp, HardDrive, Turtle, BarChart3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
 import { useServerStore } from '../../stores/server-store';
 import { formatSpeed, formatBytes } from '../../lib/format';
+import { DiskSpaceDialog } from './DiskSpaceDialog';
+import { SpeedLimitPopover } from './SpeedLimitPopover';
+import { SessionStatsDialog } from './SessionStatsDialog';
 
 export function StatusBar() {
   const { t } = useTranslation();
   const stats = useSessionStore((s) => s.stats);
   const settings = useSessionStore((s) => s.settings);
   const freeSpace = useSessionStore((s) => s.freeSpace);
+  const totalSpace = useSessionStore((s) => s.totalSpace);
   const toggleAltSpeed = useSessionStore((s) => s.toggleAltSpeed);
   const connectionStatus = useServerStore((s) => s.connectionStatus);
 
+  const [showDiskSpace, setShowDiskSpace] = useState(false);
+  const [showSessionStats, setShowSessionStats] = useState(false);
+  const [speedPopover, setSpeedPopover] = useState<{ x: number; y: number; direction: 'down' | 'up' } | null>(null);
+
   const isConnected = connectionStatus === 'connected';
-  const altSpeedEnabled = settings?.altSpeedEnabled ?? false;
+  const rawSettings = settings as Record<string, unknown> | null;
+  const altSpeedEnabled = (rawSettings?.['alt-speed-enabled'] ?? settings?.altSpeedEnabled ?? false) as boolean;
 
   return (
     <div className="flex items-center gap-4 px-3 py-1 border-t bg-card text-xs text-muted-foreground select-none">
@@ -28,11 +38,17 @@ export function StatusBar() {
 
       {isConnected && stats && (
         <>
-          <div className="flex items-center gap-1">
+          <div
+            className="flex items-center gap-1 cursor-pointer hover:bg-accent px-1 rounded"
+            onContextMenu={(e) => { e.preventDefault(); setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'down' }); }}
+          >
             <ArrowDown size={12} className="text-blue-500" />
             <span>{formatSpeed(stats.downloadSpeed)}</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div
+            className="flex items-center gap-1 cursor-pointer hover:bg-accent px-1 rounded"
+            onContextMenu={(e) => { e.preventDefault(); setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'up' }); }}
+          >
             <ArrowUp size={12} className="text-green-500" />
             <span>{formatSpeed(stats.uploadSpeed)}</span>
           </div>
@@ -51,13 +67,42 @@ export function StatusBar() {
 
           <div className="flex-1" />
 
+          <button
+            className="flex items-center gap-1 hover:bg-accent px-1 rounded cursor-pointer"
+            onClick={() => setShowSessionStats(true)}
+          >
+            <BarChart3 size={12} />
+            <span>
+              ↓ {formatBytes(stats['cumulative-stats'].downloadedBytes)} ↑ {formatBytes(stats['cumulative-stats'].uploadedBytes)}
+            </span>
+          </button>
+
           {freeSpace !== null && (
-            <div className="flex items-center gap-1">
+            <button
+              className="flex items-center gap-1 hover:bg-accent px-1 rounded cursor-pointer"
+              onClick={() => setShowDiskSpace(true)}
+            >
               <HardDrive size={12} />
-              <span>{t('statusBar.freeSpace', { space: formatBytes(freeSpace) })}</span>
-            </div>
+              <span>
+                {totalSpace
+                  ? t('statusBar.freeOfTotal', { free: formatBytes(freeSpace), total: formatBytes(totalSpace) })
+                  : t('statusBar.freeSpace', { space: formatBytes(freeSpace) })}
+              </span>
+            </button>
           )}
         </>
+      )}
+
+      {showDiskSpace && <DiskSpaceDialog onClose={() => setShowDiskSpace(false)} />}
+      {showSessionStats && <SessionStatsDialog onClose={() => setShowSessionStats(false)} />}
+
+      {speedPopover && (
+        <SpeedLimitPopover
+          x={speedPopover.x}
+          y={speedPopover.y}
+          direction={speedPopover.direction}
+          onClose={() => setSpeedPopover(null)}
+        />
       )}
     </div>
   );
