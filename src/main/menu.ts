@@ -7,7 +7,7 @@ export function createMenu(mainWindow: BrowserWindow): void {
     ...(isMac
       ? [
           {
-            label: app.name,
+            label: 'Seedora',
             submenu: [
               { role: 'about' as const },
               { type: 'separator' as const },
