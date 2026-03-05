@@ -227,12 +227,14 @@
     "testFailed": "Fallito"
   },
   "settings": {
-    "title": "Impostazioni daemon",
-    "speed": "Velocità",
-    "network": "Rete",
+    "applied": "Impostazioni applicate",
+    "applyError": "Impossibile applicare le impostazioni",
     "download": "Download",
+    "loading": "Caricamento impostazioni...",
+    "network": "Rete",
     "queue": "Coda",
-    "loading": "Caricamento impostazioni..."
+    "speed": "Velocità",
+    "title": "Impostazioni daemon"
   },
   "speedTab": {
     "speedLimits": "Limiti di velocità",
@@ -286,16 +288,17 @@
     "entries": "{{count}} voci"
   },
   "downloadTab": {
+    "appendPart": "Aggiungi \".part\" ai file incompleti",
+    "deleteTorrentFile": "Elimina file .torrent dopo l'aggiunta",
     "downloadDirectory": "Directory di download",
     "incompleteDirectory": "Directory file incompleti",
-    "useIncompleteDir": "Usa directory file incompleti:",
-    "appendPart": "Aggiungi \".part\" ai file incompleti",
-    "startAutomatically": "Avvia automaticamente i torrent aggiunti",
-    "deleteTorrentFile": "Elimina file .torrent dopo l'aggiunta",
-    "scripts": "Script",
     "scriptOnAdded": "Esegui script all'aggiunta del torrent:",
     "scriptOnCompleted": "Esegui script al completamento del torrent:",
-    "scriptPlaceholder": "/percorso/dello/script"
+    "scriptOnDoneSeeding": "Esegui script al termine della condivisione:",
+    "scriptPlaceholder": "/percorso/dello/script",
+    "scripts": "Script",
+    "startAutomatically": "Avvia automaticamente i torrent aggiunti",
+    "useIncompleteDir": "Usa directory file incompleti:"
   },
   "queueTab": {
     "downloadQueue": "Coda di download",

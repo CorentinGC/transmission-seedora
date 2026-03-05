@@ -11,6 +11,7 @@ import {
   StopCircle,
   PanelBottom,
   PanelLeft,
+  X,
 } from 'lucide-react';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -141,8 +142,16 @@ export function Toolbar() {
             placeholder={t('toolbar.searchPlaceholder')}
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="h-7 pl-7 pr-2 w-48 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+            className="h-7 pl-7 pr-7 w-48 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
           />
+          {globalFilter && (
+            <button
+              onClick={() => setGlobalFilter('')}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
 
         <div className="w-px h-6 bg-border mx-1" />

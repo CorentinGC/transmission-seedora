@@ -227,12 +227,14 @@
     "testFailed": "Falhou"
   },
   "settings": {
-    "title": "Configurações do daemon",
-    "speed": "Velocidade",
-    "network": "Rede",
+    "applied": "Configurações aplicadas",
+    "applyError": "Falha ao aplicar configurações",
     "download": "Download",
+    "loading": "Carregando configurações...",
+    "network": "Rede",
     "queue": "Fila",
-    "loading": "Carregando configurações..."
+    "speed": "Velocidade",
+    "title": "Configurações do daemon"
   },
   "speedTab": {
     "speedLimits": "Limites de velocidade",
@@ -286,16 +288,17 @@
     "entries": "{{count}} entradas"
   },
   "downloadTab": {
+    "appendPart": "Adicionar \".part\" a ficheiros incompletos",
+    "deleteTorrentFile": "Eliminar ficheiro .torrent após adicionar",
     "downloadDirectory": "Diretório de download",
     "incompleteDirectory": "Diretório de ficheiros incompletos",
-    "useIncompleteDir": "Usar diretório de ficheiros incompletos:",
-    "appendPart": "Adicionar \".part\" a ficheiros incompletos",
-    "startAutomatically": "Iniciar torrents adicionados automaticamente",
-    "deleteTorrentFile": "Eliminar ficheiro .torrent após adicionar",
-    "scripts": "Scripts",
     "scriptOnAdded": "Executar script ao adicionar torrent:",
     "scriptOnCompleted": "Executar script ao concluir torrent:",
-    "scriptPlaceholder": "/caminho/para/script"
+    "scriptOnDoneSeeding": "Executar script ao terminar de semear:",
+    "scriptPlaceholder": "/caminho/para/script",
+    "scripts": "Scripts",
+    "startAutomatically": "Iniciar torrents adicionados automaticamente",
+    "useIncompleteDir": "Usar diretório de ficheiros incompletos:"
   },
   "queueTab": {
     "downloadQueue": "Fila de download",

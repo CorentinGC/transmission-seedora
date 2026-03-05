@@ -227,12 +227,14 @@
     "testFailed": "Mislukt"
   },
   "settings": {
-    "title": "Daemon-instellingen",
-    "speed": "Snelheid",
-    "network": "Netwerk",
+    "applied": "Instellingen toegepast",
+    "applyError": "Instellingen toepassen mislukt",
     "download": "Download",
+    "loading": "Instellingen laden...",
+    "network": "Netwerk",
     "queue": "Wachtrij",
-    "loading": "Instellingen laden..."
+    "speed": "Snelheid",
+    "title": "Daemon-instellingen"
   },
   "speedTab": {
     "speedLimits": "Snelheidslimieten",
@@ -286,16 +288,17 @@
     "entries": "{{count}} items"
   },
   "downloadTab": {
+    "appendPart": "\".part\" toevoegen aan onvoltooide bestanden",
+    "deleteTorrentFile": ".torrent-bestand verwijderen na toevoegen",
     "downloadDirectory": "Downloadmap",
     "incompleteDirectory": "Map voor onvoltooide bestanden",
-    "useIncompleteDir": "Map voor onvoltooide bestanden gebruiken:",
-    "appendPart": "\".part\" toevoegen aan onvoltooide bestanden",
-    "startAutomatically": "Toegevoegde torrents automatisch starten",
-    "deleteTorrentFile": ".torrent-bestand verwijderen na toevoegen",
-    "scripts": "Scripts",
     "scriptOnAdded": "Script uitvoeren bij toevoegen van torrent:",
     "scriptOnCompleted": "Script uitvoeren bij voltooien van torrent:",
-    "scriptPlaceholder": "/pad/naar/script"
+    "scriptOnDoneSeeding": "Script uitvoeren bij klaar met seeden:",
+    "scriptPlaceholder": "/pad/naar/script",
+    "scripts": "Scripts",
+    "startAutomatically": "Toegevoegde torrents automatisch starten",
+    "useIncompleteDir": "Map voor onvoltooide bestanden gebruiken:"
   },
   "queueTab": {
     "downloadQueue": "Downloadwachtrij",

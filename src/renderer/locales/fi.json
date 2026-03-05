@@ -227,12 +227,14 @@
     "testFailed": "Epäonnistui"
   },
   "settings": {
-    "title": "Daemon-asetukset",
-    "speed": "Nopeus",
-    "network": "Verkko",
+    "applied": "Asetukset käytetty",
+    "applyError": "Asetusten käyttöönotto epäonnistui",
     "download": "Lataus",
+    "loading": "Ladataan asetuksia...",
+    "network": "Verkko",
     "queue": "Jono",
-    "loading": "Ladataan asetuksia..."
+    "speed": "Nopeus",
+    "title": "Daemon-asetukset"
   },
   "speedTab": {
     "speedLimits": "Nopeusrajoitukset",
@@ -286,16 +288,17 @@
     "entries": "{{count}} merkintää"
   },
   "downloadTab": {
+    "appendPart": "Lisää \".part\" keskeneräisiin tiedostoihin",
+    "deleteTorrentFile": "Poista .torrent-tiedosto lisäämisen jälkeen",
     "downloadDirectory": "Lataushakemisto",
     "incompleteDirectory": "Keskeneräisten hakemisto",
-    "useIncompleteDir": "Käytä keskeneräisten hakemistoa:",
-    "appendPart": "Lisää \".part\" keskeneräisiin tiedostoihin",
-    "startAutomatically": "Käynnistä lisätyt torrentit automaattisesti",
-    "deleteTorrentFile": "Poista .torrent-tiedosto lisäämisen jälkeen",
-    "scripts": "Skriptit",
     "scriptOnAdded": "Suorita skripti torrentin lisäyksessä:",
     "scriptOnCompleted": "Suorita skripti torrentin valmistuttua:",
-    "scriptPlaceholder": "/polku/skriptiin"
+    "scriptOnDoneSeeding": "Suorita skripti kun torrent on jaettu loppuun:",
+    "scriptPlaceholder": "/polku/skriptiin",
+    "scripts": "Skriptit",
+    "startAutomatically": "Käynnistä lisätyt torrentit automaattisesti",
+    "useIncompleteDir": "Käytä keskeneräisten hakemistoa:"
   },
   "queueTab": {
     "downloadQueue": "Latausjono",

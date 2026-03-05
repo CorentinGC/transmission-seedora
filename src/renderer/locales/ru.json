@@ -227,12 +227,14 @@
     "testFailed": "Ошибка"
   },
   "settings": {
-    "title": "Настройки демона",
-    "speed": "Скорость",
-    "network": "Сеть",
+    "applied": "Настройки применены",
+    "applyError": "Не удалось применить настройки",
     "download": "Загрузка",
+    "loading": "Загрузка настроек...",
+    "network": "Сеть",
     "queue": "Очередь",
-    "loading": "Загрузка настроек..."
+    "speed": "Скорость",
+    "title": "Настройки демона"
   },
   "speedTab": {
     "speedLimits": "Ограничения скорости",
@@ -286,16 +288,17 @@
     "entries": "{{count}} записей"
   },
   "downloadTab": {
+    "appendPart": "Добавлять \".part\" к незавершённым файлам",
+    "deleteTorrentFile": "Удалять .torrent-файл после добавления",
     "downloadDirectory": "Папка загрузки",
     "incompleteDirectory": "Папка незавершённых загрузок",
-    "useIncompleteDir": "Использовать папку незавершённых загрузок:",
-    "appendPart": "Добавлять \".part\" к незавершённым файлам",
-    "startAutomatically": "Автоматически запускать добавленные торренты",
-    "deleteTorrentFile": "Удалять .torrent-файл после добавления",
-    "scripts": "Скрипты",
     "scriptOnAdded": "Запускать скрипт при добавлении торрента:",
     "scriptOnCompleted": "Запускать скрипт при завершении торрента:",
-    "scriptPlaceholder": "/путь/к/скрипту"
+    "scriptOnDoneSeeding": "Запустить скрипт по окончании раздачи:",
+    "scriptPlaceholder": "/путь/к/скрипту",
+    "scripts": "Скрипты",
+    "startAutomatically": "Автоматически запускать добавленные торренты",
+    "useIncompleteDir": "Использовать папку незавершённых загрузок:"
   },
   "queueTab": {
     "downloadQueue": "Очередь загрузки",

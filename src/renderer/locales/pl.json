@@ -227,12 +227,14 @@
     "testFailed": "Niepowodzenie"
   },
   "settings": {
-    "title": "Ustawienia demona",
-    "speed": "Prędkość",
-    "network": "Sieć",
+    "applied": "Ustawienia zastosowane",
+    "applyError": "Nie udało się zastosować ustawień",
     "download": "Pobieranie",
+    "loading": "Wczytywanie ustawień...",
+    "network": "Sieć",
     "queue": "Kolejka",
-    "loading": "Wczytywanie ustawień..."
+    "speed": "Prędkość",
+    "title": "Ustawienia demona"
   },
   "speedTab": {
     "speedLimits": "Limity prędkości",
@@ -286,16 +288,17 @@
     "entries": "{{count}} wpisów"
   },
   "downloadTab": {
+    "appendPart": "Dodaj \".part\" do niekompletnych plików",
+    "deleteTorrentFile": "Usuń plik .torrent po dodaniu",
     "downloadDirectory": "Katalog pobierania",
     "incompleteDirectory": "Katalog niekompletnych",
-    "useIncompleteDir": "Użyj katalogu niekompletnych:",
-    "appendPart": "Dodaj \".part\" do niekompletnych plików",
-    "startAutomatically": "Automatycznie uruchamiaj dodane torrenty",
-    "deleteTorrentFile": "Usuń plik .torrent po dodaniu",
-    "scripts": "Skrypty",
     "scriptOnAdded": "Uruchom skrypt po dodaniu torrenta:",
     "scriptOnCompleted": "Uruchom skrypt po ukończeniu torrenta:",
-    "scriptPlaceholder": "/ścieżka/do/skryptu"
+    "scriptOnDoneSeeding": "Uruchom skrypt po zakończeniu seedowania:",
+    "scriptPlaceholder": "/ścieżka/do/skryptu",
+    "scripts": "Skrypty",
+    "startAutomatically": "Automatycznie uruchamiaj dodane torrenty",
+    "useIncompleteDir": "Użyj katalogu niekompletnych:"
   },
   "queueTab": {
     "downloadQueue": "Kolejka pobierania",

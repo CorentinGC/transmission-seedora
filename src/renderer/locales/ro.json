@@ -227,12 +227,14 @@
     "testFailed": "Eșuat"
   },
   "settings": {
-    "title": "Setări daemon",
-    "speed": "Viteză",
-    "network": "Rețea",
+    "applied": "Setările au fost aplicate",
+    "applyError": "Aplicarea setărilor a eșuat",
     "download": "Descărcare",
+    "loading": "Se încarcă setările...",
+    "network": "Rețea",
     "queue": "Coadă",
-    "loading": "Se încarcă setările..."
+    "speed": "Viteză",
+    "title": "Setări daemon"
   },
   "speedTab": {
     "speedLimits": "Limite de viteză",
@@ -286,16 +288,17 @@
     "entries": "{{count}} intrări"
   },
   "downloadTab": {
+    "appendPart": "Adaugă \".part\" la fișierele incomplete",
+    "deleteTorrentFile": "Șterge fișierul .torrent după adăugare",
     "downloadDirectory": "Director de descărcare",
     "incompleteDirectory": "Director pentru incomplete",
-    "useIncompleteDir": "Folosește director pentru incomplete:",
-    "appendPart": "Adaugă \".part\" la fișierele incomplete",
-    "startAutomatically": "Pornește automat torrentele adăugate",
-    "deleteTorrentFile": "Șterge fișierul .torrent după adăugare",
-    "scripts": "Scripturi",
     "scriptOnAdded": "Rulează script la adăugarea torrentului:",
     "scriptOnCompleted": "Rulează script la finalizarea torrentului:",
-    "scriptPlaceholder": "/cale/către/script"
+    "scriptOnDoneSeeding": "Rulează script la terminarea distribuirii:",
+    "scriptPlaceholder": "/cale/către/script",
+    "scripts": "Scripturi",
+    "startAutomatically": "Pornește automat torrentele adăugate",
+    "useIncompleteDir": "Folosește director pentru incomplete:"
   },
   "queueTab": {
     "downloadQueue": "Coadă de descărcare",

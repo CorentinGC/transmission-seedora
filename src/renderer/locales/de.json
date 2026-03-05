@@ -227,12 +227,14 @@
     "testFailed": "Fehlgeschlagen"
   },
   "settings": {
-    "title": "Daemon-Einstellungen",
-    "speed": "Geschwindigkeit",
-    "network": "Netzwerk",
+    "applied": "Einstellungen angewendet",
+    "applyError": "Fehler beim Anwenden der Einstellungen",
     "download": "Download",
+    "loading": "Einstellungen werden geladen...",
+    "network": "Netzwerk",
     "queue": "Warteschlange",
-    "loading": "Einstellungen werden geladen..."
+    "speed": "Geschwindigkeit",
+    "title": "Daemon-Einstellungen"
   },
   "speedTab": {
     "speedLimits": "Geschwindigkeitslimits",
@@ -286,16 +288,17 @@
     "entries": "{{count}} Einträge"
   },
   "downloadTab": {
+    "appendPart": "\".part\" an unvollständige Dateien anhängen",
+    "deleteTorrentFile": ".torrent-Datei nach dem Hinzufügen löschen",
     "downloadDirectory": "Download-Verzeichnis",
     "incompleteDirectory": "Verzeichnis für unvollständige Dateien",
-    "useIncompleteDir": "Verzeichnis für unvollständige Dateien verwenden:",
-    "appendPart": "\".part\" an unvollständige Dateien anhängen",
-    "startAutomatically": "Hinzugefügte Torrents automatisch starten",
-    "deleteTorrentFile": ".torrent-Datei nach dem Hinzufügen löschen",
-    "scripts": "Skripte",
     "scriptOnAdded": "Skript bei Hinzufügen ausführen:",
     "scriptOnCompleted": "Skript bei Abschluss ausführen:",
-    "scriptPlaceholder": "/pfad/zum/skript"
+    "scriptOnDoneSeeding": "Skript ausführen wenn Torrent fertig geseedet:",
+    "scriptPlaceholder": "/pfad/zum/skript",
+    "scripts": "Skripte",
+    "startAutomatically": "Hinzugefügte Torrents automatisch starten",
+    "useIncompleteDir": "Verzeichnis für unvollständige Dateien verwenden:"
   },
   "queueTab": {
     "downloadQueue": "Download-Warteschlange",

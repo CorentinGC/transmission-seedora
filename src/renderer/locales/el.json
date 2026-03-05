@@ -227,12 +227,14 @@
     "testFailed": "Αποτυχία"
   },
   "settings": {
-    "title": "Ρυθμίσεις daemon",
-    "speed": "Ταχύτητα",
-    "network": "Δίκτυο",
+    "applied": "Οι ρυθμίσεις εφαρμόστηκαν",
+    "applyError": "Αποτυχία εφαρμογής ρυθμίσεων",
     "download": "Λήψη",
+    "loading": "Φόρτωση ρυθμίσεων...",
+    "network": "Δίκτυο",
     "queue": "Ουρά",
-    "loading": "Φόρτωση ρυθμίσεων..."
+    "speed": "Ταχύτητα",
+    "title": "Ρυθμίσεις daemon"
   },
   "speedTab": {
     "speedLimits": "Όρια ταχύτητας",
@@ -286,16 +288,17 @@
     "entries": "{{count}} εγγραφές"
   },
   "downloadTab": {
+    "appendPart": "Προσθήκη \".part\" στα ημιτελή αρχεία",
+    "deleteTorrentFile": "Διαγραφή αρχείου .torrent μετά την προσθήκη",
     "downloadDirectory": "Κατάλογος λήψης",
     "incompleteDirectory": "Κατάλογος ημιτελών",
-    "useIncompleteDir": "Χρήση καταλόγου ημιτελών:",
-    "appendPart": "Προσθήκη \".part\" στα ημιτελή αρχεία",
-    "startAutomatically": "Αυτόματη εκκίνηση προστιθέμενων torrent",
-    "deleteTorrentFile": "Διαγραφή αρχείου .torrent μετά την προσθήκη",
-    "scripts": "Σενάρια εντολών",
     "scriptOnAdded": "Εκτέλεση σεναρίου κατά την προσθήκη torrent:",
     "scriptOnCompleted": "Εκτέλεση σεναρίου κατά την ολοκλήρωση torrent:",
-    "scriptPlaceholder": "/διαδρομή/προς/σενάριο"
+    "scriptOnDoneSeeding": "Εκτέλεση σεναρίου μετά την ολοκλήρωση διαμοιρασμού:",
+    "scriptPlaceholder": "/διαδρομή/προς/σενάριο",
+    "scripts": "Σενάρια εντολών",
+    "startAutomatically": "Αυτόματη εκκίνηση προστιθέμενων torrent",
+    "useIncompleteDir": "Χρήση καταλόγου ημιτελών:"
   },
   "queueTab": {
     "downloadQueue": "Ουρά λήψης",

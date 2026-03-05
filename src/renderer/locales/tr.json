@@ -227,12 +227,14 @@
     "testFailed": "Başarısız"
   },
   "settings": {
-    "title": "Arka Plan Hizmeti Ayarları",
-    "speed": "Hız",
-    "network": "Ağ",
+    "applied": "Ayarlar uygulandı",
+    "applyError": "Ayarlar uygulanamadı",
     "download": "İndirme",
+    "loading": "Ayarlar yükleniyor...",
+    "network": "Ağ",
     "queue": "Kuyruk",
-    "loading": "Ayarlar yükleniyor..."
+    "speed": "Hız",
+    "title": "Arka Plan Hizmeti Ayarları"
   },
   "speedTab": {
     "speedLimits": "Hız Limitleri",
@@ -286,16 +288,17 @@
     "entries": "{{count}} kayıt"
   },
   "downloadTab": {
+    "appendPart": "Tamamlanmamış dosyalara \".part\" ekle",
+    "deleteTorrentFile": "Ekledikten sonra .torrent dosyasını sil",
     "downloadDirectory": "İndirme Dizini",
     "incompleteDirectory": "Tamamlanmamış Dizini",
-    "useIncompleteDir": "Tamamlanmamış dizini kullan:",
-    "appendPart": "Tamamlanmamış dosyalara \".part\" ekle",
-    "startAutomatically": "Eklenen torrentleri otomatik başlat",
-    "deleteTorrentFile": "Ekledikten sonra .torrent dosyasını sil",
-    "scripts": "Betikler",
     "scriptOnAdded": "Torrent eklendiğinde betik çalıştır:",
     "scriptOnCompleted": "Torrent tamamlandığında betik çalıştır:",
-    "scriptPlaceholder": "/yol/betik"
+    "scriptOnDoneSeeding": "Torrent paylaşımı bittiğinde betik çalıştır:",
+    "scriptPlaceholder": "/yol/betik",
+    "scripts": "Betikler",
+    "startAutomatically": "Eklenen torrentleri otomatik başlat",
+    "useIncompleteDir": "Tamamlanmamış dizini kullan:"
   },
   "queueTab": {
     "downloadQueue": "İndirme Kuyruğu",

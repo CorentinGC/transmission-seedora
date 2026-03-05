@@ -21,9 +21,11 @@ export async function startWatcher(): Promise<void> {
   console.log(`[Watcher] Watching: ${watchPath}`);
 
   // Dynamic import for ESM-only chokidar
+  // Watch directory (not glob — chokidar v5 dropped glob support)
   const chokidar = await import('chokidar');
-  const w = chokidar.watch(path.join(watchPath, '*.torrent'), {
+  const w = chokidar.watch(watchPath, {
     ignoreInitial: true,
+    depth: 0,
     awaitWriteFinish: {
       stabilityThreshold: 1000,
       pollInterval: 200,
@@ -31,6 +33,7 @@ export async function startWatcher(): Promise<void> {
   });
 
   w.on('add', async (filePath: string) => {
+    if (!filePath.endsWith('.torrent')) return;
     console.log(`[Watcher] New torrent file detected: ${filePath}`);
 
     try {

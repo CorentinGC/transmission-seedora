@@ -98,7 +98,7 @@ ipcMain.on(IPC.NOTIFICATION_SHOW, (_event, { title, body }: { title: string; bod
 
 // Watcher restart
 ipcMain.on(IPC.WATCHER_RESTART, () => {
-  restartWatcher();
+  restartWatcher().catch((err) => console.error('[Watcher] Restart error:', err));
 });
 
 // Tray alt-speed toggle relay

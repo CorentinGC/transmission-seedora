@@ -269,12 +269,14 @@
     "importSuccess": "{{added}} added, {{skipped}} skipped"
   },
   "settings": {
-    "title": "Daemon Settings",
-    "speed": "Speed",
-    "network": "Network",
+    "applied": "Settings applied",
+    "applyError": "Failed to apply settings",
     "download": "Download",
+    "loading": "Loading settings...",
+    "network": "Network",
     "queue": "Queue",
-    "loading": "Loading settings..."
+    "speed": "Speed",
+    "title": "Daemon Settings"
   },
   "speedTab": {
     "speedLimits": "Speed Limits",
@@ -328,16 +330,17 @@
     "entries": "{{count}} entries"
   },
   "downloadTab": {
+    "appendPart": "Append \".part\" to incomplete files",
+    "deleteTorrentFile": "Delete .torrent file after adding",
     "downloadDirectory": "Download Directory",
     "incompleteDirectory": "Incomplete Directory",
-    "useIncompleteDir": "Use incomplete directory:",
-    "appendPart": "Append \".part\" to incomplete files",
-    "startAutomatically": "Start added torrents automatically",
-    "deleteTorrentFile": "Delete .torrent file after adding",
-    "scripts": "Scripts",
     "scriptOnAdded": "Run script on torrent added:",
     "scriptOnCompleted": "Run script on torrent completed:",
-    "scriptPlaceholder": "/path/to/script"
+    "scriptOnDoneSeeding": "Run script on torrent done seeding:",
+    "scriptPlaceholder": "/path/to/script",
+    "scripts": "Scripts",
+    "startAutomatically": "Start added torrents automatically",
+    "useIncompleteDir": "Use incomplete directory:"
   },
   "queueTab": {
     "downloadQueue": "Download Queue",

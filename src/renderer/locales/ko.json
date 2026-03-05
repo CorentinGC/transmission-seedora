@@ -227,12 +227,14 @@
     "testFailed": "실패"
   },
   "settings": {
-    "title": "데몬 설정",
-    "speed": "속도",
-    "network": "네트워크",
+    "applied": "설정이 적용되었습니다",
+    "applyError": "설정 적용에 실패했습니다",
     "download": "다운로드",
+    "loading": "설정 로딩 중...",
+    "network": "네트워크",
     "queue": "대기열",
-    "loading": "설정 로딩 중..."
+    "speed": "속도",
+    "title": "데몬 설정"
   },
   "speedTab": {
     "speedLimits": "속도 제한",
@@ -286,16 +288,17 @@
     "entries": "{{count}}개 항목"
   },
   "downloadTab": {
+    "appendPart": "미완료 파일에 \".part\" 확장자 추가",
+    "deleteTorrentFile": "추가 후 .torrent 파일 삭제",
     "downloadDirectory": "다운로드 디렉토리",
     "incompleteDirectory": "미완료 디렉토리",
-    "useIncompleteDir": "미완료 디렉토리 사용:",
-    "appendPart": "미완료 파일에 \".part\" 확장자 추가",
-    "startAutomatically": "추가된 토렌트 자동 시작",
-    "deleteTorrentFile": "추가 후 .torrent 파일 삭제",
-    "scripts": "스크립트",
     "scriptOnAdded": "토렌트 추가 시 스크립트 실행:",
     "scriptOnCompleted": "토렌트 완료 시 스크립트 실행:",
-    "scriptPlaceholder": "/경로/스크립트"
+    "scriptOnDoneSeeding": "시딩 완료 시 스크립트 실행:",
+    "scriptPlaceholder": "/경로/스크립트",
+    "scripts": "스크립트",
+    "startAutomatically": "추가된 토렌트 자동 시작",
+    "useIncompleteDir": "미완료 디렉토리 사용:"
   },
   "queueTab": {
     "downloadQueue": "다운로드 대기열",

@@ -269,12 +269,14 @@
     "importSuccess": "{{added}} ajouté(s), {{skipped}} ignoré(s)"
   },
   "settings": {
-    "title": "Paramètres du daemon",
-    "speed": "Vitesse",
-    "network": "Réseau",
+    "applied": "Paramètres appliqués",
+    "applyError": "Échec de l'application des paramètres",
     "download": "Téléchargement",
+    "loading": "Chargement des paramètres...",
+    "network": "Réseau",
     "queue": "File d'attente",
-    "loading": "Chargement des paramètres..."
+    "speed": "Vitesse",
+    "title": "Paramètres du daemon"
   },
   "speedTab": {
     "speedLimits": "Limites de vitesse",
@@ -328,16 +330,17 @@
     "entries": "{{count}} entrées"
   },
   "downloadTab": {
+    "appendPart": "Ajouter \".part\" aux fichiers incomplets",
+    "deleteTorrentFile": "Supprimer le fichier .torrent après l'ajout",
     "downloadDirectory": "Répertoire de téléchargement",
     "incompleteDirectory": "Répertoire des fichiers incomplets",
-    "useIncompleteDir": "Utiliser un répertoire pour les fichiers incomplets :",
-    "appendPart": "Ajouter \".part\" aux fichiers incomplets",
-    "startAutomatically": "Démarrer automatiquement les torrents ajoutés",
-    "deleteTorrentFile": "Supprimer le fichier .torrent après l'ajout",
-    "scripts": "Scripts",
     "scriptOnAdded": "Script à exécuter à l'ajout d'un torrent :",
     "scriptOnCompleted": "Script à exécuter à la fin d'un torrent :",
-    "scriptPlaceholder": "/chemin/vers/script"
+    "scriptOnDoneSeeding": "Exécuter un script à la fin du partage du torrent :",
+    "scriptPlaceholder": "/chemin/vers/script",
+    "scripts": "Scripts",
+    "startAutomatically": "Démarrer automatiquement les torrents ajoutés",
+    "useIncompleteDir": "Utiliser un répertoire pour les fichiers incomplets :"
   },
   "queueTab": {
     "downloadQueue": "File de téléchargement",
