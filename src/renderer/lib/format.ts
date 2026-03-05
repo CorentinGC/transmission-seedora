@@ -43,9 +43,9 @@ export function formatRatio(ratio: number): string {
 }
 
 export function formatDate(timestamp: number, relative = false): string {
-  if (timestamp == null || timestamp <= 0) return '';
+  if (timestamp == null || timestamp <= 0) return '—';
   const date = new Date(timestamp * 1000);
-  if (isNaN(date.getTime())) return '';
+  if (isNaN(date.getTime())) return '—';
 
   if (relative) {
     return formatRelativeDate(date);

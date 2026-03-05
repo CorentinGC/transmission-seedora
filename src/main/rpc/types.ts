@@ -142,6 +142,15 @@ export const TORRENT_LIST_FIELDS: TorrentField[] = [
   'seedRatioLimit',
   'seedRatioMode',
   'sequentialDownload',
+  // Details (GeneralTab)
+  'hashString',
+  'magnetLink',
+  'corruptEver',
+  'dateCreated',
+  'pieceCount',
+  'pieceSize',
+  'comment',
+  'creator',
 ];
 
 // ── Torrent Interfaces ──
