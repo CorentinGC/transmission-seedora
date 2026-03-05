@@ -128,9 +128,13 @@ Contributions are welcome! Here are some areas where help is appreciated:
 
 ## License
 
-[MIT](LICENSE)
+[Non-Commercial Open Source License](LICENSE) — Free to use, modify, and distribute. Commercial use and resale are prohibited.
 
 ## Acknowledgments
 
 - [Transmission Remote GUI (transgui)](https://github.com/transmission-remote-gui/transgui) — the original project that inspired this rewrite
 - [Transmission](https://transmissionbt.com/) — the BitTorrent client this app controls
+
+## Credits
+
+Created by [@CorentinGC](https://github.com/CorentinGC) — [Eden Solutions](https://eden-solutions.pro)
