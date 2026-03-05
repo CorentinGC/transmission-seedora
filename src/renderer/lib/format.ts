@@ -11,8 +11,8 @@ export function formatBytes(bytes: number): string {
 }
 
 export function formatSpeed(bytesPerSecond: number): string {
-  if (bytesPerSecond == null || isNaN(bytesPerSecond) || bytesPerSecond === 0) return '';
-  if (bytesPerSecond < 0) return '';
+  if (bytesPerSecond == null || isNaN(bytesPerSecond)) return '';
+  if (bytesPerSecond <= 0) return '0 B/s';
   const i = Math.floor(Math.log(bytesPerSecond) / Math.log(1024));
   const index = Math.min(i, SPEED_UNITS.length - 1);
   return `${(bytesPerSecond / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${SPEED_UNITS[index]}`;
