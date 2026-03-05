@@ -60,3 +60,18 @@ jobs:
             out/make/**/*.nupkg
             out/make/**/*.deb
             out/make/**/*.rpm
+
+  sync-staging:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync main into staging
+        run: |
+          git checkout staging
+          git merge main --no-edit
+          git push origin staging
