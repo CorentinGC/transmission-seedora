@@ -40,9 +40,9 @@ const config: ForgeConfig = {
         }
       },
     ],
-    name: 'Transmission Remote',
-    executableName: 'transmission-remote',
-    appBundleId: 'com.transmission-remote.app',
+    name: 'Seedora',
+    executableName: 'seedora',
+    appBundleId: 'com.seedora.app',
     appCategoryType: 'public.app-category.utilities',
   },
   rebuildConfig: {},
@@ -52,13 +52,13 @@ const config: ForgeConfig = {
     }),
     new MakerZIP({}, ['darwin']),
     new MakerSquirrel({
-      name: 'TransmissionRemote',
-      setupExe: 'TransmissionRemote-Setup.exe',
+      name: 'Seedora',
+      setupExe: 'Seedora-Setup.exe',
     }),
     new MakerDeb({
       options: {
-        name: 'transmission-remote',
-        productName: 'Transmission Remote',
+        name: 'seedora',
+        productName: 'Seedora',
         genericName: 'BitTorrent Client',
         description: 'Remote GUI for Transmission daemon',
         categories: ['Network', 'P2P'],
@@ -67,8 +67,8 @@ const config: ForgeConfig = {
     }),
     new MakerRpm({
       options: {
-        name: 'transmission-remote',
-        productName: 'Transmission Remote',
+        name: 'seedora',
+        productName: 'Seedora',
         description: 'Remote GUI for Transmission daemon',
         categories: ['Network', 'P2P'],
       },

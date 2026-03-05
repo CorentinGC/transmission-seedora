@@ -73,7 +73,7 @@ export function AppPrefsDialog({ onClose }: Props) {
     const res = await window.api.configExport({ servers: true, preferences: true });
     if (res.success && res.data) {
       const json = JSON.stringify(res.data, null, 2);
-      await window.api.dialogSaveFile({ defaultPath: 'transmission-remote-backup.json' }, json);
+      await window.api.dialogSaveFile({ defaultPath: 'seedora-backup.json' }, json);
     }
   };
 

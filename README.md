@@ -1,10 +1,10 @@
-# Transmission Remote
+# Seedora
 
-A modern, cross-platform desktop application to remotely manage a [Transmission](https://transmissionbt.com/) BitTorrent daemon.
+A modern, cross-platform desktop application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon.
 
 ## Why this project?
 
-The existing [Transmission Remote GUI](https://github.com/transmission-remote-gui/transgui) (transgui), built with Lazarus/Free Pascal, suffers from frequent crashes and has not been actively maintained for years. Rather than patching an aging codebase, **Transmission Remote** was rebuilt from scratch using a modern web-based stack while drawing heavy inspiration from transgui's feature set and UX.
+The existing [Transmission Remote GUI](https://github.com/transmission-remote-gui/transgui) (transgui), built with Lazarus/Free Pascal, suffers from frequent crashes and has not been actively maintained for years. Rather than patching an aging codebase, **Seedora** was rebuilt from scratch using a modern web-based stack while drawing heavy inspiration from transgui's feature set and UX.
 
 This project was entirely **vibe-coded** — designed and implemented with the assistance of AI — taking transgui as the reference for features and user experience, but with a completely new codebase built on Electron, React, and TypeScript.
 
@@ -20,7 +20,7 @@ This project was entirely **vibe-coded** — designed and implemented with the a
 - **Watch folder** — automatically add torrents from a monitored directory
 - **Proxy support** — HTTP and SOCKS5 proxy for RPC connections
 - **Dark mode** — system-aware dark/light theme
-- **i18n** — English and French (contributions welcome for more languages)
+- **i18n** — 23 languages supported
 - **Cross-platform** — macOS (DMG/ZIP), Windows (Squirrel installer), Linux (deb/rpm)
 
 ## Tech Stack
@@ -79,8 +79,8 @@ src/
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/transmission-remote-rework.git
-cd transmission-remote-rework
+git clone https://github.com/CorentinGC/seedora.git
+cd seedora
 npm install
 ```
 
