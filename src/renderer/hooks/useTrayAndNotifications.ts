@@ -24,7 +24,7 @@ export function useTrayAndNotifications() {
       downloadSpeed: cumStats.downloadSpeed ?? 0,
       uploadSpeed: cumStats.uploadSpeed ?? 0,
       activeCount: cumStats.activeTorrentCount ?? 0,
-      altSpeedEnabled: settings?.altSpeedEnabled ?? false,
+      altSpeedEnabled: ((settings as Record<string, unknown> | null)?.['alt-speed-enabled'] ?? settings?.altSpeedEnabled ?? false) as boolean,
     });
   }, [stats, settings]);
 

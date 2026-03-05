@@ -1,5 +1,17 @@
 import { create } from 'zustand';
 
+let persistTimer: ReturnType<typeof setTimeout> | null = null;
+function debouncedPersistColumns(state: { columnVisibility: Record<string, boolean>; columnSizing: Record<string, number>; columnOrder: string[] }) {
+  if (persistTimer) clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    window.api.prefsSet({
+      columnVisibility: state.columnVisibility,
+      columnSizing: state.columnSizing,
+      columnOrder: state.columnOrder,
+    });
+  }, 500);
+}
+
 interface UiStore {
   // Layout
   detailsPanelVisible: boolean;
@@ -17,8 +29,10 @@ interface UiStore {
   pollingInterval: number;
   relativeDates: boolean;
   confirmOnAdd: boolean;
+  speedPresets: number[] | null;
 
   // Actions
+  setSpeedPresets: (presets: number[] | null) => void;
   toggleDetailsPanel: () => void;
   setDetailsPanelSize: (size: number) => void;
   toggleFilterPanel: () => void;
@@ -46,6 +60,7 @@ export const useUiStore = create<UiStore>((set) => ({
   pollingInterval: 3000,
   relativeDates: false,
   confirmOnAdd: true,
+  speedPresets: null,
 
   toggleDetailsPanel: () =>
     set((state) => ({ detailsPanelVisible: !state.detailsPanelVisible })),
@@ -53,11 +68,21 @@ export const useUiStore = create<UiStore>((set) => ({
   toggleFilterPanel: () =>
     set((state) => ({ filterPanelVisible: !state.filterPanelVisible })),
   setFilterPanelSize: (size) => set({ filterPanelSize: size }),
-  setColumnVisibility: (vis) => set({ columnVisibility: vis }),
-  setColumnSizing: (sizing) => set({ columnSizing: sizing }),
-  setColumnOrder: (order) => set({ columnOrder: order }),
+  setColumnVisibility: (vis) => {
+    set({ columnVisibility: vis });
+    debouncedPersistColumns(useUiStore.getState());
+  },
+  setColumnSizing: (sizing) => {
+    set({ columnSizing: sizing });
+    debouncedPersistColumns(useUiStore.getState());
+  },
+  setColumnOrder: (order) => {
+    set({ columnOrder: order });
+    debouncedPersistColumns(useUiStore.getState());
+  },
   setTheme: (theme) => set({ theme }),
   setPollingInterval: (interval) => set({ pollingInterval: interval }),
   setRelativeDates: (value) => set({ relativeDates: value }),
   setConfirmOnAdd: (value) => set({ confirmOnAdd: value }),
+  setSpeedPresets: (presets) => set({ speedPresets: presets }),
 }));

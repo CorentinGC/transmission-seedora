@@ -31,6 +31,23 @@ export function App() {
         if (res.data.language && res.data.language !== i18n.language) {
           i18n.changeLanguage(res.data.language);
         }
+        // Restore column state directly (avoid triggering persist)
+        const columnState: Record<string, unknown> = {};
+        if (res.data.columnVisibility && Object.keys(res.data.columnVisibility).length > 0) {
+          columnState.columnVisibility = res.data.columnVisibility;
+        }
+        if (res.data.columnSizing && Object.keys(res.data.columnSizing).length > 0) {
+          columnState.columnSizing = res.data.columnSizing;
+        }
+        if (res.data.columnOrder && res.data.columnOrder.length > 0) {
+          columnState.columnOrder = res.data.columnOrder;
+        }
+        if (res.data.speedPresets) {
+          columnState.speedPresets = res.data.speedPresets;
+        }
+        if (Object.keys(columnState).length > 0) {
+          useUiStore.setState(columnState);
+        }
       }
     });
   }, [fetchServers, setTheme, setPollingInterval, setRelativeDates, setConfirmOnAdd]);
