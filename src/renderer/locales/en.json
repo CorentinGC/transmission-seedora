@@ -390,5 +390,10 @@
   },
   "notification": {
     "downloadComplete": "Download Complete"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Click to change priority",
+    "doNotDownload": "Do not download",
+    "download": "Download"
   }
 }

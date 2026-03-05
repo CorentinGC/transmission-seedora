@@ -36,7 +36,7 @@ export function OptionsTab({ torrent: tor }: Props) {
       seedRatioMode,
       seedIdleLimit,
       seedIdleMode,
-      peerLimit,
+      'peer-limit': peerLimit,
       bandwidthPriority,
       honorsSessionLimits,
       sequentialDownload,

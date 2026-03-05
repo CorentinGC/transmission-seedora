@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "اكتمل التنزيل"
+  },
+  "filesTab": {
+    "clickToChangePriority": "انقر لتغيير الأولوية",
+    "doNotDownload": "عدم التنزيل",
+    "download": "تنزيل"
   }
 }

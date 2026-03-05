@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Nedlasting fullført"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Klikk for å endre prioritet",
+    "doNotDownload": "Ikke last ned",
+    "download": "Last ned"
   }
 }

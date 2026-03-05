@@ -331,11 +331,16 @@
     "deleteWatchedTorrent": "添加后删除 .torrent 文件",
     "pathMappings": "路径映射（远程 → 本地）",
     "pathMappingsAdd": "添加",
-    "pathMappingsHelp": "将远程守护进程路径映射到本地路径，用于\u201C打开文件夹\u201D操作。",
+    "pathMappingsHelp": "将远程守护进程路径映射到本地路径，用于“打开文件夹”操作。",
     "remotePath": "远程路径",
     "localPath": "本地路径"
   },
   "notification": {
     "downloadComplete": "下载完成"
+  },
+  "filesTab": {
+    "clickToChangePriority": "点击更改优先级",
+    "doNotDownload": "不下载",
+    "download": "下载"
   }
 }

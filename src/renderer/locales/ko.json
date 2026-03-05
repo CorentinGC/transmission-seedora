@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "다운로드 완료"
+  },
+  "filesTab": {
+    "clickToChangePriority": "클릭하여 우선순위 변경",
+    "doNotDownload": "다운로드 안 함",
+    "download": "다운로드"
   }
 }

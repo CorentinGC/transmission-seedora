@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Letöltés befejezve"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Kattintson a prioritás módosításához",
+    "doNotDownload": "Ne töltse le",
+    "download": "Letöltés"
   }
 }

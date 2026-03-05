@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Download completato"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Clicca per cambiare la priorità",
+    "doNotDownload": "Non scaricare",
+    "download": "Scarica"
   }
 }
