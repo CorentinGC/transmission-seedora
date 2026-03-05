@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
+import { Dialog, Button, Input, Field } from '../ui';
 
 interface Props {
   torrentId: number;
@@ -22,30 +22,27 @@ export function RenameTorrentDialog({ torrentId, currentName, onClose }: Props) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-card border rounded-lg shadow-xl w-[420px]">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">{t('dialog.renameTorrent')}</h2>
-          <button onClick={onClose} className="hover:bg-accent rounded p-1"><X size={16} /></button>
-        </div>
-        <div className="p-4">
-          <label className="text-xs text-muted-foreground">{t('torrent.name')}</label>
-          <input
-            type="text"
-            className="w-full h-8 px-2 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            autoFocus
-            onKeyDown={(e) => e.key === 'Enter' && handleRename()}
-          />
-        </div>
-        <div className="flex items-center justify-end gap-2 p-4 border-t">
-          <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={onClose}>{t('dialog.cancel')}</button>
-          <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={handleRename} disabled={!name.trim() || name === currentName}>
+    <Dialog
+      title={t('dialog.renameTorrent')}
+      onClose={onClose}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <Button onClick={onClose}>{t('dialog.cancel')}</Button>
+          <Button variant="primary" onClick={handleRename} disabled={!name.trim() || name === currentName}>
             {t('dialog.renameTorrent')}
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      }
+    >
+      <Field label={t('torrent.name')}>
+        <Input
+          className="w-full"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          autoFocus
+          onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+        />
+      </Field>
+    </Dialog>
   );
 }

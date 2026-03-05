@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { X, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
+import { Dialog, Button } from '../ui';
 
 interface Props {
   ids: number[];
@@ -20,47 +21,33 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-card border rounded-lg shadow-xl w-fit min-w-[420px]">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <AlertTriangle size={18} className="text-destructive" />
-            {ids.length > 1 ? t('dialog.removeTorrents') : t('dialog.removeTorrent')}
-          </h2>
-          <button onClick={onClose} className="hover:bg-accent rounded p-1">
-            <X size={16} />
-          </button>
+    <Dialog
+      title={
+        <span className="flex items-center gap-2">
+          <AlertTriangle size={18} className="text-destructive" />
+          {ids.length > 1 ? t('dialog.removeTorrents') : t('dialog.removeTorrent')}
+        </span>
+      }
+      onClose={onClose}
+      width="w-fit min-w-[420px]"
+      footer={
+        <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+          <Button onClick={onClose}>{t('dialog.cancel')}</Button>
+          <Button onClick={() => handleRemove(false)}>{t('dialog.removeTorrentBtn')}</Button>
+          <Button variant="destructive" onClick={() => handleRemove(true)}>{t('dialog.removeWithData')}</Button>
         </div>
-
-        <div className="p-4 space-y-3">
-          <p className="text-sm">
-            {t('dialog.removeTorrentConfirm', { count: ids.length })}
-          </p>
-          <div className="max-h-32 overflow-auto text-xs text-muted-foreground space-y-0.5">
-            {names.map((name, i) => (
-              <div key={i} className="truncate">{name}</div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-end gap-2 p-4 border-t whitespace-nowrap">
-          <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={onClose}>
-            {t('dialog.cancel')}
-          </button>
-          <button
-            className="h-8 px-3 text-sm rounded border hover:bg-accent"
-            onClick={() => handleRemove(false)}
-          >
-            {t('dialog.removeTorrentBtn')}
-          </button>
-          <button
-            className="h-8 px-3 text-sm rounded bg-destructive text-destructive-foreground hover:opacity-90"
-            onClick={() => handleRemove(true)}
-          >
-            {t('dialog.removeWithData')}
-          </button>
+      }
+    >
+      <div className="space-y-3">
+        <p className="text-sm">
+          {t('dialog.removeTorrentConfirm', { count: ids.length })}
+        </p>
+        <div className="max-h-32 overflow-auto text-xs text-muted-foreground space-y-0.5">
+          {names.map((name, i) => (
+            <div key={i} className="truncate">{name}</div>
+          ))}
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 }
