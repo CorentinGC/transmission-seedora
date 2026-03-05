@@ -21,7 +21,7 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-card border rounded-lg shadow-xl w-[420px]">
+      <div className="bg-card border rounded-lg shadow-xl w-fit min-w-[420px]">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <AlertTriangle size={18} className="text-destructive" />
@@ -43,7 +43,7 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 p-4 border-t">
+        <div className="flex items-center justify-end gap-2 p-4 border-t whitespace-nowrap">
           <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={onClose}>
             {t('dialog.cancel')}
           </button>
