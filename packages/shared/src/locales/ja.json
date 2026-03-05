@@ -199,7 +199,11 @@
     "freeSpace": "空き容量: {{space}}",
     "startPaused": "一時停止状態で追加",
     "errorNoInput": "トレントファイルまたは URL/Magnet リンクを指定してください",
-    "errorAddFailed": "トレントの追加に失敗しました"
+    "errorAddFailed": "トレントの追加に失敗しました",
+    "errorDuplicate": "このトレントは既に存在します：{{name}}",
+    "updateTrackers": "トラッカーを更新",
+    "errorNoTrackers": "トレントファイルにトラッカーが見つかりません",
+    "errorTrackersAlreadyPresent": "すべてのトラッカーは既にこのトレントに存在します"
   },
   "server": {
     "addServer": "サーバーを追加...",

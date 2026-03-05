@@ -199,7 +199,11 @@
     "freeSpace": "可用空间: {{space}}",
     "startPaused": "添加后暂停",
     "errorNoInput": "请提供种子文件或 URL/Magnet 链接",
-    "errorAddFailed": "添加种子失败"
+    "errorAddFailed": "添加种子失败",
+    "errorDuplicate": "该种子已存在：{{name}}",
+    "updateTrackers": "更新 Tracker",
+    "errorNoTrackers": "种子文件中未找到 Tracker",
+    "errorTrackersAlreadyPresent": "所有 Tracker 已存在于此种子中"
   },
   "server": {
     "addServer": "添加服务器...",
