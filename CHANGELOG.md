@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.1.0...seedora-v1.2.0) (2026-03-05)
+
+
+### Features
+
+* add icon generation script from source 1024x1024 PNG ([735931b](https://github.com/CorentinGC/transmission-seedora/commit/735931b30a0e11468364f80cd920226191a20e08))
+* icon generation script and app assets ([4792e04](https://github.com/CorentinGC/transmission-seedora/commit/4792e047e6428083d3748b1cedf193825b99e21c))
+
+
+### Bug Fixes
+
+* use hardcoded app name in macOS menu bar ([830fecb](https://github.com/CorentinGC/transmission-seedora/commit/830fecb114f000e618085dec13df265ae4f6fed8))
+
 ## [1.1.0](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.0.0...seedora-v1.1.0) (2026-03-05)
 
 
