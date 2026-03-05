@@ -46,17 +46,17 @@ export function NetworkTab({ settings: s }: Props) {
 
   const apply = () => {
     updateSettings({
-      'peer-port': peerPort,
-      'peer-port-random-on-start': peerPortRandomOnStart,
-      'port-forwarding-enabled': portForwardingEnabled,
+      peerPort,
+      peerPortRandomOnStart,
+      portForwardingEnabled,
       encryption,
-      'dht-enabled': dhtEnabled,
-      'pex-enabled': pexEnabled,
-      'lpd-enabled': lpdEnabled,
-      'peer-limit-global': peerLimitGlobal,
-      'peer-limit-per-torrent': peerLimitPerTorrent,
-      'blocklist-enabled': blocklistEnabled,
-      'blocklist-url': blocklistUrl,
+      dhtEnabled,
+      pexEnabled,
+      lpdEnabled,
+      peerLimitGlobal,
+      peerLimitPerTorrent,
+      blocklistEnabled,
+      blocklistUrl,
     });
   };
 

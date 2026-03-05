@@ -37,16 +37,16 @@ export function SpeedTab({ settings: s }: Props) {
 
   const apply = () => {
     updateSettings({
-      'speed-limit-down-enabled': speedLimitDownEnabled,
-      'speed-limit-down': speedLimitDown,
-      'speed-limit-up-enabled': speedLimitUpEnabled,
-      'speed-limit-up': speedLimitUp,
-      'alt-speed-down': altSpeedDown,
-      'alt-speed-up': altSpeedUp,
-      'alt-speed-time-enabled': altSpeedTimeEnabled,
-      'alt-speed-time-begin': altSpeedTimeBegin,
-      'alt-speed-time-end': altSpeedTimeEnd,
-      'alt-speed-time-day': altSpeedTimeDay,
+      speedLimitDownEnabled,
+      speedLimitDown,
+      speedLimitUpEnabled,
+      speedLimitUp,
+      altSpeedDown,
+      altSpeedUp,
+      altSpeedTimeEnabled,
+      altSpeedTimeBegin,
+      altSpeedTimeEnd,
+      altSpeedTimeDay,
     });
   };
 

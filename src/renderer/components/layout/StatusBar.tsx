@@ -22,8 +22,7 @@ export function StatusBar() {
   const [speedPopover, setSpeedPopover] = useState<{ x: number; y: number; direction: 'down' | 'up' } | null>(null);
 
   const isConnected = connectionStatus === 'connected';
-  const rawSettings = settings as Record<string, unknown> | null;
-  const altSpeedEnabled = (rawSettings?.['alt-speed-enabled'] ?? settings?.altSpeedEnabled ?? false) as boolean;
+  const altSpeedEnabled = settings?.altSpeedEnabled ?? false;
 
   return (
     <div className="flex items-center gap-4 px-3 py-1 border-t bg-card text-xs text-muted-foreground select-none">
@@ -73,7 +72,7 @@ export function StatusBar() {
           >
             <BarChart3 size={12} />
             <span>
-              ↓ {formatBytes(stats['cumulative-stats'].downloadedBytes)} ↑ {formatBytes(stats['cumulative-stats'].uploadedBytes)}
+              ↓ {formatBytes(stats.cumulativeStats.downloadedBytes)} ↑ {formatBytes(stats.cumulativeStats.uploadedBytes)}
             </span>
           </button>
 

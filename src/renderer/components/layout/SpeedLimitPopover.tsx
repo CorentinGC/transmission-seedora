@@ -20,12 +20,11 @@ export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
   const speedPresets = useUiStore((s) => s.speedPresets);
 
   const isDown = direction === 'down';
-  const limitKey = isDown ? 'speed-limit-down' : 'speed-limit-up';
-  const enabledKey = isDown ? 'speed-limit-down-enabled' : 'speed-limit-up-enabled';
+  const limitKey = isDown ? 'speedLimitDown' : 'speedLimitUp';
+  const enabledKey = isDown ? 'speedLimitDownEnabled' : 'speedLimitUpEnabled';
 
-  const raw = settings as Record<string, unknown> | null;
-  const currentEnabled = (raw?.[enabledKey] ?? (isDown ? settings?.speedLimitDownEnabled : settings?.speedLimitUpEnabled) ?? false) as boolean;
-  const currentLimit = (raw?.[limitKey] ?? (isDown ? settings?.speedLimitDown : settings?.speedLimitUp) ?? 0) as number;
+  const currentEnabled = (isDown ? settings?.speedLimitDownEnabled : settings?.speedLimitUpEnabled) ?? false;
+  const currentLimit = (isDown ? settings?.speedLimitDown : settings?.speedLimitUp) ?? 0;
 
   const [customValue, setCustomValue] = useState('');
 

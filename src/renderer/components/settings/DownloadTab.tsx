@@ -24,16 +24,16 @@ export function DownloadTab({ settings: s }: Props) {
 
   const apply = () => {
     updateSettings({
-      'download-dir': downloadDir,
-      'incomplete-dir-enabled': incompleteDirEnabled,
-      'incomplete-dir': incompleteDir,
-      'rename-partial-files': renamePartialFiles,
-      'start-added-torrents': startAddedTorrents,
-      'trash-original-torrent-files': trashOriginalTorrentFiles,
-      'script-torrent-done-enabled': scriptTorrentDoneEnabled,
-      'script-torrent-done-filename': scriptTorrentDoneFilename,
-      'script-torrent-added-enabled': scriptTorrentAddedEnabled,
-      'script-torrent-added-filename': scriptTorrentAddedFilename,
+      downloadDir,
+      incompleteDirEnabled,
+      incompleteDir,
+      renamePartialFiles,
+      startAddedTorrents,
+      trashOriginalTorrentFiles,
+      scriptTorrentDoneEnabled,
+      scriptTorrentDoneFilename,
+      scriptTorrentAddedEnabled,
+      scriptTorrentAddedFilename,
     });
   };
 
