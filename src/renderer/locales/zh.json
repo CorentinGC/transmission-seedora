@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "层级",
     "announceUrl": "通告 URL",
-    "seeds": "种子",
-    "leechers": "下载者",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "状态",
     "addPlaceholder": "添加 Tracker URL...",
     "add": "添加",

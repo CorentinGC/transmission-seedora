@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "Nivel",
     "announceUrl": "URL de anunț",
-    "seeds": "Seeduri",
-    "leechers": "Leecheri",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "Stare",
     "addPlaceholder": "Adaugă URL tracker...",
     "add": "Adaugă",

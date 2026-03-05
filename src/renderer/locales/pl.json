@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "Poziom",
     "announceUrl": "Adres URL ogłoszenia",
-    "seeds": "Seedy",
-    "leechers": "Leecherzy",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "Status",
     "addPlaceholder": "Dodaj adres URL trackera...",
     "add": "Dodaj",

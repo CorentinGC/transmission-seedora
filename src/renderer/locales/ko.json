@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "티어",
     "announceUrl": "어나운스 URL",
-    "seeds": "시드",
-    "leechers": "리처",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "상태",
     "addPlaceholder": "트래커 URL 추가...",
     "add": "추가",

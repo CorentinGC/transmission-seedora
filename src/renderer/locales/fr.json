@@ -158,8 +158,8 @@
   "trackersTab": {
     "tier": "Niveau",
     "announceUrl": "URL d'annonce",
-    "seeds": "Sources",
-    "leechers": "Téléchargeurs",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "Statut",
     "addPlaceholder": "Ajouter une URL de tracker...",
     "add": "Ajouter",

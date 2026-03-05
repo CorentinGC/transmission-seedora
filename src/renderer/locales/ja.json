@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "ティア",
     "announceUrl": "アナウンス URL",
-    "seeds": "シード",
-    "leechers": "リーチャー",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "ステータス",
     "addPlaceholder": "トラッカー URL を追加...",
     "add": "追加",

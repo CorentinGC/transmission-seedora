@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pencil, Trash2, Plus, Check, X } from 'lucide-react';
 import type { Torrent, TorrentTrackerStats } from '../../types/torrent';
 import { useTorrentStore } from '../../stores/torrent-store';
+import { Button } from '../ui';
 
 interface Props {
   torrent: Torrent;
@@ -13,7 +15,19 @@ export function TrackersTab({ torrent }: Props) {
   const [newTracker, setNewTracker] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const setTorrentProps = useTorrentStore((s) => s.setTorrentProps);
+
+  const fetchTrackers = useCallback(() => {
+    window.api
+      .rpcTorrentGet(['trackerStats', 'trackerList'], [torrent.id])
+      .then((res) => {
+        if (res.success && res.data) {
+          const d = res.data as { torrents: { trackerStats: TorrentTrackerStats[]; trackerList: string }[] };
+          if (d.torrents?.[0]?.trackerStats) setTrackerStats(d.torrents[0].trackerStats);
+        }
+      });
+  }, [torrent.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,18 +42,32 @@ export function TrackersTab({ torrent }: Props) {
     return () => { cancelled = true; };
   }, [torrent.id]);
 
-  const addTracker = () => {
+  const addTracker = async () => {
     if (!newTracker.trim()) return;
-    const current = torrent.trackerList ?? '';
-    const updated = current ? `${current}\n\n${newTracker.trim()}` : newTracker.trim();
-    setTorrentProps([torrent.id], { trackerList: updated });
-    setNewTracker('');
+    setLoadingAction('add');
+    try {
+      const current = torrent.trackerList ?? '';
+      const updated = current ? `${current}\n\n${newTracker.trim()}` : newTracker.trim();
+      await setTorrentProps([torrent.id], { trackerList: updated });
+      setNewTracker('');
+      fetchTrackers();
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
-  const removeTracker = (announce: string) => {
-    const lines = (torrent.trackerList ?? '').split('\n');
-    const filtered = lines.filter((l) => l.trim() !== announce);
-    setTorrentProps([torrent.id], { trackerList: filtered.join('\n') });
+  const removeTracker = async (announce: string) => {
+    setLoadingAction(`remove-${announce}`);
+    try {
+      const tiers = (torrent.trackerList ?? '').split('\n\n');
+      const updated = tiers
+        .map((tier) => tier.split('\n').filter((l) => l.trim() !== announce).join('\n'))
+        .filter((tier) => tier.trim() !== '');
+      await setTorrentProps([torrent.id], { trackerList: updated.join('\n\n') });
+      fetchTrackers();
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
   const startEdit = (ts: TorrentTrackerStats) => {
@@ -47,15 +75,23 @@ export function TrackersTab({ torrent }: Props) {
     setEditValue(ts.announce);
   };
 
-  const saveEdit = (oldAnnounce: string) => {
+  const saveEdit = async (oldAnnounce: string) => {
     if (!editValue.trim() || editValue.trim() === oldAnnounce) {
       setEditingId(null);
       return;
     }
-    const lines = (torrent.trackerList ?? '').split('\n');
-    const updated = lines.map((l) => (l.trim() === oldAnnounce ? editValue.trim() : l));
-    setTorrentProps([torrent.id], { trackerList: updated.join('\n') });
-    setEditingId(null);
+    setLoadingAction(`save-${oldAnnounce}`);
+    try {
+      const tiers = (torrent.trackerList ?? '').split('\n\n');
+      const updated = tiers.map((tier) =>
+        tier.split('\n').map((l) => (l.trim() === oldAnnounce ? editValue.trim() : l)).join('\n')
+      );
+      await setTorrentProps([torrent.id], { trackerList: updated.join('\n\n') });
+      setEditingId(null);
+      fetchTrackers();
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
   const cancelEdit = () => {
@@ -64,78 +100,104 @@ export function TrackersTab({ torrent }: Props) {
   };
 
   return (
-    <div className="text-xs space-y-2">
-      <div className="flex items-center gap-2 px-1 py-1 font-medium text-muted-foreground border-b">
-        <span className="w-8">{t('trackersTab.tier')}</span>
-        <span className="flex-1">{t('trackersTab.announceUrl')}</span>
-        <span className="w-16 text-right">{t('trackersTab.seeds')}</span>
-        <span className="w-16 text-right">{t('trackersTab.leechers')}</span>
-        <span className="w-20">{t('trackersTab.status')}</span>
-        <span className="w-24" />
-      </div>
-      {trackerStats.map((ts) => (
-        <div key={ts.id} className="flex items-center gap-2 px-1 py-0.5 hover:bg-accent">
-          <span className="w-8 text-muted-foreground">{ts.tier}</span>
-          {editingId === ts.id ? (
-            <div className="flex-1 flex items-center gap-1">
-              <input
-                type="text"
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="flex-1 h-6 px-1 text-xs rounded border bg-background"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') saveEdit(ts.announce);
-                  if (e.key === 'Escape') cancelEdit();
-                }}
-              />
-              <button
-                className="text-green-500 hover:underline"
-                onClick={() => saveEdit(ts.announce)}
-              >
-                {t('trackersTab.save')}
-              </button>
-              <button
-                className="text-muted-foreground hover:underline"
-                onClick={cancelEdit}
-              >
-                {t('trackersTab.cancel')}
-              </button>
-            </div>
-          ) : (
-            <>
-              <span
-                className="flex-1 truncate cursor-pointer hover:underline"
-                onDoubleClick={() => startEdit(ts)}
-                title={t('details.doubleClickEdit')}
-              >
-                {ts.announce}
-              </span>
-              <span className="w-16 text-right">{ts.seederCount >= 0 ? ts.seederCount : '-'}</span>
-              <span className="w-16 text-right">{ts.leecherCount >= 0 ? ts.leecherCount : '-'}</span>
-              <span className="w-20">
-                {ts.lastAnnounceSucceeded ? t('trackersTab.ok') : ts.lastAnnounceResult || t('trackersTab.na')}
-              </span>
-              <div className="w-24 flex gap-1">
-                <button
-                  className="text-blue-500 hover:underline"
-                  onClick={() => startEdit(ts)}
-                >
-                  {t('trackersTab.edit')}
-                </button>
-                <button
-                  className="text-red-500 hover:underline"
-                  onClick={() => removeTracker(ts.announce)}
-                >
-                  {t('trackersTab.remove')}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      ))}
+    <div className="text-xs">
+      {/* Table */}
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="text-muted-foreground font-medium border-b">
+            <th className="text-left px-1.5 py-1 w-10">{t('trackersTab.tier')}</th>
+            <th className="text-left px-1.5 py-1">{t('trackersTab.announceUrl')}</th>
+            <th className="text-right px-1.5 py-1 w-16">{t('trackersTab.seeds')}</th>
+            <th className="text-right px-1.5 py-1 w-16">{t('trackersTab.leechers')}</th>
+            <th className="text-left px-1.5 py-1 w-24">{t('trackersTab.status')}</th>
+            <th className="w-14" />
+          </tr>
+        </thead>
+        <tbody>
+          {trackerStats.map((ts) => (
+            <tr key={ts.id} className="hover:bg-accent group">
+              <td className="px-1.5 py-1 text-muted-foreground">{ts.tier}</td>
+              <td className="px-1.5 py-1">
+                {editingId === ts.id ? (
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      className="flex-1 h-6 px-1.5 text-xs rounded border bg-background"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveEdit(ts.announce);
+                        if (e.key === 'Escape') cancelEdit();
+                      }}
+                    />
+                    <Button
+                      size="xs"
+                      variant="primary"
+                      onClick={() => saveEdit(ts.announce)}
+                      disabled={loadingAction === `save-${ts.announce}`}
+                    >
+                      <Check size={12} />
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      onClick={cancelEdit}
+                    >
+                      <X size={12} />
+                    </Button>
+                  </div>
+                ) : (
+                  <span
+                    className="block truncate cursor-pointer hover:underline"
+                    onDoubleClick={() => startEdit(ts)}
+                    title={ts.announce}
+                  >
+                    {ts.announce}
+                  </span>
+                )}
+              </td>
+              <td className="px-1.5 py-1 text-right">{ts.seederCount >= 0 ? ts.seederCount : '-'}</td>
+              <td className="px-1.5 py-1 text-right">{ts.leecherCount >= 0 ? ts.leecherCount : '-'}</td>
+              <td className="px-1.5 py-1 max-w-24 truncate" title={ts.lastAnnounceSucceeded ? 'OK' : (ts.lastAnnounceResult || '')}>
+                {ts.lastAnnounceSucceeded ? (
+                  <span className="text-green-500">{t('trackersTab.ok')}</span>
+                ) : (
+                  <span className="text-muted-foreground">{ts.lastAnnounceResult || t('trackersTab.na')}</span>
+                )}
+              </td>
+              <td className="px-1.5 py-1">
+                {editingId !== ts.id && (
+                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      onClick={() => startEdit(ts)}
+                      title={t('trackersTab.edit')}
+                      className="p-1 h-5 w-5"
+                    >
+                      <Pencil size={12} />
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      onClick={() => removeTracker(ts.announce)}
+                      disabled={loadingAction === `remove-${ts.announce}`}
+                      title={t('trackersTab.remove')}
+                      className="p-1 h-5 w-5 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      <div className="flex items-center gap-2 pt-2 border-t">
+      {/* Add tracker */}
+      <div className="flex items-center gap-2 mt-2 pt-2 border-t px-1.5">
         <input
           type="text"
           placeholder={t('trackersTab.addPlaceholder')}
@@ -144,12 +206,15 @@ export function TrackersTab({ torrent }: Props) {
           className="flex-1 h-7 px-2 text-xs rounded border bg-background"
           onKeyDown={(e) => e.key === 'Enter' && addTracker()}
         />
-        <button
-          className="h-7 px-3 text-xs rounded border hover:bg-accent"
+        <Button
+          size="sm"
+          variant="secondary"
           onClick={addTracker}
+          disabled={!newTracker.trim() || loadingAction === 'add'}
         >
+          <Plus size={14} className="mr-1" />
           {t('trackersTab.add')}
-        </button>
+        </Button>
       </div>
     </div>
   );
