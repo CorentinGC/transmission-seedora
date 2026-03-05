@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { useTorrentStore } from '../stores/torrent-store';
-import { useSessionStore } from '../stores/session-store';
-import { useUiStore } from '../stores/ui-store';
+import { useTorrentStore } from '@shared/stores/torrent-store';
+import { useSessionStore } from '@shared/stores/session-store';
+import { useUiStore } from '@shared/stores/ui-store';
+import { useApi } from '@shared/platform/api-context';
 
 interface MenuEventHandlers {
   onAddTorrent?: () => void;
@@ -22,42 +23,43 @@ export function useMenuEvents(handlers: MenuEventHandlers) {
   const toggleAltSpeed = useSessionStore((s) => s.toggleAltSpeed);
   const toggleFilterPanel = useUiStore((s) => s.toggleFilterPanel);
   const toggleDetailsPanel = useUiStore((s) => s.toggleDetailsPanel);
+  const api = useApi();
 
   useEffect(() => {
-    if (!window.api.onMenuEvent) return;
+    if (!api.onMenuEvent) return;
 
     const cleanups = [
-      window.api.onMenuEvent('menu:add-torrent', () => handlers.onAddTorrent?.()),
-      window.api.onMenuEvent('menu:add-magnet', () => handlers.onAddMagnet?.()),
-      window.api.onMenuEvent('menu:settings', () => handlers.onOpenSettings?.()),
-      window.api.onMenuEvent('menu:preferences', () => handlers.onOpenPreferences?.()),
-      window.api.onMenuEvent('menu:toggle-filter', () => toggleFilterPanel()),
-      window.api.onMenuEvent('menu:toggle-details', () => toggleDetailsPanel()),
-      window.api.onMenuEvent('menu:torrent-start', () => {
+      api.onMenuEvent('menu:add-torrent', () => handlers.onAddTorrent?.()),
+      api.onMenuEvent('menu:add-magnet', () => handlers.onAddMagnet?.()),
+      api.onMenuEvent('menu:settings', () => handlers.onOpenSettings?.()),
+      api.onMenuEvent('menu:preferences', () => handlers.onOpenPreferences?.()),
+      api.onMenuEvent('menu:toggle-filter', () => toggleFilterPanel()),
+      api.onMenuEvent('menu:toggle-details', () => toggleDetailsPanel()),
+      api.onMenuEvent('menu:torrent-start', () => {
         const ids = Array.from(selectedIds);
         if (ids.length) startTorrents(ids);
       }),
-      window.api.onMenuEvent('menu:torrent-stop', () => {
+      api.onMenuEvent('menu:torrent-stop', () => {
         const ids = Array.from(selectedIds);
         if (ids.length) stopTorrents(ids);
       }),
-      window.api.onMenuEvent('menu:torrent-verify', () => {
+      api.onMenuEvent('menu:torrent-verify', () => {
         const ids = Array.from(selectedIds);
         if (ids.length) verifyTorrents(ids);
       }),
-      window.api.onMenuEvent('menu:torrent-reannounce', () => {
+      api.onMenuEvent('menu:torrent-reannounce', () => {
         const ids = Array.from(selectedIds);
         if (ids.length) reannounceTorrents(ids);
       }),
-      window.api.onMenuEvent('menu:torrent-remove', () => handlers.onRemoveTorrent?.()),
-      window.api.onMenuEvent('menu:start-all', () => startAll()),
-      window.api.onMenuEvent('menu:stop-all', () => stopAll()),
-      window.api.onMenuEvent('tray:toggle-alt-speed', () => toggleAltSpeed()),
+      api.onMenuEvent('menu:torrent-remove', () => handlers.onRemoveTorrent?.()),
+      api.onMenuEvent('menu:start-all', () => startAll()),
+      api.onMenuEvent('menu:stop-all', () => stopAll()),
+      api.onMenuEvent('tray:toggle-alt-speed', () => toggleAltSpeed()),
     ];
 
     return () => cleanups.forEach((fn) => fn());
   }, [
     handlers, selectedIds, startTorrents, stopTorrents, verifyTorrents,
-    reannounceTorrents, startAll, stopAll, toggleAltSpeed, toggleFilterPanel, toggleDetailsPanel,
+    reannounceTorrents, startAll, stopAll, toggleAltSpeed, toggleFilterPanel, toggleDetailsPanel, api,
   ]);
 }

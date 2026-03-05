@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import i18n from './lib/i18n';
-import { AppShell } from './components/layout/AppShell';
-import { useServerStore } from './stores/server-store';
-import { useUiStore } from './stores/ui-store';
+import i18n from '@shared/lib/i18n';
+import { AppShell } from '@shared/components/layout/AppShell';
+import { useServerStore } from '@shared/stores/server-store';
+import { useUiStore } from '@shared/stores/ui-store';
 import { useTrayAndNotifications } from './hooks/useTrayAndNotifications';
+import { useApi } from '@shared/platform/api-context';
 
 export function App() {
   const fetchServers = useServerStore((s) => s.fetchServers);
@@ -19,10 +20,12 @@ export function App() {
   // Tray updates + completion notifications
   useTrayAndNotifications();
 
+  const api = useApi();
+
   // Load saved preferences on startup
   useEffect(() => {
     fetchServers();
-    window.api.prefsGet().then((res) => {
+    api.prefsGet().then((res) => {
       if (res.success && res.data) {
         setTheme(res.data.theme);
         setPollingInterval(res.data.pollingInterval);

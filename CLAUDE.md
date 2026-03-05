@@ -12,6 +12,8 @@ After ANY UI change (component, style, layout, dialog), you MUST verify the resu
 
 The app runs on `http://localhost:5173/` via Electron with `--remote-debugging-port=9222`.
 
+**IMPORTANT:** Ne JAMAIS lancer les serveurs (Electron ou Web) toi-même. C'est toujours l'utilisateur qui les lance manuellement. Si tu as besoin qu'un serveur tourne (pour vérifier l'UI, prendre un screenshot, etc.), demande à l'utilisateur de le lancer.
+
 ## Stack
 
 - Electron Forge + Vite 6 + TypeScript 5.7
