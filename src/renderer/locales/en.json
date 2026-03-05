@@ -5,7 +5,8 @@
     "selectTorrent": "Select a torrent to view details",
     "noTorrents": "No torrents",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "close": "Close"
   },
   "toolbar": {
     "addTorrent": "Add Torrent",
@@ -29,7 +30,31 @@
     "disableAltSpeed": "Disable alt speed",
     "enableAltSpeed": "Enable alt speed",
     "alt": "Alt",
-    "freeSpace": "{{space}} free"
+    "freeSpace": "{{space}} free",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Disk Space",
+    "totalFreeSpace": "Total free space",
+    "speedLimit": "Speed Limit",
+    "limitSpeed": "Limit speed",
+    "unlimited": "Unlimited",
+    "kbs": "KB/s",
+    "setLimit": "Set limit"
+  },
+  "sessionStats": {
+    "title": "Session Statistics",
+    "currentSession": "Current Session",
+    "allTime": "All Time (Cumulative)",
+    "downloaded": "Downloaded",
+    "uploaded": "Uploaded",
+    "ratio": "Ratio",
+    "filesAdded": "Files Added",
+    "activeTime": "Active Time",
+    "downloadSpeed": "Download Speed",
+    "uploadSpeed": "Upload Speed",
+    "sessionCount": "Sessions",
+    "activeTorrents": "Active Torrents",
+    "pausedTorrents": "Paused Torrents",
+    "totalTorrents": "Total Torrents"
   },
   "filter": {
     "all": "All",
@@ -80,7 +105,17 @@
     "downloaded": "Downloaded",
     "uploaded": "Uploaded",
     "private": "Private",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Size to DL",
+    "sizeLeft": "Size Left",
+    "connectedPeers": "Connected",
+    "seedingTime": "Seeding Time",
+    "downloadingTime": "DL Time",
+    "created": "Created",
+    "comment": "Comment",
+    "fileCount": "Files",
+    "group": "Group"
   },
   "priority": {
     "high": "High",
@@ -224,7 +259,14 @@
     "proxyUsername": "Proxy Username",
     "proxyPassword": "Proxy Password",
     "testSuccess": "Success",
-    "testFailed": "Failed"
+    "testFailed": "Failed",
+    "deleteServer": "Delete",
+    "deleteConfirm": "Delete server \"{{name}}\"?",
+    "cannotDeleteActive": "Disconnect first",
+    "exportServer": "Export",
+    "exportAll": "Export All",
+    "importServers": "Import...",
+    "importSuccess": "{{added}} added, {{skipped}} skipped"
   },
   "settings": {
     "title": "Daemon Settings",
@@ -333,7 +375,18 @@
     "pathMappingsAdd": "Add",
     "pathMappingsHelp": "Map remote daemon paths to local paths for \"Open folder\" actions.",
     "remotePath": "Remote path",
-    "localPath": "Local path"
+    "localPath": "Local path",
+    "speedPresets": "Speed Presets",
+    "speedPresetsHelp": "Quick speed limit values (KB/s) for the status bar popover.",
+    "addPreset": "Add",
+    "backup": "Backup & Restore",
+    "exportBackup": "Export backup",
+    "importBackup": "Import backup",
+    "exportBackupHelp": "Export all servers and preferences to a JSON file.",
+    "importSuccess": "Backup restored successfully."
+  },
+  "columnMenu": {
+    "setupColumns": "Setup Columns"
   },
   "notification": {
     "downloadComplete": "Download Complete"

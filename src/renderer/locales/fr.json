@@ -5,7 +5,8 @@
     "selectTorrent": "Sélectionnez un torrent pour voir les détails",
     "noTorrents": "Aucun torrent",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "close": "Fermer"
   },
   "toolbar": {
     "addTorrent": "Ajouter un torrent",
@@ -29,7 +30,31 @@
     "disableAltSpeed": "Désactiver la vitesse alternative",
     "enableAltSpeed": "Activer la vitesse alternative",
     "alt": "Alt",
-    "freeSpace": "{{space}} libre"
+    "freeSpace": "{{space}} libre",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Espace disque",
+    "totalFreeSpace": "Espace libre total",
+    "speedLimit": "Limite de vitesse",
+    "limitSpeed": "Limiter la vitesse",
+    "unlimited": "Illimité",
+    "kbs": "Ko/s",
+    "setLimit": "Définir la limite"
+  },
+  "sessionStats": {
+    "title": "Statistiques de session",
+    "currentSession": "Session actuelle",
+    "allTime": "Total (cumulé)",
+    "downloaded": "Téléchargé",
+    "uploaded": "Envoyé",
+    "ratio": "Ratio",
+    "filesAdded": "Fichiers ajoutés",
+    "activeTime": "Temps actif",
+    "downloadSpeed": "Vitesse de téléchargement",
+    "uploadSpeed": "Vitesse d'envoi",
+    "sessionCount": "Sessions",
+    "activeTorrents": "Torrents actifs",
+    "pausedTorrents": "Torrents en pause",
+    "totalTorrents": "Total torrents"
   },
   "filter": {
     "all": "Tous",
@@ -80,7 +105,17 @@
     "downloaded": "Téléchargé",
     "uploaded": "Envoyé",
     "private": "Privé",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Taille à DL",
+    "sizeLeft": "Taille restante",
+    "connectedPeers": "Connectés",
+    "seedingTime": "Temps de partage",
+    "downloadingTime": "Temps de DL",
+    "created": "Créé",
+    "comment": "Commentaire",
+    "fileCount": "Fichiers",
+    "group": "Groupe"
   },
   "priority": {
     "high": "Haute",
@@ -224,7 +259,14 @@
     "proxyUsername": "Utilisateur du proxy",
     "proxyPassword": "Mot de passe du proxy",
     "testSuccess": "Succès",
-    "testFailed": "Échec"
+    "testFailed": "Échec",
+    "deleteServer": "Supprimer",
+    "deleteConfirm": "Supprimer le serveur « {{name}} » ?",
+    "cannotDeleteActive": "Déconnectez d'abord",
+    "exportServer": "Exporter",
+    "exportAll": "Tout exporter",
+    "importServers": "Importer...",
+    "importSuccess": "{{added}} ajouté(s), {{skipped}} ignoré(s)"
   },
   "settings": {
     "title": "Paramètres du daemon",
@@ -333,7 +375,18 @@
     "pathMappingsAdd": "Ajouter",
     "pathMappingsHelp": "Associer les chemins du daemon distant aux chemins locaux pour les actions « Ouvrir le dossier ».",
     "remotePath": "Chemin distant",
-    "localPath": "Chemin local"
+    "localPath": "Chemin local",
+    "speedPresets": "Préréglages de vitesse",
+    "speedPresetsHelp": "Valeurs rapides de limite de vitesse (Ko/s) pour le popover de la barre d'état.",
+    "addPreset": "Ajouter",
+    "backup": "Sauvegarde & Restauration",
+    "exportBackup": "Exporter la sauvegarde",
+    "importBackup": "Importer une sauvegarde",
+    "exportBackupHelp": "Exporter tous les serveurs et préférences dans un fichier JSON.",
+    "importSuccess": "Sauvegarde restaurée avec succès."
+  },
+  "columnMenu": {
+    "setupColumns": "Configurer les colonnes"
   },
   "notification": {
     "downloadComplete": "Téléchargement terminé"
