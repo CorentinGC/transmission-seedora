@@ -18,7 +18,7 @@ The app runs on `http://localhost:5173/` via Electron with `--remote-debugging-p
 - React 19 + TailwindCSS v4 + shadcn-style CSS variables
 - TanStack Table v8 + @tanstack/react-virtual
 - Zustand stores (server, torrent, session, ui)
-- i18next for i18n (en/fr)
+- i18next for i18n (23 languages)
 
 ## Key Conventions
 
@@ -28,3 +28,9 @@ The app runs on `http://localhost:5173/` via Electron with `--remote-debugging-p
 - Shared types/IPC channels: `src/shared/`
 - All IPC channels defined in `src/shared/ipc-channels.ts`
 - ESM-only packages (chokidar, etc.) must use dynamic `import()` in main process or be marked `external` in vite.main.config.ts (e.g. geoip-lite)
+
+## i18n (MANDATORY)
+
+**Every user-facing string** MUST use `t('section.key')` from `react-i18next` — no hardcoded strings in components.
+
+When adding or modifying an i18n key, you MUST add the translated value to **ALL 23 locale files** in `src/renderer/locales/` (en, fr, de, es, it, pt, nl, pl, cs, ru, uk, tr, ar, ja, ko, zh, da, nb, sv, fi, hu, ro, el). Each file must contain the **actual translation** in that language, not the English fallback. Use `/i18n-strings` for the full workflow details.
