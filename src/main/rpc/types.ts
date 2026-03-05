@@ -151,6 +151,11 @@ export const TORRENT_LIST_FIELDS: TorrentField[] = [
   'pieceSize',
   'comment',
   'creator',
+  // Extra columns
+  'secondsSeeding',
+  'secondsDownloading',
+  'fileCount',
+  'group',
 ];
 
 // ── Torrent Interfaces ──
