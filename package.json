@@ -19,7 +19,8 @@
     "dev:web": "npm run dev --workspace=@seedora/web",
     "dev:web:https": "npm run dev:https --workspace=@seedora/web",
     "build:web": "npm run build --workspace=@seedora/web",
-    "start:web": "npm run start --workspace=@seedora/web"
+    "start:web": "npm run start --workspace=@seedora/web",
+    "generate:icons": "node scripts/generate-icons.mjs"
   },
   "keywords": [],
   "author": {
@@ -50,6 +51,7 @@
     "electron": "40.7.0",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.32.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.2.1",
     "typescript": "~5.7.0",
     "vite": "^6.4.1"
