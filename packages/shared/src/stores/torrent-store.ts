@@ -38,7 +38,7 @@ interface TorrentStore {
   setTorrentProps: (ids: number[], props: Record<string, unknown>) => Promise<void>;
   moveTorrents: (ids: number[], location: string, move: boolean) => Promise<void>;
   queueMove: (ids: number[], direction: 'top' | 'up' | 'down' | 'bottom') => Promise<void>;
-  addTorrent: (params: Record<string, unknown>) => Promise<{ success: boolean; error?: string }>;
+  addTorrent: (params: Record<string, unknown>) => Promise<{ success: boolean; error?: string; duplicate?: boolean; torrentName?: string; duplicateId?: number }>;
   startAll: () => Promise<void>;
   stopAll: () => Promise<void>;
 
@@ -212,6 +212,11 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   addTorrent: async (params) => {
     const res = await getPlatformApi().rpcTorrentAdd(params);
     if (res.success) {
+      const data = res.data as Record<string, unknown> | undefined;
+      const duplicate = data?.['torrent-duplicate'] as Record<string, unknown> | undefined;
+      if (duplicate) {
+        return { success: false, duplicate: true, torrentName: duplicate.name as string | undefined, duplicateId: duplicate.id as number | undefined };
+      }
       await get().fetchTorrents();
     }
     return { success: res.success, error: res.error };

@@ -199,7 +199,11 @@
     "freeSpace": "Boş alan: {{space}}",
     "startPaused": "Duraklatılmış olarak başlat",
     "errorNoInput": "Lütfen bir torrent dosyası veya URL/Magnet bağlantısı girin",
-    "errorAddFailed": "Torrent eklenemedi"
+    "errorAddFailed": "Torrent eklenemedi",
+    "errorDuplicate": "Bu torrent zaten mevcut: {{name}}",
+    "updateTrackers": "Tracker'ları güncelle",
+    "errorNoTrackers": "Torrent dosyasında tracker bulunamadı",
+    "errorTrackersAlreadyPresent": "Tüm tracker'lar zaten bu torrentte mevcut"
   },
   "server": {
     "addServer": "Sunucu Ekle...",

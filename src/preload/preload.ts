@@ -87,6 +87,10 @@ const api = {
   prefsSet: (prefs: Partial<AppPreferences>): Promise<IpcResponse> =>
     ipcRenderer.invoke(IPC.PREFS_SET, prefs),
 
+  // File reading
+  readFileBase64: (filePath: string): Promise<IpcResponse<string>> =>
+    ipcRenderer.invoke(IPC.READ_FILE_BASE64, filePath),
+
   // Dialogs
   dialogOpenFile: (options?: Electron.OpenDialogOptions): Promise<IpcResponse<string[]>> =>
     ipcRenderer.invoke(IPC.DIALOG_OPEN_FILE, options),

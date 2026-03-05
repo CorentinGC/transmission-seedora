@@ -199,7 +199,11 @@
     "freeSpace": "Spațiu liber: {{space}}",
     "startPaused": "Pornește în pauză",
     "errorNoInput": "Furnizați un fișier torrent sau URL/link Magnet",
-    "errorAddFailed": "Adăugarea torrentului a eșuat"
+    "errorAddFailed": "Adăugarea torrentului a eșuat",
+    "errorDuplicate": "Acest torrent există deja: {{name}}",
+    "updateTrackers": "Actualizare trackere",
+    "errorNoTrackers": "Nu au fost găsite trackere în fișierul torrent",
+    "errorTrackersAlreadyPresent": "Toate trackerele sunt deja prezente pe acest torrent"
   },
   "server": {
     "addServer": "Adaugă server...",

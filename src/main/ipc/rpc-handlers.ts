@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { ipcMain } from 'electron';
 import { IPC } from '@shared/ipc-channels';
 import type { IpcResponse } from '@shared/types';
@@ -28,9 +30,16 @@ export function registerRpcHandlers(): void {
     rpcHandler('torrent-set', { ids, ...params }),
   );
 
-  ipcMain.handle(IPC.RPC_TORRENT_ADD, (_, params: Record<string, unknown>) =>
-    rpcHandler('torrent-add', params),
-  );
+  ipcMain.handle(IPC.RPC_TORRENT_ADD, async (_, params: Record<string, unknown>) => {
+    // Convert local file path to base64 metainfo so it works with remote daemons
+    const filename = params.filename as string | undefined;
+    if (filename && !params.metainfo && path.isAbsolute(filename) && fs.existsSync(filename)) {
+      const content = fs.readFileSync(filename);
+      params.metainfo = content.toString('base64');
+      delete params.filename;
+    }
+    return rpcHandler('torrent-add', params);
+  });
 
   ipcMain.handle(IPC.RPC_TORRENT_REMOVE, (_, ids: number[], deleteLocalData: boolean) =>
     rpcHandler('torrent-remove', { ids, 'delete-local-data': deleteLocalData }),

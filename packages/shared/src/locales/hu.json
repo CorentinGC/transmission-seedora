@@ -199,7 +199,11 @@
     "freeSpace": "Szabad hely: {{space}}",
     "startPaused": "Szüneteltetve indítás",
     "errorNoInput": "Adjon meg egy torrent fájlt vagy URL/Magnet linket",
-    "errorAddFailed": "A torrent hozzáadása sikertelen"
+    "errorAddFailed": "A torrent hozzáadása sikertelen",
+    "errorDuplicate": "Ez a torrent már létezik: {{name}}",
+    "updateTrackers": "Trackerek frissítése",
+    "errorNoTrackers": "Nem találhatók trackerek a torrent fájlban",
+    "errorTrackersAlreadyPresent": "Minden tracker már jelen van ezen a torrenten"
   },
   "server": {
     "addServer": "Szerver hozzáadása...",

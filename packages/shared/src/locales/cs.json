@@ -199,7 +199,11 @@
     "freeSpace": "Volné místo: {{space}}",
     "startPaused": "Spustit pozastavené",
     "errorNoInput": "Zadejte soubor torrentu nebo URL/Magnet odkaz",
-    "errorAddFailed": "Nepodařilo se přidat torrent"
+    "errorAddFailed": "Nepodařilo se přidat torrent",
+    "errorDuplicate": "Tento torrent již existuje: {{name}}",
+    "updateTrackers": "Aktualizovat trackery",
+    "errorNoTrackers": "V souboru torrentu nebyly nalezeny žádné trackery",
+    "errorTrackersAlreadyPresent": "Všechny trackery jsou již na tomto torrentu přítomny"
   },
   "server": {
     "addServer": "Přidat server...",
