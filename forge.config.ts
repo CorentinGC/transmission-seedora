@@ -44,6 +44,7 @@ const config: ForgeConfig = {
     executableName: 'seedora',
     appBundleId: 'com.seedora.app',
     appCategoryType: 'public.app-category.utilities',
+    icon: './resources/icon',
   },
   rebuildConfig: {},
   makers: [

@@ -109,6 +109,34 @@ Supported targets:
 - **Windows** — Squirrel installer
 - **Linux** — deb, rpm
 
+## Installation Notes
+
+### macOS — "App is damaged" warning
+
+Since the app is not signed with an Apple Developer certificate, macOS Gatekeeper may block it with a message saying the app "is damaged and can't be opened". To fix this, run the following command in Terminal:
+
+```bash
+xattr -cr /Applications/Seedora.app
+```
+
+Replace the path with wherever you extracted the app. After that, you can open it normally.
+
+### Windows — SmartScreen warning
+
+Windows Defender SmartScreen may show an "Unknown publisher" warning when running the installer. Click **"More info"** → **"Run anyway"** to proceed.
+
+### Linux
+
+No special steps needed. Install the `.deb` or `.rpm` package with your package manager:
+
+```bash
+# Debian/Ubuntu
+sudo dpkg -i seedora_*.deb
+
+# Fedora/RHEL
+sudo rpm -i seedora-*.rpm
+```
+
 ## Contributing
 
 Contributions are welcome! Here are some areas where help is appreciated:
