@@ -24,7 +24,7 @@ export function GeneralTab({ torrent: tor }: Props) {
       <InfoRow label={t('torrent.downloaded')} value={formatBytes(tor.downloadedEver)} />
       <InfoRow label={t('torrent.uploaded')} value={formatBytes(tor.uploadedEver)} />
       <InfoRow label={t('torrent.ratio')} value={formatRatio(tor.uploadRatio)} />
-      <InfoRow label={t('details.wasted')} value={tor.corruptEver > 0 ? formatBytes(tor.corruptEver) : ''} />
+      <InfoRow label={t('details.wasted')} value={formatBytes(tor.corruptEver ?? 0)} />
       <InfoRow label={t('details.downloadSpeed')} value={formatSpeed(tor.rateDownload)} />
       <InfoRow label={t('details.uploadSpeed')} value={formatSpeed(tor.rateUpload)} />
       <InfoRow label={t('torrent.eta')} value={formatEta(tor.eta)} />
@@ -35,7 +35,7 @@ export function GeneralTab({ torrent: tor }: Props) {
       <InfoRow label={t('torrent.completed')} value={formatDate(tor.doneDate, relativeDates)} />
       <InfoRow label={t('torrent.lastActive')} value={formatDate(tor.activityDate, relativeDates)} />
       <InfoRow label={t('details.created')} value={formatDate(tor.dateCreated, relativeDates)} />
-      <InfoRow label={t('details.pieces')} value={tor.pieceCount > 0 && tor.pieceSize > 0 ? t('details.piecesFormat', { count: tor.pieceCount, size: formatBytes(tor.pieceSize) }) : ''} />
+      <InfoRow label={t('details.pieces')} value={tor.pieceCount > 0 ? t('details.piecesFormat', { count: tor.pieceCount, size: formatBytes(tor.pieceSize) }) : '0'} />
       <InfoRow label={t('details.comment')} value={tor.comment} />
       <InfoRow label={t('details.creator')} value={tor.creator} />
       {tor.errorString && (
