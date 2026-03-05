@@ -209,6 +209,53 @@ export function TorrentTable({ torrents }: Props) {
     toggleSort?.(e);
   }, []);
 
+  const handleResizeDoubleClick = useCallback((columnId: string, headerIndex: number) => {
+    const bodyContainer = parentRef.current;
+    if (!bodyContainer) return;
+
+    // Create off-screen measurement container
+    const measure = document.createElement('div');
+    measure.style.cssText = 'position:absolute;top:-9999px;left:-9999px;white-space:nowrap;visibility:hidden;';
+    document.body.appendChild(measure);
+
+    // Measure header
+    const headerEl = headerRefs.current.get(columnId);
+    let maxWidth = 0;
+    if (headerEl) {
+      measure.className = headerEl.className;
+      measure.style.width = 'auto';
+      measure.style.position = 'absolute';
+      measure.style.visibility = 'hidden';
+      measure.style.whiteSpace = 'nowrap';
+      measure.innerHTML = headerEl.innerHTML;
+      maxWidth = measure.offsetWidth;
+    }
+
+    // Measure body cells
+    const rows = bodyContainer.querySelectorAll(':scope > div > div');
+    rows.forEach((row) => {
+      const cell = row.children[headerIndex] as HTMLElement | undefined;
+      if (cell) {
+        measure.className = cell.className;
+        measure.style.width = 'auto';
+        measure.style.position = 'absolute';
+        measure.style.visibility = 'hidden';
+        measure.style.whiteSpace = 'nowrap';
+        measure.innerHTML = cell.innerHTML;
+        maxWidth = Math.max(maxWidth, measure.offsetWidth);
+      }
+    });
+
+    document.body.removeChild(measure);
+
+    const col = table.getColumn(columnId);
+    const minSize = col?.columnDef.minSize ?? 40;
+    // Add 2px buffer to avoid sub-pixel rounding issues
+    const newWidth = Math.max(maxWidth + 2, minSize);
+
+    setColumnSizing({ ...columnSizing, [columnId]: newWidth });
+  }, [columnSizing, setColumnSizing, table]);
+
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
       {/* Header */}
@@ -237,6 +284,8 @@ export function TorrentTable({ torrents }: Props) {
               <div
                 onMouseDown={header.getResizeHandler()}
                 onTouchStart={header.getResizeHandler()}
+                onClick={(e) => e.stopPropagation()}
+                onDoubleClick={(e) => { e.stopPropagation(); handleResizeDoubleClick(header.column.id, header.index); }}
                 className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500"
               />
             </div>
