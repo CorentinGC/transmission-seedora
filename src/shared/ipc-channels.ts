@@ -56,6 +56,11 @@ export const IPC = {
   // Watcher
   WATCHER_RESTART: 'watcher:restart',
 
+  // Config export/import
+  CONFIG_EXPORT: 'config:export',
+  CONFIG_IMPORT: 'config:import',
+  DIALOG_SAVE_FILE: 'dialog:save-file',
+
   // GeoIP
   GEOIP_LOOKUP: 'geoip:lookup',
 } as const;
