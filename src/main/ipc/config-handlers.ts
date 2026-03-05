@@ -1,4 +1,5 @@
 import { ipcMain, dialog } from 'electron';
+import fs from 'node:fs';
 import { IPC } from '@shared/ipc-channels';
 import type { IpcResponse, NewServerConfig, ServerConfig, AppPreferences } from '@shared/types';
 import { configStore } from '../store/config-store';
@@ -65,6 +66,70 @@ export function registerConfigHandlers(): void {
     });
     if (result.canceled) return { success: true, data: [] };
     return { success: true, data: result.filePaths };
+  });
+
+  // Config export
+  ipcMain.handle(IPC.CONFIG_EXPORT, (_, options: { servers?: boolean; preferences?: boolean; serverIds?: string[] }): IpcResponse => {
+    const result: Record<string, unknown> = { version: 1, exportedAt: new Date().toISOString() };
+    if (options.servers !== false) {
+      const allServers = configStore.getServers();
+      result.servers = options.serverIds
+        ? allServers.filter(s => options.serverIds!.includes(s.id))
+        : allServers;
+    }
+    if (options.preferences) {
+      result.preferences = configStore.getPreferences();
+    }
+    return { success: true, data: result };
+  });
+
+  // Config import (data can be the parsed JSON directly, or { filePath } to read from disk)
+  ipcMain.handle(IPC.CONFIG_IMPORT, (_, data: { servers?: ServerConfig[]; preferences?: Partial<AppPreferences>; filePath?: string }): IpcResponse => {
+    if (data.filePath) {
+      try {
+        const raw = fs.readFileSync(data.filePath, 'utf-8');
+        data = JSON.parse(raw);
+      } catch (err) {
+        return { success: false, error: (err as Error).message };
+      }
+    }
+    let serversAdded = 0;
+    let serversSkipped = 0;
+    let prefsImported = false;
+
+    if (data.servers) {
+      const existing = configStore.getServers();
+      for (const server of data.servers) {
+        const duplicate = existing.find(e => e.host === server.host && e.port === server.port && e.path === server.path);
+        if (duplicate) {
+          serversSkipped++;
+        } else {
+          const newServer: ServerConfig = { ...server, id: randomUUID() };
+          configStore.addServer(newServer);
+          existing.push(newServer);
+          serversAdded++;
+        }
+      }
+    }
+
+    if (data.preferences) {
+      const { columnVisibility, columnSizing, columnOrder, ...rest } = data.preferences;
+      configStore.updatePreferences({ ...rest, columnVisibility, columnSizing, columnOrder });
+      prefsImported = true;
+    }
+
+    return { success: true, data: { serversAdded, serversSkipped, prefsImported } };
+  });
+
+  // Save file dialog
+  ipcMain.handle(IPC.DIALOG_SAVE_FILE, async (_, options: { defaultPath?: string; filters?: Electron.FileFilter[] }, content: string): Promise<IpcResponse<string | null>> => {
+    const result = await dialog.showSaveDialog({
+      defaultPath: options.defaultPath,
+      filters: options.filters ?? [{ name: 'JSON', extensions: ['json'] }],
+    });
+    if (result.canceled || !result.filePath) return { success: true, data: null };
+    fs.writeFileSync(result.filePath, content, 'utf-8');
+    return { success: true, data: result.filePath };
   });
 
   ipcMain.handle(IPC.DIALOG_OPEN_DIRECTORY, async (): Promise<IpcResponse<string | null>> => {

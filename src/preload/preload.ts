@@ -73,6 +73,14 @@ const api = {
   rpcGroupSet: (params: Record<string, unknown>): Promise<IpcResponse> =>
     ipcRenderer.invoke(IPC.RPC_GROUP_SET, params),
 
+  // Config export/import
+  configExport: (options: { servers?: boolean; preferences?: boolean; serverIds?: string[] }): Promise<IpcResponse> =>
+    ipcRenderer.invoke(IPC.CONFIG_EXPORT, options),
+  configImport: (data: Record<string, unknown>): Promise<IpcResponse> =>
+    ipcRenderer.invoke(IPC.CONFIG_IMPORT, data),
+  dialogSaveFile: (options: { defaultPath?: string; filters?: Electron.FileFilter[] }, content: string): Promise<IpcResponse<string | null>> =>
+    ipcRenderer.invoke(IPC.DIALOG_SAVE_FILE, options, content),
+
   // Preferences
   prefsGet: (): Promise<IpcResponse<AppPreferences>> =>
     ipcRenderer.invoke(IPC.PREFS_GET),

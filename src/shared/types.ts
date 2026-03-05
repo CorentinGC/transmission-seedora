@@ -33,6 +33,10 @@ export interface AppPreferences {
   watchFolderEnabled: boolean;
   deleteWatchedTorrent: boolean;
   pathMappings: PathMapping[];
+  columnVisibility?: Record<string, boolean>;
+  columnSizing?: Record<string, number>;
+  columnOrder?: string[];
+  speedPresets?: number[];
 }
 
 export interface PathMapping {
