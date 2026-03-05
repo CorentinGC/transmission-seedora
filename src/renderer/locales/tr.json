@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "Seviye",
     "announceUrl": "Duyuru URL",
-    "seeds": "Kaynaklar",
-    "leechers": "Alıcılar",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "Durum",
     "addPlaceholder": "İzleyici URL ekle...",
     "add": "Ekle",

@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "المستوى",
     "announceUrl": "رابط الإعلان",
-    "seeds": "البذور",
-    "leechers": "المتطفلون",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "الحالة",
     "addPlaceholder": "إضافة رابط متتبع...",
     "add": "إضافة",

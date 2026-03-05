@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "Szint",
     "announceUrl": "Bejelentési URL",
-    "seeds": "Seedek",
-    "leechers": "Leecherek",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "Állapot",
     "addPlaceholder": "Tracker URL hozzáadása...",
     "add": "Hozzáadás",

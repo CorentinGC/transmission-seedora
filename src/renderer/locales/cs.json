@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "Úroveň",
     "announceUrl": "URL oznámení",
-    "seeds": "Seedy",
-    "leechers": "Leecheři",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "Stav",
     "addPlaceholder": "Přidat URL trackeru...",
     "add": "Přidat",

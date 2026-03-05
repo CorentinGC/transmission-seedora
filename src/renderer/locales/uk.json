@@ -123,8 +123,8 @@
   "trackersTab": {
     "tier": "Рівень",
     "announceUrl": "URL анонсу",
-    "seeds": "Сіди",
-    "leechers": "Лічери",
+    "seeds": "Seeds",
+    "leechers": "Leechers",
     "status": "Статус",
     "addPlaceholder": "Додати URL трекера...",
     "add": "Додати",
