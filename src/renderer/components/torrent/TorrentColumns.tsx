@@ -1,6 +1,6 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import type { Torrent } from '../../types/torrent';
-import { formatBytes, formatSpeed, formatEta, formatPercent, formatRatio, formatDate } from '../../lib/format';
+import { formatBytes, formatSpeed, formatEta, formatPercent, formatRatio, formatDate, formatDuration } from '../../lib/format';
 import { getStatusLabelKey } from '../../lib/constants';
 
 const col = createColumnHelper<Torrent>();
@@ -146,6 +146,61 @@ export function createTorrentColumns(relativeDates: boolean, t: (key: string) =>
     minSize: 45,
     cell: (info) => (info.getValue() ? t('app.yes') : t('app.no')),
   }),
+  col.accessor('id', {
+    header: t('torrent.id'),
+    size: 55,
+    minSize: 40,
+  }),
+  col.accessor('sizeWhenDone', {
+    header: t('torrent.sizeToDownload'),
+    size: 85,
+    minSize: 60,
+    cell: (info) => formatBytes(info.getValue()),
+  }),
+  col.accessor('leftUntilDone', {
+    header: t('torrent.sizeLeft'),
+    size: 85,
+    minSize: 60,
+    cell: (info) => formatBytes(info.getValue()),
+  }),
+  col.accessor('peersConnected', {
+    header: t('torrent.connectedPeers'),
+    size: 55,
+    minSize: 40,
+  }),
+  col.accessor('secondsSeeding', {
+    header: t('torrent.seedingTime'),
+    size: 90,
+    minSize: 60,
+    cell: (info) => formatDuration(info.getValue()),
+  }),
+  col.accessor('secondsDownloading', {
+    header: t('torrent.downloadingTime'),
+    size: 90,
+    minSize: 60,
+    cell: (info) => formatDuration(info.getValue()),
+  }),
+  col.accessor('dateCreated', {
+    header: t('torrent.created'),
+    size: 130,
+    minSize: 80,
+    cell: (info) => formatDate(info.getValue(), relativeDates),
+  }),
+  col.accessor('comment', {
+    header: t('torrent.comment'),
+    size: 150,
+    minSize: 80,
+  }),
+  col.accessor('fileCount', {
+    header: t('torrent.fileCount'),
+    size: 55,
+    minSize: 40,
+  }),
+  col.accessor('group', {
+    header: t('torrent.group'),
+    size: 80,
+    minSize: 50,
+  }),
   ];
 }
 
@@ -172,4 +227,14 @@ export const DEFAULT_VISIBLE_COLUMNS: Record<string, boolean> = {
   tracker: false,
   bandwidthPriority: false,
   isPrivate: false,
+  id: false,
+  sizeWhenDone: false,
+  leftUntilDone: false,
+  peersConnected: false,
+  secondsSeeding: false,
+  secondsDownloading: false,
+  dateCreated: false,
+  comment: false,
+  fileCount: false,
+  group: false,
 };

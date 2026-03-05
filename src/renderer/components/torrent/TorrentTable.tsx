@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useRef, useState } from 'react';
+import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useReactTable,
@@ -12,8 +12,11 @@ import { useTorrentStore } from '../../stores/torrent-store';
 import { useUiStore } from '../../stores/ui-store';
 import { createTorrentColumns, DEFAULT_VISIBLE_COLUMNS } from './TorrentColumns';
 import { TorrentContextMenu } from './TorrentContextMenu';
+import { HeaderContextMenu } from './HeaderContextMenu';
 import type { Torrent } from '../../types/torrent';
 import { ArrowUp, ArrowDown } from 'lucide-react';
+
+const LONG_PRESS_MS = 500;
 
 interface Props {
   torrents: Torrent[];
@@ -30,18 +33,36 @@ export function TorrentTable({ torrents }: Props) {
 
   const columnVisibility = useUiStore((s) => s.columnVisibility);
   const columnSizing = useUiStore((s) => s.columnSizing);
+  const columnOrder = useUiStore((s) => s.columnOrder);
   const setColumnSizing = useUiStore((s) => s.setColumnSizing);
+  const setColumnVisibility = useUiStore((s) => s.setColumnVisibility);
+  const setColumnOrder = useUiStore((s) => s.setColumnOrder);
   const relativeDates = useUiStore((s) => s.relativeDates);
 
   const columns = useMemo(() => createTorrentColumns(relativeDates, t), [relativeDates, t]);
 
   const parentRef = useRef<HTMLDivElement>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; ids: number[] } | null>(null);
+  const [headerMenu, setHeaderMenu] = useState<{ x: number; y: number } | null>(null);
+  const [dragColumnId, setDragColumnId] = useState<string | null>(null);
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null);
 
   const effectiveVisibility = useMemo(
     () => (Object.keys(columnVisibility).length > 0 ? columnVisibility : DEFAULT_VISIBLE_COLUMNS),
     [columnVisibility],
   );
+
+  // Build effective column order: use saved order if it exists, otherwise use definition order
+  const effectiveColumnOrder = useMemo(() => {
+    const allColIds = columns.map((c) => (c as { accessorKey?: string; id?: string }).accessorKey ?? (c as { id?: string }).id ?? '');
+    if (columnOrder.length > 0) {
+      // Merge: saved order first (filtering removed cols), then any new cols not in saved order
+      const ordered = columnOrder.filter((id) => allColIds.includes(id));
+      const newCols = allColIds.filter((id) => !columnOrder.includes(id));
+      return [...ordered, ...newCols];
+    }
+    return allColIds;
+  }, [columnOrder, columns]);
 
   const table = useReactTable({
     data: torrents,
@@ -50,11 +71,16 @@ export function TorrentTable({ torrents }: Props) {
       sorting: sortingState,
       columnVisibility: effectiveVisibility,
       columnSizing,
+      columnOrder: effectiveColumnOrder,
     },
     onSortingChange: setSortingState,
     onColumnSizingChange: (updater) => {
       const next = typeof updater === 'function' ? updater(columnSizing) : updater;
       setColumnSizing(next);
+    },
+    onColumnOrderChange: (updater) => {
+      const next = typeof updater === 'function' ? updater(effectiveColumnOrder) : updater;
+      setColumnOrder(next);
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -100,17 +126,108 @@ export function TorrentTable({ torrents }: Props) {
     [selectedIds, selectTorrent],
   );
 
+  // Long-press column reorder: mousedown starts a timer, after LONG_PRESS_MS we enter drag mode
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const headerRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const headerRowRef = useRef<HTMLDivElement>(null);
+  const suppressClick = useRef(false);
+
+  const cancelLongPress = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  const handleHeaderMouseDown = useCallback((e: React.MouseEvent, columnId: string) => {
+    // Don't start long-press if clicking on the resize handle area (right 6px)
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    if (e.clientX > rect.right - 6) return;
+    // Only left button
+    if (e.button !== 0) return;
+
+    cancelLongPress();
+    longPressTimer.current = setTimeout(() => {
+      longPressTimer.current = null;
+      setDragColumnId(columnId);
+      suppressClick.current = true;
+    }, LONG_PRESS_MS);
+  }, [cancelLongPress]);
+
+  const handleHeaderMouseUp = useCallback(() => {
+    cancelLongPress();
+  }, [cancelLongPress]);
+
+  // When in drag mode, track mouse over headers to find drop target, and drop on mouseup
+  useEffect(() => {
+    if (!dragColumnId) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Find which header the mouse is over
+      let found: string | null = null;
+      for (const [colId, el] of headerRefs.current) {
+        const rect = el.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+          if (colId !== dragColumnId) found = colId;
+          break;
+        }
+      }
+      setDropTargetId(found);
+    };
+
+    const handleMouseUp = () => {
+      if (dropTargetId && dragColumnId !== dropTargetId) {
+        const currentOrder = [...effectiveColumnOrder];
+        const fromIndex = currentOrder.indexOf(dragColumnId);
+        const toIndex = currentOrder.indexOf(dropTargetId);
+        if (fromIndex !== -1 && toIndex !== -1) {
+          currentOrder.splice(fromIndex, 1);
+          currentOrder.splice(toIndex, 0, dragColumnId);
+          setColumnOrder(currentOrder);
+        }
+      }
+      setDragColumnId(null);
+      setDropTargetId(null);
+      // Suppress the click event that follows mouseup so sorting doesn't trigger
+      setTimeout(() => { suppressClick.current = false; }, 50);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragColumnId, dropTargetId, effectiveColumnOrder, setColumnOrder]);
+
+  const handleHeaderClick = useCallback((e: React.MouseEvent, toggleSort: ((e: unknown) => void) | undefined) => {
+    if (suppressClick.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    toggleSort?.(e);
+  }, []);
+
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="flex border-b bg-muted/50 select-none">
+      <div ref={headerRowRef} className="flex border-b bg-muted/50 select-none" onContextMenu={(e) => { e.preventDefault(); setHeaderMenu({ x: e.clientX, y: e.clientY }); }}>
         {table.getHeaderGroups().map((headerGroup) =>
           headerGroup.headers.map((header) => (
             <div
               key={header.id}
-              className="relative flex items-center px-2 py-1 text-xs font-medium text-muted-foreground cursor-pointer hover:bg-accent"
+              ref={(el) => { if (el) headerRefs.current.set(header.column.id, el); else headerRefs.current.delete(header.column.id); }}
+              className={`relative flex items-center px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-accent ${
+                dragColumnId === header.column.id ? 'opacity-40 bg-accent' : ''
+              } ${dropTargetId === header.column.id ? 'border-l-2 border-blue-500' : ''} ${
+                dragColumnId ? 'cursor-grabbing' : 'cursor-pointer'
+              }`}
               style={{ width: header.getSize(), minWidth: header.column.columnDef.minSize }}
-              onClick={header.column.getToggleSortingHandler()}
+              onClick={(e) => handleHeaderClick(e, header.column.getToggleSortingHandler())}
+              onMouseDown={(e) => handleHeaderMouseDown(e, header.column.id)}
+              onMouseUp={handleHeaderMouseUp}
+              onMouseLeave={cancelLongPress}
             >
               {flexRender(header.column.columnDef.header, header.getContext())}
               {header.column.getIsSorted() === 'asc' && <ArrowUp size={12} className="ml-1" />}
@@ -128,7 +245,7 @@ export function TorrentTable({ torrents }: Props) {
       </div>
 
       {/* Body */}
-      <div ref={parentRef} className="flex-1 overflow-auto">
+      <div ref={parentRef} className="flex-1 overflow-auto select-none">
         <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const row = rows[virtualRow.index];
@@ -175,6 +292,21 @@ export function TorrentTable({ torrents }: Props) {
           y={contextMenu.y}
           torrentIds={contextMenu.ids}
           onClose={() => setContextMenu(null)}
+        />
+      )}
+
+      {/* Header context menu for column customization */}
+      {headerMenu && (
+        <HeaderContextMenu
+          x={headerMenu.x}
+          y={headerMenu.y}
+          columns={table.getAllColumns()}
+          visibility={effectiveVisibility}
+          onToggle={(colId) => {
+            const updated = { ...effectiveVisibility, [colId]: !effectiveVisibility[colId] };
+            setColumnVisibility(updated);
+          }}
+          onClose={() => setHeaderMenu(null)}
         />
       )}
     </div>
