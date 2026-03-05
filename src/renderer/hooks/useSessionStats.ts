@@ -12,9 +12,8 @@ export function useSessionStats(pollingInterval: number) {
   const poll = useCallback(async () => {
     await Promise.all([fetchStats(), fetchSettings()]);
     // Fetch free space for the download directory (needs settings loaded first)
-    // RPC returns hyphenated keys, cast to access the raw key
-    const settings = useSessionStore.getState().settings as Record<string, unknown> | null;
-    const downloadDir = (settings?.['download-dir'] ?? settings?.downloadDir) as string | undefined;
+    const settings = useSessionStore.getState().settings;
+    const downloadDir = settings?.downloadDir;
     if (downloadDir) {
       await fetchFreeSpace(downloadDir);
     }

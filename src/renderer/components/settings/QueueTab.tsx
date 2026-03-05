@@ -24,16 +24,16 @@ export function QueueTab({ settings: s }: Props) {
 
   const apply = () => {
     updateSettings({
-      'download-queue-enabled': downloadQueueEnabled,
-      'download-queue-size': downloadQueueSize,
-      'seed-queue-enabled': seedQueueEnabled,
-      'seed-queue-size': seedQueueSize,
-      'queue-stalled-enabled': queueStalledEnabled,
-      'queue-stalled-minutes': queueStalledMinutes,
-      'seedRatioLimited': seedRatioLimited,
-      'seedRatioLimit': seedRatioLimit,
-      'idle-seeding-limit-enabled': idleSeedingLimitEnabled,
-      'idle-seeding-limit': idleSeedingLimit,
+      downloadQueueEnabled,
+      downloadQueueSize,
+      seedQueueEnabled,
+      seedQueueSize,
+      queueStalledEnabled,
+      queueStalledMinutes,
+      seedRatioLimited,
+      seedRatioLimit,
+      idleSeedingLimitEnabled,
+      idleSeedingLimit,
     });
   };
 

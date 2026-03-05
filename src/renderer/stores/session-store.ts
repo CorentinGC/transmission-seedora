@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { SessionSettings, SessionStats } from '../types/session';
+import { keysToCarmel, keysToKebab } from '@shared/key-utils';
 
 export interface FreeSpaceDetail {
   path: string;
@@ -35,12 +36,12 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   fetchSettings: async () => {
     const res = await window.api.rpcSessionGet();
     if (res.success && res.data) {
-      set({ settings: res.data as unknown as SessionSettings });
+      set({ settings: keysToCarmel<SessionSettings>(res.data) });
     }
   },
 
   updateSettings: async (changes) => {
-    const res = await window.api.rpcSessionSet(changes);
+    const res = await window.api.rpcSessionSet(keysToKebab(changes));
     if (res.success) {
       await get().fetchSettings();
     }
@@ -49,7 +50,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   fetchStats: async () => {
     const res = await window.api.rpcSessionStats();
     if (res.success && res.data) {
-      set({ stats: res.data as unknown as SessionStats });
+      set({ stats: keysToCarmel<SessionStats>(res.data) });
     }
   },
 
@@ -78,8 +79,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
 
   toggleAltSpeed: async () => {
-    const s = get().settings as Record<string, unknown> | null;
-    const current = (s?.['alt-speed-enabled'] ?? s?.altSpeedEnabled ?? false) as boolean;
+    const current = get().settings?.altSpeedEnabled ?? false;
     await window.api.rpcSessionSet({ 'alt-speed-enabled': !current });
     await get().fetchSettings();
   },

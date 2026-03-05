@@ -387,8 +387,8 @@ export interface SessionStats {
   pausedTorrentCount: number;
   torrentCount: number;
   uploadSpeed: number;
-  'cumulative-stats': SessionCumulativeStats;
-  'current-stats': SessionCumulativeStats;
+  cumulativeStats: SessionCumulativeStats;
+  currentStats: SessionCumulativeStats;
 }
 
 export interface SessionCumulativeStats {
