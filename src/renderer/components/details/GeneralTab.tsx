@@ -3,6 +3,7 @@ import type { Torrent } from '../../types/torrent';
 import { formatBytes, formatSpeed, formatRatio, formatDate, formatEta } from '../../lib/format';
 import { getStatusLabelKey } from '../../lib/constants';
 import { useUiStore } from '../../stores/ui-store';
+import { InfoRow } from '../ui';
 
 interface Props {
   torrent: Torrent;
@@ -49,16 +50,6 @@ export function GeneralTab({ torrent: tor }: Props) {
           {t('details.copyMagnet')}
         </button>
       </div>
-    </div>
-  );
-}
-
-function InfoRow({ label, value, className }: { label: string; value: string; className?: string }) {
-  if (!value) return null;
-  return (
-    <div className="flex gap-2">
-      <span className="text-muted-foreground w-28 flex-shrink-0">{label}:</span>
-      <span className={`truncate ${className ?? ''}`}>{value}</span>
     </div>
   );
 }

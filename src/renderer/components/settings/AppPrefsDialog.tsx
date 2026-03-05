@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Download, Upload } from 'lucide-react';
+import { Plus, Trash2, Download, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { AppPreferences, PathMapping } from '@shared/types';
 import { useUiStore } from '../../stores/ui-store';
 import { availableLanguages, getLanguageName } from '../../lib/i18n';
+import { Dialog, Button, Input, Select, Checkbox, SectionHeading } from '../ui';
 
 interface Props {
   onClose: () => void;
@@ -31,7 +32,6 @@ export function AppPrefsDialog({ onClose }: Props) {
     if (!prefs) return;
     await window.api.prefsSet(prefs);
 
-    // Apply all preferences immediately
     setTheme(prefs.theme);
     setPollingInterval(prefs.pollingInterval);
     setRelativeDates(prefs.relativeDates);
@@ -41,10 +41,7 @@ export function AppPrefsDialog({ onClose }: Props) {
       i18n.changeLanguage(prefs.language);
     }
 
-    // Update speed presets in UI store
     useUiStore.getState().setSpeedPresets(prefs.speedPresets ?? null);
-
-    // Restart watcher if watch folder settings changed
     window.api.watcherRestart();
     onClose();
   };
@@ -89,7 +86,6 @@ export function AppPrefsDialog({ onClose }: Props) {
     const importRes = await window.api.configImport({ filePath: fileRes.data[0] });
     if (importRes.success) {
       setBackupMsg(t('prefs.importSuccess'));
-      // Reload prefs
       const prefsRes = await window.api.prefsGet();
       if (prefsRes.success && prefsRes.data) setPrefs(prefsRes.data);
       setTimeout(() => setBackupMsg(null), 3000);
@@ -124,226 +120,146 @@ export function AppPrefsDialog({ onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-card rounded-lg shadow-lg w-[550px] max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <h2 className="font-semibold">{t('prefs.title')}</h2>
-          <button onClick={onClose} className="p-1 hover:bg-accent rounded"><X size={16} /></button>
+    <Dialog
+      title={t('prefs.title')}
+      onClose={onClose}
+      width="w-[550px]"
+      maxHeight="max-h-[80vh]"
+      footer={
+        <div className="flex justify-end gap-2">
+          <Button onClick={onClose}>{t('dialog.cancel')}</Button>
+          <Button variant="primary" onClick={save}>{t('dialog.save')}</Button>
+        </div>
+      }
+    >
+      <div className="space-y-4 text-sm">
+        {/* Polling */}
+        <div>
+          <SectionHeading>{t('prefs.polling')}</SectionHeading>
+          <div className="flex items-center gap-2">
+            {t('prefs.refreshInterval')}
+            <Input inputSize="sm" type="number" min={1000} step={500} className="w-24" value={prefs.pollingInterval} onChange={(e) => updatePref('pollingInterval', Number(e.target.value))} />
+          </div>
         </div>
 
-        <div className="overflow-y-auto p-4 space-y-4 text-sm">
-          {/* Polling */}
-          <div>
-            <h3 className="font-medium mb-2">{t('prefs.polling')}</h3>
+        {/* Theme */}
+        <SectionHeading bordered>{t('prefs.appearance')}</SectionHeading>
+        <div className="flex items-center gap-2">
+          {t('prefs.theme')}
+          <Select selectSize="sm" value={prefs.theme} onChange={(e) => updatePref('theme', e.target.value as AppPreferences['theme'])}>
+            <option value="system">{t('prefs.themeSystem')}</option>
+            <option value="light">{t('prefs.themeLight')}</option>
+            <option value="dark">{t('prefs.themeDark')}</option>
+          </Select>
+        </div>
+
+        {/* Language */}
+        <SectionHeading bordered>{t('prefs.language')}</SectionHeading>
+        <Select selectSize="sm" value={prefs.language} onChange={(e) => updatePref('language', e.target.value)}>
+          {availableLanguages.map((code) => (
+            <option key={code} value={code}>{getLanguageName(code)}</option>
+          ))}
+        </Select>
+
+        {/* Tray */}
+        <SectionHeading bordered>{t('prefs.tray')}</SectionHeading>
+        <div className="space-y-1">
+          <Checkbox label={t('prefs.minimizeToTray')} checked={prefs.minimizeToTray} onChange={(e) => updatePref('minimizeToTray', (e.target as HTMLInputElement).checked)} />
+          <Checkbox label={t('prefs.closeToTray')} checked={prefs.closeToTray} onChange={(e) => updatePref('closeToTray', (e.target as HTMLInputElement).checked)} />
+          <Checkbox label={t('prefs.showNotifications')} checked={prefs.showNotifications} onChange={(e) => updatePref('showNotifications', (e.target as HTMLInputElement).checked)} />
+        </div>
+
+        {/* Display */}
+        <SectionHeading bordered>{t('prefs.display')}</SectionHeading>
+        <div className="space-y-1">
+          <Checkbox label={t('prefs.relativeDates')} checked={prefs.relativeDates} onChange={(e) => updatePref('relativeDates', (e.target as HTMLInputElement).checked)} />
+          <Checkbox label={t('prefs.confirmOnAdd')} checked={prefs.confirmOnAdd} onChange={(e) => updatePref('confirmOnAdd', (e.target as HTMLInputElement).checked)} />
+        </div>
+
+        {/* Watch Folder */}
+        <SectionHeading bordered>{t('prefs.watchFolder')}</SectionHeading>
+        <Checkbox label={t('prefs.watchFolderEnabled')} checked={prefs.watchFolderEnabled} onChange={(e) => updatePref('watchFolderEnabled', (e.target as HTMLInputElement).checked)} />
+        {prefs.watchFolderEnabled && (
+          <div className="mt-2 space-y-2">
             <div className="flex items-center gap-2">
-              {t('prefs.refreshInterval')}
-              <input
-                type="number"
-                min={1000}
-                step={500}
-                className="w-24 h-7 px-2 rounded border bg-background"
-                value={prefs.pollingInterval}
-                onChange={(e) => updatePref('pollingInterval', Number(e.target.value))}
+              <Input
+                inputSize="sm"
+                className="flex-1"
+                value={prefs.watchFolder ?? ''}
+                onChange={(e) => updatePref('watchFolder', e.target.value)}
+                placeholder={t('prefs.watchFolderPlaceholder')}
               />
+              <Button size="sm" onClick={async () => {
+                const res = await window.api.dialogOpenDirectory();
+                if (res.success && res.data) updatePref('watchFolder', res.data);
+              }}>{t('dialog.browse')}</Button>
             </div>
+            <Checkbox label={t('prefs.deleteWatchedTorrent')} checked={prefs.deleteWatchedTorrent} onChange={(e) => updatePref('deleteWatchedTorrent', (e.target as HTMLInputElement).checked)} />
           </div>
+        )}
 
-          {/* Theme */}
-          <div className="border-t pt-4">
-            <h3 className="font-medium mb-2">{t('prefs.appearance')}</h3>
-            <div className="flex items-center gap-2">
-              {t('prefs.theme')}
-              <select
-                className="h-7 px-2 rounded border bg-background"
-                value={prefs.theme}
-                onChange={(e) => updatePref('theme', e.target.value as AppPreferences['theme'])}
-              >
-                <option value="system">{t('prefs.themeSystem')}</option>
-                <option value="light">{t('prefs.themeLight')}</option>
-                <option value="dark">{t('prefs.themeDark')}</option>
-              </select>
+        {/* Path Mappings */}
+        <SectionHeading
+          bordered
+          action={
+            <Button size="xs" onClick={addMapping} className="flex items-center gap-1">
+              <Plus size={12} /> {t('prefs.pathMappingsAdd')}
+            </Button>
+          }
+        >
+          {t('prefs.pathMappings')}
+        </SectionHeading>
+        <p className="text-xs text-muted-foreground mb-2">{t('prefs.pathMappingsHelp')}</p>
+        <div className="space-y-2">
+          {prefs.pathMappings.map((mapping, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Input inputSize="sm" className="flex-1" value={mapping.remote} onChange={(e) => updateMapping(i, 'remote', e.target.value)} placeholder={t('prefs.remotePath')} />
+              <span className="text-muted-foreground">→</span>
+              <Input inputSize="sm" className="flex-1" value={mapping.local} onChange={(e) => updateMapping(i, 'local', e.target.value)} placeholder={t('prefs.localPath')} />
+              <Button variant="ghost" size="xs" onClick={() => removeMapping(i)} className="text-muted-foreground p-1">
+                <Trash2 size={14} />
+              </Button>
             </div>
-          </div>
-
-          {/* Language */}
-          <div className="border-t pt-4">
-            <h3 className="font-medium mb-2">{t('prefs.language')}</h3>
-            <select
-              className="h-7 px-2 rounded border bg-background"
-              value={prefs.language}
-              onChange={(e) => updatePref('language', e.target.value)}
-            >
-              {availableLanguages.map((code) => (
-                <option key={code} value={code}>{getLanguageName(code)}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Tray */}
-          <div className="border-t pt-4">
-            <h3 className="font-medium mb-2">{t('prefs.tray')}</h3>
-            <div className="space-y-1">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={prefs.minimizeToTray} onChange={(e) => updatePref('minimizeToTray', e.target.checked)} />
-                {t('prefs.minimizeToTray')}
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={prefs.closeToTray} onChange={(e) => updatePref('closeToTray', e.target.checked)} />
-                {t('prefs.closeToTray')}
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={prefs.showNotifications} onChange={(e) => updatePref('showNotifications', e.target.checked)} />
-                {t('prefs.showNotifications')}
-              </label>
-            </div>
-          </div>
-
-          {/* Display */}
-          <div className="border-t pt-4">
-            <h3 className="font-medium mb-2">{t('prefs.display')}</h3>
-            <div className="space-y-1">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={prefs.relativeDates} onChange={(e) => updatePref('relativeDates', e.target.checked)} />
-                {t('prefs.relativeDates')}
-              </label>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={prefs.confirmOnAdd} onChange={(e) => updatePref('confirmOnAdd', e.target.checked)} />
-                {t('prefs.confirmOnAdd')}
-              </label>
-            </div>
-          </div>
-
-          {/* Watch Folder */}
-          <div className="border-t pt-4">
-            <h3 className="font-medium mb-2">{t('prefs.watchFolder')}</h3>
-            <label className="flex items-center gap-2">
-              <input type="checkbox" checked={prefs.watchFolderEnabled} onChange={(e) => updatePref('watchFolderEnabled', e.target.checked)} />
-              {t('prefs.watchFolderEnabled')}
-            </label>
-            {prefs.watchFolderEnabled && (
-              <div className="mt-2 space-y-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    className="flex-1 h-7 px-2 rounded border bg-background"
-                    value={prefs.watchFolder ?? ''}
-                    onChange={(e) => updatePref('watchFolder', e.target.value)}
-                    placeholder={t('prefs.watchFolderPlaceholder')}
-                  />
-                  <button
-                    className="h-7 px-3 text-xs rounded border hover:bg-accent"
-                    onClick={async () => {
-                      const res = await window.api.dialogOpenDirectory();
-                      if (res.success && res.data) {
-                        updatePref('watchFolder', res.data);
-                      }
-                    }}
-                  >
-                    {t('dialog.browse')}
-                  </button>
-                </div>
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" checked={prefs.deleteWatchedTorrent} onChange={(e) => updatePref('deleteWatchedTorrent', e.target.checked)} />
-                  {t('prefs.deleteWatchedTorrent')}
-                </label>
-              </div>
-            )}
-          </div>
-
-          {/* Path Mappings */}
-          <div className="border-t pt-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium">{t('prefs.pathMappings')}</h3>
-              <button onClick={addMapping} className="h-6 px-2 text-xs rounded border hover:bg-accent flex items-center gap-1">
-                <Plus size={12} /> {t('prefs.pathMappingsAdd')}
-              </button>
-            </div>
-            <p className="text-xs text-muted-foreground mb-2">
-              {t('prefs.pathMappingsHelp')}
-            </p>
-            <div className="space-y-2">
-              {prefs.pathMappings.map((mapping, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    className="flex-1 h-7 px-2 rounded border bg-background"
-                    value={mapping.remote}
-                    onChange={(e) => updateMapping(i, 'remote', e.target.value)}
-                    placeholder={t('prefs.remotePath')}
-                  />
-                  <span className="text-muted-foreground">→</span>
-                  <input
-                    type="text"
-                    className="flex-1 h-7 px-2 rounded border bg-background"
-                    value={mapping.local}
-                    onChange={(e) => updateMapping(i, 'local', e.target.value)}
-                    placeholder={t('prefs.localPath')}
-                  />
-                  <button onClick={() => removeMapping(i)} className="p-1 hover:bg-accent rounded text-muted-foreground">
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Speed Presets */}
-          <div className="border-t pt-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium">{t('prefs.speedPresets')}</h3>
-              <button onClick={addPreset} className="h-6 px-2 text-xs rounded border hover:bg-accent flex items-center gap-1">
-                <Plus size={12} /> {t('prefs.addPreset')}
-              </button>
-            </div>
-            <p className="text-xs text-muted-foreground mb-2">{t('prefs.speedPresetsHelp')}</p>
-            <div className="flex flex-wrap gap-2">
-              {(prefs.speedPresets ?? [100, 500, 1000, 2000, 5000]).map((val, i) => (
-                <div key={i} className="flex items-center gap-1">
-                  <input
-                    type="number"
-                    className="w-20 h-7 px-2 rounded border bg-background text-right"
-                    value={val}
-                    onChange={(e) => updatePreset(i, Number(e.target.value))}
-                    min={0}
-                  />
-                  <span className="text-xs text-muted-foreground">KB/s</span>
-                  <button onClick={() => removePreset(i)} className="p-0.5 hover:bg-accent rounded text-muted-foreground">
-                    <Trash2 size={12} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Backup & Restore */}
-          <div className="border-t pt-4">
-            <h3 className="font-medium mb-2">{t('prefs.backup')}</h3>
-            <p className="text-xs text-muted-foreground mb-2">{t('prefs.exportBackupHelp')}</p>
-            <div className="flex items-center gap-2">
-              <button
-                className="h-7 px-3 text-xs rounded border hover:bg-accent flex items-center gap-1.5"
-                onClick={handleExportBackup}
-              >
-                <Download size={12} /> {t('prefs.exportBackup')}
-              </button>
-              <button
-                className="h-7 px-3 text-xs rounded border hover:bg-accent flex items-center gap-1.5"
-                onClick={handleImportBackup}
-              >
-                <Upload size={12} /> {t('prefs.importBackup')}
-              </button>
-            </div>
-            {backupMsg && (
-              <p className="text-xs text-green-600 mt-2">{backupMsg}</p>
-            )}
-          </div>
+          ))}
         </div>
 
-        <div className="flex justify-end gap-2 px-4 py-3 border-t">
-          <button className="h-8 px-4 text-sm rounded border hover:bg-accent" onClick={onClose}>{t('dialog.cancel')}</button>
-          <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={save}>{t('dialog.save')}</button>
+        {/* Speed Presets */}
+        <SectionHeading
+          bordered
+          action={
+            <Button size="xs" onClick={addPreset} className="flex items-center gap-1">
+              <Plus size={12} /> {t('prefs.addPreset')}
+            </Button>
+          }
+        >
+          {t('prefs.speedPresets')}
+        </SectionHeading>
+        <p className="text-xs text-muted-foreground mb-2">{t('prefs.speedPresetsHelp')}</p>
+        <div className="flex flex-wrap gap-2">
+          {(prefs.speedPresets ?? [100, 500, 1000, 2000, 5000]).map((val, i) => (
+            <div key={i} className="flex items-center gap-1">
+              <Input inputSize="sm" type="number" className="w-20 text-right" value={val} onChange={(e) => updatePreset(i, Number(e.target.value))} min={0} />
+              <span className="text-xs text-muted-foreground">KB/s</span>
+              <Button variant="ghost" size="xs" onClick={() => removePreset(i)} className="text-muted-foreground p-0.5">
+                <Trash2 size={12} />
+              </Button>
+            </div>
+          ))}
         </div>
+
+        {/* Backup & Restore */}
+        <SectionHeading bordered>{t('prefs.backup')}</SectionHeading>
+        <p className="text-xs text-muted-foreground mb-2">{t('prefs.exportBackupHelp')}</p>
+        <div className="flex items-center gap-2">
+          <Button size="sm" onClick={handleExportBackup} className="flex items-center gap-1.5">
+            <Download size={12} /> {t('prefs.exportBackup')}
+          </Button>
+          <Button size="sm" onClick={handleImportBackup} className="flex items-center gap-1.5">
+            <Upload size={12} /> {t('prefs.importBackup')}
+          </Button>
+        </div>
+        {backupMsg && <p className="text-xs text-green-600 mt-2">{backupMsg}</p>}
       </div>
-    </div>
+    </Dialog>
   );
 }

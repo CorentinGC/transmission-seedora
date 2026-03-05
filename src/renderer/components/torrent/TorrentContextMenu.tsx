@@ -20,6 +20,7 @@ import { useTorrentStore } from '../../stores/torrent-store';
 import { RemoveTorrentDialog } from './RemoveTorrentDialog';
 import { SetLocationDialog } from './SetLocationDialog';
 import { RenameTorrentDialog } from './RenameTorrentDialog';
+import { ContextMenuItem as MenuItem, ContextMenuSeparator as Separator } from '../ui';
 
 interface Props {
   x: number;
@@ -109,33 +110,4 @@ export function TorrentContextMenu({ x, y, torrentIds, onClose }: Props) {
       <MenuItem icon={<Trash2 size={14} />} label={t('contextMenu.remove')} onClick={() => setShowRemove(true)} className="text-destructive" />
     </div>
   );
-}
-
-function MenuItem({
-  icon,
-  label,
-  onClick,
-  className,
-  indent,
-}: {
-  icon?: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  className?: string;
-  indent?: boolean;
-}) {
-  return (
-    <button
-      className={`w-full flex items-center gap-2 px-3 py-1.5 hover:bg-accent text-left ${indent ? 'pl-6' : ''} ${className ?? ''}`}
-      onClick={onClick}
-    >
-      {icon && <span className="w-4">{icon}</span>}
-      {!icon && !indent && <span className="w-4" />}
-      <span>{label}</span>
-    </button>
-  );
-}
-
-function Separator() {
-  return <div className="my-1 border-t" />;
 }

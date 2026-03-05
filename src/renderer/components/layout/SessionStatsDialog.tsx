@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
 import { formatBytes, formatDuration } from '../../lib/format';
+import { StatRow } from '../ui';
 
 interface Props {
   onClose: () => void;
@@ -82,14 +83,5 @@ export function SessionStatsDialog({ onClose }: Props) {
         </div>
       </div>
     </div>
-  );
-}
-
-function StatRow({ label, value }: { label: string; value: string }) {
-  return (
-    <>
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-right font-mono">{value}</span>
-    </>
   );
 }
