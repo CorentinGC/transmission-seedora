@@ -7,12 +7,39 @@ import { MakerDMG } from '@electron-forge/maker-dmg';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Copy native/data-heavy modules that can't be bundled by Vite into the packaged app
+function copyExternalModules(buildPath: string) {
+  const modulesToCopy = ['geoip-lite'];
+  for (const mod of modulesToCopy) {
+    const src = path.join(__dirname, 'node_modules', mod);
+    const dest = path.join(buildPath, 'node_modules', mod);
+    if (fs.existsSync(src)) {
+      fs.cpSync(src, dest, { recursive: true });
+      console.log(`[forge] Copied ${mod} to packaged app`);
+    } else {
+      console.warn(`[forge] Module ${mod} not found, skipping`);
+    }
+  }
+}
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: {
       unpack: '**/node_modules/geoip-lite/**',
     },
+    afterCopy: [
+      (buildPath: string, _electronVersion: string, _platform: string, _arch: string, callback: (err?: Error) => void) => {
+        try {
+          copyExternalModules(buildPath);
+          callback();
+        } catch (err) {
+          callback(err as Error);
+        }
+      },
+    ],
     name: 'Transmission Remote',
     executableName: 'transmission-remote',
     appBundleId: 'com.transmission-remote.app',
