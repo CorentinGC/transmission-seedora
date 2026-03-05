@@ -1,12 +1,16 @@
 # Seedora
 
-A modern, cross-platform desktop application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon.
+A modern, cross-platform application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon. Available as a **desktop app** (macOS, Windows, Linux) and a **[web app](https://www.seedora.app/)**.
 
 ## Why this project?
 
 The existing [Transmission Remote GUI](https://github.com/transmission-remote-gui/transgui) (transgui), built with Lazarus/Free Pascal, suffers from frequent crashes and has not been actively maintained for years. Rather than patching an aging codebase, **Seedora** was rebuilt from scratch using a modern web-based stack while drawing heavy inspiration from transgui's feature set and UX.
 
 This project was entirely **vibe-coded** — designed and implemented with the assistance of AI — taking transgui as the reference for features and user experience, but with a completely new codebase built on Electron, React, and TypeScript.
+
+## Try it online
+
+Use Seedora directly in your browser — no installation required: **[seedora.app](https://www.seedora.app/)**
 
 ## Features
 
