@@ -227,12 +227,14 @@
     "testFailed": "Невдача"
   },
   "settings": {
-    "title": "Налаштування демона",
-    "speed": "Швидкість",
-    "network": "Мережа",
+    "applied": "Налаштування застосовано",
+    "applyError": "Не вдалося застосувати налаштування",
     "download": "Завантаження",
+    "loading": "Завантаження налаштувань...",
+    "network": "Мережа",
     "queue": "Черга",
-    "loading": "Завантаження налаштувань..."
+    "speed": "Швидкість",
+    "title": "Налаштування демона"
   },
   "speedTab": {
     "speedLimits": "Обмеження швидкості",
@@ -286,16 +288,17 @@
     "entries": "{{count}} записів"
   },
   "downloadTab": {
+    "appendPart": "Додавати \".part\" до незавершених файлів",
+    "deleteTorrentFile": "Видаляти файл .torrent після додавання",
     "downloadDirectory": "Тека завантаження",
     "incompleteDirectory": "Тека незавершених",
-    "useIncompleteDir": "Використовувати теку для незавершених:",
-    "appendPart": "Додавати \".part\" до незавершених файлів",
-    "startAutomatically": "Автоматично запускати додані торенти",
-    "deleteTorrentFile": "Видаляти файл .torrent після додавання",
-    "scripts": "Скрипти",
     "scriptOnAdded": "Запустити скрипт при додаванні торента:",
     "scriptOnCompleted": "Запустити скрипт при завершенні торента:",
-    "scriptPlaceholder": "/шлях/до/скрипта"
+    "scriptOnDoneSeeding": "Запустити скрипт після завершення роздачі:",
+    "scriptPlaceholder": "/шлях/до/скрипта",
+    "scripts": "Скрипти",
+    "startAutomatically": "Автоматично запускати додані торенти",
+    "useIncompleteDir": "Використовувати теку для незавершених:"
   },
   "queueTab": {
     "downloadQueue": "Черга завантаження",

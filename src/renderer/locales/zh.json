@@ -227,12 +227,14 @@
     "testFailed": "失败"
   },
   "settings": {
-    "title": "守护进程设置",
-    "speed": "速度",
-    "network": "网络",
+    "applied": "设置已应用",
+    "applyError": "应用设置失败",
     "download": "下载",
+    "loading": "正在加载设置...",
+    "network": "网络",
     "queue": "队列",
-    "loading": "正在加载设置..."
+    "speed": "速度",
+    "title": "守护进程设置"
   },
   "speedTab": {
     "speedLimits": "速度限制",
@@ -286,16 +288,17 @@
     "entries": "{{count}} 条"
   },
   "downloadTab": {
+    "appendPart": "为未完成文件添加 \".part\" 后缀",
+    "deleteTorrentFile": "添加后删除 .torrent 文件",
     "downloadDirectory": "下载目录",
     "incompleteDirectory": "未完成目录",
-    "useIncompleteDir": "使用未完成目录:",
-    "appendPart": "为未完成文件添加 \".part\" 后缀",
-    "startAutomatically": "添加后自动开始",
-    "deleteTorrentFile": "添加后删除 .torrent 文件",
-    "scripts": "脚本",
     "scriptOnAdded": "添加种子时运行脚本:",
     "scriptOnCompleted": "种子完成时运行脚本:",
-    "scriptPlaceholder": "/路径/脚本"
+    "scriptOnDoneSeeding": "做种完成时运行脚本：",
+    "scriptPlaceholder": "/路径/脚本",
+    "scripts": "脚本",
+    "startAutomatically": "添加后自动开始",
+    "useIncompleteDir": "使用未完成目录:"
   },
   "queueTab": {
     "downloadQueue": "下载队列",

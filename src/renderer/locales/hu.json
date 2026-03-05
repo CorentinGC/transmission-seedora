@@ -227,12 +227,14 @@
     "testFailed": "Sikertelen"
   },
   "settings": {
-    "title": "Daemon beállítások",
-    "speed": "Sebesség",
-    "network": "Hálózat",
+    "applied": "Beállítások alkalmazva",
+    "applyError": "A beállítások alkalmazása sikertelen",
     "download": "Letöltés",
+    "loading": "Beállítások betöltése...",
+    "network": "Hálózat",
     "queue": "Sor",
-    "loading": "Beállítások betöltése..."
+    "speed": "Sebesség",
+    "title": "Daemon beállítások"
   },
   "speedTab": {
     "speedLimits": "Sebességkorlátok",
@@ -286,16 +288,17 @@
     "entries": "{{count}} bejegyzés"
   },
   "downloadTab": {
+    "appendPart": "\".part\" hozzáfűzése a befejezetlen fájlokhoz",
+    "deleteTorrentFile": ".torrent fájl törlése hozzáadás után",
     "downloadDirectory": "Letöltési könyvtár",
     "incompleteDirectory": "Befejezetlen könyvtár",
-    "useIncompleteDir": "Befejezetlen könyvtár használata:",
-    "appendPart": "\".part\" hozzáfűzése a befejezetlen fájlokhoz",
-    "startAutomatically": "Hozzáadott torrentek automatikus indítása",
-    "deleteTorrentFile": ".torrent fájl törlése hozzáadás után",
-    "scripts": "Szkriptek",
     "scriptOnAdded": "Szkript futtatása torrent hozzáadásakor:",
     "scriptOnCompleted": "Szkript futtatása torrent befejezésekor:",
-    "scriptPlaceholder": "/útvonal/a/szkripthez"
+    "scriptOnDoneSeeding": "Szkript futtatása seed befejezésekor:",
+    "scriptPlaceholder": "/útvonal/a/szkripthez",
+    "scripts": "Szkriptek",
+    "startAutomatically": "Hozzáadott torrentek automatikus indítása",
+    "useIncompleteDir": "Befejezetlen könyvtár használata:"
   },
   "queueTab": {
     "downloadQueue": "Letöltési sor",

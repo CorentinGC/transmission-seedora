@@ -227,12 +227,14 @@
     "testFailed": "Misslyckades"
   },
   "settings": {
-    "title": "Daemoninställningar",
-    "speed": "Hastighet",
-    "network": "Nätverk",
+    "applied": "Inställningar tillämpade",
+    "applyError": "Kunde inte tillämpa inställningar",
     "download": "Nedladdning",
+    "loading": "Laddar inställningar...",
+    "network": "Nätverk",
     "queue": "Kö",
-    "loading": "Laddar inställningar..."
+    "speed": "Hastighet",
+    "title": "Daemoninställningar"
   },
   "speedTab": {
     "speedLimits": "Hastighetsbegränsningar",
@@ -286,16 +288,17 @@
     "entries": "{{count}} poster"
   },
   "downloadTab": {
+    "appendPart": "Lägg till \".part\" på ofullständiga filer",
+    "deleteTorrentFile": "Ta bort .torrent-fil efter tillägg",
     "downloadDirectory": "Nedladdningskatalog",
     "incompleteDirectory": "Katalog för ofullständiga",
-    "useIncompleteDir": "Använd katalog för ofullständiga:",
-    "appendPart": "Lägg till \".part\" på ofullständiga filer",
-    "startAutomatically": "Starta tillagda torrents automatiskt",
-    "deleteTorrentFile": "Ta bort .torrent-fil efter tillägg",
-    "scripts": "Skript",
     "scriptOnAdded": "Kör skript när torrent läggs till:",
     "scriptOnCompleted": "Kör skript när torrent slutförs:",
-    "scriptPlaceholder": "/sökväg/till/skript"
+    "scriptOnDoneSeeding": "Kör skript när torrent är klar med seedning:",
+    "scriptPlaceholder": "/sökväg/till/skript",
+    "scripts": "Skript",
+    "startAutomatically": "Starta tillagda torrents automatiskt",
+    "useIncompleteDir": "Använd katalog för ofullständiga:"
   },
   "queueTab": {
     "downloadQueue": "Nedladdningskö",

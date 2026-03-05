@@ -227,12 +227,14 @@
     "testFailed": "失敗"
   },
   "settings": {
-    "title": "デーモン設定",
-    "speed": "速度",
-    "network": "ネットワーク",
+    "applied": "設定が適用されました",
+    "applyError": "設定の適用に失敗しました",
     "download": "ダウンロード",
+    "loading": "設定を読み込み中...",
+    "network": "ネットワーク",
     "queue": "キュー",
-    "loading": "設定を読み込み中..."
+    "speed": "速度",
+    "title": "デーモン設定"
   },
   "speedTab": {
     "speedLimits": "速度制限",
@@ -286,16 +288,17 @@
     "entries": "{{count}} 件"
   },
   "downloadTab": {
+    "appendPart": "未完了ファイルに \".part\" を付加",
+    "deleteTorrentFile": "追加後に .torrent ファイルを削除",
     "downloadDirectory": "ダウンロードディレクトリ",
     "incompleteDirectory": "未完了ディレクトリ",
-    "useIncompleteDir": "未完了ディレクトリを使用:",
-    "appendPart": "未完了ファイルに \".part\" を付加",
-    "startAutomatically": "追加したトレントを自動的に開始",
-    "deleteTorrentFile": "追加後に .torrent ファイルを削除",
-    "scripts": "スクリプト",
     "scriptOnAdded": "トレント追加時にスクリプトを実行:",
     "scriptOnCompleted": "トレント完了時にスクリプトを実行:",
-    "scriptPlaceholder": "/パス/スクリプト"
+    "scriptOnDoneSeeding": "シード完了時にスクリプトを実行:",
+    "scriptPlaceholder": "/パス/スクリプト",
+    "scripts": "スクリプト",
+    "startAutomatically": "追加したトレントを自動的に開始",
+    "useIncompleteDir": "未完了ディレクトリを使用:"
   },
   "queueTab": {
     "downloadQueue": "ダウンロードキュー",

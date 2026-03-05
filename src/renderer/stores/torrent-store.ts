@@ -57,7 +57,7 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   torrents: new Map(),
   selectedIds: new Set(),
   lastSelectedId: null,
-  sortingState: [{ id: 'name', desc: false }],
+  sortingState: [{ id: 'addedDate', desc: true }],
   globalFilter: '',
   statusFilter: 'all',
   labelFilter: null,

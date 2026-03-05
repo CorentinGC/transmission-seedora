@@ -15,7 +15,7 @@ interface SessionStore {
   freeSpaceDetails: FreeSpaceDetail[] | null;
 
   fetchSettings: () => Promise<void>;
-  updateSettings: (changes: Record<string, unknown>) => Promise<void>;
+  updateSettings: (changes: Record<string, unknown>) => Promise<boolean>;
   fetchStats: () => Promise<void>;
   fetchFreeSpace: (path: string) => Promise<void>;
   fetchFreeSpaceDetails: (paths: string[]) => Promise<void>;
@@ -45,6 +45,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     if (res.success) {
       await get().fetchSettings();
     }
+    return res.success;
   },
 
   fetchStats: async () => {

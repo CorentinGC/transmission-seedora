@@ -22,8 +22,10 @@ export function QueueTab({ settings: s }: Props) {
   const [idleSeedingLimitEnabled, setIdleSeedingLimitEnabled] = useState(s.idleSeedingLimitEnabled);
   const [idleSeedingLimit, setIdleSeedingLimit] = useState(s.idleSeedingLimit);
 
-  const apply = () => {
-    updateSettings({
+  const [applyStatus, setApplyStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const apply = async () => {
+    const ok = await updateSettings({
       downloadQueueEnabled,
       downloadQueueSize,
       seedQueueEnabled,
@@ -35,6 +37,8 @@ export function QueueTab({ settings: s }: Props) {
       idleSeedingLimitEnabled,
       idleSeedingLimit,
     });
+    setApplyStatus(ok ? 'success' : 'error');
+    setTimeout(() => setApplyStatus('idle'), 3000);
   };
 
   return (
@@ -82,8 +86,10 @@ export function QueueTab({ settings: s }: Props) {
         </div>
       </div>
 
-      <div className="border-t pt-4">
+      <div className="border-t pt-4 flex items-center gap-3">
         <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={apply}>{t('dialog.apply')}</button>
+        {applyStatus === 'success' && <span className="text-xs text-green-600">{t('settings.applied')}</span>}
+        {applyStatus === 'error' && <span className="text-xs text-destructive">{t('settings.applyError')}</span>}
       </div>
     </div>
   );

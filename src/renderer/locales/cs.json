@@ -227,12 +227,14 @@
     "testFailed": "Selhání"
   },
   "settings": {
-    "title": "Nastavení démona",
-    "speed": "Rychlost",
-    "network": "Síť",
+    "applied": "Nastavení použita",
+    "applyError": "Použití nastavení se nezdařilo",
     "download": "Stahování",
+    "loading": "Načítání nastavení...",
+    "network": "Síť",
     "queue": "Fronta",
-    "loading": "Načítání nastavení..."
+    "speed": "Rychlost",
+    "title": "Nastavení démona"
   },
   "speedTab": {
     "speedLimits": "Limity rychlosti",
@@ -286,16 +288,17 @@
     "entries": "{{count}} položek"
   },
   "downloadTab": {
+    "appendPart": "Přidat \".part\" k nedokončeným souborům",
+    "deleteTorrentFile": "Smazat soubor .torrent po přidání",
     "downloadDirectory": "Složka stahování",
     "incompleteDirectory": "Složka nedokončených",
-    "useIncompleteDir": "Použít složku pro nedokončené:",
-    "appendPart": "Přidat \".part\" k nedokončeným souborům",
-    "startAutomatically": "Automaticky spustit přidané torrenty",
-    "deleteTorrentFile": "Smazat soubor .torrent po přidání",
-    "scripts": "Skripty",
     "scriptOnAdded": "Spustit skript při přidání torrentu:",
     "scriptOnCompleted": "Spustit skript při dokončení torrentu:",
-    "scriptPlaceholder": "/cesta/ke/skriptu"
+    "scriptOnDoneSeeding": "Spustit skript po dokončení sdílení:",
+    "scriptPlaceholder": "/cesta/ke/skriptu",
+    "scripts": "Skripty",
+    "startAutomatically": "Automaticky spustit přidané torrenty",
+    "useIncompleteDir": "Použít složku pro nedokončené:"
   },
   "queueTab": {
     "downloadQueue": "Fronta stahování",

@@ -227,12 +227,14 @@
     "testFailed": "فشل"
   },
   "settings": {
-    "title": "إعدادات البرنامج الخفي",
-    "speed": "السرعة",
-    "network": "الشبكة",
+    "applied": "تم تطبيق الإعدادات",
+    "applyError": "فشل في تطبيق الإعدادات",
     "download": "التنزيل",
+    "loading": "جارٍ تحميل الإعدادات...",
+    "network": "الشبكة",
     "queue": "قائمة الانتظار",
-    "loading": "جارٍ تحميل الإعدادات..."
+    "speed": "السرعة",
+    "title": "إعدادات البرنامج الخفي"
   },
   "speedTab": {
     "speedLimits": "حدود السرعة",
@@ -286,16 +288,17 @@
     "entries": "{{count}} إدخال"
   },
   "downloadTab": {
+    "appendPart": "إضافة \".part\" للملفات غير المكتملة",
+    "deleteTorrentFile": "حذف ملف .torrent بعد الإضافة",
     "downloadDirectory": "مجلد التنزيل",
     "incompleteDirectory": "مجلد غير المكتمل",
-    "useIncompleteDir": "استخدام مجلد غير المكتمل:",
-    "appendPart": "إضافة \".part\" للملفات غير المكتملة",
-    "startAutomatically": "بدء التورنتات المضافة تلقائيًا",
-    "deleteTorrentFile": "حذف ملف .torrent بعد الإضافة",
-    "scripts": "البرامج النصية",
     "scriptOnAdded": "تشغيل برنامج نصي عند إضافة تورنت:",
     "scriptOnCompleted": "تشغيل برنامج نصي عند اكتمال تورنت:",
-    "scriptPlaceholder": "/المسار/إلى/البرنامج"
+    "scriptOnDoneSeeding": "تشغيل برنامج نصي عند انتهاء البذر:",
+    "scriptPlaceholder": "/المسار/إلى/البرنامج",
+    "scripts": "البرامج النصية",
+    "startAutomatically": "بدء التورنتات المضافة تلقائيًا",
+    "useIncompleteDir": "استخدام مجلد غير المكتمل:"
   },
   "queueTab": {
     "downloadQueue": "قائمة انتظار التنزيل",

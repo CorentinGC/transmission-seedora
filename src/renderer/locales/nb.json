@@ -227,12 +227,14 @@
     "testFailed": "Mislyktes"
   },
   "settings": {
-    "title": "Daemoninnstillinger",
-    "speed": "Hastighet",
-    "network": "Nettverk",
+    "applied": "Innstillinger brukt",
+    "applyError": "Kunne ikke bruke innstillinger",
     "download": "Nedlasting",
+    "loading": "Laster innstillinger...",
+    "network": "Nettverk",
     "queue": "Kø",
-    "loading": "Laster innstillinger..."
+    "speed": "Hastighet",
+    "title": "Daemoninnstillinger"
   },
   "speedTab": {
     "speedLimits": "Hastighetsgrenser",
@@ -286,16 +288,17 @@
     "entries": "{{count}} oppføringer"
   },
   "downloadTab": {
+    "appendPart": "Legg til \".part\" på ufullstendige filer",
+    "deleteTorrentFile": "Slett .torrent-fil etter tillegg",
     "downloadDirectory": "Nedlastingsmappe",
     "incompleteDirectory": "Mappe for ufullstendige",
-    "useIncompleteDir": "Bruk mappe for ufullstendige:",
-    "appendPart": "Legg til \".part\" på ufullstendige filer",
-    "startAutomatically": "Start tillagte torrenter automatisk",
-    "deleteTorrentFile": "Slett .torrent-fil etter tillegg",
-    "scripts": "Skript",
     "scriptOnAdded": "Kjør skript når torrent legges til:",
     "scriptOnCompleted": "Kjør skript når torrent fullføres:",
-    "scriptPlaceholder": "/sti/til/skript"
+    "scriptOnDoneSeeding": "Kjør skript når torrent er ferdig med å seede:",
+    "scriptPlaceholder": "/sti/til/skript",
+    "scripts": "Skript",
+    "startAutomatically": "Start tillagte torrenter automatisk",
+    "useIncompleteDir": "Bruk mappe for ufullstendige:"
   },
   "queueTab": {
     "downloadQueue": "Nedlastingskø",
