@@ -42,11 +42,20 @@ export function TrackersTab({ torrent }: Props) {
     return () => { cancelled = true; };
   }, [torrent.id]);
 
+  const getTrackerList = async (): Promise<string> => {
+    const res = await window.api.rpcTorrentGet(['trackerList'], [torrent.id]);
+    if (res.success && res.data) {
+      const d = res.data as { torrents: { trackerList: string }[] };
+      return d.torrents?.[0]?.trackerList ?? '';
+    }
+    return '';
+  };
+
   const addTracker = async () => {
     if (!newTracker.trim()) return;
     setLoadingAction('add');
     try {
-      const current = torrent.trackerList ?? '';
+      const current = await getTrackerList();
       const updated = current ? `${current}\n\n${newTracker.trim()}` : newTracker.trim();
       await setTorrentProps([torrent.id], { trackerList: updated });
       setNewTracker('');
@@ -59,7 +68,8 @@ export function TrackersTab({ torrent }: Props) {
   const removeTracker = async (announce: string) => {
     setLoadingAction(`remove-${announce}`);
     try {
-      const tiers = (torrent.trackerList ?? '').split('\n\n');
+      const current = await getTrackerList();
+      const tiers = current.split('\n\n');
       const updated = tiers
         .map((tier) => tier.split('\n').filter((l) => l.trim() !== announce).join('\n'))
         .filter((tier) => tier.trim() !== '');
@@ -82,7 +92,8 @@ export function TrackersTab({ torrent }: Props) {
     }
     setLoadingAction(`save-${oldAnnounce}`);
     try {
-      const tiers = (torrent.trackerList ?? '').split('\n\n');
+      const current = await getTrackerList();
+      const tiers = current.split('\n\n');
       const updated = tiers.map((tier) =>
         tier.split('\n').map((l) => (l.trim() === oldAnnounce ? editValue.trim() : l)).join('\n')
       );
@@ -211,6 +222,7 @@ export function TrackersTab({ torrent }: Props) {
           variant="secondary"
           onClick={addTracker}
           disabled={!newTracker.trim() || loadingAction === 'add'}
+          className="shrink-0 whitespace-nowrap"
         >
           <Plus size={14} className="mr-1" />
           {t('trackersTab.add')}
