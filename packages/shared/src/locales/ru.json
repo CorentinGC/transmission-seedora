@@ -199,7 +199,11 @@
     "freeSpace": "Свободно: {{space}}",
     "startPaused": "Добавить на паузе",
     "errorNoInput": "Укажите торрент-файл или URL/magnet-ссылку",
-    "errorAddFailed": "Не удалось добавить торрент"
+    "errorAddFailed": "Не удалось добавить торрент",
+    "errorDuplicate": "Этот торрент уже существует: {{name}}",
+    "updateTrackers": "Обновить трекеры",
+    "errorNoTrackers": "В торрент-файле не найдено трекеров",
+    "errorTrackersAlreadyPresent": "Все трекеры уже присутствуют в этом торренте"
   },
   "server": {
     "addServer": "Добавить сервер...",

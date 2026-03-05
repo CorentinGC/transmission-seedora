@@ -199,7 +199,11 @@
     "freeSpace": "여유 공간: {{space}}",
     "startPaused": "일시 정지 상태로 시작",
     "errorNoInput": "토렌트 파일 또는 URL/Magnet 링크를 입력해 주세요",
-    "errorAddFailed": "토렌트 추가 실패"
+    "errorAddFailed": "토렌트 추가 실패",
+    "errorDuplicate": "이 토렌트는 이미 존재합니다: {{name}}",
+    "updateTrackers": "트래커 업데이트",
+    "errorNoTrackers": "토렌트 파일에서 트래커를 찾을 수 없습니다",
+    "errorTrackersAlreadyPresent": "모든 트래커가 이미 이 토렌트에 존재합니다"
   },
   "server": {
     "addServer": "서버 추가...",

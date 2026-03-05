@@ -199,7 +199,11 @@
     "freeSpace": "المساحة المتاحة: {{space}}",
     "startPaused": "بدء في وضع الإيقاف المؤقت",
     "errorNoInput": "يرجى توفير ملف تورنت أو رابط URL/Magnet",
-    "errorAddFailed": "فشل في إضافة التورنت"
+    "errorAddFailed": "فشل في إضافة التورنت",
+    "errorDuplicate": "هذا التورنت موجود بالفعل: {{name}}",
+    "updateTrackers": "تحديث التتبع",
+    "errorNoTrackers": "لم يتم العثور على متتبعات في ملف التورنت",
+    "errorTrackersAlreadyPresent": "جميع المتتبعات موجودة بالفعل في هذا التورنت"
   },
   "server": {
     "addServer": "إضافة خادم...",

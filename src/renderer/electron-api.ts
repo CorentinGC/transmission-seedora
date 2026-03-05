@@ -54,6 +54,7 @@ export const electronApi: PlatformApi = {
   prefsSet: (prefs) => window.api.prefsSet(prefs),
 
   // Platform-specific (Electron-only)
+  readFileBase64: (filePath) => window.api.readFileBase64(filePath),
   dialogOpenFile: (options) => window.api.dialogOpenFile(options),
   dialogOpenDirectory: () => window.api.dialogOpenDirectory(),
   dialogSaveFile: (options, content) => window.api.dialogSaveFile(options, content),

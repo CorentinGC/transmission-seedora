@@ -199,7 +199,11 @@
     "freeSpace": "Ledigt utrymme: {{space}}",
     "startPaused": "Starta pausad",
     "errorNoInput": "Ange en torrentfil eller URL/Magnet-länk",
-    "errorAddFailed": "Det gick inte att lägga till torrent"
+    "errorAddFailed": "Det gick inte att lägga till torrent",
+    "errorDuplicate": "Denna torrent finns redan: {{name}}",
+    "updateTrackers": "Uppdatera trackers",
+    "errorNoTrackers": "Inga trackers hittades i torrentfilen",
+    "errorTrackersAlreadyPresent": "Alla trackers finns redan på denna torrent"
   },
   "server": {
     "addServer": "Lägg till server...",

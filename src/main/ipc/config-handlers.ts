@@ -59,6 +59,15 @@ export function registerConfigHandlers(): void {
     return { success: true };
   });
 
+  ipcMain.handle(IPC.READ_FILE_BASE64, async (_, filePath: string): Promise<IpcResponse<string>> => {
+    try {
+      const content = fs.readFileSync(filePath);
+      return { success: true, data: content.toString('base64') };
+    } catch {
+      return { success: false, error: 'Failed to read file' };
+    }
+  });
+
   ipcMain.handle(IPC.DIALOG_OPEN_FILE, async (_, options?: Electron.OpenDialogOptions): Promise<IpcResponse<string[]>> => {
     const result = await dialog.showOpenDialog(options ?? {
       properties: ['openFile'],

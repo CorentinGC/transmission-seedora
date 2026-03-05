@@ -199,7 +199,11 @@
     "freeSpace": "Ledig plads: {{space}}",
     "startPaused": "Start på pause",
     "errorNoInput": "Angiv venligst en torrentfil eller URL/Magnet-link",
-    "errorAddFailed": "Kunne ikke tilføje torrent"
+    "errorAddFailed": "Kunne ikke tilføje torrent",
+    "errorDuplicate": "Denne torrent findes allerede: {{name}}",
+    "updateTrackers": "Opdater trackere",
+    "errorNoTrackers": "Ingen trackere fundet i torrentfilen",
+    "errorTrackersAlreadyPresent": "Alle trackere er allerede til stede på denne torrent"
   },
   "server": {
     "addServer": "Tilføj server...",

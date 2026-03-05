@@ -199,7 +199,11 @@
     "freeSpace": "Вільне місце: {{space}}",
     "startPaused": "Запустити призупиненим",
     "errorNoInput": "Вкажіть торент-файл або URL/Magnet-посилання",
-    "errorAddFailed": "Не вдалося додати торент"
+    "errorAddFailed": "Не вдалося додати торент",
+    "errorDuplicate": "Цей торент вже існує: {{name}}",
+    "updateTrackers": "Оновити трекери",
+    "errorNoTrackers": "У торент-файлі не знайдено трекерів",
+    "errorTrackersAlreadyPresent": "Усі трекери вже присутні в цьому торенті"
   },
   "server": {
     "addServer": "Додати сервер...",

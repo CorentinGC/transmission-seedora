@@ -199,7 +199,11 @@
     "freeSpace": "Ελεύθερος χώρος: {{space}}",
     "startPaused": "Εκκίνηση σε παύση",
     "errorNoInput": "Παρέχετε αρχείο torrent ή URL/σύνδεσμο Magnet",
-    "errorAddFailed": "Αποτυχία προσθήκης torrent"
+    "errorAddFailed": "Αποτυχία προσθήκης torrent",
+    "errorDuplicate": "Αυτό το torrent υπάρχει ήδη: {{name}}",
+    "updateTrackers": "Ενημέρωση trackers",
+    "errorNoTrackers": "Δεν βρέθηκαν trackers στο αρχείο torrent",
+    "errorTrackersAlreadyPresent": "Όλοι οι trackers υπάρχουν ήδη σε αυτό το torrent"
   },
   "server": {
     "addServer": "Προσθήκη διακομιστή...",

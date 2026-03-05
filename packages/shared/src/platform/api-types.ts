@@ -55,6 +55,7 @@ export interface PlatformApi {
   prefsSet(prefs: Partial<AppPreferences>): Promise<IpcResponse>;
 
   // Platform-specific (optional — not available on web)
+  readFileBase64?(filePath: string): Promise<IpcResponse<string>>;
   dialogOpenFile?(options?: Record<string, unknown>): Promise<IpcResponse<string[]>>;
   dialogOpenDirectory?(): Promise<IpcResponse<string | null>>;
   dialogSaveFile?(options: Record<string, unknown>, content: string): Promise<IpcResponse<string | null>>;
