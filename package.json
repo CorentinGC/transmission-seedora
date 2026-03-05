@@ -1,7 +1,7 @@
 {
   "name": "seedora",
   "productName": "Seedora",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Cross-platform remote GUI for Transmission BitTorrent daemon",
   "main": ".vite/build/index.js",
   "homepage": "https://www.seedora.app",
