@@ -1,9 +1,10 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronDown, Folder, File } from 'lucide-react';
 import type { Torrent, TorrentFile, TorrentFileStat } from '../../types/torrent';
 import { formatBytes, formatPercent } from '../../lib/format';
 import { useTorrentStore } from '../../stores/torrent-store';
+import { ContextMenuItem as MenuItem, ContextMenuSeparator as Separator } from '../ui';
 
 interface Props {
   torrent: Torrent;
@@ -20,12 +21,22 @@ interface TreeNode {
   isFolder: boolean;
   fileIndex?: number;
   children: TreeNode[];
-  // Aggregated data for folders
   totalSize: number;
   completedSize: number;
 }
 
-function buildFileTree(files: TorrentFile[], fileStats: TorrentFileStat[]): TreeNode {
+// Priority helpers
+const PRIORITY_LOW = -1;
+const PRIORITY_NORMAL = 0;
+const PRIORITY_HIGH = 1;
+
+function cyclePriority(current: number): number {
+  if (current === PRIORITY_LOW) return PRIORITY_NORMAL;
+  if (current === PRIORITY_NORMAL) return PRIORITY_HIGH;
+  return PRIORITY_LOW;
+}
+
+function buildFileTree(files: TorrentFile[]): TreeNode {
   const root: TreeNode = {
     name: '',
     path: '',
@@ -73,7 +84,6 @@ function buildFileTree(files: TorrentFile[], fileStats: TorrentFileStat[]): Tree
     }
   }
 
-  // Aggregate sizes up through folders
   function aggregateSizes(node: TreeNode): void {
     if (!node.isFolder) return;
     node.totalSize = 0;
@@ -85,7 +95,6 @@ function buildFileTree(files: TorrentFile[], fileStats: TorrentFileStat[]): Tree
     }
   }
 
-  // Sort: folders first, then alphabetical
   function sortTree(node: TreeNode): void {
     node.children.sort((a, b) => {
       if (a.isFolder !== b.isFolder) return a.isFolder ? -1 : 1;
@@ -99,12 +108,81 @@ function buildFileTree(files: TorrentFile[], fileStats: TorrentFileStat[]): Tree
   aggregateSizes(root);
   sortTree(root);
 
-  // If root has a single folder child (common torrent structure), skip it
   if (root.children.length === 1 && root.children[0].isFolder) {
     return root.children[0];
   }
 
   return root;
+}
+
+/** Collect all file indices under a tree node */
+function collectFileIndices(node: TreeNode): number[] {
+  if (!node.isFolder && node.fileIndex !== undefined) return [node.fileIndex];
+  const indices: number[] = [];
+  for (const child of node.children) {
+    indices.push(...collectFileIndices(child));
+  }
+  return indices;
+}
+
+/** Get the dominant priority for a folder (most common among children) */
+function getFolderPriority(node: TreeNode, fileStats: TorrentFileStat[]): number {
+  const indices = collectFileIndices(node);
+  if (indices.length === 0) return PRIORITY_NORMAL;
+  const counts = new Map<number, number>();
+  for (const idx of indices) {
+    const p = fileStats[idx]?.priority ?? PRIORITY_NORMAL;
+    counts.set(p, (counts.get(p) ?? 0) + 1);
+  }
+  let maxCount = 0;
+  let dominant = PRIORITY_NORMAL;
+  for (const [p, c] of counts) {
+    if (c > maxCount) {
+      maxCount = c;
+      dominant = p;
+    }
+  }
+  return dominant;
+}
+
+interface PriorityBadgeProps {
+  priority: number;
+  onClick: (e: React.MouseEvent) => void;
+  t: (key: string) => string;
+}
+
+function PriorityBadge({ priority, onClick, t }: PriorityBadgeProps) {
+  const colorClass =
+    priority === PRIORITY_HIGH
+      ? 'bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30'
+      : priority === PRIORITY_LOW
+        ? 'bg-muted text-muted-foreground border-border'
+        : 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30';
+
+  const label =
+    priority === PRIORITY_HIGH
+      ? t('priority.high')
+      : priority === PRIORITY_LOW
+        ? t('priority.low')
+        : t('priority.normal');
+
+  return (
+    <button
+      className={`w-14 h-5 text-[10px] font-medium rounded border cursor-pointer select-none transition-colors hover:opacity-80 ${colorClass}`}
+      onClick={onClick}
+      title={t('filesTab.clickToChangePriority')}
+    >
+      {label}
+    </button>
+  );
+}
+
+interface ContextMenuState {
+  x: number;
+  y: number;
+  fileIndices: number[];
+  currentPriority: number;
+  isWanted: boolean;
 }
 
 function FileTreeRow({
@@ -115,33 +193,50 @@ function FileTreeRow({
   fileStats,
   toggleWanted,
   setPriority,
+  onContextMenu,
 }: {
   node: TreeNode;
   depth: number;
   expandedPaths: Set<string>;
   toggleExpanded: (path: string) => void;
   fileStats: TorrentFileStat[];
-  toggleWanted: (index: number, wanted: boolean) => void;
-  setPriority: (index: number, priority: number) => void;
+  toggleWanted: (indices: number[], wanted: boolean) => void;
+  setPriority: (indices: number[], priority: number) => void;
+  onContextMenu: (e: React.MouseEvent, indices: number[], priority: number, wanted: boolean) => void;
 }) {
   const { t } = useTranslation();
   const isExpanded = expandedPaths.has(node.path);
   const progress = node.totalSize > 0 ? node.completedSize / node.totalSize : 0;
 
   if (node.isFolder) {
+    const folderPriority = getFolderPriority(node, fileStats);
+    const folderIndices = collectFileIndices(node);
+
+    const handlePriorityClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setPriority(folderIndices, cyclePriority(folderPriority));
+    };
+
+    const handleContextMenu = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onContextMenu(e, folderIndices, folderPriority, true);
+    };
+
     return (
       <>
         <div
           className="flex items-center gap-1 px-1 py-0.5 hover:bg-accent cursor-pointer"
           style={{ paddingLeft: `${depth * 16 + 4}px` }}
           onClick={() => toggleExpanded(node.path)}
+          onContextMenu={handleContextMenu}
         >
+          <PriorityBadge priority={folderPriority} onClick={handlePriorityClick} t={t} />
           {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
           <Folder size={14} className="text-muted-foreground" />
           <span className="flex-1 truncate">{node.name}</span>
           <span className="w-20 text-right text-muted-foreground">{formatBytes(node.totalSize)}</span>
           <span className="w-16 text-right">{formatPercent(progress)}</span>
-          <span className="w-16" />
         </div>
         {isExpanded &&
           node.children.map((child) => (
@@ -154,6 +249,7 @@ function FileTreeRow({
               fileStats={fileStats}
               toggleWanted={toggleWanted}
               setPriority={setPriority}
+              onContextMenu={onContextMenu}
             />
           ))}
       </>
@@ -162,33 +258,112 @@ function FileTreeRow({
 
   const stat = node.fileIndex !== undefined ? fileStats[node.fileIndex] : undefined;
   const wanted = stat?.wanted ?? true;
-  const priority = stat?.priority ?? 0;
+  const priority = stat?.priority ?? PRIORITY_NORMAL;
+
+  const handlePriorityClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (node.fileIndex !== undefined) {
+      setPriority([node.fileIndex], cyclePriority(priority));
+    }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (node.fileIndex !== undefined) {
+      onContextMenu(e, [node.fileIndex], priority, wanted);
+    }
+  };
 
   return (
     <div
       className="flex items-center gap-1 px-1 py-0.5 hover:bg-accent"
       style={{ paddingLeft: `${depth * 16 + 4}px` }}
+      onContextMenu={handleContextMenu}
     >
+      <PriorityBadge priority={priority} onClick={handlePriorityClick} t={t} />
       <span className="w-3" />
       <input
         type="checkbox"
         checked={wanted}
-        onChange={(e) => node.fileIndex !== undefined && toggleWanted(node.fileIndex, e.target.checked)}
+        onChange={(e) => node.fileIndex !== undefined && toggleWanted([node.fileIndex], e.target.checked)}
         className="w-3.5"
       />
       <File size={14} className="text-muted-foreground" />
       <span className="flex-1 truncate">{node.name}</span>
       <span className="w-20 text-right text-muted-foreground">{formatBytes(node.totalSize)}</span>
       <span className="w-16 text-right">{formatPercent(progress)}</span>
-      <select
-        className="w-16 text-xs bg-background border rounded px-1"
-        value={priority}
-        onChange={(e) => node.fileIndex !== undefined && setPriority(node.fileIndex, Number(e.target.value))}
-      >
-        <option value={-1}>{t('priority.low')}</option>
-        <option value={0}>{t('priority.normal')}</option>
-        <option value={1}>{t('priority.high')}</option>
-      </select>
+    </div>
+  );
+}
+
+function FileContextMenu({
+  x,
+  y,
+  fileIndices,
+  currentPriority,
+  isWanted,
+  onSetPriority,
+  onToggleWanted,
+  onClose,
+}: {
+  x: number;
+  y: number;
+  fileIndices: number[];
+  currentPriority: number;
+  isWanted: boolean;
+  onSetPriority: (indices: number[], priority: number) => void;
+  onToggleWanted: (indices: number[], wanted: boolean) => void;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [onClose]);
+
+  const act = (fn: () => void) => {
+    fn();
+    onClose();
+  };
+
+  return (
+    <div
+      ref={ref}
+      className="fixed z-50 w-48 rounded-md border bg-popover shadow-lg py-1 text-sm"
+      style={{ left: x, top: y }}
+    >
+      <div className="px-2 py-1 text-xs text-muted-foreground">{t('torrent.priority')}</div>
+      <MenuItem
+        label={t('priority.high')}
+        onClick={() => act(() => onSetPriority(fileIndices, PRIORITY_HIGH))}
+        indent
+        className={currentPriority === PRIORITY_HIGH ? 'text-red-500 font-medium' : ''}
+      />
+      <MenuItem
+        label={t('priority.normal')}
+        onClick={() => act(() => onSetPriority(fileIndices, PRIORITY_NORMAL))}
+        indent
+        className={currentPriority === PRIORITY_NORMAL ? 'text-blue-500 font-medium' : ''}
+      />
+      <MenuItem
+        label={t('priority.low')}
+        onClick={() => act(() => onSetPriority(fileIndices, PRIORITY_LOW))}
+        indent
+        className={currentPriority === PRIORITY_LOW ? 'font-medium' : ''}
+      />
+      <Separator />
+      <MenuItem
+        label={isWanted ? t('filesTab.doNotDownload') : t('filesTab.download')}
+        onClick={() => act(() => onToggleWanted(fileIndices, !isWanted))}
+      />
     </div>
   );
 }
@@ -197,6 +372,7 @@ export function FilesTab({ torrent }: Props) {
   const { t } = useTranslation();
   const [data, setData] = useState<DetailedTorrentData | null>(null);
   const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set());
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const setTorrentProps = useTorrentStore((s) => s.setTorrentProps);
 
   useEffect(() => {
@@ -214,10 +390,9 @@ export function FilesTab({ torrent }: Props) {
 
   const tree = useMemo(() => {
     if (!data?.files) return null;
-    return buildFileTree(data.files, data.fileStats);
+    return buildFileTree(data.files);
   }, [data]);
 
-  // Auto-expand root folder
   useEffect(() => {
     if (tree?.isFolder) {
       setExpandedPaths(new Set([tree.path]));
@@ -237,19 +412,44 @@ export function FilesTab({ torrent }: Props) {
   }, []);
 
   const toggleWanted = useCallback(
-    (index: number, wanted: boolean) => {
+    (indices: number[], wanted: boolean) => {
       const key = wanted ? 'files-wanted' : 'files-unwanted';
-      setTorrentProps([torrent.id], { [key]: [index] });
+      setTorrentProps([torrent.id], { [key]: indices });
+      // Optimistic update
+      setData((prev) => {
+        if (!prev) return prev;
+        const newStats = [...prev.fileStats];
+        for (const idx of indices) {
+          newStats[idx] = { ...newStats[idx], wanted };
+        }
+        return { ...prev, fileStats: newStats };
+      });
     },
     [torrent.id, setTorrentProps],
   );
 
   const setPriority = useCallback(
-    (index: number, priority: number) => {
+    (indices: number[], priority: number) => {
       const key = priority === 1 ? 'priority-high' : priority === -1 ? 'priority-low' : 'priority-normal';
-      setTorrentProps([torrent.id], { [key]: [index] });
+      setTorrentProps([torrent.id], { [key]: indices });
+      // Optimistic update
+      setData((prev) => {
+        if (!prev) return prev;
+        const newStats = [...prev.fileStats];
+        for (const idx of indices) {
+          newStats[idx] = { ...newStats[idx], priority };
+        }
+        return { ...prev, fileStats: newStats };
+      });
     },
     [torrent.id, setTorrentProps],
+  );
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent, indices: number[], priority: number, wanted: boolean) => {
+      setContextMenu({ x: e.clientX, y: e.clientY, fileIndices: indices, currentPriority: priority, isWanted: wanted });
+    },
+    [],
   );
 
   if (!data?.files || !tree) {
@@ -259,10 +459,10 @@ export function FilesTab({ torrent }: Props) {
   return (
     <div className="text-xs">
       <div className="flex items-center gap-1 px-1 py-1 font-medium text-muted-foreground border-b">
+        <span className="w-14 text-center">{t('torrent.priority')}</span>
         <span className="flex-1">{t('torrent.name')}</span>
         <span className="w-20 text-right">{t('torrent.size')}</span>
         <span className="w-16 text-right">{t('torrent.done')}</span>
-        <span className="w-16 text-right">{t('torrent.priority')}</span>
       </div>
       {tree.isFolder ? (
         tree.children.map((child) => (
@@ -275,6 +475,7 @@ export function FilesTab({ torrent }: Props) {
             fileStats={data.fileStats}
             toggleWanted={toggleWanted}
             setPriority={setPriority}
+            onContextMenu={handleContextMenu}
           />
         ))
       ) : (
@@ -286,6 +487,19 @@ export function FilesTab({ torrent }: Props) {
           fileStats={data.fileStats}
           toggleWanted={toggleWanted}
           setPriority={setPriority}
+          onContextMenu={handleContextMenu}
+        />
+      )}
+      {contextMenu && (
+        <FileContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          fileIndices={contextMenu.fileIndices}
+          currentPriority={contextMenu.currentPriority}
+          isWanted={contextMenu.isWanted}
+          onSetPriority={setPriority}
+          onToggleWanted={toggleWanted}
+          onClose={() => setContextMenu(null)}
         />
       )}
     </div>

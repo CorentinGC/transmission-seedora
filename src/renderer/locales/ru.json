@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Загрузка завершена"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Нажмите, чтобы изменить приоритет",
+    "doNotDownload": "Не скачивать",
+    "download": "Скачать"
   }
 }

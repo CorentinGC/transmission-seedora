@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Завантаження завершено"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Натисніть, щоб змінити пріоритет",
+    "doNotDownload": "Не завантажувати",
+    "download": "Завантажити"
   }
 }

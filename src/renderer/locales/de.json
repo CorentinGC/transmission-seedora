@@ -331,11 +331,16 @@
     "deleteWatchedTorrent": ".torrent-Datei nach dem Hinzufügen löschen",
     "pathMappings": "Pfadzuordnungen (Remote → Lokal)",
     "pathMappingsAdd": "Hinzufügen",
-    "pathMappingsHelp": "Remote-Daemon-Pfade auf lokale Pfade für \u201EOrdner öffnen\u201C-Aktionen zuordnen.",
+    "pathMappingsHelp": "Remote-Daemon-Pfade auf lokale Pfade für „Ordner öffnen“-Aktionen zuordnen.",
     "remotePath": "Remote-Pfad",
     "localPath": "Lokaler Pfad"
   },
   "notification": {
     "downloadComplete": "Download abgeschlossen"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Klicken, um Priorität zu ändern",
+    "doNotDownload": "Nicht herunterladen",
+    "download": "Herunterladen"
   }
 }

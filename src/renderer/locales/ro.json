@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Descărcare finalizată"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Clic pentru a schimba prioritatea",
+    "doNotDownload": "Nu descărca",
+    "download": "Descarcă"
   }
 }

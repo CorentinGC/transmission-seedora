@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Lataus valmis"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Napsauta muuttaaksesi prioriteettia",
+    "doNotDownload": "Älä lataa",
+    "download": "Lataa"
   }
 }

@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Nedladdning slutförd"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Klicka för att ändra prioritet",
+    "doNotDownload": "Ladda inte ner",
+    "download": "Ladda ner"
   }
 }

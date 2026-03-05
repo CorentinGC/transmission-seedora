@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Η λήψη ολοκληρώθηκε"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Κλικ για αλλαγή προτεραιότητας",
+    "doNotDownload": "Να μην γίνει λήψη",
+    "download": "Λήψη"
   }
 }

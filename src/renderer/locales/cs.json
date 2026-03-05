@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Stahování dokončeno"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Klikněte pro změnu priority",
+    "doNotDownload": "Nestahovat",
+    "download": "Stáhnout"
   }
 }

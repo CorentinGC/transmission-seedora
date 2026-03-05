@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "ダウンロード完了"
+  },
+  "filesTab": {
+    "clickToChangePriority": "クリックして優先度を変更",
+    "doNotDownload": "ダウンロードしない",
+    "download": "ダウンロード"
   }
 }

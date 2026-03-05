@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "Download fuldført"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Klik for at ændre prioritet",
+    "doNotDownload": "Download ikke",
+    "download": "Download"
   }
 }

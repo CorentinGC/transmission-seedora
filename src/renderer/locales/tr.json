@@ -337,5 +337,10 @@
   },
   "notification": {
     "downloadComplete": "İndirme Tamamlandı"
+  },
+  "filesTab": {
+    "clickToChangePriority": "Önceliği değiştirmek için tıklayın",
+    "doNotDownload": "İndirme",
+    "download": "İndir"
   }
 }
