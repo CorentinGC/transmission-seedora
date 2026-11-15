@@ -75,7 +75,7 @@ One deadline per action call (an `AbortSignal.timeout`) covers DNS, connect, the
 | `rpcRequest`: `blocklist-update`, `port-test`, `torrent-add` (the daemon may fetch a URL) | 30 s |
 | `rpcRequest`: every other method | 15 s |
 
-These are constants in `transmission.ts`, not caller-supplied. The function's maximum duration on the Vercel project was **not verified** while writing this ADR. c07.10 must confirm it is above 30 s, or set `maxDuration` for the route, before relying on the 30 s deadline.
+These are constants in `transmission.ts`, not caller-supplied. `export const maxDuration = 60` is set in `apps/web/src/app/layout.tsx` (server actions run in the route that calls them, here `/`; `page.tsx` is a client component and cannot export it), so the 30 s deadline can complete on Vercel. 60 s is within the Hobby limit; the plan's actual cap was not verified against a live deployment. Self-hosted `next start` ignores it.
 
 ### 5. Error codes
 
