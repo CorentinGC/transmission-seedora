@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "seedora_transmission",
+  "project_id": "bdd44255-e4f8-4a26-baf4-e968987f3c00"
+}
