@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# Not managed by beads (bd has no commit-msg hook). Delegates to the project hook.
+# core.hooksPath points here, so every project hook is chained from this directory.
+exec sh "$(git rev-parse --show-toplevel)/scripts/git-hooks/commit-msg" "$@"

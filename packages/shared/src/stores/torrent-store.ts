@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { SortingState, ColumnFiltersState, Updater } from '@tanstack/react-table';
+import type { SortingState, Updater } from '@tanstack/react-table';
 import type { Torrent } from '../types/torrent';
 import { TORRENT_LIST_FIELDS } from '../types/torrent';
 import type { StatusFilter } from '../lib/constants';

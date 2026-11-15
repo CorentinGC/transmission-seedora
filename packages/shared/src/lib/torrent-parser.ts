@@ -3,8 +3,7 @@
  * Only decodes enough to extract announce/announce-list fields.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface BencodeList extends Array<BencodeValue> {}
+type BencodeList = BencodeValue[];
 interface BencodeDict { [key: string]: BencodeValue }
 type BencodeValue = string | number | BencodeList | BencodeDict;
 

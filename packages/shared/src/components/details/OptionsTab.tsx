@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Torrent } from '../../types/torrent';
 import { useTorrentStore } from '../../stores/torrent-store';
-import { formatBytes } from '../../lib/format';
 
 interface Props {
   torrent: Torrent;

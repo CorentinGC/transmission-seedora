@@ -19,7 +19,7 @@ interface ServerStore {
   setConnectionStatus: (status: ServerStore['connectionStatus'], error?: string) => void;
 }
 
-export const useServerStore = create<ServerStore>((set, get) => ({
+export const useServerStore = create<ServerStore>((set) => ({
   servers: [],
   activeServerId: null,
   connectionStatus: 'disconnected',

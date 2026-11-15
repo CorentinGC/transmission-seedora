@@ -14,7 +14,6 @@ import {
   ArrowDown,
   ChevronsUp,
   ChevronsDown,
-  Tag,
 } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { RemoveTorrentDialog } from './RemoveTorrentDialog';

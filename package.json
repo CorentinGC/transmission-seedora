@@ -11,12 +11,15 @@
     "apps/*"
   ],
   "scripts": {
+    "prepare": "node scripts/setup-git-hooks.mjs",
     "start": "electron-forge start",
     "start:debug": "electron-forge start -- --remote-debugging-port=9222",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx .",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "dev:web": "npm run dev --workspace=@seedora/web",
     "dev:web:https": "npm run dev:https --workspace=@seedora/web",
     "build:web": "npm run build --workspace=@seedora/web",
@@ -43,6 +46,8 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
     "@electron-forge/cli": "^7.11.1",
     "@electron-forge/maker-deb": "^7.11.1",
     "@electron-forge/maker-dmg": "^7.11.1",
@@ -53,21 +58,25 @@
     "@electron-forge/plugin-fuses": "^7.11.1",
     "@electron-forge/plugin-vite": "^7.11.1",
     "@electron/fuses": "^1.8.0",
+    "@eslint/js": "^9.39.5",
     "@tailwindcss/vite": "^4.2.1",
     "@types/chokidar": "^1.7.5",
     "@types/electron-squirrel-startup": "^1.0.2",
     "@types/geoip-lite": "^1.4.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
     "@vitejs/plugin-react": "^5.1.4",
     "electron": "40.7.0",
-    "eslint": "^8.57.1",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.14.0",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.10.1",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.1",
     "typescript": "~5.7.0",
+    "typescript-eslint": "^8.72.2",
     "vite": "^6.4.1",
     "vitest": "^5.1.0"
   },
@@ -96,7 +105,7 @@
     "url": "https://github.com/CorentinGC/transmission-seedora/issues"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "packageManager": "npm@11.12.1"
 }

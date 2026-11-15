@@ -10,7 +10,7 @@ Thank you for helping. This page covers how to set up, what a pull request must 
 
 ## Set up
 
-You need Node.js 20 or later, npm 10 or later, and a Transmission daemon with RPC enabled.
+You need Node.js 22.12 or later, npm 10 or later, and a Transmission daemon with RPC enabled.
 
 ```bash
 git clone https://github.com/CorentinGC/transmission-seedora.git
