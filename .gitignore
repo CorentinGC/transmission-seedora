@@ -116,3 +116,6 @@ next-env.d.ts
 .vscode/*
 !.vscode/extensions.json
 .vitest/
+
+# Playwright MCP output
+.playwright-mcp/

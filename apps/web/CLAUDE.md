@@ -21,6 +21,6 @@ UI components do not belong here: they go in `packages/shared/src/components`.
 3a. **`'use server'` files export only actions.** Helpers go in `src/lib/server/` as plain modules; an exported helper in an action file becomes a public endpoint. A new RPC method used by `web-api.ts` must be added to the allowlist in `server/schemas.ts`.
 4. No credentials in logs, error messages or responses: failures return a fixed code from `server/errors.ts`.
 5. Web has no Electron-only `PlatformApi` methods: provide a browser fallback or hide the feature.
-6. Verify UI changes with the `chrome-devtools-web` MCP server against `npm run dev:web` (started by the user), at mobile and desktop widths.
+6. Verify UI changes with the `chrome-devtools-web` MCP server against `npm run dev:web` (the main session starts and stops it), at mobile and desktop widths.
 
 See `docs/security.md` for the known gaps in this directory before touching `server-actions/`.
