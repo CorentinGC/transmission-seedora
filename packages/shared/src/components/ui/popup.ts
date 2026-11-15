@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
+import { tabWrapAction } from './keyboard-logic';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -16,9 +17,14 @@ export function getFocusable(root: HTMLElement): HTMLElement[] {
   );
 }
 
+/** Marks the element that receives focus when a popup closes and its opener is gone or disabled. */
+export const FOCUS_FALLBACK_ATTRIBUTE = 'data-focus-fallback';
+const FOCUS_FALLBACK_SELECTOR = `[${FOCUS_FALLBACK_ATTRIBUTE}]`;
+
 /**
  * Moves focus into `ref` on mount (to the element `pickInitial` returns, else the root itself) and
- * gives it back to the element that had it before when the popup unmounts.
+ * gives it back to the element that had it before when the popup unmounts (or, if that element is
+ * detached or disabled, to the element marked with `data-focus-fallback`).
  */
 export function useFocusScope(
   ref: RefObject<HTMLElement | null>,
@@ -31,7 +37,11 @@ export function useFocusScope(
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     (pickRef.current(root) ?? root).focus({ preventScroll: true });
     return () => {
-      if (opener?.isConnected) opener.focus({ preventScroll: true });
+      if (opener && opener.isConnected && !opener.matches(':disabled')) {
+        opener.focus({ preventScroll: true });
+        return;
+      }
+      document.querySelector<HTMLElement>(FOCUS_FALLBACK_SELECTOR)?.focus({ preventScroll: true });
     };
   }, [ref]);
 }
@@ -77,22 +87,17 @@ export function useClampedPosition(
   return pos;
 }
 
-/** Keeps Tab and Shift+Tab inside `root`; call from the keydown handler of a modal surface. */
+/**
+ * Keeps Tab and Shift+Tab inside `root`; call from the keydown handler of a modal surface. Ignores
+ * events another trap already handled and stops propagation once it acts, so nested traps do not fight.
+ */
 export function trapTab(e: React.KeyboardEvent<HTMLElement>, root: HTMLElement): void {
-  if (e.key !== 'Tab') return;
+  if (e.key !== 'Tab' || e.defaultPrevented) return;
   const focusable = getFocusable(root);
-  if (focusable.length === 0) {
-    e.preventDefault();
-    return;
-  }
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
-  const active = document.activeElement;
-  if (e.shiftKey && (active === first || active === root)) {
-    e.preventDefault();
-    last.focus();
-  } else if (!e.shiftKey && active === last) {
-    e.preventDefault();
-    first.focus();
-  }
+  const action = tabWrapAction(e.shiftKey, focusable.indexOf(document.activeElement as HTMLElement), focusable.length);
+  if (action === null) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (action === 'first') focusable[0].focus();
+  else if (action === 'last') focusable[focusable.length - 1].focus();
 }

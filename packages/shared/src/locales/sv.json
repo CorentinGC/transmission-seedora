@@ -257,6 +257,7 @@
     "editServer": "Redigera server",
     "addServerTitle": "Lägg till server",
     "noServer": "Ingen server",
+    "switcherLabel": "Byt server",
     "serverName": "Namn",
     "serverNamePlaceholder": "Min server",
     "host": "Värd",

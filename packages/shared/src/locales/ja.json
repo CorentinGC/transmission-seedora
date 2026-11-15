@@ -257,6 +257,7 @@
     "editServer": "サーバーを編集",
     "addServerTitle": "サーバーを追加",
     "noServer": "サーバーなし",
+    "switcherLabel": "サーバーを切り替え",
     "serverName": "名前",
     "serverNamePlaceholder": "マイサーバー",
     "host": "ホスト",

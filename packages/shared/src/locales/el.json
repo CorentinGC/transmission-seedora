@@ -257,6 +257,7 @@
     "editServer": "Επεξεργασία διακομιστή",
     "addServerTitle": "Προσθήκη διακομιστή",
     "noServer": "Κανένας διακομιστής",
+    "switcherLabel": "Αλλαγή διακομιστή",
     "serverName": "Όνομα",
     "serverNamePlaceholder": "Ο διακομιστής μου",
     "host": "Κεντρικός υπολογιστής",

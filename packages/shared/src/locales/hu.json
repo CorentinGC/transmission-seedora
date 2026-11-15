@@ -257,6 +257,7 @@
     "editServer": "Szerver szerkesztése",
     "addServerTitle": "Szerver hozzáadása",
     "noServer": "Nincs szerver",
+    "switcherLabel": "Szerverváltás",
     "serverName": "Név",
     "serverNamePlaceholder": "Saját szerver",
     "host": "Kiszolgáló",

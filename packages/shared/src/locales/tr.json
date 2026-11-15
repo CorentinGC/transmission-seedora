@@ -257,6 +257,7 @@
     "editServer": "Sunucuyu Düzenle",
     "addServerTitle": "Sunucu Ekle",
     "noServer": "Sunucu yok",
+    "switcherLabel": "Sunucu değiştir",
     "serverName": "Ad",
     "serverNamePlaceholder": "Sunucum",
     "host": "Ana Bilgisayar",

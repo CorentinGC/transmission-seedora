@@ -77,7 +77,7 @@ export function Toolbar({ filterPanelOpen, detailsPanelOpen, onToggleFilterPanel
 
   return (
     <>
-      <div role="toolbar" aria-label={t('app.name')} className="flex flex-wrap items-center gap-1 px-2 py-1.5 border-b bg-card">
+      <div className="flex flex-wrap items-center gap-1 px-2 py-1.5 border-b bg-card">
         <ServerSwitcher />
 
         <div className="w-px h-6 bg-border mx-1" />

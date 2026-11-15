@@ -26,6 +26,8 @@ export function Sheet({ label, onClose, side, children }: SheetProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
+      {/* Escape and the Tab trap are handled on the sheet; its controls are the interactive parts. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         ref={ref}
         role="dialog"

@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { isTypeaheadKey, menuNavigationTarget, typeaheadMatch, type TypeaheadState } from './keyboard-logic';
 import { useClampedPosition, useFocusScope, useOutsidePointerDown } from './popup';
 
 interface MenuProps {
@@ -23,7 +24,7 @@ function menuItems(root: HTMLElement): HTMLElement[] {
  */
 export function Menu({ x, y, label, onClose, className = 'w-56', children }: MenuProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const typeahead = useRef({ buffer: '', at: 0 });
+  const typeahead = useRef<TypeaheadState>({ buffer: '', at: 0 });
   const pos = useClampedPosition(ref, { x, y });
   useFocusScope(ref, (root) => menuItems(root)[0]);
   useOutsidePointerDown(ref, onClose);
@@ -32,46 +33,29 @@ export function Menu({ x, y, label, onClose, className = 'w-56', children }: Men
     if (!ref.current) return;
     const items = menuItems(ref.current);
     const current = items.indexOf(document.activeElement as HTMLElement);
-    const focusAt = (index: number) => {
+    const target = menuNavigationTarget(e.key, current, items.length);
+    if (target !== null) {
       e.preventDefault();
-      items[(index + items.length) % items.length]?.focus();
-    };
-
-    switch (e.key) {
-      case 'ArrowDown':
-        focusAt(current + 1);
-        return;
-      case 'ArrowUp':
-        focusAt(current === -1 ? items.length - 1 : current - 1);
-        return;
-      case 'Home':
-        focusAt(0);
-        return;
-      case 'End':
-        focusAt(items.length - 1);
-        return;
-      case 'Escape':
-        e.preventDefault();
-        e.stopPropagation();
-        onClose();
-        return;
-      case 'Tab':
-        e.preventDefault();
-        onClose();
-        return;
+      items[target].focus();
+      return;
     }
-
-    if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey || e.key === ' ') return;
-    const now = Date.now();
-    const state = typeahead.current;
-    state.buffer = now - state.at > 700 ? e.key.toLowerCase() : state.buffer + e.key.toLowerCase();
-    state.at = now;
-    const start = state.buffer.length === 1 ? current + 1 : current;
-    const ordered = [...items.slice(start), ...items.slice(0, start)];
-    const match = ordered.find((el) => el.textContent?.trim().toLowerCase().startsWith(state.buffer));
-    if (match) {
+    if (e.key === 'Escape') {
       e.preventDefault();
-      match.focus();
+      e.stopPropagation();
+      onClose();
+      return;
+    }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      onClose();
+      return;
+    }
+    if (!isTypeaheadKey(e)) return;
+    const labels = items.map((el) => el.textContent ?? '');
+    const match = typeaheadMatch(typeahead.current, e.key, Date.now(), labels, current);
+    if (match !== -1) {
+      e.preventDefault();
+      items[match].focus();
     }
   };
 

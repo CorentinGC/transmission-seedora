@@ -31,7 +31,7 @@ export function AppPrefsDialog({ onClose }: Props) {
       if (res?.data) setPrefs(res.data);
       setLoading(false);
     });
-  }, []);
+  }, [api]);
 
   const save = async () => {
     if (!prefs || !hasValidNumbers(prefs)) return;

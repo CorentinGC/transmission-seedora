@@ -61,6 +61,8 @@ export function PeersTab({ torrent }: Props) {
         <span role="columnheader" className="w-20 text-right">{t('peersTab.down')}</span>
         <span role="columnheader" className="w-20 text-right">{t('peersTab.up')}</span>
       </div>
+      {/* Focusable so keyboard users can scroll the list. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
       <div ref={scrollRef} role="rowgroup" tabIndex={0} aria-label={t('details.peers')} className="min-h-0 flex-1 overflow-auto focus-visible:outline-2 focus-visible:outline-ring">
         <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
           {virtualizer.getVirtualItems().map((item) => {

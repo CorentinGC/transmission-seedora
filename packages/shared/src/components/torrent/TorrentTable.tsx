@@ -6,7 +6,6 @@ import {
   getSortedRowModel,
   flexRender,
   type ColumnDef,
-  type Header,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useTorrentStore } from '../../stores/torrent-store';
@@ -17,6 +16,9 @@ import { HeaderContextMenu } from './HeaderContextMenu';
 import type { Torrent } from '../../types/torrent';
 import { ArrowUp, ArrowDown, Columns3 } from 'lucide-react';
 import { useGridNavigation } from './useGridNavigation';
+import { useHeaderKeyboard } from './useHeaderKeyboard';
+import { fitColumnWidth, measureContentWidth } from './column-utils';
+import { FOCUS_FALLBACK_ATTRIBUTE } from '../ui/popup';
 
 const LONG_PRESS_MS = 500;
 
@@ -214,48 +216,15 @@ export function TorrentTable({ torrents }: Props) {
   const handleResizeDoubleClick = useCallback((columnId: string, headerIndex: number) => {
     const bodyContainer = parentRef.current;
     if (!bodyContainer) return;
-
-    // Create off-screen measurement container
-    const measure = document.createElement('div');
-    measure.style.cssText = 'position:absolute;top:-9999px;left:-9999px;white-space:nowrap;visibility:hidden;';
-    document.body.appendChild(measure);
-
-    // Measure header
+    const sources: HTMLElement[] = [];
     const headerEl = headerRefs.current.get(columnId);
-    let maxWidth = 0;
-    if (headerEl) {
-      measure.className = headerEl.className;
-      measure.style.width = 'auto';
-      measure.style.position = 'absolute';
-      measure.style.visibility = 'hidden';
-      measure.style.whiteSpace = 'nowrap';
-      measure.innerHTML = headerEl.innerHTML;
-      maxWidth = measure.offsetWidth;
-    }
-
-    // Measure body cells
-    const rows = bodyContainer.querySelectorAll(':scope > div > div');
-    rows.forEach((row) => {
-      const cell = row.children[headerIndex] as HTMLElement | undefined;
-      if (cell) {
-        measure.className = cell.className;
-        measure.style.width = 'auto';
-        measure.style.position = 'absolute';
-        measure.style.visibility = 'hidden';
-        measure.style.whiteSpace = 'nowrap';
-        measure.innerHTML = cell.innerHTML;
-        maxWidth = Math.max(maxWidth, measure.offsetWidth);
-      }
+    if (headerEl) sources.push(headerEl);
+    bodyContainer.querySelectorAll(':scope > div > div').forEach((row) => {
+      const cell = row.children[headerIndex];
+      if (cell instanceof HTMLElement) sources.push(cell);
     });
-
-    document.body.removeChild(measure);
-
-    const col = table.getColumn(columnId);
-    const minSize = col?.columnDef.minSize ?? 40;
-    // Add 2px buffer to avoid sub-pixel rounding issues
-    const newWidth = Math.max(maxWidth + 2, minSize);
-
-    setColumnSizing({ ...columnSizing, [columnId]: newWidth });
+    const minSize = table.getColumn(columnId)?.columnDef.minSize ?? 40;
+    setColumnSizing({ ...columnSizing, [columnId]: fitColumnWidth(measureContentWidth(sources), minSize) });
   }, [columnSizing, setColumnSizing, table]);
 
   const gridId = useId();
@@ -264,6 +233,7 @@ export function TorrentTable({ torrents }: Props) {
   const [headerTabId, setHeaderTabId] = useState<string | null>(null);
   const visibleColumnIds = table.getVisibleLeafColumns().map((c) => c.id);
   const rowDomId = (id: number) => `${gridId}-r${id}`;
+  const cellDomId = (id: number, columnIndex: number) => `${rowDomId(id)}-c${columnIndex}`;
 
   const openRowMenu = useCallback(
     (id: number) => {
@@ -289,49 +259,27 @@ export function TorrentTable({ torrents }: Props) {
     openMenu: openRowMenu,
   });
 
+  const virtualItems = virtualizer.getVirtualItems();
+  // Only a rendered row can be an active descendant; the id points at its first gridcell.
+  const activeRowRendered =
+    nav.activeId !== null && virtualItems.some((v) => rows[v.index]?.original.id === nav.activeId);
+  const activeDescendant =
+    nav.focused && nav.activeId !== null && activeRowRendered ? cellDomId(nav.activeId, 0) : undefined;
+
   const openColumnsMenuAt = (el: HTMLElement) => {
     const rect = el.getBoundingClientRect();
     setHeaderMenu({ x: rect.left, y: rect.bottom });
   };
 
-  const moveColumn = (colId: string, direction: 1 | -1) => {
-    const target = visibleColumnIds[visibleColumnIds.indexOf(colId) + direction];
-    if (!target) return;
-    const order = [...effectiveColumnOrder];
-    order.splice(order.indexOf(colId), 1);
-    order.splice(order.indexOf(target) + (direction > 0 ? 1 : 0), 0, colId);
-    setColumnOrder(order);
-  };
-
-  /** Header keys: arrows move between headers, Alt+arrow reorders, Shift+arrow resizes, Enter sorts. */
-  const handleHeaderKeyDown = (e: React.KeyboardEvent<HTMLDivElement>, header: Header<Torrent, unknown>) => {
-    const cells = Array.from(headerRowRef.current?.querySelectorAll<HTMLElement>('[role="columnheader"]') ?? []);
-    const index = cells.indexOf(e.currentTarget);
-    const colId = header.column.id;
-    const direction = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      e.stopPropagation();
-      header.column.getToggleSortingHandler()?.(e);
-    } else if (direction !== 0 && e.altKey) {
-      e.preventDefault();
-      moveColumn(colId, direction);
-    } else if (direction !== 0 && e.shiftKey) {
-      e.preventDefault();
-      const min = header.column.columnDef.minSize ?? 40;
-      setColumnSizing({ ...columnSizing, [colId]: Math.max(min, header.getSize() + direction * 16) });
-    } else if (direction !== 0) {
-      e.preventDefault();
-      cells[index + direction]?.focus();
-    } else if (e.key === 'Home' || e.key === 'End') {
-      e.preventDefault();
-      cells[e.key === 'Home' ? 0 : cells.length - 1]?.focus();
-    } else if (e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey)) {
-      e.preventDefault();
-      openColumnsMenuAt(e.currentTarget);
-    }
-  };
+  const handleHeaderKeyDown = useHeaderKeyboard({
+    headerRowRef,
+    visibleColumnIds,
+    columnOrder: effectiveColumnOrder,
+    columnSizing,
+    setColumnOrder,
+    setColumnSizing,
+    openColumnsMenuAt,
+  });
 
   const syncScroll = (from: HTMLElement, to: HTMLElement | null) => {
     if (to && to.scrollLeft !== from.scrollLeft) to.scrollLeft = from.scrollLeft;
@@ -345,7 +293,8 @@ export function TorrentTable({ torrents }: Props) {
         aria-label={t('app.torrentList')}
         aria-rowcount={rows.length + 1}
         aria-multiselectable="true"
-        aria-activedescendant={nav.focused && nav.activeId !== null ? rowDomId(nav.activeId) : undefined}
+        aria-activedescendant={activeDescendant}
+        {...{ [FOCUS_FALLBACK_ATTRIBUTE]: '' }}
         tabIndex={0}
         onKeyDown={nav.onKeyDown}
         onFocus={nav.onFocus}
@@ -359,6 +308,8 @@ export function TorrentTable({ torrents }: Props) {
           className="overflow-hidden"
           onScroll={(e) => syncScroll(e.currentTarget, parentRef.current)}
         >
+          {/* The header context menu has keyboard equivalents (ContextMenu key on a header, the columns button). */}
+          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- focus lives on the column headers inside */}
           <div
             role="row"
             aria-rowindex={1}
@@ -407,7 +358,7 @@ export function TorrentTable({ torrents }: Props) {
                 );
               }),
             )}
-            <div role="presentation" className="sticky right-0 ml-auto flex items-center bg-muted">
+            <div role="columnheader" className="sticky right-0 ml-auto flex items-center bg-muted">
               <button
                 type="button"
                 aria-label={t('columnMenu.setupColumns')}
@@ -429,12 +380,14 @@ export function TorrentTable({ torrents }: Props) {
           onScroll={(e) => syncScroll(e.currentTarget, headerScrollRef.current)}
         >
           <div role="presentation" style={{ height: virtualizer.getTotalSize(), minWidth: table.getTotalSize(), position: 'relative' }}>
-            {virtualizer.getVirtualItems().map((virtualRow) => {
+            {virtualItems.map((virtualRow) => {
               const row = rows[virtualRow.index];
               const isSelected = selectedIds.has(row.original.id);
               const isActive = nav.focused && nav.activeId === row.original.id;
 
               return (
+                // Pointer shortcuts only: the grid owns keyboard focus and handles every row key (useGridNavigation).
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
                 <div
                   key={row.id}
                   id={rowDomId(row.original.id)}
@@ -451,9 +404,10 @@ export function TorrentTable({ torrents }: Props) {
                   onClick={(e) => { nav.setActiveId(row.original.id); handleRowClick(row.original.id, e); }}
                   onContextMenu={(e) => handleContextMenu(row.original.id, e)}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map((cell, cellIndex) => (
                     <div
                       key={cell.id}
+                      id={cellIndex === 0 ? cellDomId(row.original.id, 0) : undefined}
                       role="gridcell"
                       className="px-2 truncate"
                       style={{ width: cell.column.getSize(), minWidth: cell.column.columnDef.minSize }}

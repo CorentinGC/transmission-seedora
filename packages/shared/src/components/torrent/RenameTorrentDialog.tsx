@@ -46,7 +46,6 @@ export function RenameTorrentDialog({ torrentId, currentName, onClose }: Props) 
           className="w-full"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          autoFocus
           onKeyDown={(e) => e.key === 'Enter' && handleRename()}
         />
       </Field>

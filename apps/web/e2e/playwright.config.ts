@@ -25,21 +25,21 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
     {
-      command: 'node --no-warnings apps/web/e2e/fake-transmission.ts',
+      command: 'node --experimental-strip-types --no-warnings apps/web/e2e/fake-transmission.ts',
       cwd: '../../..',
       env: { FAKE_DAEMON_PORT: String(DAEMON_PORT) },
       port: DAEMON_PORT,
       reuseExistingServer: false,
     },
     {
-      command: "npm run dev:web",
+      command: 'npm run dev:web -- -H 127.0.0.1',
       cwd: '../../..',
       url: `http://localhost:${WEB_PORT}`,
       reuseExistingServer: false,
       timeout: 180_000,
       env: {
         SEEDORA_ALLOW_PRIVATE_HOSTS: 'true',
-        SEEDORA_ALLOWED_HOSTS: '127.0.0.1',
+        SEEDORA_ALLOWED_HOSTS: `127.0.0.1:${DAEMON_PORT}`,
         PORT: String(WEB_PORT),
         NEXT_TELEMETRY_DISABLED: '1',
       },

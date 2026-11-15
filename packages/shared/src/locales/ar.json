@@ -257,6 +257,7 @@
     "editServer": "تعديل الخادم",
     "addServerTitle": "إضافة خادم",
     "noServer": "لا يوجد خادم",
+    "switcherLabel": "تبديل الخادم",
     "serverName": "الاسم",
     "serverNamePlaceholder": "خادمي",
     "host": "المضيف",

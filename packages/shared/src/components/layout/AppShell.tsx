@@ -190,6 +190,8 @@ export function AppShell() {
             >
               <FilterSidebar torrents={Array.from(torrents.values())} />
             </div>
+            {/* A focusable separator is the ARIA window-splitter pattern (arrow keys resize). */}
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
             <div
               role="separator"
               aria-orientation="vertical"
@@ -197,6 +199,7 @@ export function AppShell() {
               aria-valuenow={filterPanelSize}
               aria-valuemin={80}
               aria-valuemax={400}
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
               tabIndex={0}
               className="w-1 cursor-col-resize bg-border hover:bg-primary/30 focus-visible:bg-primary/30 flex-shrink-0"
               onMouseDown={sidebar.onMouseDown}
@@ -208,6 +211,8 @@ export function AppShell() {
           <TorrentTable torrents={filteredTorrents} />
           {isDesktop && detailsPanelVisible && (
             <>
+              {/* A focusable separator is the ARIA window-splitter pattern (arrow keys resize). */}
+              {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
               <div
                 role="separator"
                 aria-orientation="horizontal"
@@ -215,6 +220,7 @@ export function AppShell() {
                 aria-valuenow={detailsPanelSize}
                 aria-valuemin={100}
                 aria-valuemax={500}
+                // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                 tabIndex={0}
                 className="h-1 cursor-row-resize bg-border hover:bg-primary/30 focus-visible:bg-primary/30 flex-shrink-0"
                 onMouseDown={details.onMouseDown}

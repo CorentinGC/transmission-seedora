@@ -142,6 +142,8 @@ export function TrackersTab({ torrent }: Props) {
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
                       className="flex-1 h-6 px-1.5 text-xs rounded border bg-background"
+                      // Entering edit mode on a row is an explicit user action; focus belongs in the field.
+                      // eslint-disable-next-line jsx-a11y/no-autofocus
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') saveEdit(ts.announce);

@@ -49,6 +49,8 @@ export function Dialog({ title, onClose, width = 'w-[420px]', maxHeight, footer,
         if (e.target === e.currentTarget) onClose();
       }}
     >
+      {/* The dialog itself handles Escape and the Tab trap; its controls are the interactive parts. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         ref={panelRef}
         role="dialog"

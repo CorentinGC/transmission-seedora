@@ -257,6 +257,7 @@
     "editServer": "Upravit server",
     "addServerTitle": "Přidat server",
     "noServer": "Žádný server",
+    "switcherLabel": "Přepnout server",
     "serverName": "Název",
     "serverNamePlaceholder": "Můj server",
     "host": "Hostitel",

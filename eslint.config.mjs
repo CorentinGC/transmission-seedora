@@ -77,6 +77,25 @@ export default tseslint.config(
   },
 
   {
+    // The privileged processes may import only the dependency-free `types` and `key-utils` from the
+    // shared UI package; anything else would bundle renderer code into main or preload.
+    files: ['src/main/**/*.ts', 'src/preload/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@shared/*', '!@shared/types', '!@shared/key-utils'],
+              message: 'main and preload may import only @shared/types and @shared/key-utils.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  {
     files: ['**/*.test.{ts,tsx}'],
     rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
   },

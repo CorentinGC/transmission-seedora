@@ -46,6 +46,8 @@ export function Tabs({ tabs, activeTab, onTabChange, size = 'default', id, label
 
   return (
     <div className="flex items-stretch border-b select-none overflow-x-auto">
+      {/* Roving tabindex: focus lives on the tabs, not on the tablist. */}
+      {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
       <div ref={listRef} role="tablist" aria-label={label} className="flex" onKeyDown={handleKeyDown}>
         {tabs.map((tab) => (
           <button

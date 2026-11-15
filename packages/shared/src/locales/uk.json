@@ -257,6 +257,7 @@
     "editServer": "Редагувати сервер",
     "addServerTitle": "Додати сервер",
     "noServer": "Немає сервера",
+    "switcherLabel": "Змінити сервер",
     "serverName": "Назва",
     "serverNamePlaceholder": "Мій сервер",
     "host": "Хост",

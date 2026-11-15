@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
-
-const PAGE_SIZE = 10;
+import { gridKeyAction } from './grid-keys';
 
 interface Options {
   /** Row ids in display order. */
@@ -29,43 +28,21 @@ export function useGridNavigation({ rowIds, selectedIds, select, toggle, extendT
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLElement>) => {
       if (e.target !== e.currentTarget || rowIds.length === 0) return;
-      const last = rowIds.length - 1;
-      const moveTo = (index: number) => {
-        e.preventDefault();
-        const next = Math.max(0, Math.min(last, index));
-        const id = rowIds[next];
+      const action = gridKeyAction(e, activeIndex, rowIds.length);
+      if (!action) return;
+      e.preventDefault();
+      if (action.type === 'move') {
+        const id = rowIds[action.index];
         setActiveId(id);
-        scrollToIndex(next);
-        if (e.ctrlKey || e.metaKey) return;
-        if (e.shiftKey) extendTo(id);
-        else select(id);
-      };
-
-      switch (e.key) {
-        case 'ArrowDown':
-          return moveTo(activeIndex + 1);
-        case 'ArrowUp':
-          return moveTo(activeIndex === -1 ? 0 : activeIndex - 1);
-        case 'PageDown':
-          return moveTo(activeIndex + PAGE_SIZE);
-        case 'PageUp':
-          return moveTo(activeIndex - PAGE_SIZE);
-        case 'Home':
-          return moveTo(0);
-        case 'End':
-          return moveTo(last);
+        scrollToIndex(action.index);
+        if (action.select === 'extend') extendTo(id);
+        else if (action.select === 'replace') select(id);
+        return;
       }
-
-      if (activeIndex === -1) return;
       const id = rowIds[activeIndex];
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        if (e.ctrlKey || e.metaKey) toggle(id);
-        else select(id);
-      } else if (e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey)) {
-        e.preventDefault();
-        openMenu(id);
-      }
+      if (action.type === 'toggle') toggle(id);
+      else if (action.type === 'select') select(id);
+      else openMenu(id);
     },
     [rowIds, activeIndex, select, toggle, extendTo, scrollToIndex, openMenu],
   );

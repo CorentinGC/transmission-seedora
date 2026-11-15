@@ -257,6 +257,7 @@
     "editServer": "Rediger server",
     "addServerTitle": "Tilføj server",
     "noServer": "Ingen server",
+    "switcherLabel": "Skift server",
     "serverName": "Navn",
     "serverNamePlaceholder": "Min server",
     "host": "Vært",

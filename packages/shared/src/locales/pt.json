@@ -257,6 +257,7 @@
     "editServer": "Editar servidor",
     "addServerTitle": "Adicionar servidor",
     "noServer": "Nenhum servidor",
+    "switcherLabel": "Mudar de servidor",
     "serverName": "Nome",
     "serverNamePlaceholder": "Meu servidor",
     "host": "Host",

@@ -257,6 +257,7 @@
     "editServer": "Server bewerken",
     "addServerTitle": "Server toevoegen",
     "noServer": "Geen server",
+    "switcherLabel": "Van server wisselen",
     "serverName": "Naam",
     "serverNamePlaceholder": "Mijn server",
     "host": "Host",

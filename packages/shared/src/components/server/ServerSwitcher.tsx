@@ -139,7 +139,7 @@ export function ServerSwitcher() {
       <button
         ref={triggerRef}
         type="button"
-        aria-haspopup="true"
+        aria-haspopup="dialog"
         aria-expanded={open}
         className="flex items-center gap-1.5 h-7 pointer-coarse:h-11 px-2 rounded hover:bg-accent text-sm"
         onClick={() => (open ? closeMenu() : setOpen(true))}
@@ -173,10 +173,16 @@ export function ServerSwitcher() {
       {open && (
         <>
           <div role="presentation" className="fixed inset-0 z-40" onClick={closeMenu} />
+          {/* Escape and focus-leave handling only; every control inside is a native button or input. */}
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
           <div
-            role="group"
-            aria-label={t('server.noServer')}
+            role="dialog"
+            aria-label={t('server.switcherLabel')}
             className="absolute top-full left-0 mt-1 w-72 max-w-[calc(100vw-1rem)] rounded-md border bg-popover shadow-lg z-50"
+            onBlur={(e) => {
+              const next = e.relatedTarget;
+              if (next instanceof Node && !e.currentTarget.contains(next) && next !== triggerRef.current) closeMenu();
+            }}
             onKeyDown={(e) => {
               if (e.key !== 'Escape') return;
               e.stopPropagation();

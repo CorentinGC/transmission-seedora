@@ -24,6 +24,8 @@ export function Popover({ x, y, label, onClose, placement = 'below', className =
   useOutsidePointerDown(ref, onClose);
 
   return (
+    // Escape and focus-leave handling on the popover container; its controls are the interactive parts.
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       ref={ref}
       role="dialog"

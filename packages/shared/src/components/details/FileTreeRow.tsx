@@ -90,6 +90,8 @@ export function FileTreeRow({
 
     return (
       <>
+        {/* Pointer convenience: the button inside is the keyboard and screen-reader path to the same toggle. */}
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <div
           className="flex items-center gap-1 px-1 py-0.5 hover:bg-accent cursor-pointer"
           style={{ paddingLeft: `${depth * 16 + 4}px` }}

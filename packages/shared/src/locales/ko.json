@@ -257,6 +257,7 @@
     "editServer": "서버 편집",
     "addServerTitle": "서버 추가",
     "noServer": "서버 없음",
+    "switcherLabel": "서버 전환",
     "serverName": "이름",
     "serverNamePlaceholder": "내 서버",
     "host": "호스트",

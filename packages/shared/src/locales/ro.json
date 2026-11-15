@@ -257,6 +257,7 @@
     "editServer": "Editează server",
     "addServerTitle": "Adaugă server",
     "noServer": "Niciun server",
+    "switcherLabel": "Schimbă serverul",
     "serverName": "Nume",
     "serverNamePlaceholder": "Serverul meu",
     "host": "Gazdă",

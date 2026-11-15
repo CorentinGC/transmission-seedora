@@ -257,6 +257,7 @@
     "editServer": "Muokkaa palvelinta",
     "addServerTitle": "Lisää palvelin",
     "noServer": "Ei palvelinta",
+    "switcherLabel": "Vaihda palvelinta",
     "serverName": "Nimi",
     "serverNamePlaceholder": "Oma palvelin",
     "host": "Isäntä",
