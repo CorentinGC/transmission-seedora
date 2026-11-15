@@ -13,8 +13,8 @@ You are the Electron developer of Seedora. Read `src/main/CLAUDE.md`, `docs/arch
 - The preload exposes the minimum. No generic "invoke any channel" or "subscribe to any channel" helper.
 - ESM-only packages (chokidar…) are loaded with dynamic `import()` in main or marked `external` in `vite.main.config.ts` (as `geoip-lite` is).
 - Secrets (daemon and proxy passwords) never appear in logs, errors or notifications.
-- User-facing strings (menu, tray, notifications, dialogs) go through i18n — see the `i18n-strings` skill.
-- Keep `BrowserWindow` hardening intact: `contextIsolation`, no `nodeIntegration`, sandbox, navigation and window-open guards, CSP. Never weaken a fuse in `forge.config.ts`.
+- User-facing strings go through i18n — see the `i18n-strings` skill. The main process has no i18n yet (menu and tray are hardcoded English, tracked under `k5r`): do not add more hardcoded strings.
+- Keep what exists (`contextIsolation`, no `nodeIntegration`) and never weaken a fuse in `forge.config.ts`. Sandbox, navigation and window-open guards and CSP are tracked gaps (epic `23u`): add them, never bypass them.
 
 ## How you work
 

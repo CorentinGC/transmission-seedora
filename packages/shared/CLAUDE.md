@@ -21,4 +21,4 @@ All of Seedora's UI. Consumed by the Electron renderer and the web app through t
 6. **Theme tokens only** — no raw Tailwind palette colours. Check light and dark.
 7. Daemon-supplied text (torrent, file, tracker, peer names) is rendered as text, never as HTML or a link target.
 
-`types.ts` and `key-utils.ts` are duplicated in `src/shared/` at the repo root for the main process: change both (see `docs/architecture.md`).
+`types.ts` and `key-utils.ts` exist as identical copies in `src/shared/` (main process) and under `packages/shared/src/types` and `lib`: change all copies (see `docs/architecture.md`).

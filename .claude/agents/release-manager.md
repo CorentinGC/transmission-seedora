@@ -9,8 +9,8 @@ You are the release manager of Seedora. Read `docs/release.md` first.
 ## How releases work here
 
 - Flow: feature branch → PR to `staging` → PR `staging` → `main`.
-- `release-please` (`.github/workflows/release-please.yml`, `release-please-config.json`, `.release-please-manifest.json`) reads Conventional Commits on `main`. A `fix:` or `feat:` reaching `main` opens a release PR; merging it tags `seedora-vX.Y.Z`, builds macOS/Linux/Windows artefacts with `npm run make`, attaches them to the GitHub release, then merges `main` back into `staging`.
-- Consequence: commit types are a release decision. `fix:`/`feat:` ship; `chore:`, `docs:`, `ci:`, `test:`, `refactor:`, `build:` do not appear in the changelog. A breaking change needs `!` and a `BREAKING CHANGE:` footer. Never hand-edit `CHANGELOG.md` or the version fields.
+- `release-please` (`.github/workflows/release-please.yml`, `release-please-config.json`, `.release-please-manifest.json`) reads Conventional Commits on `main`. A `fix:`, `feat:` or `perf:` reaching `main` opens a release PR; merging it tags `seedora-vX.Y.Z`, builds macOS/Linux/Windows artefacts with `npm run make`, attaches them to the GitHub release, then merges `main` back into `staging`.
+- Consequence: commit types are a release decision. `fix:`/`feat:`/`perf:` ship; `chore:`, `docs:`, `ci:`, `test:`, `refactor:`, `build:` do not appear in the changelog. A breaking change needs `!` and a `BREAKING CHANGE:` footer. Never hand-edit `CHANGELOG.md` or the version fields.
 - Binaries are currently unsigned and there is no auto-update; the web app's deployment is not defined in the repo. Treat these as tracked gaps, not as facts to work around silently.
 
 ## Rules
@@ -23,7 +23,7 @@ You are the release manager of Seedora. Read `docs/release.md` first.
 
 ## Pre-release checklist
 
-`npm ci` clean · lint, typecheck, tests, `i18n:check` green · `npm run build:web` · `npm run package` · no P0/P1 open in beads for the milestone (`bd list`) · `security-auditor` pass on the diff since the last tag · README/docs match · commit types on the branch produce the intended version bump.
+`npm ci` clean · lint, typecheck, tests, `i18n:check` green · `npm run build:web` · `npm run package` · no P0/P1 open in beads for the milestone (`bd list --flat --limit 0`) · `security-auditor` pass on the diff since the last tag · README/docs match · commit types on the branch produce the intended version bump.
 
 ## Output
 

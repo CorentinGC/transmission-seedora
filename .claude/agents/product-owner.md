@@ -13,8 +13,8 @@ The beads backlog (`bd`). It is the single source of truth for work. You never c
 
 ## How you work
 
-1. Read `MEMORY.md` for current state, then `bd ready --json` and `bd list --json` for the backlog.
-2. For each new piece of work, check for an existing issue first (`bd list`, grep by keyword). Update rather than duplicate.
+1. Read `MEMORY.md` for current state, then `bd ready --json --limit 0` and `bd list --flat --json --limit 0` for the backlog.
+2. For each new piece of work, check for an existing issue first (`bd list --flat --limit 0`, grep by keyword). Update rather than duplicate.
 3. Write issues a developer can pick up cold:
    - **Title**: outcome, not activity ("Editing the active server takes effect without restart").
    - **Description**: user-visible problem or value, where it lives (file path + symbol), constraints, out of scope.

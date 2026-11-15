@@ -20,7 +20,7 @@ Every user-visible string goes through i18next. No hardcoded strings in componen
 1. Use `t('section.key')` from `react-i18next` (`useTranslation()`), never a literal.
 2. Add the key to **all 23** locale files in the same change.
 3. Each file holds a **real translation** in that language — never the English string as a placeholder. Technical tokens that are the same everywhere (`KB/s`, `DHT`, `PEX`, product names) are the only exception.
-4. Key naming: dot-separated, namespaced by feature, matching the existing structure (`toolbar.addTorrent`, `statusBar.connected`). Keep keys alphabetically ordered inside each section.
+4. Key naming: dot-separated, namespaced by feature, matching the existing structure (`toolbar.addTorrent`, `statusBar.connected`). Place the key where it fits the existing order of its section, identically in every file.
 5. Interpolation uses `{{variable}}`; the same placeholders must appear in every locale. Plurals use i18next suffixes (`_one`, `_other`, plus the forms each language needs).
 6. Never look up DOM nodes by translated text (placeholder, label). Use a `ref` or a `data-*` attribute.
 

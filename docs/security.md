@@ -1,6 +1,6 @@
 # Security model
 
-This document describes the model **as it is today** and, separately, the known gaps. To report a vulnerability, see `SECURITY.md` at the repo root once it exists; until then, contact the maintainer privately rather than opening a public issue.
+This document describes the model **as it is today** and, separately, the known gaps. To report a vulnerability, see `SECURITY.md` at the repo root.
 
 ## Trust boundaries
 

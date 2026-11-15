@@ -5,6 +5,8 @@
  * Compares every locale in packages/shared/src/locales against en.json (source of truth)
  * and reports missing keys, extra keys, and placeholder mismatches ({{var}}).
  * Exit code 1 on any missing/extra key or placeholder mismatch.
+ * Plural forms (_zero|_one|_two|_few|_many|_other) are compared by base key, so each language
+ * may carry the forms it needs.
  *
  * Usage: node scripts/i18n-check.mjs [--json] [--untranslated]
  *   --untranslated  also list values identical to English (informational, never fails)
@@ -35,6 +37,20 @@ function flatten(node, prefix = '', out = {}) {
   return out;
 }
 
+const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/;
+
+/** Groups flat keys by base key (plural suffix removed) with the union of their placeholders. */
+function groupByBase(flat) {
+  const groups = new Map();
+  for (const [key, value] of Object.entries(flat)) {
+    const base = key.replace(PLURAL_SUFFIX, '');
+    const group = groups.get(base) ?? new Set();
+    for (const name of placeholders(value).split(',').filter(Boolean)) group.add(name);
+    groups.set(base, group);
+  }
+  return groups;
+}
+
 /** Returns the sorted list of {{placeholders}} used in a translation value. */
 function placeholders(value) {
   if (typeof value !== 'string') return '';
@@ -55,7 +71,8 @@ const locales = readdirSync(LOCALES_DIR)
   .sort();
 
 const source = load(SOURCE_LOCALE);
-const sourceKeys = Object.keys(source);
+const sourceGroups = groupByBase(source);
+const sourceKeys = [...sourceGroups.keys()];
 const report = {};
 let hasFailure = false;
 
@@ -69,12 +86,13 @@ for (const locale of locales) {
     hasFailure = true;
     continue;
   }
-  const missing = sourceKeys.filter((key) => !(key in translations));
-  const extra = Object.keys(translations).filter((key) => !(key in source));
+  const groups = groupByBase(translations);
+  const missing = sourceKeys.filter((key) => !groups.has(key));
+  const extra = [...groups.keys()].filter((key) => !sourceGroups.has(key));
   const placeholderMismatch = sourceKeys.filter(
-    (key) => key in translations && placeholders(source[key]) !== placeholders(translations[key]),
+    (key) => groups.has(key) && [...sourceGroups.get(key)].sort().join() !== [...groups.get(key)].sort().join(),
   );
-  const untranslated = sourceKeys.filter(
+  const untranslated = Object.keys(source).filter(
     (key) => typeof source[key] === 'string' && source[key].length > 3 && translations[key] === source[key],
   );
   if (missing.length || extra.length || placeholderMismatch.length) hasFailure = true;
@@ -105,4 +123,5 @@ if (asJson) {
   console.log(hasFailure ? 'FAIL' : 'OK — all locales in sync');
 }
 
-process.exit(hasFailure ? 1 : 0);
+// exitCode (not exit()) so piped stdout is fully flushed.
+process.exitCode = hasFailure ? 1 : 0;

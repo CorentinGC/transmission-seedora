@@ -16,7 +16,7 @@ UI components do not belong here: they go in `packages/shared/src/components`.
 
 1. **A server action is a public HTTP endpoint.** Anyone can call it with any arguments. Validate every argument at runtime; never assume the caller is our UI.
 2. **Never trust the cookie.** Its content is caller-controlled input: validate it like any other, and never put a secret in it unencrypted.
-3. **Outbound requests follow the host policy** in `docs/security.md` (default-deny private ranges, `SEEDORA_ALLOW_PRIVATE_HOSTS` opt-in). No new code path that fetches a caller-supplied URL without it.
+3. **Outbound requests follow the host policy** (guard not implemented yet: `c07.2`) in `docs/security.md` (default-deny private ranges, `SEEDORA_ALLOW_PRIVATE_HOSTS` opt-in). No new code path that fetches a caller-supplied URL without it.
 4. No credentials in logs, error messages or responses.
 5. Web has no Electron-only `PlatformApi` methods: provide a browser fallback or hide the feature.
 6. Verify UI changes with the `chrome-devtools-web` MCP server against `npm run dev:web` (started by the user), at mobile and desktop widths.

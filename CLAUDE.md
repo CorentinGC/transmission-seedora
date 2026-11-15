@@ -46,7 +46,7 @@ Run the gates that apply before reporting a task as done, and report their real 
 
 ## Never start the apps (MANDATORY)
 
-Never launch the Electron app or the web server yourself (`npm start`, `npm run start:debug`, `npm run dev:web`, `npm run start:web`). The user starts them. If you need one running, ask and wait.
+Never launch the Electron app or the web server yourself (`npm start`, `npm run start:debug`, `npm run dev:web`, `npm run start:web`). The user starts them. If you need one running, ask and wait. The deny list in `.claude/settings.json` is a backstop that cannot cover every spelling; this rule is the real one.
 
 ## UI verification (MANDATORY)
 
@@ -61,13 +61,13 @@ Screenshot the changed state (open the dialog/menu first), check the console, ch
 
 ## i18n (MANDATORY)
 
-Every user-facing string uses `t('section.key')` — components, native menu, tray, notifications, errors shown to the user. A new or changed key goes into **all 23** files in `packages/shared/src/locales/` with a **real translation**, never the English fallback. `npm run i18n:check` must pass. Workflow: `i18n-strings` skill; details: `docs/i18n.md`.
+Every user-facing string uses `t('section.key')` — components, notifications, errors shown to the user; the native menu and tray are hardcoded English until main-process i18n lands (`k5r`). A new or changed key goes into **all 23** files in `packages/shared/src/locales/` with a **real translation**, never the English fallback. `npm run i18n:check` must pass. Workflow: `i18n-strings` skill; details: `docs/i18n.md`.
 
 ## Security (MANDATORY)
 
 - The Electron renderer and every caller of a Next.js server action are untrusted. Validate on the trusted side (main process, server), every argument, every time.
 - IPC: channel names in `src/shared/ipc-channels.ts`; no renderer-supplied file path reaches `fs` unless it came from a dialog opened by main.
-- Web: server actions are public endpoints; outbound requests go through the host guard; credentials are never stored or sent unencrypted, never logged.
+- Web: server actions are public endpoints; outbound requests must go through the host guard (not implemented yet, `docs/security.md`, issue `c07.2`); credentials are never stored or sent unencrypted, never logged.
 - Do not weaken `BrowserWindow` options, the CSP, security headers or Electron fuses.
 - Model and known gaps: `docs/security.md`. Changes in these areas get a `security-auditor` pass.
 
@@ -88,7 +88,7 @@ Details: `docs/conventions.md`.
 ## Git and releases
 
 - Flow: branch from `staging` → PR to `staging` → PR `staging` → `main`. Never commit directly to `staging` or `main`.
-- Conventional Commits are required: release-please turns every `fix:` / `feat:` that reaches `main` into a release. Use `chore:`, `docs:`, `ci:`, `test:`, `refactor:`, `build:` for work that should not ship a version.
+- Conventional Commits are required: release-please turns every `fix:` / `feat:` / `perf:` that reaches `main` into a release. Use `chore:`, `docs:`, `ci:`, `test:`, `refactor:`, `build:` for work that should not ship a version.
 - Never push, open a PR, tag or publish without the user's explicit go-ahead. Never hand-edit `CHANGELOG.md` or version fields.
 - Details: `docs/release.md`.
 

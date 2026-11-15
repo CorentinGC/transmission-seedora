@@ -73,7 +73,7 @@ Rules:
 - Check `bd ready` before asking what to work on; claim an issue before starting it.
 - File newly discovered work as its own issue linked with `discovered-from`; do not silently widen the current task.
 - Close an issue only when its acceptance criteria are met and verified.
-- The live database is local (Dolt, git-ignored). The shared copy is `.beads/issues.jsonl`: run `bd export -o .beads/issues.jsonl` after changing issues and include the file in the commit, so the backlog travels with the branch. A fresh clone restores it with `bd import`.
+- The live database is local (Dolt, git-ignored). The shared copy is `.beads/issues.jsonl`: run `bd export -o .beads/issues.jsonl` after changing issues and include the file in the commit, so the backlog travels with the branch. A fresh clone restores it with `bd init --from-jsonl`.
 - bd installs git hooks through `core.hooksPath` (`.beads/hooks`); other hook tooling must chain with it.
 <!-- END BEADS INTEGRATION -->
 

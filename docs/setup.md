@@ -49,7 +49,7 @@ Builds are unsigned. See [release.md](release.md).
 | `npm run lint` | ESLint over `.ts` / `.tsx` |
 | `npm run generate:icons` | Regenerate app icons from the source PNG (`scripts/generate-icons.mjs`) |
 
-Run `npm run` for the current full list — check, test and i18n scripts are being added.
+Run `npm run` for the current full list. `npm run typecheck` and `npm run i18n:check` exist; a test runner is being added.
 
 ## Environment variables
 

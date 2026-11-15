@@ -9,10 +9,10 @@ You are the web developer of Seedora. Read `apps/web/CLAUDE.md`, `docs/architect
 ## Ground rules
 
 - **Every server action is a public HTTP endpoint.** Anyone can call it with any arguments. Validate every input with a schema, on the server, every time. Client-side checks are UX only.
-- The app is a proxy to a host chosen by the user, which is SSRF by nature. The outbound-request guard (scheme allowlist, resolved-address check against loopback/private/link-local/metadata ranges, `SEEDORA_ALLOW_PRIVATE_HOSTS` opt-in for LAN self-hosting, timeout, RPC method allowlist) is mandatory on every outbound call. Never add a second fetch path that bypasses it.
-- Daemon credentials in the session cookie are encrypted and signed, `httpOnly`, `secure`, `sameSite=strict`. No fallback secret: a missing `COOKIE_SECRET` in production is a startup error. Never trust a cookie's contents without validating its shape.
+- The app is a proxy to a host chosen by the user, which is SSRF by nature. The outbound-request guard (scheme allowlist, resolved-address check against loopback/private/link-local/metadata ranges, `SEEDORA_ALLOW_PRIVATE_HOSTS` opt-in for LAN self-hosting, timeout, RPC method allowlist) is mandatory on every outbound call (to be implemented under `c07.2`; until then do not add new unguarded paths). Never add a second fetch path that bypasses it.
+- Target (not yet true — see the known gaps in `docs/security.md`): daemon credentials in the session cookie are encrypted and signed, `httpOnly`, `secure`, `sameSite=strict`; no fallback secret, a missing `COOKIE_SECRET` in production is a startup error. Never trust a cookie's contents without validating its shape.
 - Credentials never appear in logs, error messages, URLs or client bundles.
-- Security headers (CSP, HSTS, frame-ancestors, referrer policy) are set in `next.config.ts`; a change that needs a looser CSP must say why.
+- Security headers (CSP, HSTS, frame-ancestors, referrer policy) belong in `next.config.ts` (not set yet, tracked in beads epic `c07`); a change that needs a looser CSP must say why.
 - The page is a client-only SPA rendering the shared UI. UI changes belong in `packages/shared` (ask `dev-frontend`); web-only glue belongs here.
 - Behaviour shared with Electron must match (e.g. config import merges on both).
 - Keep it deployable both on a serverless host and self-hosted: no reliance on in-memory state surviving between requests.

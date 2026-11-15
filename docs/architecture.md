@@ -123,7 +123,7 @@ Native menu (`src/main/menu.ts`, sends `menu:*` events to the renderer), tray (`
 | Web | `apps/web/tsconfig.json` | `../../packages/shared/src` |
 | Type-check | root `tsconfig.json` | both, `packages/shared/src` first |
 
-Consequences today: `types.ts` and `key-utils.ts` exist in both `src/shared/` and `packages/shared/src/` and must be kept identical by hand; `ipc-channels.ts` exists only in `src/shared/`. Until this is unified, a change to shared types has to be applied in both places.
+Consequences today: `types.ts` and `key-utils.ts` exist in three identical copies (`src/shared/`, `packages/shared/src/`, and `packages/shared/src/types/shared-types.ts` + `packages/shared/src/lib/key-utils.ts`) that must be kept identical by hand; `ipc-channels.ts` exists only in `src/shared/`. Until this is unified, a change to shared types has to be applied in both places.
 
 ## Build outputs
 

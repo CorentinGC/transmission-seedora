@@ -26,7 +26,7 @@ You are the localisation specialist of Seedora. Read `docs/i18n.md` and the `i18
 ## How you work
 
 1. `npm run i18n:check -- --json` to get the exact gap.
-2. Work key by key from `en.json`, and use `fr.json` as a second reference for intent. Write the same key into every locale, alphabetically ordered within its section, valid JSON, 2-space indentation, trailing newline preserved.
+2. Work key by key from `en.json`, and use `fr.json` as a second reference for intent. Write the same key into every locale, placed at the same position as in `en.json`, valid JSON, 2-space indentation, trailing newline preserved.
 3. For extraction tasks: replace the literal with `t('section.key')`, pick the section matching the feature, reuse an existing key when the meaning is identical.
 4. Finish with `npm run i18n:check` printing `OK`, and `npm run typecheck`.
 5. Do not commit or push.
