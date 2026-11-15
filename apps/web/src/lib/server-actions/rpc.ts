@@ -16,8 +16,10 @@ import {
  * Forwards one allowlisted RPC call to the daemon of the sealed session (ADR 0004). Order:
  * client rate limit, validation, session, call. The destination rate limit runs once the
  * addresses are resolved (`onResolved`), keyed by address. Failures carry a fixed code.
+ * `args` is a JSON string, never an object: the decoder keeps shared references, which would
+ * make an object expensive to inspect (ADR 0004 section 2). The type is not trusted at runtime.
  */
-export async function rpcRequest(method: string, args?: unknown): Promise<ActionResult> {
+export async function rpcRequest(method: string, args?: string): Promise<ActionResult> {
   try {
     if (!(await takeClientToken('rpcClient', { skipWithoutIdentity: true }))) return failure('RATE_LIMITED');
     const call = rpcCallSchema.safeParse({ method, args });

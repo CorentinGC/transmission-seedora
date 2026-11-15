@@ -54,8 +54,9 @@ export interface OutboundOptions {
   /** Can only lower the 8 MiB cap (the daemon's answer to most methods is a few KB). */
   maxResponseBytes?: number;
   /**
-   * Called with the validated addresses after policy passes and before any connection (used for
-   * the per-address rate limit, so alias names and extra addresses gain nothing). It may
+   * Called with the one address the call will connect to, after policy passed for all resolved
+   * addresses and before any connection (used for the per-address rate limit, so alias names
+   * gain nothing and extra addresses are not charged). It may
    * throw an `OutboundError` (e.g. RATE_LIMITED) to refuse the call; that error propagates as is.
    */
   onResolved?: (addresses: readonly ResolvedAddress[]) => void;
@@ -214,10 +215,12 @@ export async function postJson(
   const allowedHosts = options.allowedHosts === undefined ? getAllowedHosts() : options.allowedHosts;
   const allowPrivate = options.allowPrivate && (allowedHosts === null || isListedHost(allowedHosts, host, target.port));
   const addresses = await resolveAndValidate(host, allowPrivate, options.resolver ?? systemResolver, signal, options.clientKey);
-  options.onResolved?.(addresses);
-  // One slot and one share of the byte budget per resolved address: a name that lists a victim's
-  // address next to its own, or any number of alias names, counts against that address each time.
-  const keys = destinationKeys(addresses);
+  // Every resolved address was validated above, but the call connects to the first one only and
+  // all limits are charged to it alone: a name listing [attacker, victim] cannot drain the
+  // victim's gate, byte budget or rate tokens with calls that never reach the victim.
+  const pinned = [addresses[0]];
+  options.onResolved?.(pinned);
+  const keys = destinationKeys(pinned);
   const releaseDestination = (options.destinationGate ?? processDestinationGate).tryAcquireAll(keys);
   if (!releaseDestination) throw new OutboundError('RATE_LIMITED');
   const budget = options.byteBudget ?? processByteBudget;
@@ -258,7 +261,7 @@ export async function postJson(
         path: target.path,
         method: 'POST',
         headers,
-        lookup: createPinnedLookup(addresses),
+        lookup: createPinnedLookup(pinned),
         agent: false,
       });
     } catch {

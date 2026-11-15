@@ -43,7 +43,26 @@ describe('webApi RPC recovery', () => {
     expect(await webApi.rpcTorrentGet(['id'])).toEqual({ success: true, data: { torrents: [] } });
     expect(actions.setActiveServerCookie).toHaveBeenCalledTimes(1);
     expect(actions.rpcRequest).toHaveBeenCalledTimes(2);
-    expect(actions.rpcRequest).toHaveBeenLastCalledWith('torrent-get', { fields: ['id'] });
+    expect(actions.rpcRequest).toHaveBeenLastCalledWith('torrent-get', JSON.stringify({ fields: ['id'] }));
+  });
+});
+
+describe('webApi RPC arguments', () => {
+  it('sends the arguments as a JSON string, dropping undefined and turning NaN into null', async () => {
+    actions.rpcRequest.mockResolvedValue({ success: true, data: {} });
+    await webApi.rpcTorrentGet(['id']);
+    expect(actions.rpcRequest).toHaveBeenLastCalledWith('torrent-get', '{"fields":["id"]}');
+    await webApi.rpcSessionGet();
+    expect(actions.rpcRequest).toHaveBeenLastCalledWith('session-get', undefined);
+    await webApi.rpcSessionSet({ 'speed-limit-down': NaN, gone: undefined, kept: 1 });
+    expect(actions.rpcRequest).toHaveBeenLastCalledWith('session-set', '{"speed-limit-down":null,"kept":1}');
+  });
+
+  it('fails locally, without a server call, when the arguments cannot be serialised', async () => {
+    actions.rpcRequest.mockClear();
+    const result = await webApi.rpcSessionSet({ big: BigInt(1) });
+    expect(result).toMatchObject({ success: false });
+    expect(actions.rpcRequest).not.toHaveBeenCalled();
   });
 });
 

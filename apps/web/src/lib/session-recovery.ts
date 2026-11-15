@@ -46,7 +46,8 @@ async function resealFromStorage(): Promise<CodedResponse | null> {
 /**
  * Runs a server-action call. On `NO_SESSION` (first load after a deploy, secret rotation, expiry,
  * cleared cookie) it re-seals the cookie from `localStorage` and retries the call once (ADR 0002 section 6).
- * A re-seal that fails returns its own failure. A re-seal that succeeds but does not bring the
+ * A re-seal that fails returns its own failure (a `RATE_LIMITED` one also starts the cool-down).
+ * A re-seal that succeeds but does not bring the
  * session back stops further re-sealing for `RESEAL_COOLDOWN_MS` and returns `SESSION_UNAVAILABLE`.
  */
 export async function withSessionRecovery<T extends CodedResponse>(call: () => Promise<T>): Promise<T> {
@@ -58,7 +59,11 @@ export async function withSessionRecovery<T extends CodedResponse>(call: () => P
   });
   const resealed = await reseal;
   if (!resealed) return first;
-  if (!resealed.success) return resealed as T;
+  if (!resealed.success) {
+    // A rate-limited re-seal would be repeated by every poll tick and keep the limit saturated.
+    if (resealed.code === 'RATE_LIMITED') resealBlockedUntil = Date.now() + RESEAL_COOLDOWN_MS;
+    return resealed as T;
+  }
   const retry = await call();
   if (!retry.success && retry.code === 'NO_SESSION') {
     resealBlockedUntil = Date.now() + RESEAL_COOLDOWN_MS;

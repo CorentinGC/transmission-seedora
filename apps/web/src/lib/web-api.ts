@@ -3,6 +3,7 @@ import type { ServerConfig, NewServerConfig, IpcResponse, AppPreferences } from 
 import { rpcRequest as rpcAction, testServerConnection } from './server-actions/rpc';
 import { setActiveServerCookie, clearServerCookie } from './server-actions/session';
 import { geoipLookup as serverGeoipLookup } from './server-actions/geoip';
+import { ERROR_MESSAGES } from './server/errors';
 import { withSessionRecovery } from './session-recovery';
 import { GEOIP_CHUNK_SIZE, chunk, toServerTarget } from './server-target';
 import {
@@ -16,9 +17,20 @@ import {
 
 type RpcArgs = Record<string, unknown> | undefined;
 
-/** One RPC call through the server action, recovering once from a lost session cookie. */
+/**
+ * One RPC call through the server action. The arguments travel as a JSON string, so a decoded
+ * object graph never reaches the server (ADR 0004 section 2); `undefined` is dropped and `NaN`
+ * becomes null, as on the wire before. Recovers once from a lost
+ * session cookie.
+ */
 function rpcRequest(method: string, args?: RpcArgs): Promise<IpcResponse> {
-  return withSessionRecovery(() => rpcAction(method, args));
+  let text: string | undefined;
+  try {
+    text = args === undefined ? undefined : JSON.stringify(args);
+  } catch {
+    return Promise.resolve({ success: false, error: ERROR_MESSAGES.INVALID_INPUT });
+  }
+  return withSessionRecovery(() => rpcAction(method, text));
 }
 
 function generateId(): string {

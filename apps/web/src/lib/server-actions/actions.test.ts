@@ -105,7 +105,7 @@ describe('clearServerCookie', () => {
 describe('rpcRequest', () => {
   it('forwards an allowlisted call to the sealed target', async () => {
     await activate();
-    const result = await rpcRequest('torrent-get', { fields: ['id'] });
+    const result = await rpcRequest('torrent-get', JSON.stringify({ fields: ['id'] }));
     expect(result).toEqual({ success: true, data: { ok: true } });
     expect(post.fn.mock.calls[0][0]).toMatchObject({ host: 'nas.example.com', port: 9091, useSSL: true });
     expect(post.fn.mock.calls[0][2].allowPrivate).toBe(false);
@@ -121,12 +121,33 @@ describe('rpcRequest', () => {
 
   it('rejects oversized, non-object and prototype-polluting arguments', async () => {
     await activate();
-    const big = { 'metainfo': 'a'.repeat(1024 * 1024 + 1) };
+    const big = JSON.stringify({ 'metainfo': 'a'.repeat(1024 * 1024 + 1) });
     expect(await rpcRequest('torrent-add', big)).toMatchObject({ code: 'INVALID_INPUT' });
     expect(await rpcRequest('torrent-get', 'nope')).toMatchObject({ code: 'INVALID_INPUT' });
-    expect(await rpcRequest('torrent-get', JSON.parse('{"__proto__":{"x":1}}'))).toMatchObject({ code: 'INVALID_INPUT' });
-    expect(await rpcRequest('torrent-get', { ids: { evil: true } })).toMatchObject({ code: 'INVALID_INPUT' });
+    expect(await rpcRequest('torrent-get', '{"__proto__":{"x":1}}')).toMatchObject({ code: 'INVALID_INPUT' });
+    expect(await rpcRequest('torrent-get', '{"ids":{"evil":true}}')).toMatchObject({ code: 'INVALID_INPUT' });
     expect(post.fn).not.toHaveBeenCalled();
+  });
+
+  it('refuses a shared-reference DAG object quickly, before anything walks it (w0c)', async () => {
+    await activate();
+    // React's action decoder preserves shared references: 40 levels of {a: x, b: x} is 2^40 paths.
+    let node: Record<string, unknown> = { leaf: 'x' };
+    for (let i = 0; i < 40; i++) node = { a: node, b: node };
+    const started = performance.now();
+    // A hostile caller is not bound by the declared type.
+    expect(await rpcRequest('torrent-get', node as unknown as string)).toMatchObject({ code: 'INVALID_INPUT' });
+    expect(performance.now() - started).toBeLessThan(50);
+    expect(post.fn).not.toHaveBeenCalled();
+  });
+
+  it('refuses 5000-level deep arguments without logging an error (az8)', async () => {
+    await activate();
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const deep = '{"a":'.repeat(5000) + '1' + '}'.repeat(5000);
+    expect(await rpcRequest('torrent-get', deep)).toMatchObject({ code: 'INVALID_INPUT' });
+    expect(errors).not.toHaveBeenCalled();
+    errors.mockRestore();
   });
 
   it('returns NO_SESSION without a cookie, with a tampered one, and with the legacy base64 cookie', async () => {

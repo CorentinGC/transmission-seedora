@@ -8,8 +8,11 @@ import { canonicalClientKey } from './rate-limit';
 
 /** Total response bytes buffered by in-flight outbound calls in one process. */
 export const MAX_IN_FLIGHT_BYTES = 32 * 1024 * 1024;
-/** One destination may hold at most 1/N of the global byte budget, so one daemon cannot starve the rest. */
-export const DESTINATION_BUDGET_FRACTION = 4;
+/**
+ * One destination may hold at most 1/N of the global byte budget, so one daemon cannot starve the
+ * rest. Half: a legitimate 8 MiB `torrent-get` must not fail when two polls overlap (ADR 0003).
+ */
+export const DESTINATION_BUDGET_FRACTION = 2;
 /** Concurrent outbound calls towards one resolved address. */
 export const MAX_CONCURRENT_PER_DESTINATION = 8;
 /** Concurrent `getaddrinfo` calls; libuv's pool has 4 threads shared with fs and crypto. */
@@ -45,7 +48,7 @@ export interface ByteBudget {
   inUseBy(key: string): number;
 }
 
-/** Creates a byte budget of `limit` bytes where one key may hold at most `perKeyLimit` (default a quarter). */
+/** Creates a byte budget of `limit` bytes where one key may hold at most `perKeyLimit` (default half). */
 export function createByteBudget(limit: number, perKeyLimit = Math.floor(limit / DESTINATION_BUDGET_FRACTION)): ByteBudget {
   let used = 0;
   const byKey = new Map<string, number>();

@@ -8,7 +8,7 @@ import { DEFAULT_RPC_PATH } from '../server-target';
  * Schemas never echo input values in their messages, so a password cannot leak through an issue list.
  */
 
-/** Largest serialised `arguments` object accepted for an RPC call (matches Next's 1 MB action body limit). */
+/** Largest serialised `arguments` text accepted for an RPC call (matches Next's 1 MB action body limit). */
 export const MAX_ARGS_BYTES = 1024 * 1024;
 
 /** Largest GeoIP lookup batch; the client splits larger peer lists into chunks. */
@@ -135,40 +135,59 @@ const knownArgumentShapes: Record<string, z.ZodType> = {
 
 const jsonObjectSchema = z.record(z.string(), z.json());
 
+/** Deepest nesting of arrays and objects accepted in RPC arguments; the root object is level 1. */
+export const MAX_ARGS_DEPTH = 32;
+/** Most values (objects, arrays and scalars, counted once each) accepted in RPC arguments. */
+export const MAX_ARGS_NODES = 100_000;
+
 /**
- * The JSON round trip of `value` (what the old proxy sent on the wire): `undefined` values are
- * dropped and `NaN` becomes `null`. Null when `value` cannot be serialised (cycle, BigInt, too deep)
- * or is larger than `MAX_ARGS_BYTES`.
+ * Walks a parsed JSON value without recursion and refuses nesting beyond `MAX_ARGS_DEPTH`, more
+ * than `MAX_ARGS_NODES` values, or an own `__proto__` key at any level. `JSON.parse` output is a
+ * tree, so the walk is linear in the (already 1 MiB-capped) text.
  */
-function normaliseJson(value: unknown): unknown {
-  try {
-    const text = JSON.stringify(value);
-    if (text === undefined || Buffer.byteLength(text, 'utf8') > MAX_ARGS_BYTES) return INVALID;
-    return JSON.parse(text);
-  } catch {
-    return INVALID;
+function isWithinBudget(root: unknown): boolean {
+  const stack: Array<{ value: unknown; depth: number }> = [{ value: root, depth: 1 }];
+  let nodes = 0;
+  for (let item = stack.pop(); item !== undefined; item = stack.pop()) {
+    nodes += 1;
+    if (nodes > MAX_ARGS_NODES) return false;
+    const { value, depth } = item;
+    if (typeof value !== 'object' || value === null) continue;
+    if (depth > MAX_ARGS_DEPTH) return false;
+    if (Array.isArray(value)) {
+      for (const child of value) stack.push({ value: child, depth: depth + 1 });
+      continue;
+    }
+    for (const key of Object.keys(value)) {
+      if (key === '__proto__') return false;
+      stack.push({ value: (value as Record<string, unknown>)[key], depth: depth + 1 });
+    }
   }
+  return true;
 }
 
-const INVALID = Symbol('invalid');
-
 /**
- * Plain JSON object of at most 1 MiB. The value is normalised with a JSON round trip before any
- * check, so everything below sees exactly what would be forwarded. The daemon validates its own
- * semantics (ADR 0004 section 2), so only the well-known keys get a shape.
+ * The RPC arguments as the client sends them: a JSON string (ADR 0004 section 2). A string, not
+ * an object, because React's action decoder preserves shared references: a few hundred bytes of
+ * reference DAG would make any walk or `JSON.stringify` of a decoded object run for minutes. The
+ * text is length-capped first, then parsed (a tree by construction), then checked for depth and
+ * node budget and for the shape of the well-known keys. The daemon validates its own semantics
+ * (ADR 0004 section 2), so only the well-known keys get a shape.
  */
-const rpcArgsSchema = z.unknown().transform((raw, ctx): Record<string, z.core.util.JSONType> => {
+const rpcArgsSchema = z.string().transform((text, ctx): Record<string, z.core.util.JSONType> => {
   const fail = (): never => {
     ctx.addIssue({ code: 'custom', message: 'Invalid arguments' });
     return z.NEVER;
   };
-  // Classes, Maps and Dates pass `JSON.stringify` (as `{}` or a string): only plain objects are accepted.
-  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return fail();
-  const proto: unknown = Object.getPrototypeOf(raw);
-  if (proto !== Object.prototype && proto !== null) return fail();
-  const value = normaliseJson(raw);
-  if (value === INVALID) return fail();
-  if (typeof value === 'object' && value !== null && Object.hasOwn(value, '__proto__')) return fail();
+  if (text.length > MAX_ARGS_BYTES || Buffer.byteLength(text, 'utf8') > MAX_ARGS_BYTES) return fail();
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    return fail();
+  }
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return fail();
+  if (!isWithinBudget(value)) return fail();
   const parsed = jsonObjectSchema.safeParse(value);
   if (!parsed.success) return fail();
   const args = parsed.data;

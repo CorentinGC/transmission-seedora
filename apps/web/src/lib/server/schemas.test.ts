@@ -1,8 +1,10 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   MAX_ARGS_BYTES,
+  MAX_ARGS_DEPTH,
+  MAX_ARGS_NODES,
   MAX_GEOIP_IPS,
   RPC_METHODS,
   geoipInputSchema,
@@ -159,7 +161,10 @@ describe('RPC method allowlist', () => {
 });
 
 describe('RPC arguments', () => {
-  const call = (args: unknown, method = 'torrent-get') => rpcCallSchema.safeParse({ method, args });
+  /** `args` as the client sends it: a JSON string (ADR 0004 section 2). A string passes through as is. */
+  const call = (args: unknown, method = 'torrent-get') =>
+    rpcCallSchema.safeParse({ method, args: args === undefined ? undefined : JSON.stringify(args) });
+  const callRaw = (args: unknown, method = 'torrent-get') => rpcCallSchema.safeParse({ method, args });
 
   it('accepts absent args and typical shapes', () => {
     expect(rpcCallSchema.safeParse({ method: 'session-stats' }).success).toBe(true);
@@ -174,27 +179,35 @@ describe('RPC arguments', () => {
   });
 
   it('keeps unknown daemon keys (the daemon validates its own semantics)', () => {
-    const parsed = rpcCallSchema.parse({ method: 'session-set', args: { 'speed-limit-down': 100, nested: { a: [1, null] } } });
+    const parsed = rpcCallSchema.parse({ method: 'session-set', args: JSON.stringify({ 'speed-limit-down': 100, nested: { a: [1, null] } }) });
     expect(parsed.args).toEqual({ 'speed-limit-down': 100, nested: { a: [1, null] } });
   });
 
   it.each([
+    ['array', '[1,2]'],
+    ['string', '"x"'],
+    ['number', '5'],
+    ['null', 'null'],
+    ['not JSON', '{nope'],
+    ['empty', ''],
+  ])('rejects non-object JSON text: %s', (_label, text) => {
+    expect(callRaw(text).success).toBe(false);
+  });
+
+  it.each([
+    ['object', { fields: ['id'] }],
     ['array', [1, 2]],
-    ['string', 'x'],
+    ['Map', new Map()],
     ['number', 5],
     ['null', null],
-    ['Date', new Date()],
-    ['Map', new Map()],
-    ['class instance', new (class Foo { a = 1; })()],
-    ['bigint value', { a: BigInt(1) }],
-  ])('rejects non-JSON or non-plain args: %s', (_label, args) => {
-    expect(call(args).success).toBe(false);
+  ])('rejects args that are not a string (no object ever reaches JSON.stringify): %s', (_label, args) => {
+    expect(callRaw(args).success).toBe(false);
   });
 
   it('normalises like JSON.stringify: undefined values are dropped, NaN and Infinity become null', () => {
     const parsed = rpcCallSchema.parse({
       method: 'torrent-set',
-      args: { ids: [1], sequentialDownload: undefined, 'speed-limit-down': NaN, ratio: Infinity, nested: { gone: undefined, kept: 1 }, fn: () => 1, sym: Symbol('x') },
+      args: JSON.stringify({ ids: [1], sequentialDownload: undefined, 'speed-limit-down': NaN, ratio: Infinity, nested: { gone: undefined, kept: 1 }, fn: () => 1, sym: Symbol('x') }),
     });
     expect(parsed.args).toEqual({ ids: [1], 'speed-limit-down': null, ratio: null, nested: { kept: 1 } });
     expect(parsed.args).not.toHaveProperty('sequentialDownload');
@@ -212,7 +225,8 @@ describe('RPC arguments', () => {
   });
 
   it('rejects a prototype-pollution key', () => {
-    expect(call(JSON.parse('{"__proto__": {"polluted": true}}')).success).toBe(false);
+    expect(callRaw('{"__proto__": {"polluted": true}}').success).toBe(false);
+    expect(callRaw('{"a":{"__proto__":{"polluted":true}}}').success).toBe(false);
   });
 
   it('rejects malformed ids', () => {
@@ -251,11 +265,38 @@ describe('RPC arguments', () => {
     expect(call({ metainfo: '€'.repeat(chars) }, 'torrent-add').success).toBe(false);
   });
 
-  it('rejects absurdly deep nesting without throwing', () => {
-    let deep: unknown = 1;
-    for (let i = 0; i < 100_000; i++) deep = { a: deep };
-    expect(() => call({ deep })).not.toThrow();
-    expect(call({ deep }).success).toBe(false);
+  it('rejects absurdly deep nesting iteratively, without throwing or logging', () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const text = '{"a":'.repeat(5000) + '1' + '}'.repeat(5000);
+    expect(() => callRaw(text)).not.toThrow();
+    expect(callRaw(text).success).toBe(false);
+    expect(callRaw('['.repeat(200_000)).success).toBe(false);
+    expect(errors).not.toHaveBeenCalled();
+    errors.mockRestore();
+  });
+
+  it('accepts nesting up to the depth limit and refuses one level more', () => {
+    const nest = (levels: number) => '{"a":'.repeat(levels) + '1' + '}'.repeat(levels);
+    expect(callRaw(nest(MAX_ARGS_DEPTH - 1)).success).toBe(true);
+    expect(callRaw(nest(MAX_ARGS_DEPTH + 1)).success).toBe(false);
+  });
+
+  it('refuses a document with more nodes than the budget', () => {
+    expect(callRaw(JSON.stringify({ a: new Array(MAX_ARGS_NODES + 1).fill(0) })).success).toBe(false);
+    expect(callRaw(JSON.stringify({ a: new Array(1000).fill(0) })).success).toBe(true);
+  });
+
+  it('rejects a shared-reference DAG built in JS in under 50 ms, whether sent as an object or its text', () => {
+    const levels = 40;
+    let node: Record<string, unknown> = { leaf: 'x' };
+    for (let i = 0; i < levels; i++) node = { a: node, b: node };
+    const started = performance.now();
+    expect(callRaw(node).success).toBe(false);
+    expect(performance.now() - started).toBeLessThan(50);
+  });
+
+  it('caps the text length before parsing it', () => {
+    expect(callRaw(`{"a":"${'x'.repeat(MAX_ARGS_BYTES)}"}`).success).toBe(false);
   });
 });
 

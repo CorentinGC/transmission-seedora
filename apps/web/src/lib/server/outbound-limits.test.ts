@@ -7,7 +7,14 @@ import {
   destinationKey,
   destinationKeys,
 } from './outbound-limits';
-import { MAX_SLOT_WAITERS_PER_CLIENT, NEGATIVE_CACHE_TTL_MS, createSystemResolver } from './resolver';
+import {
+  MAX_HUNG_NAMES_PER_DOMAIN,
+  MAX_NEGATIVE_ENTRIES,
+  MAX_SLOT_WAITERS_PER_CLIENT,
+  MIN_HANG_MS,
+  NEGATIVE_CACHE_TTL_MS,
+  createSystemResolver,
+} from './resolver';
 
 /** A promise settled from outside. */
 function deferred<T = void>() {
@@ -49,20 +56,21 @@ describe('createByteBudget', () => {
 describe('per-destination byte budget (ick)', () => {
   const MiB = 1024 * 1024;
 
-  it('defaults a destination to a quarter of the global budget', () => {
+  it('defaults a destination to half of the global budget: two overlapping 8 MiB polls both fit', () => {
     const budget = createByteBudget(32 * MiB);
     expect(budget.reserve(8 * MiB, ['a'])).toBe(true);
+    expect(budget.reserve(8 * MiB, ['a'])).toBe(true);
     expect(budget.reserve(1, ['a'])).toBe(false);
-    expect(budget.inUseBy('a')).toBe(8 * MiB);
+    expect(budget.inUseBy('a')).toBe(16 * MiB);
   });
 
   it('destination A holding 4 x 8 MiB of demand does not block destination B', () => {
     const budget = createByteBudget(32 * MiB);
     const grants = [1, 2, 3, 4].map(() => budget.reserve(8 * MiB, ['a']));
-    expect(grants).toEqual([true, false, false, false]);
+    expect(grants).toEqual([true, true, false, false]);
     expect(budget.reserve(8 * MiB, ['b'])).toBe(true);
     expect(budget.reserve(8 * MiB, ['c'])).toBe(true);
-    expect(budget.inUse()).toBe(24 * MiB);
+    expect(budget.inUse()).toBe(32 * MiB);
   });
 
   it('still honours the global limit across many destinations', () => {
@@ -73,10 +81,10 @@ describe('per-destination byte budget (ick)', () => {
 
   it('charges every key of a multi-address call, refuses when any is full, and takes nothing then', () => {
     const budget = createByteBudget(32 * MiB);
-    expect(budget.reserve(8 * MiB, ['victim'])).toBe(true);
+    expect(budget.reserve(16 * MiB, ['victim'])).toBe(true);
     expect(budget.reserve(MiB, ['attacker', 'victim'])).toBe(false);
     expect(budget.inUseBy('attacker')).toBe(0);
-    expect(budget.inUse()).toBe(8 * MiB);
+    expect(budget.inUse()).toBe(16 * MiB);
   });
 
   it('releases what it reserved, per key, and forgets empty keys', () => {
@@ -322,6 +330,7 @@ describe('createSystemResolver', () => {
     const resolver = createSystemResolver(lookup, createLookupLimiter(3, 10), { now: () => now });
     const controller = new AbortController();
     const hung = resolver('hang.test', controller.signal, 'A');
+    now += MIN_HANG_MS;
     controller.abort();
     await codeOf(hung);
     expect(await codeOf(resolver('hang.test', signal(), 'B'))).toBe('DNS_FAILED');
@@ -345,5 +354,81 @@ describe('createSystemResolver', () => {
     expect(await codeOf(queued)).toBe('TIMEOUT');
     busy.resolve(OK);
     expect(await resolver('queued.test', signal(), 'B')).toHaveLength(2);
+  });
+  it('does not poison a healthy name whose queued lookup started just before its caller gave up (ol7)', async () => {
+    let now = 1_000;
+    const slow = deferred<Answer>();
+    const fast = deferred<Answer>();
+    const lookup = vi.fn((host: string) => (host === 'hog.test' ? slow.promise : host === 'fast.test' ? fast.promise : Promise.resolve(OK)));
+    const resolver = createSystemResolver(lookup, createLookupLimiter(1, 10), { now: () => now });
+    void resolver('hog.test', signal(), 'A');
+    const controller = new AbortController();
+    const queued = resolver('fast.test', controller.signal, 'B');
+    now += 14_000;
+    // The slot frees, the queued lookup starts, and its caller's deadline falls 10 ms later.
+    slow.resolve(OK);
+    await vi.waitFor(() => expect(lookup).toHaveBeenCalledWith('fast.test', expect.anything()));
+    now += 10;
+    controller.abort();
+    expect(await codeOf(queued)).toBe('TIMEOUT');
+    fast.resolve(OK);
+    expect(await resolver('fast.test', signal(), 'B')).toHaveLength(2);
+  });
+
+  it('refuses every name of a parent domain once several of its names hung, but not other domains (ol7)', async () => {
+    let now = 1_000;
+    const lookup = vi.fn((host: string) => (host.endsWith('evil.test') ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
+    const resolver = createSystemResolver(lookup, createLookupLimiter(MAX_HUNG_NAMES_PER_DOMAIN + 2, 10), { now: () => now });
+    for (let i = 0; i < MAX_HUNG_NAMES_PER_DOMAIN; i++) {
+      const controller = new AbortController();
+      const hung = resolver(`w${i}.evil.test`, controller.signal);
+      now += MIN_HANG_MS;
+      controller.abort();
+      await codeOf(hung);
+    }
+    const calls = lookup.mock.calls.length;
+    expect(await codeOf(resolver('fresh.evil.test', signal()))).toBe('DNS_FAILED');
+    expect(await codeOf(resolver('a.b.evil.test', signal(), 'C'))).toBe('DNS_FAILED');
+    expect(lookup).toHaveBeenCalledTimes(calls);
+    expect(await resolver('good.test', signal())).toHaveLength(2);
+    expect(lookup).toHaveBeenCalledTimes(calls + 1);
+    now += NEGATIVE_CACHE_TTL_MS + 1;
+    const again = new AbortController();
+    const retry = resolver('fresh.evil.test', again.signal);
+    expect(lookup).toHaveBeenCalledTimes(calls + 2);
+    again.abort();
+    await codeOf(retry);
+  });
+
+  it('fewer hung names than the threshold leave the rest of the domain usable', async () => {
+    let now = 1_000;
+    const lookup = vi.fn((host: string) => (host.startsWith('w') ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
+    const resolver = createSystemResolver(lookup, createLookupLimiter(8, 10), { now: () => now });
+    for (let i = 0; i < MAX_HUNG_NAMES_PER_DOMAIN - 1; i++) {
+      const controller = new AbortController();
+      const hung = resolver(`w${i}.zone.test`, controller.signal);
+      now += MIN_HANG_MS;
+      controller.abort();
+      await codeOf(hung);
+    }
+    expect(await resolver('ok.zone.test', signal())).toHaveLength(2);
+  });
+
+  it('keeps the negative cache and the per-domain counters within MAX_NEGATIVE_ENTRIES', async () => {
+    let now = 1_000;
+    const resolver = createSystemResolver(() => new Promise<Answer>(() => undefined), createLookupLimiter(MAX_NEGATIVE_ENTRIES + 10, 10), { now: () => now });
+    for (let i = 0; i < MAX_NEGATIVE_ENTRIES + 5; i++) {
+      const controller = new AbortController();
+      const hung = resolver(`h.d${i}.test`, controller.signal);
+      now += MIN_HANG_MS;
+      controller.abort();
+      await codeOf(hung);
+    }
+    // The oldest name was forgotten (a lookup starts again); the newest is still refused.
+    const oldest = new AbortController();
+    const retry = resolver('h.d0.test', oldest.signal);
+    oldest.abort();
+    expect(await codeOf(retry)).toBe('TIMEOUT');
+    expect(await codeOf(resolver(`h.d${MAX_NEGATIVE_ENTRIES + 4}.test`, signal()))).toBe('DNS_FAILED');
   });
 });

@@ -50,22 +50,15 @@ async function codeOf(promise: Promise<unknown>): Promise<ErrorCode | 'resolved'
 }
 
 describe('per-address concurrency gate (bth, 9s8)', () => {
-  it('a name resolving to [victim, D_i] counts against the victim each time: the 9th call is RATE_LIMITED', async () => {
-    const gate = createConcurrencyGate(8);
+  it('a name resolving to [A, B] charges the gate only to the one address it connects to (rkp)', async () => {
+    const gate = createConcurrencyGate(1);
     respond = (res) => pending.push(res);
-    const calls: Promise<unknown>[] = [];
-    for (let i = 1; i <= 8; i++) {
-      calls.push(postJson(target(), {}, { allowPrivate: true, allowedHosts: null, resolver: answering('127.0.0.1', `127.0.0.${i + 1}`), destinationGate: gate }));
-    }
-    await vi.waitFor(() => expect(pending).toHaveLength(8));
-    const ninth = postJson(target(), {}, { allowPrivate: true, allowedHosts: null, resolver: answering('127.0.0.1', '127.0.0.10'), destinationGate: gate });
-    expect(await codeOf(ninth)).toBe('RATE_LIMITED');
-    expect(pending).toHaveLength(8);
-    // The refused call took nothing: its other address is free.
-    expect(gate.tryAcquire('127.0.0.10')).not.toBeNull();
+    const call = postJson(target(), {}, { allowPrivate: true, allowedHosts: null, resolver: answering('127.0.0.1', '127.0.0.2'), destinationGate: gate });
+    await vi.waitFor(() => expect(pending).toHaveLength(1));
+    expect(gate.tryAcquire('127.0.0.1')).toBeNull();
+    expect(gate.tryAcquire('127.0.0.2')).not.toBeNull();
     pending.forEach((res) => res.end('{}'));
-    await Promise.all(calls);
-    expect(gate.size()).toBe(1);
+    await call;
   });
 
   it('alias names for the same address share one cap, and a different address does not', async () => {
@@ -78,17 +71,35 @@ describe('per-address concurrency gate (bth, 9s8)', () => {
     await first;
   });
 
-  it('hands the validated addresses to onResolved so callers can rate limit per address', async () => {
+  it('hands only the pinned address to onResolved, so the rate limit charges the address actually used (rkp)', async () => {
     const onResolved = vi.fn(() => { throw new OutboundError('RATE_LIMITED'); });
     expect(await codeOf(postJson(target(), {}, { allowPrivate: true, allowedHosts: null, resolver: answering('127.0.0.1', '127.0.0.2'), onResolved }))).toBe('RATE_LIMITED');
-    expect(onResolved).toHaveBeenCalledWith([
-      { address: '127.0.0.1', family: 4 },
-      { address: '127.0.0.2', family: 4 },
-    ]);
+    expect(onResolved).toHaveBeenCalledTimes(1);
+    expect(onResolved).toHaveBeenCalledWith([{ address: '127.0.0.1', family: 4 }]);
+  });
+
+  it('still refuses the whole call when any resolved address is forbidden, even one it would not connect to', async () => {
+    expect(await codeOf(postJson(target(), {}, { allowPrivate: true, allowedHosts: null, resolver: answering('127.0.0.1', '169.254.169.254') }))).toBe('HOST_NOT_ALLOWED');
   });
 });
 
 describe('per-destination byte budget (ick)', () => {
+  it('a name resolving to [A, B] with A streaming leaves B untouched (rkp)', async () => {
+    const budget = createByteBudget(32 * 1024 * 1024);
+    const gate = createConcurrencyGate(8);
+    respond = (res) => {
+      res.write(' '.repeat(2048));
+      pending.push(res);
+    };
+    const call = postJson(target(), {}, { allowPrivate: true, allowedHosts: null, resolver: answering('127.0.0.1', '127.0.0.2'), byteBudget: budget, destinationGate: gate });
+    await vi.waitFor(() => expect(budget.inUseBy('127.0.0.1')).toBeGreaterThan(0));
+    expect(budget.inUseBy('127.0.0.2')).toBe(0);
+    expect(gate.tryAcquire('127.0.0.2')).not.toBeNull();
+    expect(budget.reserve(16 * 1024 * 1024, ['127.0.0.2'])).toBe(true);
+    pending.forEach((res) => res.end('{}'));
+    await call;
+  });
+
   it('charges the response to the address key and gives it back', async () => {
     const budget = createByteBudget(8 * 1024 * 1024, 1024);
     const reserve = vi.spyOn(budget, 'reserve');

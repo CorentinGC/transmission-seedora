@@ -71,6 +71,20 @@ describe('withSessionRecovery', () => {
     expect(call).toHaveBeenCalledTimes(1);
   });
 
+  it('a re-seal refused with RATE_LIMITED starts the cool-down: a NO_SESSION within 30 s does not re-seal again (zcw)', async () => {
+    vi.useFakeTimers();
+    setCookie.fn.mockResolvedValue({ success: false, error: 'Too many requests, try again shortly', code: 'RATE_LIMITED' });
+    const call = vi.fn().mockResolvedValue(noSession);
+    await withSessionRecovery(call);
+    expect(setCookie.fn).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(RESEAL_COOLDOWN_MS - 1000);
+    expect(await withSessionRecovery(call)).toMatchObject({ success: false, code: 'SESSION_UNAVAILABLE' });
+    expect(setCookie.fn).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(2000);
+    await withSessionRecovery(call);
+    expect(setCookie.fn).toHaveBeenCalledTimes(2);
+  });
+
   it('seals the new active server when the active id changed while the cookie was being written', async () => {
     storage.servers = [
       { id: 'a', host: 'old.example.com', port: 1, path: '', useSSL: false },
