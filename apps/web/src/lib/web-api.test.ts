@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const storage = vi.hoisted(() => ({ activeId: null as string | null, servers: [] as Record<string, unknown>[] }));
+const storage = vi.hoisted(() => ({
+  activeId: null as string | null,
+  servers: [] as Record<string, unknown>[],
+  prefs: {} as Record<string, unknown>,
+}));
 const actions = vi.hoisted(() => ({
   rpcRequest: vi.fn(),
   testServerConnection: vi.fn(),
@@ -14,8 +18,8 @@ vi.mock('./web-storage', () => ({
   setServers: (s: Record<string, unknown>[]) => (storage.servers = s),
   getActiveServerId: () => storage.activeId,
   setActiveServerId: (id: string | null) => (storage.activeId = id),
-  getPreferences: () => ({}),
-  setPreferences: () => undefined,
+  getPreferences: () => storage.prefs,
+  setPreferences: (p: Record<string, unknown>) => (storage.prefs = { ...storage.prefs, ...p }),
 }));
 vi.mock('./server-actions/rpc', () => ({ rpcRequest: actions.rpcRequest, testServerConnection: actions.testServerConnection }));
 vi.mock('./server-actions/session', () => ({ setActiveServerCookie: actions.setActiveServerCookie, clearServerCookie: actions.clearServerCookie }));
@@ -31,6 +35,7 @@ beforeEach(() => {
   resetSessionRecovery();
   storage.activeId = 'a';
   storage.servers = [server];
+  storage.prefs = {};
   actions.setActiveServerCookie.mockResolvedValue({ success: true });
   actions.clearServerCookie.mockResolvedValue({ success: true });
 });
@@ -200,28 +205,78 @@ describe('webApi fail-closed re-seal', () => {
     actions.clearServerCookie.mockResolvedValue({ success: false, error: 'y', code: 'SERVER_MISCONFIGURED' });
     expect(await webApi.serverUpdate('a', { host: 'new.example.com' })).toMatchObject({ success: false, code: 'RATE_LIMITED' });
   });
+});
 
-  it('re-seals on import when the active server target changed', async () => {
-    expect(await webApi.configImport({ servers: [{ ...server, host: 'imported.example.com' }] })).toEqual({ success: true });
-    expect(actions.setActiveServerCookie).toHaveBeenCalledWith(expect.objectContaining({ host: 'imported.example.com' }));
+describe('webApi.configImport', () => {
+  const INVALID = { success: false, error: 'Import failed: invalid file' };
+  const fresh = { name: 'B', host: 'b.example.com', port: 9091, path: '/transmission/rpc', useSSL: false };
+
+  it('adds new servers with a fresh id, strips allowSelfSigned and reports counts', async () => {
+    const result = await webApi.configImport({ servers: [{ ...fresh, id: 'a', allowSelfSigned: true, extra: 1 }] });
+    expect(result).toEqual({ success: true, data: { serversAdded: 1, serversSkipped: 0, prefsImported: false } });
+    expect(storage.servers).toHaveLength(2);
+    expect(storage.servers[0]).toEqual(server);
+    const added = storage.servers[1];
+    expect(added.id).toEqual(expect.any(String));
+    expect(added.id).not.toBe('a');
+    expect(added).not.toHaveProperty('allowSelfSigned');
+    expect(added).not.toHaveProperty('extra');
   });
 
-  it('does not touch the cookie on import when the active target is unchanged', async () => {
-    await webApi.configImport({ servers: [{ ...server, name: 'Renamed' }] });
+  it('skips duplicates (host+port+path) against existing and earlier entries, never updating them', async () => {
+    const result = await webApi.configImport({
+      servers: [{ ...server, name: 'Renamed', username: 'u' }, fresh, { ...fresh, name: 'again' }, { ...fresh, path: '/other' }],
+    });
+    expect(result).toEqual({ success: true, data: { serversAdded: 2, serversSkipped: 2, prefsImported: false } });
+    expect(storage.servers[0]).toEqual(server);
+    expect(storage.servers.map((s) => s.path)).toEqual(['/transmission/rpc', '/transmission/rpc', '/other']);
+    expect(storage.servers[1].name).toBe('B');
+  });
+
+  it('compares host, port and path by exact string equality', async () => {
+    const result = await webApi.configImport({ servers: [{ ...server, host: 'NAS.example.com' }] });
+    expect(result).toMatchObject({ data: { serversAdded: 1 } });
+  });
+
+  it('leaves the active server, active id and cookie untouched', async () => {
+    await webApi.configImport({ servers: [{ ...server, name: 'Renamed' }, { ...fresh, host: 'imported.example.com' }] });
+    expect(storage.activeId).toBe('a');
     expect(actions.setActiveServerCookie).not.toHaveBeenCalled();
     expect(actions.clearServerCookie).not.toHaveBeenCalled();
   });
 
-  it('clears the cookie when the import fails to re-seal the changed active server', async () => {
-    actions.setActiveServerCookie.mockResolvedValue({ success: false, error: 'x', code: 'RATE_LIMITED' });
-    expect(await webApi.configImport({ servers: [{ ...server, host: 'imported.example.com' }] })).toMatchObject({ success: false, code: 'RATE_LIMITED' });
-    expect(actions.clearServerCookie).toHaveBeenCalledTimes(1);
+  it('applies nothing when any server is invalid', async () => {
+    storage.prefs = { theme: 'light' };
+    const result = await webApi.configImport({ servers: [fresh, { ...fresh, host: 'a/b' }], preferences: { theme: 'dark' } });
+    expect(result).toEqual(INVALID);
+    expect(storage.servers).toEqual([server]);
+    expect(storage.prefs).toEqual({ theme: 'light' });
   });
 
-  it('clears the cookie and the active id when the import drops the active server', async () => {
-    expect(await webApi.configImport({ servers: [{ ...server, id: 'z' }] })).toEqual({ success: true });
-    expect(actions.clearServerCookie).toHaveBeenCalledTimes(1);
-    expect(storage.activeId).toBeNull();
+  it('applies nothing when the preferences are invalid, without leaking details', async () => {
+    const result = await webApi.configImport({ servers: [fresh], preferences: { pollingInterval: 1 } });
+    expect(result).toEqual(INVALID);
+    expect(storage.servers).toEqual([server]);
+  });
+
+  it('rejects non-object payloads and oversized lists', async () => {
+    expect(await webApi.configImport(null as never)).toEqual(INVALID);
+    expect(await webApi.configImport({ servers: 'x' })).toEqual(INVALID);
+    expect(await webApi.configImport({ servers: Array(1001).fill(fresh) })).toEqual(INVALID);
+    expect(storage.servers).toEqual([server]);
+  });
+
+  it('patches preferences, keeps omitted keys and drops watchFolder', async () => {
+    storage.prefs = { theme: 'light', language: 'fr' };
+    const result = await webApi.configImport({ preferences: { theme: 'dark', watchFolder: '/etc', bogus: 1 } });
+    expect(result).toEqual({ success: true, data: { serversAdded: 0, serversSkipped: 0, prefsImported: true } });
+    expect(storage.prefs).toEqual({ theme: 'dark', language: 'fr' });
+  });
+
+  it('leaves preferences untouched when absent', async () => {
+    storage.prefs = { theme: 'light' };
+    await webApi.configImport({ servers: [fresh] });
+    expect(storage.prefs).toEqual({ theme: 'light' });
   });
 });
 

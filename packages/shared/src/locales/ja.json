@@ -338,16 +338,10 @@
     "showNotifications": "完了時に通知を表示",
     "display": "表示",
     "relativeDates": "相対日付を使用",
-    "confirmOnAdd": "トレント追加時に確認を表示",
     "watchFolder": "監視フォルダー",
     "watchFolderEnabled": ".torrent ファイルのフォルダーを監視",
     "watchFolderPlaceholder": "/監視/パス",
     "deleteWatchedTorrent": "追加後に .torrent ファイルを削除",
-    "pathMappings": "パスマッピング（リモート → ローカル）",
-    "pathMappingsAdd": "追加",
-    "pathMappingsHelp": "「フォルダーを開く」操作のために、リモートデーモンのパスをローカルパスにマッピングします。",
-    "remotePath": "リモートパス",
-    "localPath": "ローカルパス",
     "saveFailed": "設定を保存できませんでした。値を確認してもう一度お試しください。",
     "invalidValues": "更新間隔は250ミリ秒以上、速度プリセットは数値にしてください。",
     "importFailed": "インポートに失敗しました。"
@@ -364,5 +358,11 @@
     "clickToChangePriority": "クリックして優先度を変更",
     "doNotDownload": "ダウンロードしない",
     "download": "ダウンロード"
+  },
+  "errorBoundary": {
+    "title": "問題が発生しました",
+    "description": "アプリで予期しないエラーが発生しました。もう一度試すか、ウィンドウを再読み込みしてください。",
+    "retry": "再試行",
+    "reload": "再読み込み"
   }
 }

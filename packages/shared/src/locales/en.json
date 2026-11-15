@@ -380,16 +380,10 @@
     "showNotifications": "Show notifications on completion",
     "display": "Display",
     "relativeDates": "Use relative dates",
-    "confirmOnAdd": "Show confirmation when adding torrents",
     "watchFolder": "Watch Folder",
     "watchFolderEnabled": "Watch a folder for .torrent files",
     "watchFolderPlaceholder": "/path/to/watch",
     "deleteWatchedTorrent": "Delete .torrent file after adding",
-    "pathMappings": "Path Mappings (Remote → Local)",
-    "pathMappingsAdd": "Add",
-    "pathMappingsHelp": "Map remote daemon paths to local paths for \"Open folder\" actions.",
-    "remotePath": "Remote path",
-    "localPath": "Local path",
     "speedPresets": "Speed Presets",
     "speedPresetsHelp": "Quick speed limit values (KB/s) for the status bar popover.",
     "addPreset": "Add",
@@ -417,5 +411,11 @@
     "clickToChangePriority": "Click to change priority",
     "doNotDownload": "Do not download",
     "download": "Download"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "The app hit an unexpected error. You can try again or reload the window.",
+    "retry": "Try again",
+    "reload": "Reload"
   }
 }

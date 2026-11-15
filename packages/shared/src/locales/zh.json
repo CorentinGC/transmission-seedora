@@ -338,16 +338,10 @@
     "showNotifications": "完成时显示通知",
     "display": "显示",
     "relativeDates": "使用相对日期",
-    "confirmOnAdd": "添加种子时显示确认",
     "watchFolder": "监视文件夹",
     "watchFolderEnabled": "监视文件夹中的 .torrent 文件",
     "watchFolderPlaceholder": "/监视/路径",
     "deleteWatchedTorrent": "添加后删除 .torrent 文件",
-    "pathMappings": "路径映射（远程 → 本地）",
-    "pathMappingsAdd": "添加",
-    "pathMappingsHelp": "将远程守护进程路径映射到本地路径，用于“打开文件夹”操作。",
-    "remotePath": "远程路径",
-    "localPath": "本地路径",
     "saveFailed": "无法保存偏好设置。请检查输入的值后重试。",
     "invalidValues": "刷新间隔不得小于 250 毫秒，速度预设必须为数字。",
     "importFailed": "导入失败。"
@@ -364,5 +358,11 @@
     "clickToChangePriority": "点击更改优先级",
     "doNotDownload": "不下载",
     "download": "下载"
+  },
+  "errorBoundary": {
+    "title": "出错了",
+    "description": "应用遇到了意外错误。您可以重试或重新加载窗口。",
+    "retry": "重试",
+    "reload": "重新加载"
   }
 }

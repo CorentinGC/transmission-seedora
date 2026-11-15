@@ -338,16 +338,10 @@
     "showNotifications": "Mostra notifiche al completamento",
     "display": "Visualizzazione",
     "relativeDates": "Usa date relative",
-    "confirmOnAdd": "Mostra conferma all'aggiunta di torrent",
     "watchFolder": "Cartella monitorata",
     "watchFolderEnabled": "Monitora una cartella per file .torrent",
     "watchFolderPlaceholder": "/percorso/da/monitorare",
     "deleteWatchedTorrent": "Elimina file .torrent dopo l'aggiunta",
-    "pathMappings": "Mappatura percorsi (Remoto → Locale)",
-    "pathMappingsAdd": "Aggiungi",
-    "pathMappingsHelp": "Mappa i percorsi del daemon remoto a percorsi locali per le azioni \"Apri cartella\".",
-    "remotePath": "Percorso remoto",
-    "localPath": "Percorso locale",
     "saveFailed": "Impossibile salvare le preferenze. Controlla i valori e riprova.",
     "invalidValues": "L'intervallo di aggiornamento deve essere di almeno 250 ms e i preset di velocità devono essere numeri.",
     "importFailed": "Importazione non riuscita."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Clicca per cambiare la priorità",
     "doNotDownload": "Non scaricare",
     "download": "Scarica"
+  },
+  "errorBoundary": {
+    "title": "Qualcosa è andato storto",
+    "description": "L'app ha riscontrato un errore imprevisto. Puoi riprovare o ricaricare la finestra.",
+    "retry": "Riprova",
+    "reload": "Ricarica"
   }
 }

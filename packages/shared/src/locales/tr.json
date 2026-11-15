@@ -338,16 +338,10 @@
     "showNotifications": "Tamamlandığında bildirim göster",
     "display": "Görüntüleme",
     "relativeDates": "Göreli tarihler kullan",
-    "confirmOnAdd": "Torrent eklerken onay göster",
     "watchFolder": "İzleme Klasörü",
     "watchFolderEnabled": ".torrent dosyaları için bir klasör izle",
     "watchFolderPlaceholder": "/izlenecek/yol",
     "deleteWatchedTorrent": "Ekledikten sonra .torrent dosyasını sil",
-    "pathMappings": "Yol Eşlemeleri (Uzak → Yerel)",
-    "pathMappingsAdd": "Ekle",
-    "pathMappingsHelp": "\"Klasörü aç\" işlemleri için uzak arka plan hizmeti yollarını yerel yollara eşleyin.",
-    "remotePath": "Uzak yol",
-    "localPath": "Yerel yol",
     "saveFailed": "Tercihler kaydedilemedi. Değerleri kontrol edip tekrar deneyin.",
     "invalidValues": "Yenileme aralığı en az 250 ms olmalı ve hız ön ayarları sayı olmalıdır.",
     "importFailed": "İçe aktarma başarısız oldu."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Önceliği değiştirmek için tıklayın",
     "doNotDownload": "İndirme",
     "download": "İndir"
+  },
+  "errorBoundary": {
+    "title": "Bir şeyler ters gitti",
+    "description": "Uygulama beklenmeyen bir hatayla karşılaştı. Tekrar deneyebilir veya pencereyi yeniden yükleyebilirsiniz.",
+    "retry": "Tekrar dene",
+    "reload": "Yeniden yükle"
   }
 }

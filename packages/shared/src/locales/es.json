@@ -338,16 +338,10 @@
     "showNotifications": "Mostrar notificaciones al completar",
     "display": "Visualización",
     "relativeDates": "Usar fechas relativas",
-    "confirmOnAdd": "Mostrar confirmación al añadir torrents",
     "watchFolder": "Carpeta vigilada",
     "watchFolderEnabled": "Vigilar una carpeta en busca de archivos .torrent",
     "watchFolderPlaceholder": "/ruta/a/vigilar",
     "deleteWatchedTorrent": "Eliminar archivo .torrent después de añadir",
-    "pathMappings": "Mapeo de rutas (Remoto → Local)",
-    "pathMappingsAdd": "Añadir",
-    "pathMappingsHelp": "Mapear rutas del daemon remoto a rutas locales para acciones de \"Abrir carpeta\".",
-    "remotePath": "Ruta remota",
-    "localPath": "Ruta local",
     "saveFailed": "No se pudieron guardar las preferencias. Revise los valores e inténtelo de nuevo.",
     "invalidValues": "El intervalo de actualización debe ser de al menos 250 ms y los ajustes de velocidad deben ser números.",
     "importFailed": "Error al importar."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Clic para cambiar la prioridad",
     "doNotDownload": "No descargar",
     "download": "Descargar"
+  },
+  "errorBoundary": {
+    "title": "Algo salió mal",
+    "description": "La aplicación encontró un error inesperado. Puedes intentarlo de nuevo o recargar la ventana.",
+    "retry": "Reintentar",
+    "reload": "Recargar"
   }
 }

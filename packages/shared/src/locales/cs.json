@@ -338,16 +338,10 @@
     "showNotifications": "Zobrazovat oznámení při dokončení",
     "display": "Zobrazení",
     "relativeDates": "Používat relativní data",
-    "confirmOnAdd": "Zobrazit potvrzení při přidávání torrentů",
     "watchFolder": "Sledovaná složka",
     "watchFolderEnabled": "Sledovat složku pro soubory .torrent",
     "watchFolderPlaceholder": "/cesta/ke/složce",
     "deleteWatchedTorrent": "Smazat soubor .torrent po přidání",
-    "pathMappings": "Mapování cest (Vzdálený → Místní)",
-    "pathMappingsAdd": "Přidat",
-    "pathMappingsHelp": "Mapování cest vzdáleného démona na místní cesty pro akci \"Otevřít složku\".",
-    "remotePath": "Vzdálená cesta",
-    "localPath": "Místní cesta",
     "saveFailed": "Předvolby se nepodařilo uložit. Zkontrolujte hodnoty a zkuste to znovu.",
     "invalidValues": "Interval obnovení musí být alespoň 250 ms a předvolby rychlosti musí být čísla.",
     "importFailed": "Import se nezdařil."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Klikněte pro změnu priority",
     "doNotDownload": "Nestahovat",
     "download": "Stáhnout"
+  },
+  "errorBoundary": {
+    "title": "Něco se pokazilo",
+    "description": "Aplikace narazila na neočekávanou chybu. Můžete to zkusit znovu nebo okno načíst znovu.",
+    "retry": "Zkusit znovu",
+    "reload": "Načíst znovu"
   }
 }

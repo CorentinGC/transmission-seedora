@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import i18n from '@shared/lib/i18n';
 import { AppShell } from '@shared/components/layout/AppShell';
+import { ErrorBoundary } from '@shared/components/layout/ErrorBoundary';
 import { useServerStore } from '@shared/stores/server-store';
 import { useUiStore } from '@shared/stores/ui-store';
 import { useTrayAndNotifications } from './hooks/useTrayAndNotifications';
@@ -15,7 +16,6 @@ export function App() {
   const setTheme = useUiStore((s) => s.setTheme);
   const setPollingInterval = useUiStore((s) => s.setPollingInterval);
   const setRelativeDates = useUiStore((s) => s.setRelativeDates);
-  const setConfirmOnAdd = useUiStore((s) => s.setConfirmOnAdd);
 
   // Tray updates + completion notifications
   useTrayAndNotifications();
@@ -30,7 +30,6 @@ export function App() {
         setTheme(res.data.theme);
         setPollingInterval(res.data.pollingInterval);
         setRelativeDates(res.data.relativeDates);
-        setConfirmOnAdd(res.data.confirmOnAdd);
         if (res.data.language && res.data.language !== i18n.language) {
           i18n.changeLanguage(res.data.language);
         }
@@ -53,7 +52,7 @@ export function App() {
         }
       }
     });
-  }, [fetchServers, setTheme, setPollingInterval, setRelativeDates, setConfirmOnAdd]);
+  }, [fetchServers, setTheme, setPollingInterval, setRelativeDates]);
 
   // Auto-connect to the first server after servers are loaded
   useEffect(() => {
@@ -83,5 +82,9 @@ export function App() {
     }
   }, [theme]);
 
-  return <AppShell />;
+  return (
+    <ErrorBoundary>
+      <AppShell />
+    </ErrorBoundary>
+  );
 }

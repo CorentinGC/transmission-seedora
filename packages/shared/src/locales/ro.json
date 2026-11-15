@@ -338,16 +338,10 @@
     "showNotifications": "Afișează notificări la finalizare",
     "display": "Afișare",
     "relativeDates": "Folosește date relative",
-    "confirmOnAdd": "Afișează confirmare la adăugarea torrentelor",
     "watchFolder": "Folder de monitorizare",
     "watchFolderEnabled": "Monitorizează un folder pentru fișiere .torrent",
     "watchFolderPlaceholder": "/cale/către/folder",
     "deleteWatchedTorrent": "Șterge fișierul .torrent după adăugare",
-    "pathMappings": "Mapări de căi (La distanță → Local)",
-    "pathMappingsAdd": "Adaugă",
-    "pathMappingsHelp": "Mapează căile daemonului de la distanță la căi locale pentru acțiunea \"Deschide folder\".",
-    "remotePath": "Cale la distanță",
-    "localPath": "Cale locală",
     "saveFailed": "Preferințele nu au putut fi salvate. Verificați valorile și încercați din nou.",
     "invalidValues": "Intervalul de reîmprospătare trebuie să fie de cel puțin 250 ms, iar presetările de viteză trebuie să fie numere.",
     "importFailed": "Importul a eșuat."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Clic pentru a schimba prioritatea",
     "doNotDownload": "Nu descărca",
     "download": "Descarcă"
+  },
+  "errorBoundary": {
+    "title": "Ceva nu a mers bine",
+    "description": "Aplicația a întâmpinat o eroare neașteptată. Puteți încerca din nou sau reîncărca fereastra.",
+    "retry": "Încearcă din nou",
+    "reload": "Reîncarcă"
   }
 }

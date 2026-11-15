@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Download, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { AppPreferences, PathMapping } from '../../types';
+import type { AppPreferences } from '../../types';
 import { useUiStore } from '../../stores/ui-store';
 import { useApi } from '../../platform/api-context';
 import { availableLanguages, getLanguageName } from '../../lib/i18n-utils';
@@ -22,7 +22,6 @@ export function AppPrefsDialog({ onClose }: Props) {
   const setTheme = useUiStore((s) => s.setTheme);
   const setPollingInterval = useUiStore((s) => s.setPollingInterval);
   const setRelativeDates = useUiStore((s) => s.setRelativeDates);
-  const setConfirmOnAdd = useUiStore((s) => s.setConfirmOnAdd);
 
   useEffect(() => {
     api.prefsGet().then((res) => {
@@ -45,7 +44,6 @@ export function AppPrefsDialog({ onClose }: Props) {
     setTheme(prefs.theme);
     setPollingInterval(prefs.pollingInterval);
     setRelativeDates(prefs.relativeDates);
-    setConfirmOnAdd(prefs.confirmOnAdd);
 
     if (i18n.language !== prefs.language) {
       i18n.changeLanguage(prefs.language);
@@ -58,23 +56,6 @@ export function AppPrefsDialog({ onClose }: Props) {
 
   const updatePref = <K extends keyof AppPreferences>(key: K, value: AppPreferences[K]) => {
     setPrefs((p) => (p ? { ...p, [key]: value } : p));
-  };
-
-  const addMapping = () => {
-    if (!prefs) return;
-    updatePref('pathMappings', [...prefs.pathMappings, { remote: '', local: '' }]);
-  };
-
-  const updateMapping = (index: number, field: keyof PathMapping, value: string) => {
-    if (!prefs) return;
-    const mappings = [...prefs.pathMappings];
-    mappings[index] = { ...mappings[index], [field]: value };
-    updatePref('pathMappings', mappings);
-  };
-
-  const removeMapping = (index: number) => {
-    if (!prefs) return;
-    updatePref('pathMappings', prefs.pathMappings.filter((_, i) => i !== index));
   };
 
   const [backupMsg, setBackupMsg] = useState<string | null>(null);
@@ -235,7 +216,6 @@ export function AppPrefsDialog({ onClose }: Props) {
         <SectionHeading bordered>{t('prefs.display')}</SectionHeading>
         <div className="space-y-1">
           <Checkbox label={t('prefs.relativeDates')} checked={prefs.relativeDates} onChange={(e) => updatePref('relativeDates', (e.target as HTMLInputElement).checked)} />
-          <Checkbox label={t('prefs.confirmOnAdd')} checked={prefs.confirmOnAdd} onChange={(e) => updatePref('confirmOnAdd', (e.target as HTMLInputElement).checked)} />
         </div>
 
         {/* Watch Folder */}
@@ -260,31 +240,6 @@ export function AppPrefsDialog({ onClose }: Props) {
             <Checkbox label={t('prefs.deleteWatchedTorrent')} checked={prefs.deleteWatchedTorrent} onChange={(e) => updatePref('deleteWatchedTorrent', (e.target as HTMLInputElement).checked)} />
           </div>
         )}
-
-        {/* Path Mappings */}
-        <SectionHeading
-          bordered
-          action={
-            <Button size="xs" onClick={addMapping} className="flex items-center gap-1">
-              <Plus size={12} /> {t('prefs.pathMappingsAdd')}
-            </Button>
-          }
-        >
-          {t('prefs.pathMappings')}
-        </SectionHeading>
-        <p className="text-xs text-muted-foreground mb-2">{t('prefs.pathMappingsHelp')}</p>
-        <div className="space-y-2">
-          {prefs.pathMappings.map((mapping, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <Input inputSize="sm" className="flex-1" value={mapping.remote} onChange={(e) => updateMapping(i, 'remote', e.target.value)} placeholder={t('prefs.remotePath')} />
-              <span className="text-muted-foreground">→</span>
-              <Input inputSize="sm" className="flex-1" value={mapping.local} onChange={(e) => updateMapping(i, 'local', e.target.value)} placeholder={t('prefs.localPath')} />
-              <Button variant="ghost" size="xs" onClick={() => removeMapping(i)} className="text-muted-foreground p-1">
-                <Trash2 size={14} />
-              </Button>
-            </div>
-          ))}
-        </div>
 
         {/* Speed Presets */}
         <SectionHeading

@@ -16,7 +16,6 @@ export function WebApp() {
   const setTheme = useUiStore((s) => s.setTheme);
   const setPollingInterval = useUiStore((s) => s.setPollingInterval);
   const setRelativeDates = useUiStore((s) => s.setRelativeDates);
-  const setConfirmOnAdd = useUiStore((s) => s.setConfirmOnAdd);
 
   const api = useApi();
 
@@ -28,7 +27,6 @@ export function WebApp() {
         setTheme(res.data.theme);
         setPollingInterval(res.data.pollingInterval);
         setRelativeDates(res.data.relativeDates);
-        setConfirmOnAdd(res.data.confirmOnAdd);
         if (res.data.language && res.data.language !== i18n.language) {
           i18n.changeLanguage(res.data.language);
         }
@@ -51,7 +49,7 @@ export function WebApp() {
         }
       }
     });
-  }, [fetchServers, setTheme, setPollingInterval, setRelativeDates, setConfirmOnAdd]);
+  }, [fetchServers, setTheme, setPollingInterval, setRelativeDates]);
 
   // Auto-connect to the first server after servers are loaded
   useEffect(() => {

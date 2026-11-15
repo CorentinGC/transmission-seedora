@@ -29,7 +29,6 @@ interface UiStore {
   theme: 'light' | 'dark' | 'system';
   pollingInterval: number;
   relativeDates: boolean;
-  confirmOnAdd: boolean;
   speedPresets: number[] | null;
 
   // Dialogs
@@ -48,7 +47,6 @@ interface UiStore {
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   setPollingInterval: (interval: number) => void;
   setRelativeDates: (value: boolean) => void;
-  setConfirmOnAdd: (value: boolean) => void;
 }
 
 export const useUiStore = create<UiStore>((set) => ({
@@ -64,7 +62,6 @@ export const useUiStore = create<UiStore>((set) => ({
   theme: 'system',
   pollingInterval: 3000,
   relativeDates: false,
-  confirmOnAdd: true,
   speedPresets: null,
   removeDialogOpen: false,
 
@@ -90,6 +87,5 @@ export const useUiStore = create<UiStore>((set) => ({
   setTheme: (theme) => set({ theme }),
   setPollingInterval: (interval) => set({ pollingInterval: interval }),
   setRelativeDates: (value) => set({ relativeDates: value }),
-  setConfirmOnAdd: (value) => set({ confirmOnAdd: value }),
   setSpeedPresets: (presets) => set({ speedPresets: presets }),
 }));

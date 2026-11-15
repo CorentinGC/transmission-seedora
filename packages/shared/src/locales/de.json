@@ -338,16 +338,10 @@
     "showNotifications": "Benachrichtigungen bei Abschluss anzeigen",
     "display": "Anzeige",
     "relativeDates": "Relative Datumsangaben verwenden",
-    "confirmOnAdd": "Bestätigung beim Hinzufügen von Torrents anzeigen",
     "watchFolder": "Überwachungsordner",
     "watchFolderEnabled": "Ordner auf .torrent-Dateien überwachen",
     "watchFolderPlaceholder": "/pfad/zum/ordner",
     "deleteWatchedTorrent": ".torrent-Datei nach dem Hinzufügen löschen",
-    "pathMappings": "Pfadzuordnungen (Remote → Lokal)",
-    "pathMappingsAdd": "Hinzufügen",
-    "pathMappingsHelp": "Remote-Daemon-Pfade auf lokale Pfade für „Ordner öffnen“-Aktionen zuordnen.",
-    "remotePath": "Remote-Pfad",
-    "localPath": "Lokaler Pfad",
     "saveFailed": "Einstellungen konnten nicht gespeichert werden. Prüfen Sie die Werte und versuchen Sie es erneut.",
     "invalidValues": "Das Aktualisierungsintervall muss mindestens 250 ms betragen und die Geschwindigkeitsvorgaben müssen Zahlen sein.",
     "importFailed": "Import fehlgeschlagen."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Klicken, um Priorität zu ändern",
     "doNotDownload": "Nicht herunterladen",
     "download": "Herunterladen"
+  },
+  "errorBoundary": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Die App ist auf einen unerwarteten Fehler gestoßen. Sie können es erneut versuchen oder das Fenster neu laden.",
+    "retry": "Erneut versuchen",
+    "reload": "Neu laden"
   }
 }

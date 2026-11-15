@@ -338,16 +338,10 @@
     "showNotifications": "Vis notifikationer ved fuldførelse",
     "display": "Visning",
     "relativeDates": "Brug relative datoer",
-    "confirmOnAdd": "Vis bekræftelse ved tilføjelse af torrents",
     "watchFolder": "Overvåget mappe",
     "watchFolderEnabled": "Overvåg en mappe for .torrent-filer",
     "watchFolderPlaceholder": "/sti/til/mappe",
     "deleteWatchedTorrent": "Slet .torrent-fil efter tilføjelse",
-    "pathMappings": "Stitilknytninger (Fjern → Lokal)",
-    "pathMappingsAdd": "Tilføj",
-    "pathMappingsHelp": "Tilknyt fjernserverens stier til lokale stier for \"Åbn mappe\"-handlinger.",
-    "remotePath": "Fjernsti",
-    "localPath": "Lokal sti",
     "saveFailed": "Indstillingerne kunne ikke gemmes. Kontroller værdierne, og prøv igen.",
     "invalidValues": "Opdateringsintervallet skal være mindst 250 ms, og hastighedsforudindstillingerne skal være tal.",
     "importFailed": "Importen mislykkedes."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Klik for at ændre prioritet",
     "doNotDownload": "Download ikke",
     "download": "Download"
+  },
+  "errorBoundary": {
+    "title": "Noget gik galt",
+    "description": "Appen stødte på en uventet fejl. Du kan prøve igen eller genindlæse vinduet.",
+    "retry": "Prøv igen",
+    "reload": "Genindlæs"
   }
 }

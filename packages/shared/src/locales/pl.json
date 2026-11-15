@@ -338,16 +338,10 @@
     "showNotifications": "Pokazuj powiadomienia o ukończeniu",
     "display": "Wyświetlanie",
     "relativeDates": "Używaj dat względnych",
-    "confirmOnAdd": "Potwierdzaj dodawanie torrentów",
     "watchFolder": "Obserwowany folder",
     "watchFolderEnabled": "Obserwuj folder w poszukiwaniu plików .torrent",
     "watchFolderPlaceholder": "/ścieżka/do/obserwacji",
     "deleteWatchedTorrent": "Usuń plik .torrent po dodaniu",
-    "pathMappings": "Mapowanie ścieżek (Zdalne → Lokalne)",
-    "pathMappingsAdd": "Dodaj",
-    "pathMappingsHelp": "Mapuj ścieżki zdalnego demona na ścieżki lokalne dla akcji \"Otwórz folder\".",
-    "remotePath": "Ścieżka zdalna",
-    "localPath": "Ścieżka lokalna",
     "saveFailed": "Nie udało się zapisać preferencji. Sprawdź wartości i spróbuj ponownie.",
     "invalidValues": "Interwał odświeżania musi wynosić co najmniej 250 ms, a ustawienia prędkości muszą być liczbami.",
     "importFailed": "Import nie powiódł się."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Kliknij, aby zmienić priorytet",
     "doNotDownload": "Nie pobieraj",
     "download": "Pobierz"
+  },
+  "errorBoundary": {
+    "title": "Coś poszło nie tak",
+    "description": "Aplikacja napotkała nieoczekiwany błąd. Możesz spróbować ponownie lub przeładować okno.",
+    "retry": "Spróbuj ponownie",
+    "reload": "Przeładuj"
   }
 }

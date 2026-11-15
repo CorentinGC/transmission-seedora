@@ -338,16 +338,10 @@
     "showNotifications": "إظهار الإشعارات عند الاكتمال",
     "display": "العرض",
     "relativeDates": "استخدام تواريخ نسبية",
-    "confirmOnAdd": "إظهار تأكيد عند إضافة تورنتات",
     "watchFolder": "مجلد المراقبة",
     "watchFolderEnabled": "مراقبة مجلد لملفات .torrent",
     "watchFolderPlaceholder": "/المسار/للمراقبة",
     "deleteWatchedTorrent": "حذف ملف .torrent بعد الإضافة",
-    "pathMappings": "تعيين المسارات (بعيد → محلي)",
-    "pathMappingsAdd": "إضافة",
-    "pathMappingsHelp": "تعيين مسارات البرنامج الخفي البعيد إلى مسارات محلية لإجراءات \"فتح المجلد\".",
-    "remotePath": "المسار البعيد",
-    "localPath": "المسار المحلي",
     "saveFailed": "تعذّر حفظ التفضيلات. تحقق من القيم وحاول مرة أخرى.",
     "invalidValues": "يجب ألا تقل فترة التحديث عن 250 ملي ثانية ويجب أن تكون إعدادات السرعة المسبقة أرقامًا.",
     "importFailed": "فشل الاستيراد."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "انقر لتغيير الأولوية",
     "doNotDownload": "عدم التنزيل",
     "download": "تنزيل"
+  },
+  "errorBoundary": {
+    "title": "حدث خطأ ما",
+    "description": "واجه التطبيق خطأً غير متوقع. يمكنك المحاولة مرة أخرى أو إعادة تحميل النافذة.",
+    "retry": "إعادة المحاولة",
+    "reload": "إعادة التحميل"
   }
 }

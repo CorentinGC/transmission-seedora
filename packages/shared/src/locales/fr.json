@@ -380,16 +380,10 @@
     "showNotifications": "Afficher les notifications à la fin du téléchargement",
     "display": "Affichage",
     "relativeDates": "Utiliser les dates relatives",
-    "confirmOnAdd": "Afficher la confirmation lors de l'ajout de torrents",
     "watchFolder": "Dossier surveillé",
     "watchFolderEnabled": "Surveiller un dossier pour les fichiers .torrent",
     "watchFolderPlaceholder": "/chemin/vers/dossier",
     "deleteWatchedTorrent": "Supprimer le fichier .torrent après l'ajout",
-    "pathMappings": "Correspondances de chemins (Distant → Local)",
-    "pathMappingsAdd": "Ajouter",
-    "pathMappingsHelp": "Associer les chemins du daemon distant aux chemins locaux pour les actions « Ouvrir le dossier ».",
-    "remotePath": "Chemin distant",
-    "localPath": "Chemin local",
     "speedPresets": "Préréglages de vitesse",
     "speedPresetsHelp": "Valeurs rapides de limite de vitesse (Ko/s) pour le popover de la barre d'état.",
     "addPreset": "Ajouter",
@@ -417,5 +411,11 @@
     "clickToChangePriority": "Cliquer pour changer la priorité",
     "doNotDownload": "Ne pas télécharger",
     "download": "Télécharger"
+  },
+  "errorBoundary": {
+    "title": "Une erreur est survenue",
+    "description": "L'application a rencontré une erreur inattendue. Vous pouvez réessayer ou recharger la fenêtre.",
+    "retry": "Réessayer",
+    "reload": "Recharger"
   }
 }

@@ -338,16 +338,10 @@
     "showNotifications": "Értesítések megjelenítése befejezéskor",
     "display": "Megjelenítés",
     "relativeDates": "Relatív dátumok használata",
-    "confirmOnAdd": "Megerősítés kérése torrent hozzáadásakor",
     "watchFolder": "Figyelt mappa",
     "watchFolderEnabled": "Mappa figyelése .torrent fájlokra",
     "watchFolderPlaceholder": "/útvonal/a/mappához",
     "deleteWatchedTorrent": ".torrent fájl törlése hozzáadás után",
-    "pathMappings": "Útvonal leképezések (Távoli → Helyi)",
-    "pathMappingsAdd": "Hozzáadás",
-    "pathMappingsHelp": "Távoli daemon útvonalak leképezése helyi útvonalakra a \"Mappa megnyitása\" művelethez.",
-    "remotePath": "Távoli útvonal",
-    "localPath": "Helyi útvonal",
     "saveFailed": "A beállítások mentése sikertelen. Ellenőrizze az értékeket, és próbálja újra.",
     "invalidValues": "A frissítési időköznek legalább 250 ms-nak kell lennie, a sebesség-előbeállításoknak pedig számoknak kell lenniük.",
     "importFailed": "Az importálás sikertelen."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Kattintson a prioritás módosításához",
     "doNotDownload": "Ne töltse le",
     "download": "Letöltés"
+  },
+  "errorBoundary": {
+    "title": "Hiba történt",
+    "description": "Az alkalmazás váratlan hibába ütközött. Próbálja újra, vagy töltse újra az ablakot.",
+    "retry": "Újrapróbálás",
+    "reload": "Újratöltés"
   }
 }

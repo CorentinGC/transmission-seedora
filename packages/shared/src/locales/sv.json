@@ -338,16 +338,10 @@
     "showNotifications": "Visa aviseringar vid slutförande",
     "display": "Visning",
     "relativeDates": "Använd relativa datum",
-    "confirmOnAdd": "Visa bekräftelse vid tillägg av torrents",
     "watchFolder": "Bevakad mapp",
     "watchFolderEnabled": "Bevaka en mapp för .torrent-filer",
     "watchFolderPlaceholder": "/sökväg/till/mapp",
     "deleteWatchedTorrent": "Ta bort .torrent-fil efter tillägg",
-    "pathMappings": "Sökvägsmappningar (Fjärr → Lokal)",
-    "pathMappingsAdd": "Lägg till",
-    "pathMappingsHelp": "Mappa fjärrdaemonens sökvägar till lokala sökvägar för \"Öppna mapp\"-åtgärder.",
-    "remotePath": "Fjärrsökväg",
-    "localPath": "Lokal sökväg",
     "saveFailed": "Det gick inte att spara inställningarna. Kontrollera värdena och försök igen.",
     "invalidValues": "Uppdateringsintervallet måste vara minst 250 ms och hastighetsförinställningarna måste vara tal.",
     "importFailed": "Importen misslyckades."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Klicka för att ändra prioritet",
     "doNotDownload": "Ladda inte ner",
     "download": "Ladda ner"
+  },
+  "errorBoundary": {
+    "title": "Något gick fel",
+    "description": "Appen stötte på ett oväntat fel. Du kan försöka igen eller ladda om fönstret.",
+    "retry": "Försök igen",
+    "reload": "Ladda om"
   }
 }

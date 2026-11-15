@@ -90,9 +90,52 @@ describe('applyImport', () => {
     expect(store.updatePreferences).toHaveBeenCalledWith({ theme: 'dark' });
     expect(store.addServer).toHaveBeenCalledTimes(1);
   });
+
+  it('dedupes by host+port+path only, ignoring name, SSL and credentials', () => {
+    store.getServers.mockReturnValue([{ ...server, id: 'x' }]);
+    const res = applyImport({
+      servers: [
+        { ...server, name: 'renamed', useSSL: true, username: 'u', password: 'p' },
+        { ...server, port: 9092 },
+        { ...server, path: '/other/rpc' },
+      ],
+    });
+    expect(res.data).toEqual({ serversAdded: 2, serversSkipped: 1, prefsImported: false });
+  });
+
+  it('dedupes duplicates inside the file itself and regenerates ids', () => {
+    const res = applyImport({ servers: [{ ...server, id: 'from-file' }, { ...server, id: 'other-id' }] });
+    expect(res.data).toEqual({ serversAdded: 1, serversSkipped: 1, prefsImported: false });
+    const added = store.addServer.mock.calls[0]?.[0];
+    expect(added.id).not.toBe('from-file');
+    expect(added.id).toEqual(expect.any(String));
+  });
+
+  it('never replaces or removes existing servers and leaves the active server untouched', () => {
+    store.getServers.mockReturnValue([{ ...server, id: 'x' }]);
+    applyImport({ servers: [{ ...server, host: 'new' }] });
+    expect(store.removeServer).not.toHaveBeenCalled();
+    expect(store.updateServer).not.toHaveBeenCalled();
+    expect(store.setActiveServerId).not.toHaveBeenCalled();
+    expect(manager.setActiveServer).not.toHaveBeenCalled();
+    expect(manager.removeClient).not.toHaveBeenCalled();
+  });
+
+  it('reports a servers-only and a preferences-only import', () => {
+    expect(applyImport({ servers: [server] }).data).toEqual({ serversAdded: 1, serversSkipped: 0, prefsImported: false });
+    expect(store.updatePreferences).not.toHaveBeenCalled();
+    expect(applyImport({ preferences: { theme: 'dark' } }).data).toEqual({ serversAdded: 0, serversSkipped: 0, prefsImported: true });
+    expect(store.addServer).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('CONFIG_IMPORT', () => {
+  it('rejects a payload with an invalid server host (no cast through)', async () => {
+    const res = await call(IPC.CONFIG_IMPORT, { servers: [{ ...server, host: 'a/b' }] });
+    expect(res.success).toBe(false);
+    expect(store.addServer).not.toHaveBeenCalled();
+  });
+
   it('refuses a filePath that no dialog returned', async () => {
     const file = path.join(dir, 'unapproved.json');
     fs.writeFileSync(file, JSON.stringify({ servers: [server] }));

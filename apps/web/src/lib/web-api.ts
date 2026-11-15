@@ -4,6 +4,7 @@ import { rpcRequest as rpcAction, testServerConnection } from './server-actions/
 import { setActiveServerCookie, clearServerCookie } from './server-actions/session';
 import { geoipLookup as serverGeoipLookup } from './server-actions/geoip';
 import { ERROR_MESSAGES } from './server/errors';
+import { importDataSchema } from './config-import-schema';
 import { withSessionRecovery } from './session-recovery';
 import { GEOIP_CHUNK_SIZE, chunk, toServerTarget } from './server-target';
 import {
@@ -35,14 +36,6 @@ function rpcRequest(method: string, args?: RpcArgs): Promise<IpcResponse> {
 
 function generateId(): string {
   return crypto.randomUUID();
-}
-
-function sameTarget(a: ServerConfig, b: ServerConfig): boolean {
-  try {
-    return JSON.stringify(toServerTarget(a)) === JSON.stringify(toServerTarget(b));
-  } catch {
-    return false;
-  }
 }
 
 /**
@@ -253,26 +246,38 @@ export const webApi: PlatformApi = {
     return { success: true, data };
   },
 
+  /**
+   * Same contract as Electron: the whole parsed backup is validated first (nothing is applied on
+   * failure), servers are only added (duplicates by host+port+path skipped, fresh ids,
+   * `allowSelfSigned` stripped) and preferences are a partial patch without `watchFolder`.
+   * Existing servers, the active server and the sealed cookie are never touched.
+   */
   async configImport(data: Record<string, unknown>): Promise<IpcResponse> {
-    let sessionResult: IpcResponse = { success: true };
-    if (data.servers && Array.isArray(data.servers)) {
-      const activeId = getActiveServerId();
-      const before = getServers().find((s) => s.id === activeId);
-      const imported = data.servers as ServerConfig[];
-      setServers(imported);
-      const after = imported.find((s) => s?.id === activeId);
-      if (activeId && before && !after) {
-        // The sealed cookie still targets a server that no longer exists: drop it with the id.
-        setActiveServerId(null);
-        sessionResult = await clearServerCookie();
-      } else if (before && after && !sameTarget(before, after)) {
-        sessionResult = await resealOrClear(after);
+    const parsed = importDataSchema.safeParse(data);
+    if (!parsed.success) return { success: false, error: 'Import failed: invalid file' };
+    const { servers: imported, preferences } = parsed.data;
+
+    let serversAdded = 0;
+    let serversSkipped = 0;
+    if (imported) {
+      const servers = getServers();
+      for (const entry of imported) {
+        const duplicate = servers.some((s) => s.host === entry.host && s.port === entry.port && s.path === entry.path);
+        if (duplicate) {
+          serversSkipped++;
+        } else {
+          servers.push({ ...entry, id: generateId() });
+          serversAdded++;
+        }
       }
+      if (serversAdded > 0) setServers(servers);
     }
-    if (data.preferences && typeof data.preferences === 'object') {
-      setPreferences(data.preferences as Partial<AppPreferences>);
+
+    if (preferences) {
+      const { watchFolder: _ignored, ...safePrefs } = preferences;
+      setPreferences(safePrefs);
     }
-    return sessionResult;
+    return { success: true, data: { serversAdded, serversSkipped, prefsImported: preferences !== undefined } };
   },
 
   // ── Preferences (localStorage) ──

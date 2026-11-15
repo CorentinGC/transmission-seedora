@@ -124,7 +124,10 @@ export function ServerSwitcher() {
       const data = JSON.parse(text);
       const importRes = await api.configImport(data);
       if (importRes.success) {
-        setImportMsg(t('server.importSuccess', { added: '?', skipped: 0 }));
+        const counts = importRes.data as { serversAdded: number; serversSkipped: number } | undefined;
+        setImportMsg(
+          t('server.importSuccess', { added: counts?.serversAdded ?? 0, skipped: counts?.serversSkipped ?? 0 }),
+        );
         await fetchServers();
         setTimeout(() => setImportMsg(null), 3000);
       } else {

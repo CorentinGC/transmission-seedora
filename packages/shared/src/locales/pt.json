@@ -338,16 +338,10 @@
     "showNotifications": "Mostrar notificações ao concluir",
     "display": "Exibição",
     "relativeDates": "Usar datas relativas",
-    "confirmOnAdd": "Mostrar confirmação ao adicionar torrents",
     "watchFolder": "Pasta monitorizada",
     "watchFolderEnabled": "Monitorizar uma pasta para ficheiros .torrent",
     "watchFolderPlaceholder": "/caminho/para/monitorizar",
     "deleteWatchedTorrent": "Eliminar ficheiro .torrent após adicionar",
-    "pathMappings": "Mapeamento de caminhos (Remoto → Local)",
-    "pathMappingsAdd": "Adicionar",
-    "pathMappingsHelp": "Mapear caminhos do daemon remoto para caminhos locais para ações de \"Abrir pasta\".",
-    "remotePath": "Caminho remoto",
-    "localPath": "Caminho local",
     "saveFailed": "Não foi possível guardar as preferências. Verifique os valores e tente novamente.",
     "invalidValues": "O intervalo de atualização deve ser de pelo menos 250 ms e as predefinições de velocidade têm de ser números.",
     "importFailed": "Falha na importação."
@@ -364,5 +358,11 @@
     "clickToChangePriority": "Clique para alterar a prioridade",
     "doNotDownload": "Não descarregar",
     "download": "Descarregar"
+  },
+  "errorBoundary": {
+    "title": "Algo correu mal",
+    "description": "A aplicação encontrou um erro inesperado. Pode tentar novamente ou recarregar a janela.",
+    "retry": "Tentar novamente",
+    "reload": "Recarregar"
   }
 }

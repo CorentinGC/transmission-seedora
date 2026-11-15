@@ -48,6 +48,7 @@ export interface PlatformApi {
 
   // Config export/import
   configExport(options: { servers?: boolean; preferences?: boolean; serverIds?: string[] }): Promise<IpcResponse>;
+  /** Validates then MERGES a backup: servers deduped by host+port+path (active server kept, `allowSelfSigned` dropped); resolves `data: { serversAdded, serversSkipped, prefsImported }`. */
   configImport(data: Record<string, unknown>): Promise<IpcResponse>;
 
   // Preferences
