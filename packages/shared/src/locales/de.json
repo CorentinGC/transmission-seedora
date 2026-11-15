@@ -229,7 +229,8 @@
     "proxyUsername": "Proxy-Benutzername",
     "proxyPassword": "Proxy-Passwort",
     "testSuccess": "Erfolgreich",
-    "testFailed": "Fehlgeschlagen"
+    "testFailed": "Fehlgeschlagen",
+    "importFailed": "Import fehlgeschlagen."
   },
   "settings": {
     "applied": "Einstellungen angewendet",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Hinzufügen",
     "pathMappingsHelp": "Remote-Daemon-Pfade auf lokale Pfade für „Ordner öffnen“-Aktionen zuordnen.",
     "remotePath": "Remote-Pfad",
-    "localPath": "Lokaler Pfad"
+    "localPath": "Lokaler Pfad",
+    "saveFailed": "Einstellungen konnten nicht gespeichert werden. Prüfen Sie die Werte und versuchen Sie es erneut.",
+    "invalidValues": "Das Aktualisierungsintervall muss mindestens 250 ms betragen und die Geschwindigkeitsvorgaben müssen Zahlen sein.",
+    "importFailed": "Import fehlgeschlagen."
   },
   "notification": {
     "downloadComplete": "Download abgeschlossen"

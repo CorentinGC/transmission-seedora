@@ -229,7 +229,8 @@
     "proxyUsername": "Proxy uživatelské jméno",
     "proxyPassword": "Proxy heslo",
     "testSuccess": "Úspěch",
-    "testFailed": "Selhání"
+    "testFailed": "Selhání",
+    "importFailed": "Import se nezdařil."
   },
   "settings": {
     "applied": "Nastavení použita",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Přidat",
     "pathMappingsHelp": "Mapování cest vzdáleného démona na místní cesty pro akci \"Otevřít složku\".",
     "remotePath": "Vzdálená cesta",
-    "localPath": "Místní cesta"
+    "localPath": "Místní cesta",
+    "saveFailed": "Předvolby se nepodařilo uložit. Zkontrolujte hodnoty a zkuste to znovu.",
+    "invalidValues": "Interval obnovení musí být alespoň 250 ms a předvolby rychlosti musí být čísla.",
+    "importFailed": "Import se nezdařil."
   },
   "notification": {
     "downloadComplete": "Stahování dokončeno"

@@ -229,7 +229,8 @@
     "proxyUsername": "프록시 사용자 이름",
     "proxyPassword": "프록시 비밀번호",
     "testSuccess": "성공",
-    "testFailed": "실패"
+    "testFailed": "실패",
+    "importFailed": "가져오기에 실패했습니다."
   },
   "settings": {
     "applied": "설정이 적용되었습니다",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "추가",
     "pathMappingsHelp": "\"폴더 열기\" 동작을 위해 원격 데몬 경로를 로컬 경로에 매핑합니다.",
     "remotePath": "원격 경로",
-    "localPath": "로컬 경로"
+    "localPath": "로컬 경로",
+    "saveFailed": "환경설정을 저장하지 못했습니다. 값을 확인한 후 다시 시도하세요.",
+    "invalidValues": "새로 고침 간격은 250ms 이상이어야 하며 속도 프리셋은 숫자여야 합니다.",
+    "importFailed": "가져오기에 실패했습니다."
   },
   "notification": {
     "downloadComplete": "다운로드 완료"

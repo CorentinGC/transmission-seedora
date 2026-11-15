@@ -229,7 +229,8 @@
     "proxyUsername": "Välityspalvelimen käyttäjänimi",
     "proxyPassword": "Välityspalvelimen salasana",
     "testSuccess": "Onnistui",
-    "testFailed": "Epäonnistui"
+    "testFailed": "Epäonnistui",
+    "importFailed": "Tuonti epäonnistui."
   },
   "settings": {
     "applied": "Asetukset käytetty",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Lisää",
     "pathMappingsHelp": "Yhdistä etädaemonin polut paikallisiin polkuihin \"Avaa kansio\" -toimintoja varten.",
     "remotePath": "Etäpolku",
-    "localPath": "Paikallinen polku"
+    "localPath": "Paikallinen polku",
+    "saveFailed": "Asetusten tallentaminen epäonnistui. Tarkista arvot ja yritä uudelleen.",
+    "invalidValues": "Päivitysvälin on oltava vähintään 250 ms ja nopeuden esiasetusten on oltava lukuja.",
+    "importFailed": "Tuonti epäonnistui."
   },
   "notification": {
     "downloadComplete": "Lataus valmis"

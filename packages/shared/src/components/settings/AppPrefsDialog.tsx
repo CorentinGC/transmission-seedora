@@ -5,6 +5,7 @@ import type { AppPreferences, PathMapping } from '../../types';
 import { useUiStore } from '../../stores/ui-store';
 import { useApi } from '../../platform/api-context';
 import { availableLanguages, getLanguageName } from '../../lib/i18n-utils';
+import { hasValidNumbers, parseNumberInput, MIN_POLLING_INTERVAL_MS } from '../../lib/prefs-validation';
 import { Dialog, Button, Input, Select, Checkbox, SectionHeading } from '../ui';
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 export function AppPrefsDialog({ onClose }: Props) {
   const [prefs, setPrefs] = useState<AppPreferences | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const backupFileRef = useRef<HTMLInputElement>(null);
   const { t, i18n } = useTranslation();
   const api = useApi();
@@ -32,8 +34,13 @@ export function AppPrefsDialog({ onClose }: Props) {
   }, []);
 
   const save = async () => {
-    if (!prefs) return;
-    await api.prefsSet(prefs);
+    if (!prefs || !hasValidNumbers(prefs)) return;
+    setSaveError(null);
+    const res = await api.prefsSet(prefs);
+    if (!res.success) {
+      setSaveError(res.error ? `${t('prefs.saveFailed')} (${res.error})` : t('prefs.saveFailed'));
+      return;
+    }
 
     setTheme(prefs.theme);
     setPollingInterval(prefs.pollingInterval);
@@ -71,6 +78,13 @@ export function AppPrefsDialog({ onClose }: Props) {
   };
 
   const [backupMsg, setBackupMsg] = useState<string | null>(null);
+  const [backupFailed, setBackupFailed] = useState(false);
+
+  const showImportFailed = () => {
+    setBackupMsg(t('prefs.importFailed'));
+    setBackupFailed(true);
+    setTimeout(() => { setBackupMsg(null); setBackupFailed(false); }, 3000);
+  };
 
   const handleExportBackup = async () => {
     const res = await api.configExport({ servers: true, preferences: true });
@@ -104,6 +118,8 @@ export function AppPrefsDialog({ onClose }: Props) {
         const prefsRes = await api.prefsGet();
         if (prefsRes.success && prefsRes.data) setPrefs(prefsRes.data);
         setTimeout(() => setBackupMsg(null), 3000);
+      } else {
+        showImportFailed();
       }
     } else {
       // Web: trigger hidden file input
@@ -123,10 +139,11 @@ export function AppPrefsDialog({ onClose }: Props) {
         const prefsRes = await api.prefsGet();
         if (prefsRes.success && prefsRes.data) setPrefs(prefsRes.data);
         setTimeout(() => setBackupMsg(null), 3000);
+      } else {
+        showImportFailed();
       }
     } catch {
-      setBackupMsg('Import failed');
-      setTimeout(() => setBackupMsg(null), 3000);
+      showImportFailed();
     }
     e.target.value = '';
   };
@@ -150,6 +167,8 @@ export function AppPrefsDialog({ onClose }: Props) {
     updatePref('speedPresets', presets);
   };
 
+  const numbersValid = prefs ? hasValidNumbers(prefs) : true;
+
   if (loading || !prefs) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -165,9 +184,13 @@ export function AppPrefsDialog({ onClose }: Props) {
       width="w-[550px]"
       maxHeight="max-h-[80vh]"
       footer={
-        <div className="flex justify-end gap-2">
-          <Button onClick={onClose}>{t('dialog.cancel')}</Button>
-          <Button variant="primary" onClick={save}>{t('dialog.save')}</Button>
+        <div className="space-y-2">
+          {!numbersValid && <p className="text-xs text-destructive">{t('prefs.invalidValues')}</p>}
+          {saveError && <p role="alert" className="text-xs text-destructive">{saveError}</p>}
+          <div className="flex justify-end gap-2">
+            <Button onClick={onClose}>{t('dialog.cancel')}</Button>
+            <Button variant="primary" onClick={save} disabled={!numbersValid}>{t('dialog.save')}</Button>
+          </div>
         </div>
       }
     >
@@ -177,7 +200,7 @@ export function AppPrefsDialog({ onClose }: Props) {
           <SectionHeading>{t('prefs.polling')}</SectionHeading>
           <div className="flex items-center gap-2">
             {t('prefs.refreshInterval')}
-            <Input inputSize="sm" type="number" min={1000} step={500} className="w-24" value={prefs.pollingInterval} onChange={(e) => updatePref('pollingInterval', Number(e.target.value))} />
+            <Input inputSize="sm" type="number" min={MIN_POLLING_INTERVAL_MS} step={500} className="w-24" aria-label={t('prefs.refreshInterval')} aria-invalid={!Number.isFinite(prefs.pollingInterval) || prefs.pollingInterval < MIN_POLLING_INTERVAL_MS} value={Number.isNaN(prefs.pollingInterval) ? '' : prefs.pollingInterval} onChange={(e) => updatePref('pollingInterval', parseNumberInput(e.target.value))} />
           </div>
         </div>
 
@@ -225,12 +248,12 @@ export function AppPrefsDialog({ onClose }: Props) {
                 inputSize="sm"
                 className="flex-1"
                 value={prefs.watchFolder ?? ''}
-                onChange={(e) => updatePref('watchFolder', e.target.value)}
+                readOnly
                 placeholder={t('prefs.watchFolderPlaceholder')}
               />
               <Button size="sm" onClick={async () => {
                 if (!api.dialogOpenDirectory) return;
-                const res = await api.dialogOpenDirectory();
+                const res = await api.dialogOpenDirectory({ purpose: 'watch-folder' });
                 if (res.success && res.data) updatePref('watchFolder', res.data);
               }}>{t('dialog.browse')}</Button>
             </div>
@@ -278,7 +301,7 @@ export function AppPrefsDialog({ onClose }: Props) {
         <div className="flex flex-wrap gap-2">
           {(prefs.speedPresets ?? [100, 500, 1000, 2000, 5000]).map((val, i) => (
             <div key={i} className="flex items-center gap-1">
-              <Input inputSize="sm" type="number" className="w-20 text-right" value={val} onChange={(e) => updatePreset(i, Number(e.target.value))} min={0} />
+              <Input inputSize="sm" type="number" className="w-20 text-right" aria-label={t('prefs.speedPresets')} aria-invalid={!Number.isFinite(val) || val < 0} value={Number.isNaN(val) ? '' : val} onChange={(e) => updatePreset(i, parseNumberInput(e.target.value))} min={0} />
               <span className="text-xs text-muted-foreground">KB/s</span>
               <Button variant="ghost" size="xs" onClick={() => removePreset(i)} className="text-muted-foreground p-0.5">
                 <Trash2 size={12} />
@@ -299,7 +322,7 @@ export function AppPrefsDialog({ onClose }: Props) {
             <Upload size={12} /> {t('prefs.importBackup')}
           </Button>
         </div>
-        {backupMsg && <p className="text-xs text-green-600 mt-2">{backupMsg}</p>}
+        {backupMsg && <p role="status" className={`text-xs mt-2 ${backupFailed ? 'text-destructive' : 'text-green-600'}`}>{backupMsg}</p>}
       </div>
     </Dialog>
   );

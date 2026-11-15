@@ -229,7 +229,8 @@
     "proxyUsername": "Utilizator proxy",
     "proxyPassword": "Parolă proxy",
     "testSuccess": "Reușit",
-    "testFailed": "Eșuat"
+    "testFailed": "Eșuat",
+    "importFailed": "Importul a eșuat."
   },
   "settings": {
     "applied": "Setările au fost aplicate",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Adaugă",
     "pathMappingsHelp": "Mapează căile daemonului de la distanță la căi locale pentru acțiunea \"Deschide folder\".",
     "remotePath": "Cale la distanță",
-    "localPath": "Cale locală"
+    "localPath": "Cale locală",
+    "saveFailed": "Preferințele nu au putut fi salvate. Verificați valorile și încercați din nou.",
+    "invalidValues": "Intervalul de reîmprospătare trebuie să fie de cel puțin 250 ms, iar presetările de viteză trebuie să fie numere.",
+    "importFailed": "Importul a eșuat."
   },
   "notification": {
     "downloadComplete": "Descărcare finalizată"

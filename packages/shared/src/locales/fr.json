@@ -271,7 +271,8 @@
     "exportServer": "Exporter",
     "exportAll": "Tout exporter",
     "importServers": "Importer...",
-    "importSuccess": "{{added}} ajouté(s), {{skipped}} ignoré(s)"
+    "importSuccess": "{{added}} ajouté(s), {{skipped}} ignoré(s)",
+    "importFailed": "Échec de l'importation."
   },
   "settings": {
     "applied": "Paramètres appliqués",
@@ -391,7 +392,10 @@
     "exportBackup": "Exporter la sauvegarde",
     "importBackup": "Importer une sauvegarde",
     "exportBackupHelp": "Exporter tous les serveurs et préférences dans un fichier JSON.",
-    "importSuccess": "Sauvegarde restaurée avec succès."
+    "importSuccess": "Sauvegarde restaurée avec succès.",
+    "saveFailed": "Impossible d'enregistrer les préférences. Vérifiez les valeurs et réessayez.",
+    "invalidValues": "L'intervalle d'actualisation doit être d'au moins 250 ms et les préréglages de vitesse doivent être des nombres.",
+    "importFailed": "Échec de l'importation."
   },
   "columnMenu": {
     "setupColumns": "Configurer les colonnes"

@@ -229,7 +229,8 @@
     "proxyUsername": "Proxy felhasználónév",
     "proxyPassword": "Proxy jelszó",
     "testSuccess": "Sikeres",
-    "testFailed": "Sikertelen"
+    "testFailed": "Sikertelen",
+    "importFailed": "Az importálás sikertelen."
   },
   "settings": {
     "applied": "Beállítások alkalmazva",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Hozzáadás",
     "pathMappingsHelp": "Távoli daemon útvonalak leképezése helyi útvonalakra a \"Mappa megnyitása\" művelethez.",
     "remotePath": "Távoli útvonal",
-    "localPath": "Helyi útvonal"
+    "localPath": "Helyi útvonal",
+    "saveFailed": "A beállítások mentése sikertelen. Ellenőrizze az értékeket, és próbálja újra.",
+    "invalidValues": "A frissítési időköznek legalább 250 ms-nak kell lennie, a sebesség-előbeállításoknak pedig számoknak kell lenniük.",
+    "importFailed": "Az importálás sikertelen."
   },
   "notification": {
     "downloadComplete": "Letöltés befejezve"

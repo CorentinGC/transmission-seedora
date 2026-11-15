@@ -229,7 +229,8 @@
     "proxyUsername": "Usuario del proxy",
     "proxyPassword": "Contraseña del proxy",
     "testSuccess": "Éxito",
-    "testFailed": "Fallido"
+    "testFailed": "Fallido",
+    "importFailed": "Error al importar."
   },
   "settings": {
     "applied": "Ajustes aplicados",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Añadir",
     "pathMappingsHelp": "Mapear rutas del daemon remoto a rutas locales para acciones de \"Abrir carpeta\".",
     "remotePath": "Ruta remota",
-    "localPath": "Ruta local"
+    "localPath": "Ruta local",
+    "saveFailed": "No se pudieron guardar las preferencias. Revise los valores e inténtelo de nuevo.",
+    "invalidValues": "El intervalo de actualización debe ser de al menos 250 ms y los ajustes de velocidad deben ser números.",
+    "importFailed": "Error al importar."
   },
   "notification": {
     "downloadComplete": "Descarga completada"

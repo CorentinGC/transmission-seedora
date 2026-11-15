@@ -229,7 +229,8 @@
     "proxyUsername": "Nazwa użytkownika proxy",
     "proxyPassword": "Hasło proxy",
     "testSuccess": "Sukces",
-    "testFailed": "Niepowodzenie"
+    "testFailed": "Niepowodzenie",
+    "importFailed": "Import nie powiódł się."
   },
   "settings": {
     "applied": "Ustawienia zastosowane",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Dodaj",
     "pathMappingsHelp": "Mapuj ścieżki zdalnego demona na ścieżki lokalne dla akcji \"Otwórz folder\".",
     "remotePath": "Ścieżka zdalna",
-    "localPath": "Ścieżka lokalna"
+    "localPath": "Ścieżka lokalna",
+    "saveFailed": "Nie udało się zapisać preferencji. Sprawdź wartości i spróbuj ponownie.",
+    "invalidValues": "Interwał odświeżania musi wynosić co najmniej 250 ms, a ustawienia prędkości muszą być liczbami.",
+    "importFailed": "Import nie powiódł się."
   },
   "notification": {
     "downloadComplete": "Pobieranie zakończone"

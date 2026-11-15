@@ -229,7 +229,8 @@
     "proxyUsername": "Proxygebruikersnaam",
     "proxyPassword": "Proxywachtwoord",
     "testSuccess": "Geslaagd",
-    "testFailed": "Mislukt"
+    "testFailed": "Mislukt",
+    "importFailed": "Importeren mislukt."
   },
   "settings": {
     "applied": "Instellingen toegepast",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Toevoegen",
     "pathMappingsHelp": "Wijs externe daemonpaden toe aan lokale paden voor \"Map openen\"-acties.",
     "remotePath": "Extern pad",
-    "localPath": "Lokaal pad"
+    "localPath": "Lokaal pad",
+    "saveFailed": "Voorkeuren konden niet worden opgeslagen. Controleer de waarden en probeer het opnieuw.",
+    "invalidValues": "Het verversingsinterval moet minstens 250 ms zijn en de snelheidsvoorinstellingen moeten getallen zijn.",
+    "importFailed": "Importeren mislukt."
   },
   "notification": {
     "downloadComplete": "Download voltooid"

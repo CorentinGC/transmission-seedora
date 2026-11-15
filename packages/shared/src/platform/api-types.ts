@@ -57,7 +57,7 @@ export interface PlatformApi {
   // Platform-specific (optional — not available on web)
   readFileBase64?(filePath: string): Promise<IpcResponse<string>>;
   dialogOpenFile?(options?: Record<string, unknown>): Promise<IpcResponse<string[]>>;
-  dialogOpenDirectory?(): Promise<IpcResponse<string | null>>;
+  dialogOpenDirectory?(options?: { purpose?: 'watch-folder' }): Promise<IpcResponse<string | null>>;
   dialogSaveFile?(options: Record<string, unknown>, content: string): Promise<IpcResponse<string | null>>;
   trayUpdate?(state: { downloadSpeed: number; uploadSpeed: number; activeCount: number; altSpeedEnabled: boolean }): void;
   notificationShow?(title: string, body: string): void;

@@ -229,7 +229,8 @@
     "proxyUsername": "プロキシユーザー名",
     "proxyPassword": "プロキシパスワード",
     "testSuccess": "成功",
-    "testFailed": "失敗"
+    "testFailed": "失敗",
+    "importFailed": "インポートに失敗しました。"
   },
   "settings": {
     "applied": "設定が適用されました",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "追加",
     "pathMappingsHelp": "「フォルダーを開く」操作のために、リモートデーモンのパスをローカルパスにマッピングします。",
     "remotePath": "リモートパス",
-    "localPath": "ローカルパス"
+    "localPath": "ローカルパス",
+    "saveFailed": "設定を保存できませんでした。値を確認してもう一度お試しください。",
+    "invalidValues": "更新間隔は250ミリ秒以上、速度プリセットは数値にしてください。",
+    "importFailed": "インポートに失敗しました。"
   },
   "notification": {
     "downloadComplete": "ダウンロード完了"

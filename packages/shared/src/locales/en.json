@@ -271,7 +271,8 @@
     "exportServer": "Export",
     "exportAll": "Export All",
     "importServers": "Import...",
-    "importSuccess": "{{added}} added, {{skipped}} skipped"
+    "importSuccess": "{{added}} added, {{skipped}} skipped",
+    "importFailed": "Import failed."
   },
   "settings": {
     "applied": "Settings applied",
@@ -391,7 +392,10 @@
     "exportBackup": "Export backup",
     "importBackup": "Import backup",
     "exportBackupHelp": "Export all servers and preferences to a JSON file.",
-    "importSuccess": "Backup restored successfully."
+    "importSuccess": "Backup restored successfully.",
+    "saveFailed": "Could not save preferences. Check the values and try again.",
+    "invalidValues": "Refresh interval must be at least 250 ms and speed presets must be numbers.",
+    "importFailed": "Import failed."
   },
   "columnMenu": {
     "setupColumns": "Setup Columns"

@@ -101,9 +101,12 @@ export function ServerSwitcher() {
           setImportMsg(t('server.importSuccess', { added: d.serversAdded, skipped: d.serversSkipped }));
           await fetchServers();
           setTimeout(() => setImportMsg(null), 3000);
+        } else {
+          setImportMsg(t('server.importFailed'));
+          setTimeout(() => setImportMsg(null), 3000);
         }
       } catch {
-        setImportMsg('Import failed');
+        setImportMsg(t('server.importFailed'));
         setTimeout(() => setImportMsg(null), 3000);
       }
       setOpen(false);
@@ -124,9 +127,12 @@ export function ServerSwitcher() {
         setImportMsg(t('server.importSuccess', { added: '?', skipped: 0 }));
         await fetchServers();
         setTimeout(() => setImportMsg(null), 3000);
+      } else {
+        setImportMsg(t('server.importFailed'));
+        setTimeout(() => setImportMsg(null), 3000);
       }
     } catch {
-      setImportMsg('Import failed');
+      setImportMsg(t('server.importFailed'));
       setTimeout(() => setImportMsg(null), 3000);
     }
     // Reset input so same file can be re-selected

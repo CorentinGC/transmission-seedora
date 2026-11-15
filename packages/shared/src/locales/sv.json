@@ -229,7 +229,8 @@
     "proxyUsername": "Proxyanvändarnamn",
     "proxyPassword": "Proxylösenord",
     "testSuccess": "Lyckades",
-    "testFailed": "Misslyckades"
+    "testFailed": "Misslyckades",
+    "importFailed": "Importen misslyckades."
   },
   "settings": {
     "applied": "Inställningar tillämpade",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Lägg till",
     "pathMappingsHelp": "Mappa fjärrdaemonens sökvägar till lokala sökvägar för \"Öppna mapp\"-åtgärder.",
     "remotePath": "Fjärrsökväg",
-    "localPath": "Lokal sökväg"
+    "localPath": "Lokal sökväg",
+    "saveFailed": "Det gick inte att spara inställningarna. Kontrollera värdena och försök igen.",
+    "invalidValues": "Uppdateringsintervallet måste vara minst 250 ms och hastighetsförinställningarna måste vara tal.",
+    "importFailed": "Importen misslyckades."
   },
   "notification": {
     "downloadComplete": "Nedladdning slutförd"

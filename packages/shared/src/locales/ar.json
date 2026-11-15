@@ -229,7 +229,8 @@
     "proxyUsername": "اسم مستخدم الوكيل",
     "proxyPassword": "كلمة مرور الوكيل",
     "testSuccess": "نجح",
-    "testFailed": "فشل"
+    "testFailed": "فشل",
+    "importFailed": "فشل الاستيراد."
   },
   "settings": {
     "applied": "تم تطبيق الإعدادات",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "إضافة",
     "pathMappingsHelp": "تعيين مسارات البرنامج الخفي البعيد إلى مسارات محلية لإجراءات \"فتح المجلد\".",
     "remotePath": "المسار البعيد",
-    "localPath": "المسار المحلي"
+    "localPath": "المسار المحلي",
+    "saveFailed": "تعذّر حفظ التفضيلات. تحقق من القيم وحاول مرة أخرى.",
+    "invalidValues": "يجب ألا تقل فترة التحديث عن 250 ملي ثانية ويجب أن تكون إعدادات السرعة المسبقة أرقامًا.",
+    "importFailed": "فشل الاستيراد."
   },
   "notification": {
     "downloadComplete": "اكتمل التنزيل"

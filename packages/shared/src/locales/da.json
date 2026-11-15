@@ -229,7 +229,8 @@
     "proxyUsername": "Proxybrugernavn",
     "proxyPassword": "Proxyadgangskode",
     "testSuccess": "Lykkedes",
-    "testFailed": "Mislykkedes"
+    "testFailed": "Mislykkedes",
+    "importFailed": "Importen mislykkedes."
   },
   "settings": {
     "applied": "Indstillinger anvendt",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Tilføj",
     "pathMappingsHelp": "Tilknyt fjernserverens stier til lokale stier for \"Åbn mappe\"-handlinger.",
     "remotePath": "Fjernsti",
-    "localPath": "Lokal sti"
+    "localPath": "Lokal sti",
+    "saveFailed": "Indstillingerne kunne ikke gemmes. Kontroller værdierne, og prøv igen.",
+    "invalidValues": "Opdateringsintervallet skal være mindst 250 ms, og hastighedsforudindstillingerne skal være tal.",
+    "importFailed": "Importen mislykkedes."
   },
   "notification": {
     "downloadComplete": "Download fuldført"

@@ -229,7 +229,8 @@
     "proxyUsername": "Vekil Sunucu Kullanıcı Adı",
     "proxyPassword": "Vekil Sunucu Şifresi",
     "testSuccess": "Başarılı",
-    "testFailed": "Başarısız"
+    "testFailed": "Başarısız",
+    "importFailed": "İçe aktarma başarısız oldu."
   },
   "settings": {
     "applied": "Ayarlar uygulandı",
@@ -341,7 +342,10 @@
     "pathMappingsAdd": "Ekle",
     "pathMappingsHelp": "\"Klasörü aç\" işlemleri için uzak arka plan hizmeti yollarını yerel yollara eşleyin.",
     "remotePath": "Uzak yol",
-    "localPath": "Yerel yol"
+    "localPath": "Yerel yol",
+    "saveFailed": "Tercihler kaydedilemedi. Değerleri kontrol edip tekrar deneyin.",
+    "invalidValues": "Yenileme aralığı en az 250 ms olmalı ve hız ön ayarları sayı olmalıdır.",
+    "importFailed": "İçe aktarma başarısız oldu."
   },
   "notification": {
     "downloadComplete": "İndirme Tamamlandı"
