@@ -5,7 +5,8 @@
     "selectTorrent": "Selectați un torrent pentru a vedea detaliile",
     "noTorrents": "Niciun torrent",
     "yes": "Da",
-    "no": "Nu"
+    "no": "Nu",
+    "close": "Închide"
   },
   "toolbar": {
     "addTorrent": "Adaugă torrent",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Dezactivează viteza alt.",
     "enableAltSpeed": "Activează viteza alt.",
     "alt": "Alt",
-    "freeSpace": "{{space}} liber"
+    "freeSpace": "{{space}} liber",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Spațiu pe disc",
+    "totalFreeSpace": "Spațiu liber total",
+    "speedLimit": "Limită de viteză",
+    "limitSpeed": "Limitează viteza",
+    "unlimited": "Nelimitat",
+    "kbs": "KB/s",
+    "setLimit": "Setează limita"
+  },
+  "sessionStats": {
+    "title": "Statistici sesiune",
+    "currentSession": "Sesiunea curentă",
+    "allTime": "Total (cumulat)",
+    "downloaded": "Descărcat",
+    "uploaded": "Încărcat",
+    "ratio": "Raport",
+    "filesAdded": "Fișiere adăugate",
+    "activeTime": "Timp activ",
+    "downloadSpeed": "Viteză de descărcare",
+    "uploadSpeed": "Viteză de încărcare",
+    "sessionCount": "Sesiuni",
+    "activeTorrents": "Torrente active",
+    "pausedTorrents": "Torrente în pauză",
+    "totalTorrents": "Total torrente"
   },
   "filter": {
     "all": "Toate",
@@ -81,7 +106,17 @@
     "downloaded": "Descărcat",
     "uploaded": "Încărcat",
     "private": "Privat",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Dimensiune de descărcat",
+    "sizeLeft": "Dimensiune rămasă",
+    "connectedPeers": "Conectați",
+    "seedingTime": "Timp de seeding",
+    "downloadingTime": "Timp de descărcare",
+    "created": "Creat",
+    "comment": "Comentariu",
+    "fileCount": "Fișiere",
+    "group": "Grup"
   },
   "priority": {
     "high": "Înaltă",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "Nivel",
     "announceUrl": "URL de anunț",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Seeduri",
+    "leechers": "Leecheri",
     "status": "Stare",
     "addPlaceholder": "Adaugă URL tracker...",
     "add": "Adaugă",
@@ -193,7 +228,7 @@
     "add": "Adaugă",
     "test": "Testează conexiunea",
     "browse": "Răsfoiește...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / link magnet",
     "file": "Fișier",
     "urlOrMagnet": "URL sau link Magnet",
     "urlPlaceholder": "magnet:?xt= sau https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Parolă proxy",
     "testSuccess": "Reușit",
     "testFailed": "Eșuat",
+    "deleteServer": "Șterge",
+    "deleteConfirm": "Ștergi serverul „{{name}}”?",
+    "cannotDeleteActive": "Deconectează-te mai întâi",
+    "exportServer": "Exportă",
+    "exportAll": "Exportă tot",
+    "importServers": "Importă...",
+    "importSuccess": "{{added}} adăugate, {{skipped}} omise",
     "importFailed": "Importul a eșuat."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Monitorizează un folder pentru fișiere .torrent",
     "watchFolderPlaceholder": "/cale/către/folder",
     "deleteWatchedTorrent": "Șterge fișierul .torrent după adăugare",
+    "speedPresets": "Presetări de viteză",
+    "speedPresetsHelp": "Valori rapide pentru limita de viteză (KB/s) în fereastra pop-up din bara de stare.",
+    "addPreset": "Adaugă",
+    "backup": "Copie de siguranță și restaurare",
+    "exportBackup": "Exportă copia de siguranță",
+    "importBackup": "Importă o copie de siguranță",
+    "exportBackupHelp": "Exportă toate serverele și preferințele într-un fișier JSON.",
+    "importSuccess": "Copia de siguranță a fost restaurată.",
     "saveFailed": "Preferințele nu au putut fi salvate. Verificați valorile și încercați din nou.",
     "invalidValues": "Intervalul de reîmprospătare trebuie să fie de cel puțin 250 ms, iar presetările de viteză trebuie să fie numere.",
     "importFailed": "Importul a eșuat."
+  },
+  "columnMenu": {
+    "setupColumns": "Configurează coloanele"
   },
   "notification": {
     "downloadComplete": "Descărcare finalizată",

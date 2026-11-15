@@ -5,7 +5,8 @@
     "selectTorrent": "세부 정보를 보려면 토렌트를 선택하세요",
     "noTorrents": "토렌트 없음",
     "yes": "예",
-    "no": "아니오"
+    "no": "아니오",
+    "close": "닫기"
   },
   "toolbar": {
     "addTorrent": "토렌트 추가",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "대체 속도 비활성화",
     "enableAltSpeed": "대체 속도 활성화",
     "alt": "대체",
-    "freeSpace": "{{space}} 여유"
+    "freeSpace": "{{space}} 여유",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "디스크 공간",
+    "totalFreeSpace": "전체 여유 공간",
+    "speedLimit": "속도 제한",
+    "limitSpeed": "속도 제한하기",
+    "unlimited": "무제한",
+    "kbs": "KB/s",
+    "setLimit": "제한 설정"
+  },
+  "sessionStats": {
+    "title": "세션 통계",
+    "currentSession": "현재 세션",
+    "allTime": "전체 기간 (누적)",
+    "downloaded": "다운로드됨",
+    "uploaded": "업로드됨",
+    "ratio": "비율",
+    "filesAdded": "추가된 파일",
+    "activeTime": "활성 시간",
+    "downloadSpeed": "다운로드 속도",
+    "uploadSpeed": "업로드 속도",
+    "sessionCount": "세션",
+    "activeTorrents": "활성 토렌트",
+    "pausedTorrents": "일시 중지된 토렌트",
+    "totalTorrents": "전체 토렌트"
   },
   "filter": {
     "all": "전체",
@@ -81,7 +106,17 @@
     "downloaded": "다운로드됨",
     "uploaded": "업로드됨",
     "private": "비공개",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "다운로드할 크기",
+    "sizeLeft": "남은 크기",
+    "connectedPeers": "연결됨",
+    "seedingTime": "시딩 시간",
+    "downloadingTime": "다운로드 시간",
+    "created": "생성일",
+    "comment": "설명",
+    "fileCount": "파일 수",
+    "group": "그룹"
   },
   "priority": {
     "high": "높음",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "티어",
     "announceUrl": "어나운스 URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "시드",
+    "leechers": "리치",
     "status": "상태",
     "addPlaceholder": "트래커 URL 추가...",
     "add": "추가",
@@ -193,7 +228,7 @@
     "add": "추가",
     "test": "연결 테스트",
     "browse": "찾아보기...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / 마그넷",
     "file": "파일",
     "urlOrMagnet": "URL 또는 Magnet 링크",
     "urlPlaceholder": "magnet:?xt= 또는 https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "프록시 비밀번호",
     "testSuccess": "성공",
     "testFailed": "실패",
+    "deleteServer": "삭제",
+    "deleteConfirm": "서버 \"{{name}}\"을(를) 삭제하시겠습니까?",
+    "cannotDeleteActive": "먼저 연결을 끊으세요",
+    "exportServer": "내보내기",
+    "exportAll": "모두 내보내기",
+    "importServers": "가져오기...",
+    "importSuccess": "{{added}}개 추가, {{skipped}}개 건너뜀",
     "importFailed": "가져오기에 실패했습니다."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": ".torrent 파일 감시 폴더 설정",
     "watchFolderPlaceholder": "/감시/경로",
     "deleteWatchedTorrent": "추가 후 .torrent 파일 삭제",
+    "speedPresets": "속도 프리셋",
+    "speedPresetsHelp": "상태 표시줄 팝오버용 속도 제한 빠른 값 (KB/s).",
+    "addPreset": "추가",
+    "backup": "백업 및 복원",
+    "exportBackup": "백업 내보내기",
+    "importBackup": "백업 가져오기",
+    "exportBackupHelp": "모든 서버와 환경설정을 JSON 파일로 내보냅니다.",
+    "importSuccess": "백업을 복원했습니다.",
     "saveFailed": "환경설정을 저장하지 못했습니다. 값을 확인한 후 다시 시도하세요.",
     "invalidValues": "새로 고침 간격은 250ms 이상이어야 하며 속도 프리셋은 숫자여야 합니다.",
     "importFailed": "가져오기에 실패했습니다."
+  },
+  "columnMenu": {
+    "setupColumns": "열 설정"
   },
   "notification": {
     "downloadComplete": "다운로드 완료",

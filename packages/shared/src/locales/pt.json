@@ -5,7 +5,8 @@
     "selectTorrent": "Selecione um torrent para ver os detalhes",
     "noTorrents": "Nenhum torrent",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "close": "Fechar"
   },
   "toolbar": {
     "addTorrent": "Adicionar torrent",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Desativar velocidade alternativa",
     "enableAltSpeed": "Ativar velocidade alternativa",
     "alt": "Alt",
-    "freeSpace": "{{space}} livre"
+    "freeSpace": "{{space}} livre",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Espaço em disco",
+    "totalFreeSpace": "Espaço livre total",
+    "speedLimit": "Limite de velocidade",
+    "limitSpeed": "Limitar velocidade",
+    "unlimited": "Ilimitado",
+    "kbs": "KB/s",
+    "setLimit": "Definir limite"
+  },
+  "sessionStats": {
+    "title": "Estatísticas da sessão",
+    "currentSession": "Sessão atual",
+    "allTime": "Total (acumulado)",
+    "downloaded": "Baixado",
+    "uploaded": "Enviado",
+    "ratio": "Proporção",
+    "filesAdded": "Arquivos adicionados",
+    "activeTime": "Tempo ativo",
+    "downloadSpeed": "Velocidade de download",
+    "uploadSpeed": "Velocidade de upload",
+    "sessionCount": "Sessões",
+    "activeTorrents": "Torrents ativos",
+    "pausedTorrents": "Torrents pausados",
+    "totalTorrents": "Total de torrents"
   },
   "filter": {
     "all": "Todos",
@@ -66,7 +91,7 @@
     "status": "Estado",
     "seeds": "Seeds",
     "peers": "Peers",
-    "downSpeed": "Down",
+    "downSpeed": "Download",
     "upSpeed": "Up",
     "eta": "Tempo restante",
     "ratio": "Proporção",
@@ -81,7 +106,17 @@
     "downloaded": "Baixado",
     "uploaded": "Enviado",
     "private": "Privado",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Tamanho a baixar",
+    "sizeLeft": "Tamanho restante",
+    "connectedPeers": "Conectados",
+    "seedingTime": "Tempo de seeding",
+    "downloadingTime": "Tempo de download",
+    "created": "Criado",
+    "comment": "Comentário",
+    "fileCount": "Arquivos",
+    "group": "Grupo"
   },
   "priority": {
     "high": "Alta",
@@ -121,7 +156,7 @@
     "client": "Cliente",
     "flags": "Flags",
     "progress": "Progresso",
-    "down": "Down",
+    "down": "Download",
     "up": "Up"
   },
   "trackersTab": {
@@ -193,7 +228,7 @@
     "add": "Adicionar",
     "test": "Testar conexão",
     "browse": "Procurar...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / link magnet",
     "file": "Arquivo",
     "urlOrMagnet": "URL ou link Magnet",
     "urlPlaceholder": "magnet:?xt= ou https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Palavra-passe do proxy",
     "testSuccess": "Sucesso",
     "testFailed": "Falhou",
+    "deleteServer": "Excluir",
+    "deleteConfirm": "Excluir o servidor \"{{name}}\"?",
+    "cannotDeleteActive": "Desconecte primeiro",
+    "exportServer": "Exportar",
+    "exportAll": "Exportar tudo",
+    "importServers": "Importar...",
+    "importSuccess": "{{added}} adicionados, {{skipped}} ignorados",
     "importFailed": "Falha na importação."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Monitorizar uma pasta para ficheiros .torrent",
     "watchFolderPlaceholder": "/caminho/para/monitorizar",
     "deleteWatchedTorrent": "Eliminar ficheiro .torrent após adicionar",
+    "speedPresets": "Predefinições de velocidade",
+    "speedPresetsHelp": "Valores rápidos de limite de velocidade (KB/s) para o popover da barra de status.",
+    "addPreset": "Adicionar",
+    "backup": "Backup e restauração",
+    "exportBackup": "Exportar backup",
+    "importBackup": "Importar backup",
+    "exportBackupHelp": "Exporta todos os servidores e preferências para um arquivo JSON.",
+    "importSuccess": "Backup restaurado com sucesso.",
     "saveFailed": "Não foi possível guardar as preferências. Verifique os valores e tente novamente.",
     "invalidValues": "O intervalo de atualização deve ser de pelo menos 250 ms e as predefinições de velocidade têm de ser números.",
     "importFailed": "Falha na importação."
+  },
+  "columnMenu": {
+    "setupColumns": "Configurar colunas"
   },
   "notification": {
     "downloadComplete": "Download concluído",

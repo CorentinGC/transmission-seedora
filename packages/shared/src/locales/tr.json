@@ -5,7 +5,8 @@
     "selectTorrent": "Ayrıntıları görüntülemek için bir torrent seçin",
     "noTorrents": "Torrent yok",
     "yes": "Evet",
-    "no": "Hayır"
+    "no": "Hayır",
+    "close": "Kapat"
   },
   "toolbar": {
     "addTorrent": "Torrent Ekle",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Alternatif hızı devre dışı bırak",
     "enableAltSpeed": "Alternatif hızı etkinleştir",
     "alt": "Alt",
-    "freeSpace": "{{space}} boş"
+    "freeSpace": "{{space}} boş",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Disk alanı",
+    "totalFreeSpace": "Toplam boş alan",
+    "speedLimit": "Hız sınırı",
+    "limitSpeed": "Hızı sınırla",
+    "unlimited": "Sınırsız",
+    "kbs": "KB/s",
+    "setLimit": "Sınır belirle"
+  },
+  "sessionStats": {
+    "title": "Oturum istatistikleri",
+    "currentSession": "Geçerli oturum",
+    "allTime": "Tüm zamanlar (kümülatif)",
+    "downloaded": "İndirilen",
+    "uploaded": "Yüklenen",
+    "ratio": "Oran",
+    "filesAdded": "Eklenen dosyalar",
+    "activeTime": "Etkin süre",
+    "downloadSpeed": "İndirme hızı",
+    "uploadSpeed": "Yükleme hızı",
+    "sessionCount": "Oturumlar",
+    "activeTorrents": "Etkin torrentler",
+    "pausedTorrents": "Duraklatılmış torrentler",
+    "totalTorrents": "Toplam torrent"
   },
   "filter": {
     "all": "Tümü",
@@ -81,7 +106,17 @@
     "downloaded": "İndirildi",
     "uploaded": "Gönderildi",
     "private": "Özel",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "İndirilecek boyut",
+    "sizeLeft": "Kalan boyut",
+    "connectedPeers": "Bağlı",
+    "seedingTime": "Tohumlama süresi",
+    "downloadingTime": "İndirme süresi",
+    "created": "Oluşturulma",
+    "comment": "Açıklama",
+    "fileCount": "Dosyalar",
+    "group": "Grup"
   },
   "priority": {
     "high": "Yüksek",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "Seviye",
     "announceUrl": "Duyuru URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Kaynaklar",
+    "leechers": "Çekenler",
     "status": "Durum",
     "addPlaceholder": "İzleyici URL ekle...",
     "add": "Ekle",
@@ -193,7 +228,7 @@
     "add": "Ekle",
     "test": "Bağlantıyı Test Et",
     "browse": "Gözat...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / Magnet bağlantısı",
     "file": "Dosya",
     "urlOrMagnet": "URL veya Magnet Bağlantısı",
     "urlPlaceholder": "magnet:?xt= veya https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Vekil Sunucu Şifresi",
     "testSuccess": "Başarılı",
     "testFailed": "Başarısız",
+    "deleteServer": "Sil",
+    "deleteConfirm": "\"{{name}}\" sunucusu silinsin mi?",
+    "cannotDeleteActive": "Önce bağlantıyı kesin",
+    "exportServer": "Dışa aktar",
+    "exportAll": "Tümünü dışa aktar",
+    "importServers": "İçe aktar...",
+    "importSuccess": "{{added}} eklendi, {{skipped}} atlandı",
     "importFailed": "İçe aktarma başarısız oldu."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": ".torrent dosyaları için bir klasör izle",
     "watchFolderPlaceholder": "/izlenecek/yol",
     "deleteWatchedTorrent": "Ekledikten sonra .torrent dosyasını sil",
+    "speedPresets": "Hız ön ayarları",
+    "speedPresetsHelp": "Durum çubuğu açılır penceresi için hızlı hız sınırı değerleri (KB/s).",
+    "addPreset": "Ekle",
+    "backup": "Yedekleme ve geri yükleme",
+    "exportBackup": "Yedeği dışa aktar",
+    "importBackup": "Yedeği içe aktar",
+    "exportBackupHelp": "Tüm sunucuları ve tercihleri bir JSON dosyasına aktarır.",
+    "importSuccess": "Yedek başarıyla geri yüklendi.",
     "saveFailed": "Tercihler kaydedilemedi. Değerleri kontrol edip tekrar deneyin.",
     "invalidValues": "Yenileme aralığı en az 250 ms olmalı ve hız ön ayarları sayı olmalıdır.",
     "importFailed": "İçe aktarma başarısız oldu."
+  },
+  "columnMenu": {
+    "setupColumns": "Sütunları ayarla"
   },
   "notification": {
     "downloadComplete": "İndirme Tamamlandı",

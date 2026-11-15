@@ -5,7 +5,8 @@
     "selectTorrent": "Оберіть торент для перегляду деталей",
     "noTorrents": "Немає торентів",
     "yes": "Так",
-    "no": "Ні"
+    "no": "Ні",
+    "close": "Закрити"
   },
   "toolbar": {
     "addTorrent": "Додати торент",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Вимкнути альт. швидкість",
     "enableAltSpeed": "Увімкнути альт. швидкість",
     "alt": "Альт",
-    "freeSpace": "{{space}} вільно"
+    "freeSpace": "{{space}} вільно",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Місце на диску",
+    "totalFreeSpace": "Усього вільно",
+    "speedLimit": "Обмеження швидкості",
+    "limitSpeed": "Обмежити швидкість",
+    "unlimited": "Без обмежень",
+    "kbs": "KB/s",
+    "setLimit": "Задати ліміт"
+  },
+  "sessionStats": {
+    "title": "Статистика сесії",
+    "currentSession": "Поточна сесія",
+    "allTime": "За весь час (накопичена)",
+    "downloaded": "Завантажено",
+    "uploaded": "Віддано",
+    "ratio": "Рейтинг",
+    "filesAdded": "Додано файлів",
+    "activeTime": "Час активності",
+    "downloadSpeed": "Швидкість завантаження",
+    "uploadSpeed": "Швидкість віддачі",
+    "sessionCount": "Сесії",
+    "activeTorrents": "Активні торренти",
+    "pausedTorrents": "Торренти на паузі",
+    "totalTorrents": "Усього торрентів"
   },
   "filter": {
     "all": "Всі",
@@ -81,7 +106,17 @@
     "downloaded": "Завантажено",
     "uploaded": "Віддано",
     "private": "Приватний",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Залишилось завантажити",
+    "sizeLeft": "Залишилось",
+    "connectedPeers": "Підключено",
+    "seedingTime": "Час роздачі",
+    "downloadingTime": "Час завантаження",
+    "created": "Створено",
+    "comment": "Коментар",
+    "fileCount": "Файли",
+    "group": "Група"
   },
   "priority": {
     "high": "Високий",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "Рівень",
     "announceUrl": "URL анонсу",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Сіди",
+    "leechers": "Лічери",
     "status": "Статус",
     "addPlaceholder": "Додати URL трекера...",
     "add": "Додати",
@@ -193,7 +228,7 @@
     "add": "Додати",
     "test": "Тест з'єднання",
     "browse": "Огляд...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnet-посилання",
     "file": "Файл",
     "urlOrMagnet": "URL або Magnet-посилання",
     "urlPlaceholder": "magnet:?xt= або https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Пароль проксі",
     "testSuccess": "Успішно",
     "testFailed": "Невдача",
+    "deleteServer": "Видалити",
+    "deleteConfirm": "Видалити сервер «{{name}}»?",
+    "cannotDeleteActive": "Спочатку відключіться",
+    "exportServer": "Експорт",
+    "exportAll": "Експортувати все",
+    "importServers": "Імпорт...",
+    "importSuccess": "Додано: {{added}}, пропущено: {{skipped}}",
     "importFailed": "Не вдалося виконати імпорт."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Спостерігати теку на файли .torrent",
     "watchFolderPlaceholder": "/шлях/до/теки",
     "deleteWatchedTorrent": "Видаляти файл .torrent після додавання",
+    "speedPresets": "Пресети швидкості",
+    "speedPresetsHelp": "Швидкі значення обмеження швидкості (KB/s) для спливного вікна в рядку стану.",
+    "addPreset": "Додати",
+    "backup": "Резервна копія та відновлення",
+    "exportBackup": "Експорт резервної копії",
+    "importBackup": "Імпорт резервної копії",
+    "exportBackupHelp": "Експорт усіх серверів і налаштувань у файл JSON.",
+    "importSuccess": "Резервну копію успішно відновлено.",
     "saveFailed": "Не вдалося зберегти налаштування. Перевірте значення та повторіть спробу.",
     "invalidValues": "Інтервал оновлення має бути не менше 250 мс, а пресети швидкості мають бути числами.",
     "importFailed": "Не вдалося виконати імпорт."
+  },
+  "columnMenu": {
+    "setupColumns": "Налаштувати стовпці"
   },
   "notification": {
     "downloadComplete": "Завантаження завершено",

@@ -5,7 +5,8 @@
     "selectTorrent": "トレントを選択して詳細を表示",
     "noTorrents": "トレントがありません",
     "yes": "はい",
-    "no": "いいえ"
+    "no": "いいえ",
+    "close": "閉じる"
   },
   "toolbar": {
     "addTorrent": "トレントを追加",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "代替速度を無効にする",
     "enableAltSpeed": "代替速度を有効にする",
     "alt": "代替",
-    "freeSpace": "{{space}} 空き"
+    "freeSpace": "{{space}} 空き",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "ディスク容量",
+    "totalFreeSpace": "空き容量の合計",
+    "speedLimit": "速度制限",
+    "limitSpeed": "速度を制限",
+    "unlimited": "無制限",
+    "kbs": "KB/s",
+    "setLimit": "制限を設定"
+  },
+  "sessionStats": {
+    "title": "セッション統計",
+    "currentSession": "現在のセッション",
+    "allTime": "全期間（累計）",
+    "downloaded": "ダウンロード済み",
+    "uploaded": "アップロード済み",
+    "ratio": "共有比",
+    "filesAdded": "追加したファイル",
+    "activeTime": "アクティブ時間",
+    "downloadSpeed": "ダウンロード速度",
+    "uploadSpeed": "アップロード速度",
+    "sessionCount": "セッション数",
+    "activeTorrents": "アクティブなトレント",
+    "pausedTorrents": "一時停止中のトレント",
+    "totalTorrents": "トレント合計"
   },
   "filter": {
     "all": "すべて",
@@ -81,7 +106,17 @@
     "downloaded": "ダウンロード済み",
     "uploaded": "アップロード済み",
     "private": "プライベート",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "ダウンロードするサイズ",
+    "sizeLeft": "残りサイズ",
+    "connectedPeers": "接続中",
+    "seedingTime": "シード時間",
+    "downloadingTime": "ダウンロード時間",
+    "created": "作成日",
+    "comment": "コメント",
+    "fileCount": "ファイル数",
+    "group": "グループ"
   },
   "priority": {
     "high": "高",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "ティア",
     "announceUrl": "アナウンス URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "シード",
+    "leechers": "リーチャー",
     "status": "ステータス",
     "addPlaceholder": "トラッカー URL を追加...",
     "add": "追加",
@@ -193,7 +228,7 @@
     "add": "追加",
     "test": "接続テスト",
     "browse": "参照...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / マグネット",
     "file": "ファイル",
     "urlOrMagnet": "URL または Magnet リンク",
     "urlPlaceholder": "magnet:?xt= または https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "プロキシパスワード",
     "testSuccess": "成功",
     "testFailed": "失敗",
+    "deleteServer": "削除",
+    "deleteConfirm": "サーバー「{{name}}」を削除しますか？",
+    "cannotDeleteActive": "先に切断してください",
+    "exportServer": "エクスポート",
+    "exportAll": "すべてエクスポート",
+    "importServers": "インポート...",
+    "importSuccess": "{{added}} 件追加、{{skipped}} 件スキップ",
     "importFailed": "インポートに失敗しました。"
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": ".torrent ファイルのフォルダーを監視",
     "watchFolderPlaceholder": "/監視/パス",
     "deleteWatchedTorrent": "追加後に .torrent ファイルを削除",
+    "speedPresets": "速度プリセット",
+    "speedPresetsHelp": "ステータスバーのポップオーバー用の速度制限のクイック値 (KB/s)。",
+    "addPreset": "追加",
+    "backup": "バックアップと復元",
+    "exportBackup": "バックアップをエクスポート",
+    "importBackup": "バックアップをインポート",
+    "exportBackupHelp": "すべてのサーバーと設定を JSON ファイルにエクスポートします。",
+    "importSuccess": "バックアップを復元しました。",
     "saveFailed": "設定を保存できませんでした。値を確認してもう一度お試しください。",
     "invalidValues": "更新間隔は250ミリ秒以上、速度プリセットは数値にしてください。",
     "importFailed": "インポートに失敗しました。"
+  },
+  "columnMenu": {
+    "setupColumns": "列を設定"
   },
   "notification": {
     "downloadComplete": "ダウンロード完了",

@@ -5,7 +5,8 @@
     "selectTorrent": "Valitse torrent nähdäksesi tiedot",
     "noTorrents": "Ei torrentteja",
     "yes": "Kyllä",
-    "no": "Ei"
+    "no": "Ei",
+    "close": "Sulje"
   },
   "toolbar": {
     "addTorrent": "Lisää torrent",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Poista vaihtoehtoinen nopeus käytöstä",
     "enableAltSpeed": "Ota vaihtoehtoinen nopeus käyttöön",
     "alt": "Alt",
-    "freeSpace": "{{space}} vapaana"
+    "freeSpace": "{{space}} vapaana",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Levytila",
+    "totalFreeSpace": "Vapaa tila yhteensä",
+    "speedLimit": "Nopeusrajoitus",
+    "limitSpeed": "Rajoita nopeutta",
+    "unlimited": "Rajoittamaton",
+    "kbs": "KB/s",
+    "setLimit": "Aseta raja"
+  },
+  "sessionStats": {
+    "title": "Istunnon tilastot",
+    "currentSession": "Nykyinen istunto",
+    "allTime": "Koko ajalta (kumulatiivinen)",
+    "downloaded": "Ladattu",
+    "uploaded": "Lähetetty",
+    "ratio": "Suhde",
+    "filesAdded": "Lisätyt tiedostot",
+    "activeTime": "Aktiivinen aika",
+    "downloadSpeed": "Latausnopeus",
+    "uploadSpeed": "Lähetysnopeus",
+    "sessionCount": "Istunnot",
+    "activeTorrents": "Aktiiviset torrentit",
+    "pausedTorrents": "Keskeytetyt torrentit",
+    "totalTorrents": "Torrentit yhteensä"
   },
   "filter": {
     "all": "Kaikki",
@@ -81,7 +106,17 @@
     "downloaded": "Ladattu",
     "uploaded": "Lähetetty",
     "private": "Yksityinen",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Ladattavaa",
+    "sizeLeft": "Jäljellä",
+    "connectedPeers": "Yhdistetty",
+    "seedingTime": "Jakoaika",
+    "downloadingTime": "Latausaika",
+    "created": "Luotu",
+    "comment": "Kommentti",
+    "fileCount": "Tiedostot",
+    "group": "Ryhmä"
   },
   "priority": {
     "high": "Korkea",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "Taso",
     "announceUrl": "Announce URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Seedit",
+    "leechers": "Leecherit",
     "status": "Tila",
     "addPlaceholder": "Lisää tracker-URL...",
     "add": "Lisää",
@@ -193,7 +228,7 @@
     "add": "Lisää",
     "test": "Testaa yhteys",
     "browse": "Selaa...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magneettilinkki",
     "file": "Tiedosto",
     "urlOrMagnet": "URL tai Magnet-linkki",
     "urlPlaceholder": "magnet:?xt= tai https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Välityspalvelimen salasana",
     "testSuccess": "Onnistui",
     "testFailed": "Epäonnistui",
+    "deleteServer": "Poista",
+    "deleteConfirm": "Poistetaanko palvelin \"{{name}}\"?",
+    "cannotDeleteActive": "Katkaise yhteys ensin",
+    "exportServer": "Vie",
+    "exportAll": "Vie kaikki",
+    "importServers": "Tuo...",
+    "importSuccess": "{{added}} lisätty, {{skipped}} ohitettu",
     "importFailed": "Tuonti epäonnistui."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Seuraa kansiota .torrent-tiedostojen varalta",
     "watchFolderPlaceholder": "/polku/kansioon",
     "deleteWatchedTorrent": "Poista .torrent-tiedosto lisäämisen jälkeen",
+    "speedPresets": "Nopeusvalmiit",
+    "speedPresetsHelp": "Nopeat nopeusrajoitusarvot (KB/s) tilapalkin ponnahdusikkunaa varten.",
+    "addPreset": "Lisää",
+    "backup": "Varmuuskopiointi ja palautus",
+    "exportBackup": "Vie varmuuskopio",
+    "importBackup": "Tuo varmuuskopio",
+    "exportBackupHelp": "Vie kaikki palvelimet ja asetukset JSON-tiedostoon.",
+    "importSuccess": "Varmuuskopio palautettu onnistuneesti.",
     "saveFailed": "Asetusten tallentaminen epäonnistui. Tarkista arvot ja yritä uudelleen.",
     "invalidValues": "Päivitysvälin on oltava vähintään 250 ms ja nopeuden esiasetusten on oltava lukuja.",
     "importFailed": "Tuonti epäonnistui."
+  },
+  "columnMenu": {
+    "setupColumns": "Määritä sarakkeet"
   },
   "notification": {
     "downloadComplete": "Lataus valmis",

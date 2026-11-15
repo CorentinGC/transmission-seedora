@@ -5,7 +5,8 @@
     "selectTorrent": "Válasszon egy torrentet a részletek megtekintéséhez",
     "noTorrents": "Nincsenek torrentek",
     "yes": "Igen",
-    "no": "Nem"
+    "no": "Nem",
+    "close": "Bezárás"
   },
   "toolbar": {
     "addTorrent": "Torrent hozzáadása",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Alt. sebesség kikapcsolása",
     "enableAltSpeed": "Alt. sebesség bekapcsolása",
     "alt": "Alt",
-    "freeSpace": "{{space}} szabad"
+    "freeSpace": "{{space}} szabad",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Lemezterület",
+    "totalFreeSpace": "Teljes szabad hely",
+    "speedLimit": "Sebességkorlát",
+    "limitSpeed": "Sebesség korlátozása",
+    "unlimited": "Korlátlan",
+    "kbs": "KB/s",
+    "setLimit": "Korlát beállítása"
+  },
+  "sessionStats": {
+    "title": "Munkamenet statisztikái",
+    "currentSession": "Jelenlegi munkamenet",
+    "allTime": "Összesen (halmozott)",
+    "downloaded": "Letöltve",
+    "uploaded": "Feltöltve",
+    "ratio": "Arány",
+    "filesAdded": "Hozzáadott fájlok",
+    "activeTime": "Aktív idő",
+    "downloadSpeed": "Letöltési sebesség",
+    "uploadSpeed": "Feltöltési sebesség",
+    "sessionCount": "Munkamenetek",
+    "activeTorrents": "Aktív torrentek",
+    "pausedTorrents": "Szüneteltetett torrentek",
+    "totalTorrents": "Torrentek összesen"
   },
   "filter": {
     "all": "Összes",
@@ -81,7 +106,17 @@
     "downloaded": "Letöltve",
     "uploaded": "Feltöltve",
     "private": "Privát",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Letöltendő méret",
+    "sizeLeft": "Hátralévő méret",
+    "connectedPeers": "Csatlakozva",
+    "seedingTime": "Seedelési idő",
+    "downloadingTime": "Letöltési idő",
+    "created": "Létrehozva",
+    "comment": "Megjegyzés",
+    "fileCount": "Fájlok",
+    "group": "Csoport"
   },
   "priority": {
     "high": "Magas",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "Szint",
     "announceUrl": "Bejelentési URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Seedek",
+    "leechers": "Leecherek",
     "status": "Állapot",
     "addPlaceholder": "Tracker URL hozzáadása...",
     "add": "Hozzáadás",
@@ -193,7 +228,7 @@
     "add": "Hozzáadás",
     "test": "Kapcsolat tesztelése",
     "browse": "Tallózás...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnet hivatkozás",
     "file": "Fájl",
     "urlOrMagnet": "URL vagy Magnet link",
     "urlPlaceholder": "magnet:?xt= vagy https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Proxy jelszó",
     "testSuccess": "Sikeres",
     "testFailed": "Sikertelen",
+    "deleteServer": "Törlés",
+    "deleteConfirm": "Törli a(z) „{{name}}” szervert?",
+    "cannotDeleteActive": "Előbb szakítsa meg a kapcsolatot",
+    "exportServer": "Exportálás",
+    "exportAll": "Összes exportálása",
+    "importServers": "Importálás...",
+    "importSuccess": "{{added}} hozzáadva, {{skipped}} kihagyva",
     "importFailed": "Az importálás sikertelen."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Mappa figyelése .torrent fájlokra",
     "watchFolderPlaceholder": "/útvonal/a/mappához",
     "deleteWatchedTorrent": ".torrent fájl törlése hozzáadás után",
+    "speedPresets": "Sebesség-előbeállítások",
+    "speedPresetsHelp": "Gyors sebességkorlát-értékek (KB/s) az állapotsor felugró ablakához.",
+    "addPreset": "Hozzáadás",
+    "backup": "Mentés és visszaállítás",
+    "exportBackup": "Mentés exportálása",
+    "importBackup": "Mentés importálása",
+    "exportBackupHelp": "Az összes szerver és beállítás exportálása JSON-fájlba.",
+    "importSuccess": "A mentés sikeresen visszaállítva.",
     "saveFailed": "A beállítások mentése sikertelen. Ellenőrizze az értékeket, és próbálja újra.",
     "invalidValues": "A frissítési időköznek legalább 250 ms-nak kell lennie, a sebesség-előbeállításoknak pedig számoknak kell lenniük.",
     "importFailed": "Az importálás sikertelen."
+  },
+  "columnMenu": {
+    "setupColumns": "Oszlopok beállítása"
   },
   "notification": {
     "downloadComplete": "Letöltés befejezve",

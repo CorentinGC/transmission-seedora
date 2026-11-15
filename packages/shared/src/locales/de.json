@@ -5,7 +5,8 @@
     "selectTorrent": "Torrent auswählen, um Details anzuzeigen",
     "noTorrents": "Keine Torrents",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "close": "Schließen"
   },
   "toolbar": {
     "addTorrent": "Torrent hinzufügen",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Alternative Geschwindigkeit deaktivieren",
     "enableAltSpeed": "Alternative Geschwindigkeit aktivieren",
     "alt": "Alt",
-    "freeSpace": "{{space}} frei"
+    "freeSpace": "{{space}} frei",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Speicherplatz",
+    "totalFreeSpace": "Freier Speicherplatz gesamt",
+    "speedLimit": "Geschwindigkeitslimit",
+    "limitSpeed": "Geschwindigkeit begrenzen",
+    "unlimited": "Unbegrenzt",
+    "kbs": "KB/s",
+    "setLimit": "Limit festlegen"
+  },
+  "sessionStats": {
+    "title": "Sitzungsstatistik",
+    "currentSession": "Aktuelle Sitzung",
+    "allTime": "Gesamt (kumuliert)",
+    "downloaded": "Heruntergeladen",
+    "uploaded": "Hochgeladen",
+    "ratio": "Verhältnis",
+    "filesAdded": "Hinzugefügte Dateien",
+    "activeTime": "Aktive Zeit",
+    "downloadSpeed": "Download-Geschwindigkeit",
+    "uploadSpeed": "Upload-Geschwindigkeit",
+    "sessionCount": "Sitzungen",
+    "activeTorrents": "Aktive Torrents",
+    "pausedTorrents": "Pausierte Torrents",
+    "totalTorrents": "Torrents gesamt"
   },
   "filter": {
     "all": "Alle",
@@ -66,7 +91,7 @@
     "status": "Status",
     "seeds": "Seeds",
     "peers": "Peers",
-    "downSpeed": "Down",
+    "downSpeed": "Download",
     "upSpeed": "Up",
     "eta": "Verbleibend",
     "ratio": "Verhältnis",
@@ -81,7 +106,17 @@
     "downloaded": "Heruntergeladen",
     "uploaded": "Hochgeladen",
     "private": "Privat",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Noch herunterzuladen",
+    "sizeLeft": "Verbleibend",
+    "connectedPeers": "Verbunden",
+    "seedingTime": "Seed-Zeit",
+    "downloadingTime": "Download-Zeit",
+    "created": "Erstellt",
+    "comment": "Kommentar",
+    "fileCount": "Dateien",
+    "group": "Gruppe"
   },
   "priority": {
     "high": "Hoch",
@@ -121,14 +156,14 @@
     "client": "Client",
     "flags": "Flags",
     "progress": "Fortschritt",
-    "down": "Down",
+    "down": "Download",
     "up": "Up"
   },
   "trackersTab": {
     "tier": "Stufe",
     "announceUrl": "Announce-URL",
     "seeds": "Seeds",
-    "leechers": "Leechers",
+    "leechers": "Leecher",
     "status": "Status",
     "addPlaceholder": "Tracker-URL hinzufügen...",
     "add": "Hinzufügen",
@@ -193,7 +228,7 @@
     "add": "Hinzufügen",
     "test": "Verbindung testen",
     "browse": "Durchsuchen...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / Magnet-Link",
     "file": "Datei",
     "urlOrMagnet": "URL oder Magnet-Link",
     "urlPlaceholder": "magnet:?xt= oder https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Proxy-Passwort",
     "testSuccess": "Erfolgreich",
     "testFailed": "Fehlgeschlagen",
+    "deleteServer": "Löschen",
+    "deleteConfirm": "Server „{{name}}“ löschen?",
+    "cannotDeleteActive": "Zuerst trennen",
+    "exportServer": "Exportieren",
+    "exportAll": "Alle exportieren",
+    "importServers": "Importieren...",
+    "importSuccess": "{{added}} hinzugefügt, {{skipped}} übersprungen",
     "importFailed": "Import fehlgeschlagen."
   },
   "settings": {
@@ -327,7 +369,7 @@
     "polling": "Abfrage",
     "refreshInterval": "Aktualisierungsintervall (ms):",
     "appearance": "Erscheinungsbild",
-    "theme": "Theme:",
+    "theme": "Design:",
     "themeSystem": "System",
     "themeLight": "Hell",
     "themeDark": "Dunkel",
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Ordner auf .torrent-Dateien überwachen",
     "watchFolderPlaceholder": "/pfad/zum/ordner",
     "deleteWatchedTorrent": ".torrent-Datei nach dem Hinzufügen löschen",
+    "speedPresets": "Geschwindigkeitsvorgaben",
+    "speedPresetsHelp": "Schnellwerte für das Geschwindigkeitslimit (KB/s) im Popover der Statusleiste.",
+    "addPreset": "Hinzufügen",
+    "backup": "Sicherung und Wiederherstellung",
+    "exportBackup": "Sicherung exportieren",
+    "importBackup": "Sicherung importieren",
+    "exportBackupHelp": "Alle Server und Einstellungen in eine JSON-Datei exportieren.",
+    "importSuccess": "Sicherung erfolgreich wiederhergestellt.",
     "saveFailed": "Einstellungen konnten nicht gespeichert werden. Prüfen Sie die Werte und versuchen Sie es erneut.",
     "invalidValues": "Das Aktualisierungsintervall muss mindestens 250 ms betragen und die Geschwindigkeitsvorgaben müssen Zahlen sein.",
     "importFailed": "Import fehlgeschlagen."
+  },
+  "columnMenu": {
+    "setupColumns": "Spalten einrichten"
   },
   "notification": {
     "downloadComplete": "Download abgeschlossen",

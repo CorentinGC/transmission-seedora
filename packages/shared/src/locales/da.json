@@ -5,7 +5,8 @@
     "selectTorrent": "Vælg en torrent for at se detaljer",
     "noTorrents": "Ingen torrents",
     "yes": "Ja",
-    "no": "Nej"
+    "no": "Nej",
+    "close": "Luk"
   },
   "toolbar": {
     "addTorrent": "Tilføj torrent",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Deaktiver alternativ hastighed",
     "enableAltSpeed": "Aktiver alternativ hastighed",
     "alt": "Alt",
-    "freeSpace": "{{space}} ledig"
+    "freeSpace": "{{space}} ledig",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Diskplads",
+    "totalFreeSpace": "Samlet ledig plads",
+    "speedLimit": "Hastighedsgrænse",
+    "limitSpeed": "Begræns hastighed",
+    "unlimited": "Ubegrænset",
+    "kbs": "KB/s",
+    "setLimit": "Angiv grænse"
+  },
+  "sessionStats": {
+    "title": "Sessionsstatistik",
+    "currentSession": "Nuværende session",
+    "allTime": "Alle tider (samlet)",
+    "downloaded": "Downloadet",
+    "uploaded": "Uploadet",
+    "ratio": "Ratio",
+    "filesAdded": "Tilføjede filer",
+    "activeTime": "Aktiv tid",
+    "downloadSpeed": "Downloadhastighed",
+    "uploadSpeed": "Uploadhastighed",
+    "sessionCount": "Sessioner",
+    "activeTorrents": "Aktive torrents",
+    "pausedTorrents": "Satte torrents på pause",
+    "totalTorrents": "Torrents i alt"
   },
   "filter": {
     "all": "Alle",
@@ -81,7 +106,17 @@
     "downloaded": "Downloadet",
     "uploaded": "Uploadet",
     "private": "Privat",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Størrelse at hente",
+    "sizeLeft": "Størrelse tilbage",
+    "connectedPeers": "Forbundet",
+    "seedingTime": "Seedingtid",
+    "downloadingTime": "Downloadtid",
+    "created": "Oprettet",
+    "comment": "Kommentar",
+    "fileCount": "Filer",
+    "group": "Gruppe"
   },
   "priority": {
     "high": "Høj",
@@ -193,7 +228,7 @@
     "add": "Tilføj",
     "test": "Test forbindelse",
     "browse": "Gennemse...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnetlink",
     "file": "Fil",
     "urlOrMagnet": "URL eller Magnet-link",
     "urlPlaceholder": "magnet:?xt= eller https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Proxyadgangskode",
     "testSuccess": "Lykkedes",
     "testFailed": "Mislykkedes",
+    "deleteServer": "Slet",
+    "deleteConfirm": "Slet server \"{{name}}\"?",
+    "cannotDeleteActive": "Afbryd forbindelsen først",
+    "exportServer": "Eksportér",
+    "exportAll": "Eksportér alle",
+    "importServers": "Importér...",
+    "importSuccess": "{{added}} tilføjet, {{skipped}} sprunget over",
     "importFailed": "Importen mislykkedes."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Overvåg en mappe for .torrent-filer",
     "watchFolderPlaceholder": "/sti/til/mappe",
     "deleteWatchedTorrent": "Slet .torrent-fil efter tilføjelse",
+    "speedPresets": "Hastighedsforvalg",
+    "speedPresetsHelp": "Hurtige værdier for hastighedsgrænse (KB/s) til statuslinjens popover.",
+    "addPreset": "Tilføj",
+    "backup": "Sikkerhedskopi og gendannelse",
+    "exportBackup": "Eksportér sikkerhedskopi",
+    "importBackup": "Importér sikkerhedskopi",
+    "exportBackupHelp": "Eksportér alle servere og indstillinger til en JSON-fil.",
+    "importSuccess": "Sikkerhedskopien blev gendannet.",
     "saveFailed": "Indstillingerne kunne ikke gemmes. Kontroller værdierne, og prøv igen.",
     "invalidValues": "Opdateringsintervallet skal være mindst 250 ms, og hastighedsforudindstillingerne skal være tal.",
     "importFailed": "Importen mislykkedes."
+  },
+  "columnMenu": {
+    "setupColumns": "Opsæt kolonner"
   },
   "notification": {
     "downloadComplete": "Download fuldført",

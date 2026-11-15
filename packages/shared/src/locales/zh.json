@@ -5,7 +5,8 @@
     "selectTorrent": "选择一个种子以查看详情",
     "noTorrents": "没有种子",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "close": "关闭"
   },
   "toolbar": {
     "addTorrent": "添加种子",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "关闭备用速度",
     "enableAltSpeed": "开启备用速度",
     "alt": "备用",
-    "freeSpace": "{{space}} 可用"
+    "freeSpace": "{{space}} 可用",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "磁盘空间",
+    "totalFreeSpace": "总可用空间",
+    "speedLimit": "速度限制",
+    "limitSpeed": "限制速度",
+    "unlimited": "不限制",
+    "kbs": "KB/s",
+    "setLimit": "设置限制"
+  },
+  "sessionStats": {
+    "title": "会话统计",
+    "currentSession": "当前会话",
+    "allTime": "全部（累计）",
+    "downloaded": "已下载",
+    "uploaded": "已上传",
+    "ratio": "分享率",
+    "filesAdded": "已添加文件",
+    "activeTime": "活动时间",
+    "downloadSpeed": "下载速度",
+    "uploadSpeed": "上传速度",
+    "sessionCount": "会话数",
+    "activeTorrents": "活动的种子",
+    "pausedTorrents": "已暂停的种子",
+    "totalTorrents": "种子总数"
   },
   "filter": {
     "all": "全部",
@@ -81,7 +106,17 @@
     "downloaded": "已下载",
     "uploaded": "已上传",
     "private": "私有",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "待下载大小",
+    "sizeLeft": "剩余大小",
+    "connectedPeers": "已连接",
+    "seedingTime": "做种时间",
+    "downloadingTime": "下载用时",
+    "created": "创建时间",
+    "comment": "备注",
+    "fileCount": "文件数",
+    "group": "分组"
   },
   "priority": {
     "high": "高",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "层级",
     "announceUrl": "通告 URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "做种者",
+    "leechers": "下载者",
     "status": "状态",
     "addPlaceholder": "添加 Tracker URL...",
     "add": "添加",
@@ -193,7 +228,7 @@
     "add": "添加",
     "test": "测试连接",
     "browse": "浏览...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / 磁力链接",
     "file": "文件",
     "urlOrMagnet": "URL 或 Magnet 链接",
     "urlPlaceholder": "magnet:?xt= 或 https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "代理密码",
     "testSuccess": "成功",
     "testFailed": "失败",
+    "deleteServer": "删除",
+    "deleteConfirm": "删除服务器“{{name}}”？",
+    "cannotDeleteActive": "请先断开连接",
+    "exportServer": "导出",
+    "exportAll": "全部导出",
+    "importServers": "导入...",
+    "importSuccess": "已添加 {{added}} 个，已跳过 {{skipped}} 个",
     "importFailed": "导入失败。"
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "监视文件夹中的 .torrent 文件",
     "watchFolderPlaceholder": "/监视/路径",
     "deleteWatchedTorrent": "添加后删除 .torrent 文件",
+    "speedPresets": "速度预设",
+    "speedPresetsHelp": "状态栏弹出窗口的速度限制快捷值 (KB/s)。",
+    "addPreset": "添加",
+    "backup": "备份与恢复",
+    "exportBackup": "导出备份",
+    "importBackup": "导入备份",
+    "exportBackupHelp": "将所有服务器和偏好设置导出为 JSON 文件。",
+    "importSuccess": "备份已成功恢复。",
     "saveFailed": "无法保存偏好设置。请检查输入的值后重试。",
     "invalidValues": "刷新间隔不得小于 250 毫秒，速度预设必须为数字。",
     "importFailed": "导入失败。"
+  },
+  "columnMenu": {
+    "setupColumns": "设置列"
   },
   "notification": {
     "downloadComplete": "下载完成",

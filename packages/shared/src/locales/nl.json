@@ -5,7 +5,8 @@
     "selectTorrent": "Selecteer een torrent om details te bekijken",
     "noTorrents": "Geen torrents",
     "yes": "Ja",
-    "no": "Nee"
+    "no": "Nee",
+    "close": "Sluiten"
   },
   "toolbar": {
     "addTorrent": "Torrent toevoegen",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Alternatieve snelheid uitschakelen",
     "enableAltSpeed": "Alternatieve snelheid inschakelen",
     "alt": "Alt",
-    "freeSpace": "{{space}} vrij"
+    "freeSpace": "{{space}} vrij",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Schijfruimte",
+    "totalFreeSpace": "Totale vrije ruimte",
+    "speedLimit": "Snelheidslimiet",
+    "limitSpeed": "Snelheid beperken",
+    "unlimited": "Onbeperkt",
+    "kbs": "KB/s",
+    "setLimit": "Limiet instellen"
+  },
+  "sessionStats": {
+    "title": "Sessiestatistieken",
+    "currentSession": "Huidige sessie",
+    "allTime": "Totaal (cumulatief)",
+    "downloaded": "Gedownload",
+    "uploaded": "Geüpload",
+    "ratio": "Ratio",
+    "filesAdded": "Toegevoegde bestanden",
+    "activeTime": "Actieve tijd",
+    "downloadSpeed": "Downloadsnelheid",
+    "uploadSpeed": "Uploadsnelheid",
+    "sessionCount": "Sessies",
+    "activeTorrents": "Actieve torrents",
+    "pausedTorrents": "Gepauzeerde torrents",
+    "totalTorrents": "Totaal aantal torrents"
   },
   "filter": {
     "all": "Alles",
@@ -66,7 +91,7 @@
     "status": "Status",
     "seeds": "Seeds",
     "peers": "Peers",
-    "downSpeed": "Down",
+    "downSpeed": "Download",
     "upSpeed": "Up",
     "eta": "ETA",
     "ratio": "Ratio",
@@ -81,7 +106,17 @@
     "downloaded": "Gedownload",
     "uploaded": "Geüpload",
     "private": "Privé",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Te downloaden",
+    "sizeLeft": "Resterend",
+    "connectedPeers": "Verbonden",
+    "seedingTime": "Seedtijd",
+    "downloadingTime": "Downloadtijd",
+    "created": "Aangemaakt",
+    "comment": "Opmerking",
+    "fileCount": "Bestanden",
+    "group": "Groep"
   },
   "priority": {
     "high": "Hoog",
@@ -121,7 +156,7 @@
     "client": "Client",
     "flags": "Vlaggen",
     "progress": "Voortgang",
-    "down": "Down",
+    "down": "Download",
     "up": "Up"
   },
   "trackersTab": {
@@ -193,7 +228,7 @@
     "add": "Toevoegen",
     "test": "Verbinding testen",
     "browse": "Bladeren...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnetlink",
     "file": "Bestand",
     "urlOrMagnet": "URL of Magnet-link",
     "urlPlaceholder": "magnet:?xt= of https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Proxywachtwoord",
     "testSuccess": "Geslaagd",
     "testFailed": "Mislukt",
+    "deleteServer": "Verwijderen",
+    "deleteConfirm": "Server \"{{name}}\" verwijderen?",
+    "cannotDeleteActive": "Verbreek eerst de verbinding",
+    "exportServer": "Exporteren",
+    "exportAll": "Alles exporteren",
+    "importServers": "Importeren...",
+    "importSuccess": "{{added}} toegevoegd, {{skipped}} overgeslagen",
     "importFailed": "Importeren mislukt."
   },
   "settings": {
@@ -324,7 +366,7 @@
   },
   "prefs": {
     "title": "Toepassingsvoorkeuren",
-    "polling": "Polling",
+    "polling": "Verversing",
     "refreshInterval": "Verversingsinterval (ms):",
     "appearance": "Weergave",
     "theme": "Thema:",
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Map bewaken voor .torrent-bestanden",
     "watchFolderPlaceholder": "/pad/naar/map",
     "deleteWatchedTorrent": ".torrent-bestand verwijderen na toevoegen",
+    "speedPresets": "Snelheidsvoorinstellingen",
+    "speedPresetsHelp": "Snelle waarden voor de snelheidslimiet (KB/s) voor de popover in de statusbalk.",
+    "addPreset": "Toevoegen",
+    "backup": "Back-up en herstel",
+    "exportBackup": "Back-up exporteren",
+    "importBackup": "Back-up importeren",
+    "exportBackupHelp": "Alle servers en voorkeuren exporteren naar een JSON-bestand.",
+    "importSuccess": "Back-up succesvol hersteld.",
     "saveFailed": "Voorkeuren konden niet worden opgeslagen. Controleer de waarden en probeer het opnieuw.",
     "invalidValues": "Het verversingsinterval moet minstens 250 ms zijn en de snelheidsvoorinstellingen moeten getallen zijn.",
     "importFailed": "Importeren mislukt."
+  },
+  "columnMenu": {
+    "setupColumns": "Kolommen instellen"
   },
   "notification": {
     "downloadComplete": "Download voltooid",

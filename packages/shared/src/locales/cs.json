@@ -5,7 +5,8 @@
     "selectTorrent": "Vyberte torrent pro zobrazení podrobností",
     "noTorrents": "Žádné torrenty",
     "yes": "Ano",
-    "no": "Ne"
+    "no": "Ne",
+    "close": "Zavřít"
   },
   "toolbar": {
     "addTorrent": "Přidat torrent",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Vypnout alt. rychlost",
     "enableAltSpeed": "Zapnout alt. rychlost",
     "alt": "Alt",
-    "freeSpace": "{{space}} volného místa"
+    "freeSpace": "{{space}} volného místa",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Místo na disku",
+    "totalFreeSpace": "Celkové volné místo",
+    "speedLimit": "Omezení rychlosti",
+    "limitSpeed": "Omezit rychlost",
+    "unlimited": "Neomezeno",
+    "kbs": "KB/s",
+    "setLimit": "Nastavit limit"
+  },
+  "sessionStats": {
+    "title": "Statistiky relace",
+    "currentSession": "Aktuální relace",
+    "allTime": "Celkem (kumulativně)",
+    "downloaded": "Staženo",
+    "uploaded": "Odesláno",
+    "ratio": "Poměr",
+    "filesAdded": "Přidané soubory",
+    "activeTime": "Aktivní čas",
+    "downloadSpeed": "Rychlost stahování",
+    "uploadSpeed": "Rychlost odesílání",
+    "sessionCount": "Relace",
+    "activeTorrents": "Aktivní torrenty",
+    "pausedTorrents": "Pozastavené torrenty",
+    "totalTorrents": "Torrenty celkem"
   },
   "filter": {
     "all": "Vše",
@@ -81,7 +106,17 @@
     "downloaded": "Staženo",
     "uploaded": "Odesláno",
     "private": "Soukromý",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Zbývá stáhnout",
+    "sizeLeft": "Zbývá",
+    "connectedPeers": "Připojeno",
+    "seedingTime": "Doba seedování",
+    "downloadingTime": "Doba stahování",
+    "created": "Vytvořeno",
+    "comment": "Komentář",
+    "fileCount": "Soubory",
+    "group": "Skupina"
   },
   "priority": {
     "high": "Vysoká",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "Úroveň",
     "announceUrl": "URL oznámení",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Seedy",
+    "leechers": "Leecheři",
     "status": "Stav",
     "addPlaceholder": "Přidat URL trackeru...",
     "add": "Přidat",
@@ -193,7 +228,7 @@
     "add": "Přidat",
     "test": "Test připojení",
     "browse": "Procházet...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnet odkaz",
     "file": "Soubor",
     "urlOrMagnet": "URL nebo Magnet odkaz",
     "urlPlaceholder": "magnet:?xt= nebo https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Proxy heslo",
     "testSuccess": "Úspěch",
     "testFailed": "Selhání",
+    "deleteServer": "Smazat",
+    "deleteConfirm": "Smazat server „{{name}}“?",
+    "cannotDeleteActive": "Nejprve se odpojte",
+    "exportServer": "Exportovat",
+    "exportAll": "Exportovat vše",
+    "importServers": "Importovat...",
+    "importSuccess": "Přidáno: {{added}}, přeskočeno: {{skipped}}",
     "importFailed": "Import se nezdařil."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Sledovat složku pro soubory .torrent",
     "watchFolderPlaceholder": "/cesta/ke/složce",
     "deleteWatchedTorrent": "Smazat soubor .torrent po přidání",
+    "speedPresets": "Předvolby rychlosti",
+    "speedPresetsHelp": "Rychlé hodnoty omezení rychlosti (KB/s) pro vyskakovací okno ve stavovém řádku.",
+    "addPreset": "Přidat",
+    "backup": "Záloha a obnovení",
+    "exportBackup": "Exportovat zálohu",
+    "importBackup": "Importovat zálohu",
+    "exportBackupHelp": "Exportovat všechny servery a předvolby do souboru JSON.",
+    "importSuccess": "Záloha byla úspěšně obnovena.",
     "saveFailed": "Předvolby se nepodařilo uložit. Zkontrolujte hodnoty a zkuste to znovu.",
     "invalidValues": "Interval obnovení musí být alespoň 250 ms a předvolby rychlosti musí být čísla.",
     "importFailed": "Import se nezdařil."
+  },
+  "columnMenu": {
+    "setupColumns": "Nastavit sloupce"
   },
   "notification": {
     "downloadComplete": "Stahování dokončeno",

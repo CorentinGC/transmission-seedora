@@ -5,7 +5,8 @@
     "selectTorrent": "Επιλέξτε ένα torrent για προβολή λεπτομερειών",
     "noTorrents": "Κανένα torrent",
     "yes": "Ναι",
-    "no": "Όχι"
+    "no": "Όχι",
+    "close": "Κλείσιμο"
   },
   "toolbar": {
     "addTorrent": "Προσθήκη torrent",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Απενεργοποίηση εναλ. ταχύτητας",
     "enableAltSpeed": "Ενεργοποίηση εναλ. ταχύτητας",
     "alt": "Εναλ.",
-    "freeSpace": "{{space}} ελεύθερα"
+    "freeSpace": "{{space}} ελεύθερα",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Χώρος δίσκου",
+    "totalFreeSpace": "Συνολικός ελεύθερος χώρος",
+    "speedLimit": "Όριο ταχύτητας",
+    "limitSpeed": "Περιορισμός ταχύτητας",
+    "unlimited": "Απεριόριστο",
+    "kbs": "KB/s",
+    "setLimit": "Ορισμός ορίου"
+  },
+  "sessionStats": {
+    "title": "Στατιστικά συνεδρίας",
+    "currentSession": "Τρέχουσα συνεδρία",
+    "allTime": "Συνολικά (σωρευτικά)",
+    "downloaded": "Λήψεις",
+    "uploaded": "Αποστολές",
+    "ratio": "Αναλογία",
+    "filesAdded": "Προστέθηκαν αρχεία",
+    "activeTime": "Ενεργός χρόνος",
+    "downloadSpeed": "Ταχύτητα λήψης",
+    "uploadSpeed": "Ταχύτητα αποστολής",
+    "sessionCount": "Συνεδρίες",
+    "activeTorrents": "Ενεργά torrents",
+    "pausedTorrents": "Torrents σε παύση",
+    "totalTorrents": "Σύνολο torrents"
   },
   "filter": {
     "all": "Όλα",
@@ -81,7 +106,17 @@
     "downloaded": "Ληφθέντα",
     "uploaded": "Απεσταλμένα",
     "private": "Ιδιωτικό",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Μέγεθος προς λήψη",
+    "sizeLeft": "Υπολειπόμενο μέγεθος",
+    "connectedPeers": "Συνδεδεμένοι",
+    "seedingTime": "Χρόνος seeding",
+    "downloadingTime": "Χρόνος λήψης",
+    "created": "Δημιουργήθηκε",
+    "comment": "Σχόλιο",
+    "fileCount": "Αρχεία",
+    "group": "Ομάδα"
   },
   "priority": {
     "high": "Υψηλή",
@@ -193,7 +228,7 @@
     "add": "Προσθήκη",
     "test": "Δοκιμή σύνδεσης",
     "browse": "Αναζήτηση...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / σύνδεσμος magnet",
     "file": "Αρχείο",
     "urlOrMagnet": "URL ή σύνδεσμος Magnet",
     "urlPlaceholder": "magnet:?xt= ή https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Κωδικός διαμεσολαβητή",
     "testSuccess": "Επιτυχία",
     "testFailed": "Αποτυχία",
+    "deleteServer": "Διαγραφή",
+    "deleteConfirm": "Διαγραφή του διακομιστή «{{name}}»;",
+    "cannotDeleteActive": "Αποσυνδεθείτε πρώτα",
+    "exportServer": "Εξαγωγή",
+    "exportAll": "Εξαγωγή όλων",
+    "importServers": "Εισαγωγή...",
+    "importSuccess": "{{added}} προστέθηκαν, {{skipped}} παραλείφθηκαν",
     "importFailed": "Η εισαγωγή απέτυχε."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Παρακολούθηση φακέλου για αρχεία .torrent",
     "watchFolderPlaceholder": "/διαδρομή/προς/φάκελο",
     "deleteWatchedTorrent": "Διαγραφή αρχείου .torrent μετά την προσθήκη",
+    "speedPresets": "Προεπιλογές ταχύτητας",
+    "speedPresetsHelp": "Γρήγορες τιμές ορίου ταχύτητας (KB/s) για το αναδυόμενο παράθυρο της γραμμής κατάστασης.",
+    "addPreset": "Προσθήκη",
+    "backup": "Αντίγραφο ασφαλείας και επαναφορά",
+    "exportBackup": "Εξαγωγή αντιγράφου ασφαλείας",
+    "importBackup": "Εισαγωγή αντιγράφου ασφαλείας",
+    "exportBackupHelp": "Εξαγωγή όλων των διακομιστών και προτιμήσεων σε αρχείο JSON.",
+    "importSuccess": "Το αντίγραφο ασφαλείας επαναφέρθηκε με επιτυχία.",
     "saveFailed": "Δεν ήταν δυνατή η αποθήκευση των προτιμήσεων. Ελέγξτε τις τιμές και δοκιμάστε ξανά.",
     "invalidValues": "Το διάστημα ανανέωσης πρέπει να είναι τουλάχιστον 250 ms και οι προεπιλογές ταχύτητας πρέπει να είναι αριθμοί.",
     "importFailed": "Η εισαγωγή απέτυχε."
+  },
+  "columnMenu": {
+    "setupColumns": "Ρύθμιση στηλών"
   },
   "notification": {
     "downloadComplete": "Η λήψη ολοκληρώθηκε",

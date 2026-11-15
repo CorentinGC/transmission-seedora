@@ -5,7 +5,8 @@
     "selectTorrent": "Wybierz torrent, aby zobaczyć szczegóły",
     "noTorrents": "Brak torrentów",
     "yes": "Tak",
-    "no": "Nie"
+    "no": "Nie",
+    "close": "Zamknij"
   },
   "toolbar": {
     "addTorrent": "Dodaj torrent",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Wyłącz alternatywną prędkość",
     "enableAltSpeed": "Włącz alternatywną prędkość",
     "alt": "Alt",
-    "freeSpace": "{{space}} wolne"
+    "freeSpace": "{{space}} wolne",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Miejsce na dysku",
+    "totalFreeSpace": "Łączne wolne miejsce",
+    "speedLimit": "Limit prędkości",
+    "limitSpeed": "Ogranicz prędkość",
+    "unlimited": "Bez limitu",
+    "kbs": "KB/s",
+    "setLimit": "Ustaw limit"
+  },
+  "sessionStats": {
+    "title": "Statystyki sesji",
+    "currentSession": "Bieżąca sesja",
+    "allTime": "Łącznie (skumulowane)",
+    "downloaded": "Pobrano",
+    "uploaded": "Wysłano",
+    "ratio": "Współczynnik",
+    "filesAdded": "Dodane pliki",
+    "activeTime": "Czas aktywności",
+    "downloadSpeed": "Prędkość pobierania",
+    "uploadSpeed": "Prędkość wysyłania",
+    "sessionCount": "Sesje",
+    "activeTorrents": "Aktywne torrenty",
+    "pausedTorrents": "Wstrzymane torrenty",
+    "totalTorrents": "Wszystkie torrenty"
   },
   "filter": {
     "all": "Wszystkie",
@@ -81,7 +106,17 @@
     "downloaded": "Pobrano",
     "uploaded": "Wysłano",
     "private": "Prywatny",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Do pobrania",
+    "sizeLeft": "Pozostało",
+    "connectedPeers": "Połączone",
+    "seedingTime": "Czas seedowania",
+    "downloadingTime": "Czas pobierania",
+    "created": "Utworzono",
+    "comment": "Komentarz",
+    "fileCount": "Pliki",
+    "group": "Grupa"
   },
   "priority": {
     "high": "Wysoki",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "Poziom",
     "announceUrl": "Adres URL ogłoszenia",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Seedy",
+    "leechers": "Leecherzy",
     "status": "Status",
     "addPlaceholder": "Dodaj adres URL trackera...",
     "add": "Dodaj",
@@ -193,7 +228,7 @@
     "add": "Dodaj",
     "test": "Testuj połączenie",
     "browse": "Przeglądaj...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / link magnet",
     "file": "Plik",
     "urlOrMagnet": "URL lub link Magnet",
     "urlPlaceholder": "magnet:?xt= lub https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Hasło proxy",
     "testSuccess": "Sukces",
     "testFailed": "Niepowodzenie",
+    "deleteServer": "Usuń",
+    "deleteConfirm": "Usunąć serwer „{{name}}”?",
+    "cannotDeleteActive": "Najpierw się rozłącz",
+    "exportServer": "Eksportuj",
+    "exportAll": "Eksportuj wszystko",
+    "importServers": "Importuj...",
+    "importSuccess": "Dodano: {{added}}, pominięto: {{skipped}}",
     "importFailed": "Import nie powiódł się."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Obserwuj folder w poszukiwaniu plików .torrent",
     "watchFolderPlaceholder": "/ścieżka/do/obserwacji",
     "deleteWatchedTorrent": "Usuń plik .torrent po dodaniu",
+    "speedPresets": "Ustawienia prędkości",
+    "speedPresetsHelp": "Szybkie wartości limitu prędkości (KB/s) dla okna podręcznego na pasku stanu.",
+    "addPreset": "Dodaj",
+    "backup": "Kopia zapasowa i przywracanie",
+    "exportBackup": "Eksportuj kopię zapasową",
+    "importBackup": "Importuj kopię zapasową",
+    "exportBackupHelp": "Wyeksportuj wszystkie serwery i preferencje do pliku JSON.",
+    "importSuccess": "Kopia zapasowa została przywrócona.",
     "saveFailed": "Nie udało się zapisać preferencji. Sprawdź wartości i spróbuj ponownie.",
     "invalidValues": "Interwał odświeżania musi wynosić co najmniej 250 ms, a ustawienia prędkości muszą być liczbami.",
     "importFailed": "Import nie powiódł się."
+  },
+  "columnMenu": {
+    "setupColumns": "Konfiguruj kolumny"
   },
   "notification": {
     "downloadComplete": "Pobieranie zakończone",

@@ -5,7 +5,8 @@
     "selectTorrent": "اختر تورنت لعرض التفاصيل",
     "noTorrents": "لا توجد تورنتات",
     "yes": "نعم",
-    "no": "لا"
+    "no": "لا",
+    "close": "إغلاق"
   },
   "toolbar": {
     "addTorrent": "إضافة تورنت",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "تعطيل السرعة البديلة",
     "enableAltSpeed": "تفعيل السرعة البديلة",
     "alt": "بديل",
-    "freeSpace": "{{space}} متاح"
+    "freeSpace": "{{space}} متاح",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "مساحة القرص",
+    "totalFreeSpace": "إجمالي المساحة الفارغة",
+    "speedLimit": "حد السرعة",
+    "limitSpeed": "تحديد السرعة",
+    "unlimited": "غير محدود",
+    "kbs": "KB/s",
+    "setLimit": "تعيين الحد"
+  },
+  "sessionStats": {
+    "title": "إحصائيات الجلسة",
+    "currentSession": "الجلسة الحالية",
+    "allTime": "الإجمالي (تراكمي)",
+    "downloaded": "تم تنزيله",
+    "uploaded": "تم رفعه",
+    "ratio": "النسبة",
+    "filesAdded": "الملفات المضافة",
+    "activeTime": "وقت النشاط",
+    "downloadSpeed": "سرعة التنزيل",
+    "uploadSpeed": "سرعة الرفع",
+    "sessionCount": "الجلسات",
+    "activeTorrents": "التورنتات النشطة",
+    "pausedTorrents": "التورنتات المتوقفة",
+    "totalTorrents": "إجمالي التورنتات"
   },
   "filter": {
     "all": "الكل",
@@ -81,7 +106,17 @@
     "downloaded": "تم تنزيله",
     "uploaded": "تم رفعه",
     "private": "خاص",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "المعرّف",
+    "sizeToDownload": "حجم التنزيل",
+    "sizeLeft": "المتبقي",
+    "connectedPeers": "المتصلون",
+    "seedingTime": "وقت البذر",
+    "downloadingTime": "وقت التنزيل",
+    "created": "تاريخ الإنشاء",
+    "comment": "تعليق",
+    "fileCount": "الملفات",
+    "group": "المجموعة"
   },
   "priority": {
     "high": "عالية",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "المستوى",
     "announceUrl": "رابط الإعلان",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "البذور",
+    "leechers": "المُحمِّلون",
     "status": "الحالة",
     "addPlaceholder": "إضافة رابط متتبع...",
     "add": "إضافة",
@@ -193,7 +228,7 @@
     "add": "إضافة",
     "test": "اختبار الاتصال",
     "browse": "تصفح...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "رابط / Magnet",
     "file": "ملف",
     "urlOrMagnet": "URL أو رابط Magnet",
     "urlPlaceholder": "magnet:?xt= أو https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "كلمة مرور الوكيل",
     "testSuccess": "نجح",
     "testFailed": "فشل",
+    "deleteServer": "حذف",
+    "deleteConfirm": "حذف الخادم \"{{name}}\"؟",
+    "cannotDeleteActive": "اقطع الاتصال أولاً",
+    "exportServer": "تصدير",
+    "exportAll": "تصدير الكل",
+    "importServers": "استيراد...",
+    "importSuccess": "تمت إضافة {{added}}، وتخطي {{skipped}}",
     "importFailed": "فشل الاستيراد."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "مراقبة مجلد لملفات .torrent",
     "watchFolderPlaceholder": "/المسار/للمراقبة",
     "deleteWatchedTorrent": "حذف ملف .torrent بعد الإضافة",
+    "speedPresets": "إعدادات السرعة المسبقة",
+    "speedPresetsHelp": "قيم سريعة لحد السرعة (KB/s) للنافذة المنبثقة في شريط الحالة.",
+    "addPreset": "إضافة",
+    "backup": "النسخ الاحتياطي والاستعادة",
+    "exportBackup": "تصدير النسخة الاحتياطية",
+    "importBackup": "استيراد نسخة احتياطية",
+    "exportBackupHelp": "تصدير جميع الخوادم والتفضيلات إلى ملف JSON.",
+    "importSuccess": "تمت استعادة النسخة الاحتياطية بنجاح.",
     "saveFailed": "تعذّر حفظ التفضيلات. تحقق من القيم وحاول مرة أخرى.",
     "invalidValues": "يجب ألا تقل فترة التحديث عن 250 ملي ثانية ويجب أن تكون إعدادات السرعة المسبقة أرقامًا.",
     "importFailed": "فشل الاستيراد."
+  },
+  "columnMenu": {
+    "setupColumns": "إعداد الأعمدة"
   },
   "notification": {
     "downloadComplete": "اكتمل التنزيل",

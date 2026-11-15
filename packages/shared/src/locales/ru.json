@@ -5,7 +5,8 @@
     "selectTorrent": "Выберите торрент для просмотра подробностей",
     "noTorrents": "Нет торрентов",
     "yes": "Да",
-    "no": "Нет"
+    "no": "Нет",
+    "close": "Закрыть"
   },
   "toolbar": {
     "addTorrent": "Добавить торрент",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Отключить альт. скорость",
     "enableAltSpeed": "Включить альт. скорость",
     "alt": "Альт",
-    "freeSpace": "{{space}} свободно"
+    "freeSpace": "{{space}} свободно",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Место на диске",
+    "totalFreeSpace": "Всего свободно",
+    "speedLimit": "Ограничение скорости",
+    "limitSpeed": "Ограничить скорость",
+    "unlimited": "Без ограничений",
+    "kbs": "KB/s",
+    "setLimit": "Задать лимит"
+  },
+  "sessionStats": {
+    "title": "Статистика сессии",
+    "currentSession": "Текущая сессия",
+    "allTime": "За всё время (накопленная)",
+    "downloaded": "Загружено",
+    "uploaded": "Отдано",
+    "ratio": "Рейтинг",
+    "filesAdded": "Добавлено файлов",
+    "activeTime": "Время активности",
+    "downloadSpeed": "Скорость загрузки",
+    "uploadSpeed": "Скорость отдачи",
+    "sessionCount": "Сессии",
+    "activeTorrents": "Активные торренты",
+    "pausedTorrents": "Торренты на паузе",
+    "totalTorrents": "Всего торрентов"
   },
   "filter": {
     "all": "Все",
@@ -81,7 +106,17 @@
     "downloaded": "Загружено",
     "uploaded": "Отдано",
     "private": "Приватный",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Осталось скачать",
+    "sizeLeft": "Осталось",
+    "connectedPeers": "Подключено",
+    "seedingTime": "Время раздачи",
+    "downloadingTime": "Время загрузки",
+    "created": "Создан",
+    "comment": "Комментарий",
+    "fileCount": "Файлы",
+    "group": "Группа"
   },
   "priority": {
     "high": "Высокий",
@@ -127,8 +162,8 @@
   "trackersTab": {
     "tier": "Уровень",
     "announceUrl": "URL анонса",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Сиды",
+    "leechers": "Личеры",
     "status": "Статус",
     "addPlaceholder": "Добавить URL трекера...",
     "add": "Добавить",
@@ -193,7 +228,7 @@
     "add": "Добавить",
     "test": "Проверить подключение",
     "browse": "Обзор...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnet-ссылка",
     "file": "Файл",
     "urlOrMagnet": "URL или Magnet-ссылка",
     "urlPlaceholder": "magnet:?xt= или https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Пароль прокси",
     "testSuccess": "Успешно",
     "testFailed": "Ошибка",
+    "deleteServer": "Удалить",
+    "deleteConfirm": "Удалить сервер «{{name}}»?",
+    "cannotDeleteActive": "Сначала отключитесь",
+    "exportServer": "Экспорт",
+    "exportAll": "Экспортировать все",
+    "importServers": "Импорт...",
+    "importSuccess": "Добавлено: {{added}}, пропущено: {{skipped}}",
     "importFailed": "Не удалось выполнить импорт."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Отслеживать папку для .torrent-файлов",
     "watchFolderPlaceholder": "/путь/к/папке",
     "deleteWatchedTorrent": "Удалять .torrent-файл после добавления",
+    "speedPresets": "Пресеты скорости",
+    "speedPresetsHelp": "Быстрые значения ограничения скорости (KB/s) для всплывающего окна в строке состояния.",
+    "addPreset": "Добавить",
+    "backup": "Резервная копия и восстановление",
+    "exportBackup": "Экспорт резервной копии",
+    "importBackup": "Импорт резервной копии",
+    "exportBackupHelp": "Экспорт всех серверов и настроек в файл JSON.",
+    "importSuccess": "Резервная копия успешно восстановлена.",
     "saveFailed": "Не удалось сохранить настройки. Проверьте значения и повторите попытку.",
     "invalidValues": "Интервал обновления должен быть не менее 250 мс, а пресеты скорости должны быть числами.",
     "importFailed": "Не удалось выполнить импорт."
+  },
+  "columnMenu": {
+    "setupColumns": "Настроить столбцы"
   },
   "notification": {
     "downloadComplete": "Загрузка завершена",

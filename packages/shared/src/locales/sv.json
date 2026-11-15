@@ -5,7 +5,8 @@
     "selectTorrent": "Välj en torrent för att visa detaljer",
     "noTorrents": "Inga torrents",
     "yes": "Ja",
-    "no": "Nej"
+    "no": "Nej",
+    "close": "Stäng"
   },
   "toolbar": {
     "addTorrent": "Lägg till torrent",
@@ -30,7 +31,31 @@
     "disableAltSpeed": "Inaktivera alternativ hastighet",
     "enableAltSpeed": "Aktivera alternativ hastighet",
     "alt": "Alt",
-    "freeSpace": "{{space}} ledigt"
+    "freeSpace": "{{space}} ledigt",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Diskutrymme",
+    "totalFreeSpace": "Totalt ledigt utrymme",
+    "speedLimit": "Hastighetsgräns",
+    "limitSpeed": "Begränsa hastighet",
+    "unlimited": "Obegränsad",
+    "kbs": "KB/s",
+    "setLimit": "Ange gräns"
+  },
+  "sessionStats": {
+    "title": "Sessionsstatistik",
+    "currentSession": "Aktuell session",
+    "allTime": "Totalt (ackumulerat)",
+    "downloaded": "Nedladdat",
+    "uploaded": "Uppladdat",
+    "ratio": "Kvot",
+    "filesAdded": "Tillagda filer",
+    "activeTime": "Aktiv tid",
+    "downloadSpeed": "Nedladdningshastighet",
+    "uploadSpeed": "Uppladdningshastighet",
+    "sessionCount": "Sessioner",
+    "activeTorrents": "Aktiva torrenter",
+    "pausedTorrents": "Pausade torrenter",
+    "totalTorrents": "Torrenter totalt"
   },
   "filter": {
     "all": "Alla",
@@ -81,7 +106,17 @@
     "downloaded": "Nerladdat",
     "uploaded": "Uppladdat",
     "private": "Privat",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Storlek att ladda ned",
+    "sizeLeft": "Storlek kvar",
+    "connectedPeers": "Anslutna",
+    "seedingTime": "Seedtid",
+    "downloadingTime": "Nedladdningstid",
+    "created": "Skapad",
+    "comment": "Kommentar",
+    "fileCount": "Filer",
+    "group": "Grupp"
   },
   "priority": {
     "high": "Hög",
@@ -152,7 +187,7 @@
     "unlimited": "Obegränsad",
     "minutes": "minuter",
     "other": "Övrigt",
-    "maxPeers": "Max peers:",
+    "maxPeers": "Max antal peers:",
     "sequentialDownload": "Sekventiell nedladdning",
     "labelsLabel": "Etiketter:",
     "labelsPlaceholder": "etikett1, etikett2"
@@ -193,7 +228,7 @@
     "add": "Lägg till",
     "test": "Testa anslutning",
     "browse": "Bläddra...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnetlänk",
     "file": "Fil",
     "urlOrMagnet": "URL eller Magnet-länk",
     "urlPlaceholder": "magnet:?xt= eller https://...",
@@ -235,6 +270,13 @@
     "proxyPassword": "Proxylösenord",
     "testSuccess": "Lyckades",
     "testFailed": "Misslyckades",
+    "deleteServer": "Ta bort",
+    "deleteConfirm": "Ta bort servern \"{{name}}\"?",
+    "cannotDeleteActive": "Koppla från först",
+    "exportServer": "Exportera",
+    "exportAll": "Exportera alla",
+    "importServers": "Importera...",
+    "importSuccess": "{{added}} tillagda, {{skipped}} hoppades över",
     "importFailed": "Importen misslyckades."
   },
   "settings": {
@@ -342,9 +384,20 @@
     "watchFolderEnabled": "Bevaka en mapp för .torrent-filer",
     "watchFolderPlaceholder": "/sökväg/till/mapp",
     "deleteWatchedTorrent": "Ta bort .torrent-fil efter tillägg",
+    "speedPresets": "Hastighetsförval",
+    "speedPresetsHelp": "Snabbvärden för hastighetsgräns (KB/s) till statusradens popover.",
+    "addPreset": "Lägg till",
+    "backup": "Säkerhetskopiering och återställning",
+    "exportBackup": "Exportera säkerhetskopia",
+    "importBackup": "Importera säkerhetskopia",
+    "exportBackupHelp": "Exportera alla servrar och inställningar till en JSON-fil.",
+    "importSuccess": "Säkerhetskopian återställdes.",
     "saveFailed": "Det gick inte att spara inställningarna. Kontrollera värdena och försök igen.",
     "invalidValues": "Uppdateringsintervallet måste vara minst 250 ms och hastighetsförinställningarna måste vara tal.",
     "importFailed": "Importen misslyckades."
+  },
+  "columnMenu": {
+    "setupColumns": "Konfigurera kolumner"
   },
   "notification": {
     "downloadComplete": "Nedladdning slutförd",
