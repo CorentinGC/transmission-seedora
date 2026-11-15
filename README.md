@@ -78,7 +78,7 @@ More detail: [docs/setup.md](docs/setup.md).
 
 The web app is a standard Next.js app (`apps/web`). Build it with `npm run build:web` and serve it with `npm run start:web`, or deploy it to a Next.js host. It needs a Node.js runtime because RPC calls go through server actions. This repository has no deployment workflow and no container image; the release workflow builds only the desktop installers ([docs/release.md](docs/release.md)).
 
-Set `COOKIE_SECRET` in any deployment (see [docs/setup.md](docs/setup.md#environment-variables)). Do not expose a deployment publicly before reading the known gaps below.
+Set `COOKIE_SECRET` (at least 32 characters) in production: the server refuses to start without it. A daemon on a private or LAN address also needs `SEEDORA_ALLOW_PRIVATE_HOSTS=true`, and a production build must be served over HTTPS. All variables are in [docs/setup.md](docs/setup.md#environment-variables). Read the known gaps below before exposing a deployment publicly.
 
 ## Project structure
 
@@ -102,9 +102,9 @@ Electron 40 and Electron Forge with Vite 6; Next.js 16 (App Router); TypeScript 
 
 ## Known gaps and security
 
-Seedora has known security gaps that are confirmed and scheduled for fixing, including in the hosted web app (server-side request handling, how the active server's credentials are stored in a cookie, missing security headers) and in the desktop app (renderer hardening, input validation in IPC handlers, plaintext credentials on disk). The full list is in [docs/security.md](docs/security.md). Until they are fixed, use the web app only with a daemon and credentials you can afford to expose, and prefer the desktop app.
+The hosted web app proxies RPC through server actions that validate their input, refuse loopback, private and cloud-metadata addresses by default, and keep the active server in a sealed cookie ([docs/security.md](docs/security.md)). This hardening is not released yet and has not had its final security audit. Known gaps remain: the web client keeps server passwords in `localStorage` in plaintext, web rate limits are in memory per server instance, and the desktop app still needs renderer hardening, input validation in IPC handlers and encryption of credentials on disk. The full list is in [docs/security.md](docs/security.md). Until they are fixed, use the web app only with a daemon and credentials you can afford to expose, and prefer the desktop app.
 
-Other gaps: desktop builds are unsigned, there is no auto-update, and the automated test suite and CI on pull requests are not in place yet. Progress is tracked in the beads backlog (`.beads/issues.jsonl`).
+Other gaps: desktop builds are unsigned and there is no auto-update. A Vitest suite and a CI workflow on pull requests exist, but some checks are still red or advisory. Progress is tracked in the beads backlog (`.beads/issues.jsonl`).
 
 To report a vulnerability, follow [SECURITY.md](SECURITY.md). Do not open a public issue.
 

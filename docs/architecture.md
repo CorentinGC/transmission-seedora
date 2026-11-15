@@ -61,7 +61,7 @@ Two access paths to the same instance, both initialised at startup by each shell
 | Implementation | File | Storage | RPC transport |
 |---|---|---|---|
 | Electron | `src/renderer/electron-api.ts` | `config.json` in Electron `userData` (`src/main/store/config-store.ts`) | IPC to main |
-| Web | `apps/web/src/lib/web-api.ts` | `localStorage` (`apps/web/src/lib/web-storage.ts`) + active-server cookie | Server actions |
+| Web | `apps/web/src/lib/web-api.ts` | `localStorage` (`apps/web/src/lib/web-storage.ts`) + sealed active-server cookie | Server actions |
 
 Every method returns `IpcResponse` (`{ success, data?, error? }`) — failures are returned, not thrown.
 
@@ -88,11 +88,15 @@ The main-process client owns the `X-Transmission-Session-Id` handshake (409 → 
 component / store
   → PlatformApi (web-api.ts)
   → server action rpcRequest (apps/web/src/lib/server-actions/rpc.ts)
-  → reads the active server from the cookie (server-actions/session.ts)
-  → fetch → Transmission daemon
+      client rate limit → validate method and args (server/schemas.ts)
+  → readActiveServer: unseal the session cookie (server/active-session.ts, session-cookie.ts)
+  → callTransmission (server/transmission.ts): Basic auth, 409 session-id handshake, deadline
+  → postJson (server/outbound.ts): resolve once, classify every address (address-policy.ts),
+      destination rate limit, connect to a validated address
+  → Transmission daemon
 ```
 
-The Next.js server is the proxy: the daemon must be reachable **from the server**, not from the user's browser. Session IDs are cached in a module-level `Map` per server instance. Proxy settings are not supported on web.
+The Next.js server is the proxy: the daemon must be reachable **from the server**, not from the user's browser. Server actions are public endpoints, so each one validates its input and applies the host guard on every outbound request; the cookie only carries the target. When the cookie is missing or expired, the action returns the code `NO_SESSION` and `web-api.ts` re-seals it from `localStorage` and retries once. Failures return a fixed error code (`server/errors.ts`). Session IDs are cached in a bounded in-memory map per server instance. Proxy settings are not supported on web. Design and rationale: [ADRs 0002 to 0005](decisions/); model and gaps: [security.md](security.md).
 
 ## State
 

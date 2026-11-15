@@ -4,32 +4,37 @@
 
 ## Current state (2026-11-15)
 
-- Project resumed after an 8-month pause (last release 1.2.1, 2026-03-05). Overhaul in three phases: (1) agentic setup, (2) repo cleanup and community readiness, (3) full review with fixes.
-- **Phase 1 done on branch `chore/agentic-setup`** (not pushed): `CLAUDE.md`, `AGENTS.md`, nested `CLAUDE.md`, `docs/`, `llms.txt`, 12 agents in `.claude/agents/`, 3 skills in `.claude/skills/`, tracked `.claude/settings.json` + post-edit hook, `scripts/i18n-check.mjs`, beads backlog (100 issues, 9 epics; exported to `.beads/issues.jsonl`).
-- Phases 2 and 3 not started. Their work is entirely in beads.
+- Project resumed after an 8-month pause (last release 1.2.1, 2026-03-05). Overhaul in phases: (1) agentic setup, (2) repo cleanup and community readiness, (3) full review with fixes.
+- **Phase 1 done**: `CLAUDE.md`, `AGENTS.md`, nested `CLAUDE.md`, `docs/`, `llms.txt`, 12 agents, 3 skills, tracked `.claude/settings.json`, `scripts/i18n-check.mjs`, beads backlog (exported to `.beads/issues.jsonl`).
+- **Phase 2 mostly done** on `chore/repo-cleanup`: MIT licence, README and community files, Vitest, ESLint 9 flat config and Prettier (`mi9.10` in progress), CI/CodeQL/Dependabot on the self-hosted `helmut` runner (`we5.4`, `we5.6` in progress).
+- **Phase 3, web P0 fixes done, pending the final security audit**: sealed cookie, SSRF guard, validated actions, rate limits, security headers (ADRs `docs/decisions/0002`-`0005`, epic `c07`). Docs updated (`c07.16`, `9o7`). Electron P0 (epic `23u`) not started.
+- **All of this is in local commits on `chore/repo-cleanup`, not pushed.** Do not push or open a PR without the user's go-ahead; `staging` and `main` still carry the old web code.
 
 ## Next steps
 
-- [ ] Phase 2 — repo cleanup: epic `seedora-transmission-mi9` and tests/CI epic `seedora-transmission-we5` (Vitest foundation `we5.1` unblocks several fixes — do it first).
-- [ ] Phase 3 — P0 security first: web epic `seedora-transmission-c07`, Electron epic `seedora-transmission-23u`; then bugs `0cl`, i18n `k5r`, a11y/design `vpz`.
-- [ ] Phase 4 (after 2–3) — epic `seedora-transmission-52c`: landing page on `seedora.app`, web app moved to `app.seedora.app`, landing SEO, Google Search Console registration (via the browser, with the user's confirmation). Hosting: **Vercel**; DNS: **Cloudflare** (via the Cloudflare MCP) — user decision 2026-11-15.
-- [ ] Do not push `chore/agentic-setup` before the P0 web fixes are ready to ship: `docs/security.md` describes gaps that are live on seedora.app.
+- [ ] Final `security-auditor` pass on the web hardening, then close `c07.10` and `c07.7`.
+- [ ] Remaining web items: `c07.8` (plaintext passwords in `localStorage` and exports), `c07.17` (nonce CSP), `c07.18` (Vercel Firewall rule, user action in the dashboard), `46b` (rate-limit shared-key lockout), `099` (upgrade Next past 16.4.0), tests `c07.3`, `c07.11`-`c07.15`.
+- [ ] Verify on Vercel (unconfirmed): which forwarding header is overwritten, function max duration above 30 s, CSP violations in a real browser, pinned HTTPS connections (SNI, certificate) against a real TLS server.
+- [ ] Phase 3 continued: Electron epic `seedora-transmission-23u`; bugs `0cl`; i18n `k5r` (49 keys missing in 21 locales, `k5r.1`); a11y/design `vpz`.
+- [ ] Phase 4 (after 2-3), epic `52c`: landing page on `seedora.app`, web app moved to `app.seedora.app`, landing SEO, Google Search Console. Hosting **Vercel**; DNS **Cloudflare** (user decision 2026-11-15).
+- [ ] Deploying the new web code needs `COOKIE_SECRET` (>= 32 characters) set on the host first, or the server will not start in production.
 - [ ] Visual review pass (`vpz.10`) needs the user to start Electron (`npm run start:debug`) and web (`npm run dev:web`).
 
-## Baseline measured on 2026-11-15 (origin/staging, before any fix)
+## Gate baseline (re-measured 2026-11-15 on `chore/repo-cleanup`)
 
 - `npm run typecheck`: passes (root and `apps/web`).
-- `npm run lint`: **fails** — mostly `import/no-unresolved` because the legacy `.eslintrc.json` does not resolve workspace aliases; migration to flat config is tracked (`mi9.10`).
-- `npm run i18n:check`: **fails** — 21 locales each miss 49 keys (`en` and `fr` have 356).
-- Tests: none exist. No CI on pull requests.
-- `npm audit`: 64 advisories (2 critical, 47 high) — untriaged; most likely in the build toolchain, to confirm.
+- `npm test`: passes, 23 files, 726 tests.
+- `npm run lint`: 0 errors, 29 warnings.
+- `npm run i18n:check`: **fails**, 21 of 23 locales each miss 49 keys (`en` has 357); tracked in `k5r.1`.
+- CI (`.github/workflows/ci.yml`) runs lint, format check, typecheck, tests, i18n parity, web build and a Linux package smoke test on pull requests. Format check and i18n parity are `continue-on-error` until `00q` and `k5r.1` land.
+- `npm audit`: 64 advisories (2 critical, 47 high) as measured before any fix; not re-run, untriaged.
 
 ## Recent decisions
 
 - 2026-11-15 — Licence is **MIT** (`LICENSE` replaced on `chore/repo-cleanup`).
 - 2026-11-15 — Backlog in **beads**; GitHub Issues stay the public inbox, mirrored by `product-owner`.
 - 2026-11-15 — Everything found in review gets fixed in this overhaul, not deferred.
-- 2026-11-15 — Web SSRF design: default-deny loopback/private/link-local/metadata addresses, `SEEDORA_ALLOW_PRIVATE_HOSTS` opt-in for LAN self-hosting.
+- 2026-11-15 — Web SSRF design: default-deny loopback/private/link-local addresses with `SEEDORA_ALLOW_PRIVATE_HOSTS` opt-in for LAN self-hosting (metadata addresses always denied), optional `SEEDORA_ALLOWED_HOSTS`. Sealed cookie via iron-session, static CSP. See ADRs 0002-0005.
 - 2026-11-15 — The committed localhost dev key is removed from the tree and ignored; public history is not rewritten for it.
 - 2026-11-15 — Tracked agent and project files are written in English (community-facing).
 
