@@ -30,22 +30,7 @@ const config: ForgeConfig = {
     asar: {
       unpack: '**/node_modules/geoip-lite/**',
     },
-    afterCopy: [
-      (
-        buildPath: string,
-        _electronVersion: string,
-        _platform: string,
-        _arch: string,
-        callback: (err?: Error) => void,
-      ) => {
-        try {
-          copyExternalModules(buildPath);
-          callback();
-        } catch (err) {
-          callback(err as Error);
-        }
-      },
-    ],
+    afterCopy: [({ buildPath }) => copyExternalModules(buildPath)],
     name: 'Seedora',
     executableName: 'seedora',
     appBundleId: 'com.seedora.app',
