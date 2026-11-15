@@ -7,9 +7,9 @@ description: Visually verify a UI change in the running app. Use after ANY chang
 
 A UI change is not done until it has been seen in the running app. Type-checks and tests do not prove a dialog renders.
 
-## Never start the apps yourself
+## Running the apps
 
-The user launches the servers. If the one you need is not running, ask for it and wait:
+The main session starts the servers in the background and stops them afterwards. A subagent never starts them: if the one you need is not running, report it to the main session. Commands:
 
 | App | User runs | MCP server to use | URL |
 |-----|-----------|-------------------|-----|

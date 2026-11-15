@@ -75,4 +75,4 @@ No `.env` file is required for local development.
 | `chrome-devtools` | **Electron app** | Attaches to `http://127.0.0.1:9222` — requires `npm run start:debug` to be running |
 | `chrome-devtools-web` | **Web app** | Launches its own isolated Chrome (1440×900, accepts the self-signed dev certificate); navigate it to the `dev:web` URL |
 
-Agents never start the Electron or web servers themselves: a human starts them, the agent attaches.
+The main agent session may start the Electron or web servers in the background to verify a change and stops them afterwards; subagents never start them, they attach.

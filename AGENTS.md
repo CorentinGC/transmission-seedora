@@ -40,7 +40,7 @@ Small, single-area fixes may skip step 2. Steps 4 and 5 are never skipped.
 - Prefer what exists (helpers, primitives, store actions, official tooling) over new code or a new dependency.
 - Gates are judged against the baseline recorded in `MEMORY.md`: until the test runner and the lint migration land, `npm test` does not exist and `npm run lint` / `npm run i18n:check` are red on `staging`. Do not add failures; do not claim a gate you could not run.
 - Report honestly: real gate output, what was verified and how, what was not. "Unverified" is an acceptable status; a false "done" is not.
-- Never start the Electron app or the web server; the user does.
+- Subagents never start the Electron app or the web server; the main session does when verification needs it, and stops it afterwards.
 - Never commit, push, open a PR, tag, publish or change repository settings unless the user has explicitly asked for that action.
 - Secrets and credentials never go into logs, messages, commits or issue text.
 

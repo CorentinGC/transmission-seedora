@@ -44,9 +44,9 @@ The `@shared` alias currently resolves to `src/shared` in main/preload and to `p
 
 Run the gates that apply before reporting a task as done, and report their real output.
 
-## Never start the apps (MANDATORY)
+## Running the apps
 
-Never launch the Electron app or the web server yourself (`npm start`, `npm run start:debug`, `npm run dev:web`, `npm run start:web`). The user starts them. If you need one running, ask and wait. The deny list in `.claude/settings.json` is a backstop that cannot cover every spelling; this rule is the real one.
+The main session may start the Electron app (`npm run start:debug`) and the web server (`npm run dev:web`) in the background to verify a change (owner decision, 2026-11-15), and must stop them when done. Subagents never start them: the main session starts the app and hands them the URL or port.
 
 ## UI verification (MANDATORY)
 

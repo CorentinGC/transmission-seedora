@@ -39,10 +39,6 @@
       "mcp__chrome-devtools-web__list_console_messages"
     ],
     "deny": [
-      "Bash(npm start:*)",
-      "Bash(npm run start:*)",
-      "Bash(npm run dev:web:*)",
-      "Bash(npm run start:web:*)",
       "Bash(npm run publish:*)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
@@ -52,11 +48,7 @@
       "Read(./apps/web/.env.*)",
       "Bash(git push:* --force:*)",
       "Bash(git push:* -f:*)",
-      "Bash(git push --force-with-lease:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npx next dev:*)",
-      "Bash(npx electron-forge start:*)",
-      "Bash(npx electron:*)"
+      "Bash(git push --force-with-lease:*)"
     ]
   },
   "hooks": {
