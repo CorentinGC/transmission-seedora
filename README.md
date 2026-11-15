@@ -102,9 +102,9 @@ Electron 40 and Electron Forge with Vite 6; Next.js 16 (App Router); TypeScript 
 
 ## Known gaps and security
 
-The hosted web app proxies RPC through server actions that validate their input, refuse loopback, private and cloud-metadata addresses by default, and keep the active server in a sealed cookie ([docs/security.md](docs/security.md)). This hardening is not released yet and has not had its final security audit. Known gaps remain: the web client keeps server passwords in `localStorage` in plaintext, web rate limits are in memory per server instance, and the desktop app still needs renderer hardening, input validation in IPC handlers and encryption of credentials on disk. The full list is in [docs/security.md](docs/security.md). Until they are fixed, use the web app only with a daemon and credentials you can afford to expose, and prefer the desktop app.
+The hosted web app proxies RPC through server actions that validate their input, refuse loopback, private and cloud-metadata addresses by default, and keep the active server in a sealed cookie ([docs/security.md](docs/security.md)). This hardening is not released yet and has not had its final security audit. Known gaps remain: the web client keeps server passwords in `localStorage` in plaintext, and web rate limits are in memory per server instance. The desktop app runs sandboxed with a CSP, validates every IPC call and encrypts stored passwords with the OS keychain when available. The full list is in [docs/security.md](docs/security.md). Until they are fixed, use the web app only with a daemon and credentials you can afford to expose, and prefer the desktop app.
 
-Other gaps: desktop builds are unsigned and there is no auto-update. A Vitest suite and a CI workflow on pull requests exist; the format check is advisory until the repo-wide Prettier commit lands. Progress is tracked in the beads backlog (`.beads/issues.jsonl`).
+Other gaps: desktop builds are unsigned and there is no auto-update. A Vitest suite and a CI workflow on pull requests exist; every CI job, including the Prettier format check, is blocking. Progress is tracked in the beads backlog (`.beads/issues.jsonl`).
 
 To report a vulnerability, follow [SECURITY.md](SECURITY.md). Do not open a public issue.
 

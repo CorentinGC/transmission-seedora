@@ -38,7 +38,7 @@ Small, single-area fixes may skip step 2. Steps 4 and 5 are never skipped.
 - Read before writing: the code you change, its callers, the nested `CLAUDE.md`, the relevant `docs/` page. Verify facts in the repo; do not rely on memory of a library — check its current docs (context7 MCP or the package's own docs) for the version in `package.json`.
 - Stay in your lane. If the task needs a change outside the paths you own, report it instead of making it.
 - Prefer what exists (helpers, primitives, store actions, official tooling) over new code or a new dependency.
-- Gates are judged against the baseline recorded in `MEMORY.md`: until the test runner and the lint migration land, `npm test` does not exist and `npm run lint` / `npm run i18n:check` are red on `staging`. Do not add failures; do not claim a gate you could not run.
+- Gates are judged against the baseline recorded in `MEMORY.md`: `npm run typecheck`, `npm run lint`, `npm test`, `npm run i18n:check`, `npm run format:check` and `npm run build:web` all exist and are green. Do not add failures; do not claim a gate you could not run.
 - Report honestly: real gate output, what was verified and how, what was not. "Unverified" is an acceptable status; a false "done" is not.
 - Subagents never start the Electron app or the web server; the main session does when verification needs it, and stops it afterwards.
 - Never commit, push, open a PR, tag, publish or change repository settings unless the user has explicitly asked for that action.
@@ -80,7 +80,7 @@ Rules:
 ## Ending a work session
 
 1. File beads issues for anything left to do; close what is finished and verified.
-2. Run the gates for what changed (`npm run typecheck`, `npm run lint`, `npm test`, `npm run i18n:check`, `npm run build:web`) and note the results.
+2. Run the gates for what changed (`npm run typecheck`, `npm run lint`, `npm test`, `npm run i18n:check`, `npm run format:check`, `npm run build:web`) and note the results.
 3. Update `MEMORY.md` (state, next steps, gotchas).
 4. Leave the work committed locally on its branch **only if the user asked for commits**; otherwise leave it in the working tree and say so.
 5. Report to the user: what changed, gate results, what is unverified, and the exact push/PR commands they can approve. **Do not push** — pushing and opening PRs happen only on the user's explicit request.

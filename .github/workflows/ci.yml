@@ -17,10 +17,6 @@ concurrency:
 # Every job runs on the self-hosted Linux runner `helmut` (project decision: no GitHub-hosted
 # runners for CI). The repository is public, so jobs are skipped for pull requests from forks:
 # their code must never execute on the runner (see beads seedora-transmission-3o1).
-#
-# The only job marked `continue-on-error` is the format check: it is red on the baseline until the
-# repo-wide Prettier commit lands. It is NOT hidden (the failure shows in the run) and the flag is
-# removed by seedora-transmission-00q.
 jobs:
   lint:
     name: Lint
@@ -37,8 +33,6 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, helmut]
     timeout-minutes: 10
-    # Red on baseline: the repo-wide format commit has not landed (seedora-transmission-00q).
-    continue-on-error: true
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: ./.github/actions/setup

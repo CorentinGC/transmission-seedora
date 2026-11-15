@@ -40,10 +40,12 @@ The type matters. [release-please](https://github.com/googleapis/release-please)
 npm run typecheck    # TypeScript, root and web app
 npm run lint         # ESLint
 npm run i18n:check   # every locale has the same keys as en.json
+npm run format:check # Prettier (npm run format fixes)
+npm test             # Vitest unit tests
 npm run build:web    # web app production build
 ```
 
-Do not add new failures. Be aware that on `staging` today `npm run lint` and `npm run i18n:check` already fail (a legacy ESLint config and 49 untranslated keys in 21 locales); both are tracked, so compare your result with the baseline rather than expecting green. There is no `npm test` script and no CI on pull requests yet; both are planned. New logic should come with a test once the runner lands, and a bug fix should start with a failing test.
+All of these gates are green on the baseline and CI runs them on every pull request, so none may fail. New logic should come with a test, and a bug fix should start with a failing test.
 
 If you change the UI, check it in the running app in both light and dark themes, and for shared UI in both the Electron and web apps.
 

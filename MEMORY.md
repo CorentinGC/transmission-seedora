@@ -13,6 +13,8 @@
 - **`mi9.7` (deduplicate shared types and `key-utils`, unify the `@shared` alias) is in progress in another session.** Do not describe it as done; the `@shared` and duplicate-file gotchas below stay true until it lands.
 - **All of this is in local commits on `chore/repo-cleanup`, not pushed.** Do not push or open a PR without the user's go-ahead; `staging` and `main` still carry the old web code.
 
+- **All gates green** (typecheck, lint, test, i18n:check, format:check, build:web), per the owner on 2026-11-15; the counts in "Gate baseline" are from the earlier measurement. **Electron visual verification is still pending**: the window was black in the last attempt (cause not investigated), so the Electron UI changes of this branch have not been seen in the running app. Remaining open work is under "Next steps".
+
 ## Next steps
 
 - [ ] Final `security-auditor` pass on the web hardening, then close `c07.10` and `c07.7`.
@@ -38,7 +40,9 @@
 - `npm test`: passes, 68 files, 1158 tests.
 - `npm run lint`: 0 errors, 25 warnings.
 - `npm run i18n:check`: passes, 23 locales in sync (491 keys in `en.json`).
-- CI (`.github/workflows/ci.yml`) runs lint, format check, typecheck, tests, i18n parity, web build and a Linux package smoke test on pull requests. Only the format check is `continue-on-error` (until `00q`); i18n parity is green and enforced. A `commitlint` job checks the PR title and commits.
+- `npm run format:check`: passes after the repo-wide Prettier commit (`00q`).
+- `npm run build:web`: passes.
+- CI (`.github/workflows/ci.yml`) runs lint, format check, typecheck, tests, i18n parity, web build and a Linux package smoke test on pull requests. Every job is blocking (`continue-on-error` is gone). A `commitlint` job checks the PR title and commits.
 - `npm audit`: triaged 2026-11-15, 64 to 52 after non-breaking fixes and Electron 40.10.6 (prod path 9, none reachable at runtime except the Electron advisories that need a 41/42 major). Details: `docs/dependency-audit.md`.
 
 ## Recent decisions
