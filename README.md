@@ -1,6 +1,9 @@
 # Seedora
 
-A modern, cross-platform application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon. Available as a **desktop app** (macOS, Windows, Linux) and a **[web app](https://www.seedora.app/)**.
+[![Licence: MIT](https://img.shields.io/github/license/CorentinGC/transmission-seedora)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/CorentinGC/transmission-seedora)](https://github.com/CorentinGC/transmission-seedora/releases)
+
+A cross-platform application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon. One shared React UI ships as a **desktop app** (macOS, Windows, Linux, built with Electron) and as a **web app** (Next.js, installable as a PWA), hosted at [seedora.app](https://www.seedora.app/).
 
 ## Why this project?
 
@@ -10,7 +13,7 @@ This project was entirely **vibe-coded** — designed and implemented with the a
 
 ## Try it online
 
-Use Seedora directly in your browser — no installation required: **[seedora.app](https://www.seedora.app/)**
+Use Seedora directly in your browser, no installation required: **[seedora.app](https://www.seedora.app/)**. The web server relays your requests to the daemon, so the daemon must be reachable from that server. Read [Known gaps and security](#known-gaps-and-security) first.
 
 ## Features
 
@@ -19,146 +22,97 @@ Use Seedora directly in your browser — no installation required: **[seedora.ap
 - **Rich torrent details** — general info, file tree, peers (with GeoIP), trackers, per-torrent options
 - **Daemon settings** — speed limits, network, download paths, queue management
 - **Filter sidebar** — filter by status, tracker, or download directory
-- **Keyboard shortcuts & context menu** — efficient workflow for power users
-- **System tray & notifications** — minimize to tray, torrent completion alerts
-- **Watch folder** — automatically add torrents from a monitored directory
-- **Proxy support** — HTTP and SOCKS5 proxy for RPC connections
+- **Keyboard shortcuts and context menu**
+- **System tray and notifications** (desktop app)
+- **Watch folder** — automatically add torrents from a monitored directory (desktop app)
+- **Proxy support** — HTTP and SOCKS5 proxy for RPC connections (desktop app)
 - **Dark mode** — system-aware dark/light theme
-- **i18n** — 23 languages supported
-- **Cross-platform** — macOS (DMG/ZIP), Windows (Squirrel installer), Linux (deb/rpm)
+- **23 languages** — ar, cs, da, de, el, en, es, fi, fr, hu, it, ja, ko, nb, nl, pl, pt, ro, ru, sv, tr, uk, zh. Some translations are incomplete, see [docs/i18n.md](docs/i18n.md).
 
-## Tech Stack
+## Install the desktop app
 
-| Layer | Technology |
-|-------|-----------|
-| Desktop framework | [Electron](https://www.electronjs.org/) 40 + [Electron Forge](https://www.electronforge.io/) |
-| Build tool | [Vite](https://vite.dev/) 6 |
-| Language | [TypeScript](https://www.typescriptlang.org/) 5.7 |
-| UI framework | [React](https://react.dev/) 19 |
-| Styling | [Tailwind CSS](https://tailwindcss.com/) v4 + shadcn-style CSS variables |
-| Data table | [TanStack Table](https://tanstack.com/table) v8 + [@tanstack/react-virtual](https://tanstack.com/virtual) |
-| State management | [Zustand](https://zustand.docs.pmnd.rs/) |
-| Internationalization | [i18next](https://www.i18next.com/) + react-i18next |
-| Icons | [Lucide React](https://lucide.dev/) |
-| File watching | [chokidar](https://github.com/paulmillr/chokidar) |
-| GeoIP | [geoip-lite](https://github.com/bluesmoon/node-geoip) |
+Download an installer from [GitHub Releases](https://github.com/CorentinGC/transmission-seedora/releases): DMG or ZIP (macOS), Squirrel installer (Windows), deb or rpm (Linux).
 
-## Project Structure
+Builds are **unsigned and not notarized**, and there is **no auto-update**: download new versions manually.
 
-```
-src/
-├── main/               # Electron main process
-│   ├── index.ts         # App entry point, window creation
-│   ├── menu.ts          # Native application menu
-│   ├── tray.ts          # System tray integration
-│   ├── watcher.ts       # Watch folder (chokidar)
-│   ├── ipc/             # IPC handlers (main ↔ renderer)
-│   ├── rpc/             # Transmission RPC client (HTTP, CSRF, proxy)
-│   └── store/           # electron-store config persistence
-├── preload/
-│   └── preload.ts       # Typed contextBridge API (window.api)
-├── renderer/            # React application
-│   ├── components/
-│   │   ├── details/     # Torrent detail tabs (General, Files, Peers, Trackers, Options)
-│   │   ├── filter/      # Filter sidebar (status, tracker, directory)
-│   │   ├── layout/      # AppShell, Toolbar, StatusBar
-│   │   ├── server/      # Server switcher & connection dialog
-│   │   ├── settings/    # Daemon settings dialog (Speed, Network, Download, Queue)
-│   │   ├── torrent/     # Torrent table, dialogs (Add, Remove, Move, Rename), context menu
-│   │   └── ui/          # Shared UI primitives (Button, Dialog, Input, etc.)
-│   ├── stores/          # Zustand stores (server, torrent, session, ui)
-│   ├── lib/             # Utilities, i18n config
-│   └── locales/         # Translation files (en.json, fr.json)
-└── shared/              # Shared types & IPC channel constants
-```
+- **macOS, "App is damaged"**: Gatekeeper blocks unsigned apps. Run `xattr -cr /Applications/Seedora.app` (adjust the path to where you put the app), then open it.
+- **Windows, SmartScreen "Unknown publisher"**: click "More info", then "Run anyway".
+- **Linux**: `sudo dpkg -i seedora_*.deb` (Debian/Ubuntu) or `sudo rpm -i seedora-*.rpm` (Fedora/RHEL).
 
-## Getting Started
+## Run from source
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) >= 20
-- npm >= 10
-- A running [Transmission](https://transmissionbt.com/) daemon with RPC enabled
-
-### Installation
+Prerequisites: [Node.js](https://nodejs.org/) 20 or later (`.nvmrc` pins the version used in CI), npm 10 or later, and a Transmission daemon with RPC enabled.
 
 ```bash
-git clone https://github.com/CorentinGC/seedora.git
-cd seedora
-npm install
+git clone https://github.com/CorentinGC/transmission-seedora.git
+cd transmission-seedora
+npm ci
 ```
 
-### Development
+Desktop app (Electron):
 
 ```bash
-# Start the app in development mode
-npm start
-
-# Start with Chrome DevTools remote debugging (port 9222)
-npm run start:debug
+npm start              # development mode
+npm run start:debug    # same, with remote debugging on port 9222
 ```
 
-### Build & Package
+Web app (Next.js, http://localhost:3000):
 
 ```bash
-# Package the app for your platform
-npm run package
-
-# Create distributable installers
-npm run make
+npm run dev:web        # development server
+npm run dev:web:https  # with HTTPS, needed to test the PWA and notifications
+npm run build:web      # production build
+npm run start:web      # serve the production build
 ```
 
-Supported targets:
-- **macOS** — DMG, ZIP
-- **Windows** — Squirrel installer
-- **Linux** — deb, rpm
-
-## Installation Notes
-
-### macOS — "App is damaged" warning
-
-Since the app is not signed with an Apple Developer certificate, macOS Gatekeeper may block it with a message saying the app "is damaged and can't be opened". To fix this, run the following command in Terminal:
+Package the desktop app (unsigned, output in `out/`):
 
 ```bash
-xattr -cr /Applications/Seedora.app
+npm run package        # unpacked app
+npm run make           # installers for the current platform
 ```
 
-Replace the path with wherever you extracted the app. After that, you can open it normally.
+More detail: [docs/setup.md](docs/setup.md).
 
-### Windows — SmartScreen warning
+## Deploying the web app
 
-Windows Defender SmartScreen may show an "Unknown publisher" warning when running the installer. Click **"More info"** → **"Run anyway"** to proceed.
+The web app is a standard Next.js app (`apps/web`). Build it with `npm run build:web` and serve it with `npm run start:web`, or deploy it to a Next.js host. It needs a Node.js runtime because RPC calls go through server actions. This repository has no deployment workflow and no container image; the release workflow builds only the desktop installers ([docs/release.md](docs/release.md)).
 
-### Linux
+Set `COOKIE_SECRET` in any deployment (see [docs/setup.md](docs/setup.md#environment-variables)). Do not expose a deployment publicly before reading the known gaps below.
 
-No special steps needed. Install the `.deb` or `.rpm` package with your package manager:
+## Project structure
 
-```bash
-# Debian/Ubuntu
-sudo dpkg -i seedora_*.deb
+npm workspaces monorepo. The Electron app is the root package.
 
-# Fedora/RHEL
-sudo rpm -i seedora-*.rpm
-```
+| Path | What |
+|------|------|
+| `src/main/` | Electron main process: IPC handlers, Transmission RPC client, config store, menu, tray, watch folder |
+| `src/preload/` | `contextBridge` exposing `window.api` |
+| `src/renderer/` | thin Electron shell around the shared UI |
+| `src/shared/` | IPC channel names and types shared by main and preload |
+| `packages/shared/` | `@seedora/shared`: the whole UI (components, stores, hooks, locales, theme) |
+| `apps/web/` | `@seedora/web`: Next.js app and server actions |
+| `docs/` | architecture, setup, conventions, security, i18n, release, decisions |
+
+The UI reaches the platform only through a `PlatformApi` abstraction. See [docs/architecture.md](docs/architecture.md).
+
+## Tech stack
+
+Electron 40 and Electron Forge with Vite 6; Next.js 16 (App Router); TypeScript 5.7; React 19; Tailwind CSS v4; TanStack Table and react-virtual; Zustand; i18next; lucide-react; chokidar; geoip-lite.
+
+## Known gaps and security
+
+Seedora has known security gaps that are confirmed and scheduled for fixing, including in the hosted web app (server-side request handling, how the active server's credentials are stored in a cookie, missing security headers) and in the desktop app (renderer hardening, input validation in IPC handlers, plaintext credentials on disk). The full list is in [docs/security.md](docs/security.md). Until they are fixed, use the web app only with a daemon and credentials you can afford to expose, and prefer the desktop app.
+
+Other gaps: desktop builds are unsigned, there is no auto-update, and the automated test suite and CI on pull requests are not in place yet. Progress is tracked in the beads backlog (`.beads/issues.jsonl`).
+
+To report a vulnerability, follow [SECURITY.md](SECURITY.md). Do not open a public issue.
 
 ## Contributing
 
-Contributions are welcome! Here are some areas where help is appreciated:
+Contributions are welcome: bug reports, fixes, features and translations. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Documentation index: [llms.txt](llms.txt).
 
-- **Translations** — add new languages in `src/renderer/locales/`
-- **Bug reports & fixes** — open an issue or submit a PR
-- **New features** — check the issues for ideas or propose your own
-- **Testing** — the project currently has no automated tests
-
-### Development Tips
-
-- The app communicates with Transmission via its [RPC protocol](https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md) — the spec is the source of truth for all RPC types
-- IPC channels between main and renderer are all defined in `src/shared/ipc-channels.ts`
-- State is managed by 4 Zustand stores — keep logic in stores, components stay presentational
-- Tailwind v4 is used with CSS variables for theming — see `src/renderer/index.css` for the color tokens
-- ESM-only packages must use dynamic `import()` in the main process or be marked `external` in `vite.main.config.ts`
-
-## License
+## Licence
 
 [MIT](LICENSE)
 
