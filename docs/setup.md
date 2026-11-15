@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js >= 20 (CI builds on Node 20), npm >= 10
+- Node.js >= 22.12 (CI builds on Node 22), npm >= 10
 - A Transmission daemon with RPC enabled, reachable from your machine
 
 ## Install

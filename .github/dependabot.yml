@@ -1,0 +1,34 @@
+version: 2
+updates:
+  # npm workspaces: one entry at the root covers the lockfile for every workspace.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    # Dependabot PRs target staging, like every other PR (see docs/release.md).
+    target-branch: staging
+    commit-message:
+      prefix: chore(deps)
+      prefix-development: chore(deps-dev)
+    groups:
+      # Majors are never grouped: Electron, Next, Vite, Tailwind and React need their
+      # changelog read and a dedicated PR (beads seedora-transmission-mi9.18).
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: electron
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    target-branch: staging
+    commit-message:
+      prefix: ci(deps)
+    groups:
+      actions:
+        patterns: ['*']
