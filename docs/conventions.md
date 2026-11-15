@@ -35,6 +35,12 @@
 
 ESM-only packages (e.g. `chokidar`) are loaded with dynamic `import()` in the main process. Packages that cannot be bundled (e.g. `geoip-lite`) are marked `external` in `vite.main.config.ts` and copied into the package by `forge.config.ts`.
 
+## Tests
+
+- Vitest, configured in `vitest.config.ts` with three projects because `@shared` resolves differently: `main` (`src/main`, `src/preload`, `src/shared`; `@shared` is `src/shared`), `shared` (`packages/shared/src`, `src/renderer`) and `web` (`apps/web/src`); the last two map `@shared` to `packages/shared/src`.
+- `npm test` runs everything once; `npm run test:watch` watches. Tests live next to the code as `*.test.ts(x)`.
+- No real network, daemon or timers. A bug fix starts with a failing test.
+
 ## i18n
 
 Every user-facing string goes through `t('section.key')`. A new key is added to all 23 locale files with a real translation. Full rules: [i18n.md](i18n.md).
