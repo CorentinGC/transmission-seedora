@@ -8,7 +8,7 @@ npm workspaces (`packages/*`, `apps/*`). The Electron app is the **root package*
 
 | Path | Package | Role |
 |---|---|---|
-| `src/main/` | `seedora` (root) | Electron main process: window, native menu, tray, watch folder, config store, RPC client, IPC handlers |
+| `src/main/` | `seedora` (root) | Electron main process: window, native menu, tray, watch folder, config store, RPC client, IPC handlers, `security/` (IPC guard, schemas, approved paths, window guards, CSP, `app://` scheme) |
 | `src/preload/preload.ts` | root | `contextBridge` bridge exposing `window.api` (typed in `src/preload/api.d.ts`) |
 | `src/renderer/` | root | Thin Electron shell: `main.tsx`, `App.tsx`, `electron-api.ts`, `hooks/` |
 | `src/shared/` | root | Code shared by main and preload: `ipc-channels.ts`, `types.ts`, `key-utils.ts` |
@@ -44,7 +44,7 @@ npm workspaces (`packages/*`, `apps/*`). The Electron app is the **root package*
 |---|---|
 | Electron main | `src/main/index.ts` |
 | Electron preload | `src/preload/preload.ts` |
-| Electron renderer | `index.html` → `src/renderer/main.tsx` → `App` → `AppShell` |
+| Electron renderer | `index.html` → `src/renderer/main.tsx` → `App` → `AppShell`; packaged builds load it from `app://seedora/index.html`, development from the Vite dev server |
 | Web | `apps/web/src/app/layout.tsx` → `page.tsx` (`dynamic(..., { ssr: false })`) → `lib/SeedoraApp.tsx` → `WebApp` → `AppShell` |
 
 The web app is a client-only SPA: one route (`/`), no `app/api`, no middleware. The server side exists only for the server actions.
@@ -74,13 +74,15 @@ component / store
   → PlatformApi (electron-api.ts)
   → window.api (preload.ts, contextBridge)
   → ipcRenderer.invoke(IPC.RPC_*)
-  → ipcMain.handle (src/main/ipc/rpc-handlers.ts)
+  → ipcMain.handle, wrapped by guardHandler (src/main/security/ipc-guard.ts):
+      sender origin check, then zod validation (src/main/security/schemas.ts)
+  → handler (src/main/ipc/rpc-handlers.ts)
   → connectionManager.getActiveClient() (src/main/rpc/connection-manager.ts)
   → TransmissionRpcClient.request (src/main/rpc/client.ts)
   → Transmission daemon
 ```
 
-The main-process client owns the `X-Transmission-Session-Id` handshake (409 → retry once), Basic auth, and optional HTTP / SOCKS5 proxy agents.
+Both the sender check and the argument schemas run before any handler code; failures return an `IpcResponse` error. The main-process client owns the `X-Transmission-Session-Id` handshake (409 → retry once), Basic auth, and optional HTTP / SOCKS5 proxy agents.
 
 **Web**
 
@@ -98,6 +100,14 @@ component / store
 
 The Next.js server is the proxy: the daemon must be reachable **from the server**, not from the user's browser. Server actions are public endpoints, so each one validates its input and applies the host guard on every outbound request; the cookie only carries the target. When the cookie is missing or expired, the action returns the code `NO_SESSION` and `web-api.ts` re-seals it from `localStorage` and retries once. Failures return a fixed error code (`server/errors.ts`). Session IDs are cached in a bounded in-memory map per server instance. Proxy settings are not supported on web. Design and rationale: [ADRs 0002 to 0005](decisions/); model and gaps: [security.md](security.md).
 
+## Electron renderer origin and file access
+
+The packaged renderer is not loaded from `file://`. `src/main/index.ts` calls `registerAppScheme()` before `ready` and `serveRendererFrom(rendererRoot)` after it; `src/main/security/app-protocol.ts` loads the renderer build directory into an in-memory manifest once and serves `app://seedora/...` requests from it by exact path lookup. In development the window loads the Vite dev server instead. The IPC sender check, navigation guards and permission handlers all trust the same origin (`TrustedOrigins` in `src/main/security/sender.ts`). Rationale: [ADR 0006](decisions/0006-packaged-renderer-app-scheme.md).
+
+The renderer never supplies a file path that main reads directly. Paths come from dialogs that main opens (`ipc/dialog-handlers.ts`), are recorded per kind in `security/approved-paths.ts`, and are read with `readRegularFile`. `READ_FILE_BASE64`, config import and `torrent-add` with a local file all go through that registry. Details and known gaps: [security.md](security.md).
+
+The CSP is a meta tag injected into `index.html` by `cspPlugin` in `vite.renderer.config.ts` (policy in `src/main/security/csp.ts`).
+
 ## State
 
 Zustand stores in `packages/shared/src/stores/`:
@@ -113,7 +123,7 @@ Polling is driven by `usePolling` / `useTorrents` / `useSessionStats`.
 
 ## Electron-only features
 
-Native menu (`src/main/menu.ts`, sends `menu:*` events to the renderer), tray (`tray.ts`), watch folder (`watcher.ts`, chokidar), GeoIP lookup (`ipc/handlers.ts`, `geoip-lite`), desktop notifications (`index.ts`).
+Native menu (`src/main/menu.ts`, sends `menu:*` events to the renderer; the preload only lets the renderer subscribe to channels listed in `RENDERER_EVENT_CHANNELS`), tray (`tray.ts`), watch folder (`watcher.ts`, chokidar), GeoIP lookup (`ipc/handlers.ts`, `geoip-lite`), desktop notifications (`index.ts`).
 
 ## `@shared` alias — to be unified, see backlog
 

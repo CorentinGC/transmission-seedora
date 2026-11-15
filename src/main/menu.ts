@@ -1,4 +1,5 @@
-import { Menu, shell, BrowserWindow } from 'electron';
+import { app, Menu, shell, BrowserWindow } from 'electron';
+import { IPC } from '@shared/ipc-channels';
 
 export function createMenu(mainWindow: BrowserWindow): void {
   const isMac = process.platform === 'darwin';
@@ -14,7 +15,7 @@ export function createMenu(mainWindow: BrowserWindow): void {
               {
                 label: 'Preferences…',
                 accelerator: 'CmdOrCtrl+,',
-                click: () => mainWindow.webContents.send('menu:preferences'),
+                click: () => mainWindow.webContents.send(IPC.MENU_PREFERENCES),
               },
               { type: 'separator' as const },
               { role: 'services' as const },
@@ -34,12 +35,12 @@ export function createMenu(mainWindow: BrowserWindow): void {
         {
           label: 'Add Torrent…',
           accelerator: 'CmdOrCtrl+O',
-          click: () => mainWindow.webContents.send('menu:add-torrent'),
+          click: () => mainWindow.webContents.send(IPC.MENU_ADD_TORRENT),
         },
         {
           label: 'Add Magnet Link…',
           accelerator: 'CmdOrCtrl+M',
-          click: () => mainWindow.webContents.send('menu:add-magnet'),
+          click: () => mainWindow.webContents.send(IPC.MENU_ADD_MAGNET),
         },
         { type: 'separator' },
         isMac ? { role: 'close' } : { role: 'quit' },
@@ -63,17 +64,17 @@ export function createMenu(mainWindow: BrowserWindow): void {
         {
           label: 'Toggle Filter Sidebar',
           accelerator: 'CmdOrCtrl+Shift+F',
-          click: () => mainWindow.webContents.send('menu:toggle-filter'),
+          click: () => mainWindow.webContents.send(IPC.MENU_TOGGLE_FILTER),
         },
         {
           label: 'Toggle Details Panel',
           accelerator: 'CmdOrCtrl+Shift+D',
-          click: () => mainWindow.webContents.send('menu:toggle-details'),
+          click: () => mainWindow.webContents.send(IPC.MENU_TOGGLE_DETAILS),
         },
         { type: 'separator' },
         { role: 'reload' },
         { role: 'forceReload' },
-        { role: 'toggleDevTools' },
+        ...(app.isPackaged ? [] : [{ role: 'toggleDevTools' as const }]),
         { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
@@ -88,36 +89,36 @@ export function createMenu(mainWindow: BrowserWindow): void {
         {
           label: 'Start',
           accelerator: 'CmdOrCtrl+S',
-          click: () => mainWindow.webContents.send('menu:torrent-start'),
+          click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_START),
         },
         {
           label: 'Stop',
           accelerator: 'CmdOrCtrl+P',
-          click: () => mainWindow.webContents.send('menu:torrent-stop'),
+          click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_STOP),
         },
         { type: 'separator' },
         {
           label: 'Verify',
-          click: () => mainWindow.webContents.send('menu:torrent-verify'),
+          click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_VERIFY),
         },
         {
           label: 'Reannounce',
-          click: () => mainWindow.webContents.send('menu:torrent-reannounce'),
+          click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_REANNOUNCE),
         },
         { type: 'separator' },
         {
           label: 'Start All',
-          click: () => mainWindow.webContents.send('menu:start-all'),
+          click: () => mainWindow.webContents.send(IPC.MENU_START_ALL),
         },
         {
           label: 'Stop All',
-          click: () => mainWindow.webContents.send('menu:stop-all'),
+          click: () => mainWindow.webContents.send(IPC.MENU_STOP_ALL),
         },
         { type: 'separator' },
         {
           label: 'Remove…',
           accelerator: 'Delete',
-          click: () => mainWindow.webContents.send('menu:torrent-remove'),
+          click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_REMOVE),
         },
       ],
     },
@@ -126,14 +127,14 @@ export function createMenu(mainWindow: BrowserWindow): void {
       submenu: [
         {
           label: 'Server Settings…',
-          click: () => mainWindow.webContents.send('menu:settings'),
+          click: () => mainWindow.webContents.send(IPC.MENU_SETTINGS),
         },
         ...(!isMac
           ? [
               { type: 'separator' as const },
               {
                 label: 'Preferences…',
-                click: () => mainWindow.webContents.send('menu:preferences'),
+                click: () => mainWindow.webContents.send(IPC.MENU_PREFERENCES),
               },
             ]
           : []),
@@ -152,7 +153,7 @@ export function createMenu(mainWindow: BrowserWindow): void {
         {
           label: 'Report an Issue',
           click: () =>
-            shell.openExternal('https://github.com/transmission-remote-gui/transgui/issues'),
+            shell.openExternal('https://github.com/CorentinGC/transmission-seedora/issues'),
         },
       ],
     },

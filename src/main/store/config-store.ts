@@ -2,6 +2,7 @@ import { app } from 'electron';
 import path from 'node:path';
 import fs from 'node:fs';
 import type { ServerConfig, AppPreferences } from '@shared/types';
+import { stripUndefined } from '../security/strip-undefined';
 
 interface StoreData {
   servers: ServerConfig[];
@@ -61,7 +62,7 @@ export const configStore = {
     const data = readStore();
     const index = data.servers.findIndex(s => s.id === id);
     if (index !== -1) {
-      data.servers[index] = { ...data.servers[index], ...updates };
+      data.servers[index] = { ...data.servers[index], ...stripUndefined(updates) };
       writeStore(data);
     }
   },
@@ -91,7 +92,7 @@ export const configStore = {
 
   updatePreferences(updates: Partial<AppPreferences>): void {
     const data = readStore();
-    data.preferences = { ...data.preferences, ...updates };
+    data.preferences = { ...data.preferences, ...stripUndefined(updates) };
     writeStore(data);
   },
 };

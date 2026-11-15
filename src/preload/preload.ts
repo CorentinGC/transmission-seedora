@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { IPC } from '@shared/ipc-channels';
+import { IPC, RENDERER_EVENT_CHANNELS } from '@shared/ipc-channels';
 import type { IpcResponse, ServerConfig, NewServerConfig, AppPreferences } from '@shared/types';
 
 const api = {
@@ -94,8 +94,8 @@ const api = {
   // Dialogs
   dialogOpenFile: (options?: Electron.OpenDialogOptions): Promise<IpcResponse<string[]>> =>
     ipcRenderer.invoke(IPC.DIALOG_OPEN_FILE, options),
-  dialogOpenDirectory: (): Promise<IpcResponse<string | null>> =>
-    ipcRenderer.invoke(IPC.DIALOG_OPEN_DIRECTORY),
+  dialogOpenDirectory: (options?: { purpose?: 'watch-folder' }): Promise<IpcResponse<string | null>> =>
+    ipcRenderer.invoke(IPC.DIALOG_OPEN_DIRECTORY, options),
 
   // Tray
   trayUpdate: (state: { downloadSpeed: number; uploadSpeed: number; activeCount: number; altSpeedEnabled: boolean }): void =>
@@ -115,6 +115,7 @@ const api = {
 
   // Menu events (renderer listens)
   onMenuEvent: (channel: string, callback: (...args: unknown[]) => void): (() => void) => {
+    if (!RENDERER_EVENT_CHANNELS.includes(channel)) return () => {};
     const listener = (_event: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);
     ipcRenderer.on(channel, listener);
     return () => ipcRenderer.removeListener(channel, listener);

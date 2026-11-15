@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { connectionManager } from './rpc/connection-manager';
 import { configStore } from './store/config-store';
+import { readWatchedTorrent, validateWatchFolder } from './security/watch-folder';
 
 let watcher: { close: () => Promise<void> } | null = null;
 
@@ -11,10 +12,9 @@ export async function startWatcher(): Promise<void> {
   const prefs = configStore.getPreferences();
   if (!prefs.watchFolderEnabled || !prefs.watchFolder) return;
 
-  const watchPath = prefs.watchFolder;
-
-  if (!fs.existsSync(watchPath)) {
-    console.warn(`[Watcher] Watch folder does not exist: ${watchPath}`);
+  const watchPath = validateWatchFolder(prefs.watchFolder);
+  if (!watchPath) {
+    console.warn('[Watcher] Stored watch folder is not an absolute path to an existing directory, not watching');
     return;
   }
 
@@ -26,6 +26,7 @@ export async function startWatcher(): Promise<void> {
   const w = chokidar.watch(watchPath, {
     ignoreInitial: true,
     depth: 0,
+    followSymlinks: false,
     awaitWriteFinish: {
       stabilityThreshold: 1000,
       pollInterval: 200,
@@ -33,9 +34,6 @@ export async function startWatcher(): Promise<void> {
   });
 
   w.on('add', async (filePath: string) => {
-    if (!filePath.endsWith('.torrent')) return;
-    console.log(`[Watcher] New torrent file detected: ${filePath}`);
-
     try {
       const client = connectionManager.getActiveClient();
       if (!client) {
@@ -43,7 +41,9 @@ export async function startWatcher(): Promise<void> {
         return;
       }
 
-      const content = fs.readFileSync(filePath);
+      const content = readWatchedTorrent(filePath);
+      if (!content) return;
+      console.log(`[Watcher] New torrent file detected: ${path.basename(filePath)}`);
       const base64 = content.toString('base64');
 
       await client.request('torrent-add', { metainfo: base64 });
@@ -55,7 +55,7 @@ export async function startWatcher(): Promise<void> {
         console.log(`[Watcher] Deleted: ${path.basename(filePath)}`);
       }
     } catch (err) {
-      console.error(`[Watcher] Error adding torrent:`, err);
+      console.error('[Watcher] Error adding torrent:', err instanceof Error ? err.message : 'unknown error');
     }
   });
 

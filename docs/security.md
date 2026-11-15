@@ -1,6 +1,6 @@
 # Security model
 
-This document describes the model **as it is today** and, separately, the known gaps. Status of the web hardening: implemented on branch `chore/repo-cleanup`, pending a final security audit and not yet released. To report a vulnerability, see `SECURITY.md` at the repo root.
+This document describes the model **as it is today** and, separately, the known gaps. Status of the web and Electron hardening: implemented on branch `chore/repo-cleanup`, pending a final security audit and not yet released. To report a vulnerability, see `SECURITY.md` at the repo root.
 
 ## Trust boundaries
 
@@ -16,9 +16,17 @@ This document describes the model **as it is today** and, separately, the known 
 
 **Electron**
 
-- `contextIsolation: true`, `nodeIntegration: false` (`createWindow` in `src/main/index.ts`).
-- The renderer reaches the main process only through `window.api`, defined in `src/preload/preload.ts`.
-- Fuses (`forge.config.ts`): `RunAsNode` off, `EnableNodeOptionsEnvironmentVariable` off, `EnableNodeCliInspectArguments` off, cookie encryption on, asar integrity validation on, `OnlyLoadAppFromAsar` on.
+- Window: `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`, `devTools` only when unpackaged (`createWindow` in `src/main/index.ts`).
+- **Renderer origin.** The packaged renderer is served from the privileged `app://seedora` scheme, not from `file://` ([ADR 0006](decisions/0006-packaged-renderer-app-scheme.md)). `src/main/security/app-protocol.ts` serves only allow-listed file types under the renderer build directory, GET and HEAD only (other methods get 405), after a realpath containment check; everything else is an opaque 404. The scheme is registered without `corsEnabled`, `bypassCSP`, `allowServiceWorkers` or `stream` (`security/app-scheme.ts`). Verified in a packaged build: `fetch('file://...')` is blocked, path traversal returns 404, `POST` returns 405.
+- **CSP.** A `<meta http-equiv>` policy is injected into `index.html` at build time (`cspPlugin` in `vite.renderer.config.ts`, policy from `security/csp.ts`). Production: `default-src 'self'`, `script-src 'self'`, `connect-src 'self'`, `object-src 'none'`, `base-uri 'none'`, `form-action 'none'`, `frame-src 'none'`. `style-src` keeps `'unsafe-inline'`. The dev policy adds `'unsafe-inline'` scripts and the Vite dev server and HMR origins.
+- **Navigation and permissions** (`security/window-guards.ts`): `will-navigate` and `will-redirect` are blocked unless the target is the app's own origin, `setWindowOpenHandler` denies every new window, `<webview>` is refused, and every permission request, permission check and device permission is denied except `clipboard-sanitized-write` for the app's own page. Packaged builds close DevTools if they open. Trust is by origin (`app://seedora`, or the dev server in development); a `file:` URL is never trusted (`security/sender.ts`).
+- **Single instance.** `app.requestSingleInstanceLock()` is claimed before any handler is registered; a second launch quits and focuses the existing window.
+- **IPC.** Every channel goes through `security/ipc-guard.ts`: sender check (top-level frame, trusted origin) then zod validation of the arguments (`security/schemas.ts`); failures return `Invalid request` or `Untrusted sender` and run no handler code. A handler that throws returns a generic `Request failed`. Server `host` must be a hostname, IPv4 or `[IPv6]` literal and `path` must match `^/[A-Za-z0-9._~/-]*$`, since both are interpolated into the RPC URL. Patches never carry `undefined` keys. Imported servers and preferences are validated (`importDataSchema`).
+- **Approved paths.** Files are read only if their path was returned by a dialog that main opened (`security/approved-paths.ts`), and only for the kind of dialog that produced it: `torrent`, `json`, `directory`, `watch-folder`. Reads open the file `O_RDONLY|O_NOFOLLOW`, `fstat` and read on one descriptor, with a size cap (10 MB for `.torrent`, 5 MB for backup JSON). `READ_FILE_BASE64`, `CONFIG_IMPORT` and local-file `torrent-add` go through it, and an unapproved path is refused (verified in the packaged build). `watchFolder` in `PREFS_SET` needs a `watch-folder` approval; a backup import never sets it.
+- **Preload.** `window.api.onMenuEvent` only subscribes to channels in `RENDERER_EVENT_CHANNELS` (`src/shared/ipc-channels.ts`); any other channel name gets a no-op unsubscribe.
+- **Watch folder** (`security/watch-folder.ts`, `src/main/watcher.ts`): the stored folder is revalidated at startup, symlinks are skipped, files over 10 MB are skipped, and reads use the same descriptor-based reader.
+- Fuses (`src/main/security/fuses.ts`, applied by `forge.config.ts`): `RunAsNode` off, `EnableNodeOptionsEnvironmentVariable` off, `EnableNodeCliInspectArguments` off, cookie encryption on, asar integrity validation on, `OnlyLoadAppFromAsar` on, `GrantFileProtocolExtraPrivileges` off. A test pins the map.
+- DevTools are available only in unpackaged builds; the View menu item is hidden when packaged (`src/main/menu.ts`).
 - `shell.openExternal` is only called with hardcoded URLs (`src/main/menu.ts`).
 - No `child_process`, no remote module, no auto-updater. The remote debugging port exists only in the `start:debug` npm script.
 - RPC requests are made from the main process; TLS certificates are verified (no `rejectUnauthorized` override).
@@ -66,16 +74,18 @@ The web guard is implemented. What remains:
 
 ### Electron app
 
-| Gap | Where | Intended fix |
+The window, IPC, file-path and origin hardening is implemented (see "What is in place"). What remains:
+
+| Gap | Where | Tracked in |
 |---|---|---|
-| **No sandbox, CSP or navigation guards.** `sandbox` is not set; there is no CSP, `will-navigate` handler, `setWindowOpenHandler` or permission handler. A page the window navigates to keeps the preload and therefore `window.api`. | `src/main/index.ts`, `index.html` | `sandbox: true`, CSP, deny navigation and new windows, single-instance lock |
-| **IPC handlers do not validate input** and do not check the sender frame. | `src/main/ipc/*.ts` | Schema validation and sender check on every handler |
-| **Arbitrary file read.** `READ_FILE_BASE64` and `CONFIG_IMPORT` (`filePath`) read any path the renderer supplies; `RPC_TORRENT_ADD` reads any absolute path given as `filename` and sends it to the daemon. `DIALOG_OPEN_FILE` forwards renderer-supplied dialog options. | `ipc/config-handlers.ts`, `ipc/rpc-handlers.ts` | Only paths returned by a native dialog (tracked in main) and of the expected type |
-| **Plaintext credentials at rest.** Server and proxy passwords are stored as plain JSON with default file permissions. | `src/main/store/config-store.ts` | `safeStorage` encryption with migration, atomic writes, `0600` |
-| **`onMenuEvent` has no allowlist.** The renderer can subscribe to any IPC channel name. | `src/preload/preload.ts` | Restrict to the known `menu:*` / tray channels |
-| One channel (`tray:toggle-alt-speed`) is a string literal outside `ipc-channels.ts`. | `src/main/index.ts`, `tray.ts` | Move to `IPC` |
-| `GrantFileProtocolExtraPrivileges` fuse not disabled; DevTools reachable from the production View menu. | `forge.config.ts`, `src/main/menu.ts` | Disable both |
-| Imported server and preference objects are stored without validation. | `CONFIG_IMPORT` handler | Schema validation |
+| **Server and proxy passwords are returned to the renderer** by the server and config calls, and `SERVER_TEST` takes the full config from the renderer. A compromised renderer can read every stored password. Intended fix: never send passwords to the renderer, and test a saved server by id with the stored credentials. | `src/main/ipc/config-handlers.ts`, `src/main/store/config-store.ts` | `tva` |
+| **`SERVER_TEST` returns the raw RPC error message** to the renderer. It has not been checked that the message cannot carry credentials or internal addresses. | `src/main/ipc/config-handlers.ts` | `gad` |
+| **Plaintext credentials at rest.** Server and proxy passwords are stored as plain JSON with default file permissions; writes are not atomic and a read failure can silently reset the config. | `src/main/store/config-store.ts` | `23u.8` (`safeStorage` encryption, `0600`), `23u.9` (atomic writes, no silent reset) |
+| **No confirmation when `script-*` session keys change.** The daemon-side script options are by design reachable from the settings UI, but main does not ask before they are changed. | `src/main/ipc/rpc-handlers.ts` | `3kt` |
+| **`magnet:` links and `.torrent` file association are not handled** by the main process: the forge config declares the MIME type and scheme, but no `open-file`, `open-url` or launch-argument handler exists. | `src/main/index.ts`, `forge.config.ts` | `23u.12` |
+| **Packaged-build verification is macOS only.** The `app://` behaviour (blocked `file://`, traversal, unapproved reads) was verified on one packaged build (macOS); Windows and Linux are not verified. | `src/main/security/app-protocol.ts` | `2df` |
+| **Storage origin changed from `file://` to `app://seedora`.** Renderer-only `localStorage` written by an earlier build is not visible to the new origin and resets once on upgrade. Servers and preferences live in `config.json` and are not affected. | `src/renderer/` | accepted, see ADR 0006 |
+| `style-src` still allows `'unsafe-inline'`; whether it can be dropped has not been evaluated. | `src/main/security/csp.ts` | not tracked yet |
 
 ### Repository
 

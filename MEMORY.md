@@ -7,15 +7,17 @@
 - Project resumed after an 8-month pause (last release 1.2.1, 2026-03-05). Overhaul in phases: (1) agentic setup, (2) repo cleanup and community readiness, (3) full review with fixes.
 - **Phase 1 done**: `CLAUDE.md`, `AGENTS.md`, nested `CLAUDE.md`, `docs/`, `llms.txt`, 12 agents, 3 skills, tracked `.claude/settings.json`, `scripts/i18n-check.mjs`, beads backlog (exported to `.beads/issues.jsonl`).
 - **Phase 2 mostly done** on `chore/repo-cleanup`: MIT licence, README and community files, Vitest, ESLint 9 flat config and Prettier (`mi9.10` in progress), CI/CodeQL/Dependabot on the self-hosted `helmut` runner (`we5.4`, `we5.6` in progress).
-- **Phase 3, web P0 fixes done, pending the final security audit**: sealed cookie, SSRF guard, validated actions, rate limits, security headers (ADRs `docs/decisions/0002`-`0005`, epic `c07`). Docs updated (`c07.16`, `9o7`). Electron P0 (epic `23u`) not started.
+- **Phase 3, web P0 fixes done, pending the final security audit**: sealed cookie, SSRF guard, validated actions, rate limits, security headers (ADRs `docs/decisions/0002`-`0005`, epic `c07`). Docs updated (`c07.16`, `9o7`). **Electron hardening implemented, pending the audit** (epic `23u`, ADR `docs/decisions/0006`): sandbox, strict CSP meta, navigation/permission guards, single-instance lock, zod validation and sender check on every IPC channel, approved-path registry, preload event allowlist, DevTools unpackaged only, fuse `GrantFileProtocolExtraPrivileges` off, renderer served from `app://seedora`. Verified in one packaged build (macOS): `file://` fetch blocked, traversal 404, POST 405, unapproved `readFileBase64` refused.
 - **All of this is in local commits on `chore/repo-cleanup`, not pushed.** Do not push or open a PR without the user's go-ahead; `staging` and `main` still carry the old web code.
 
 ## Next steps
 
 - [ ] Final `security-auditor` pass on the web hardening, then close `c07.10` and `c07.7`.
+- [ ] Final `security-auditor` pass on the Electron hardening (`app-protocol.ts`, `ipc-guard.ts`, `approved-paths.ts`), then close the finished `23u.*` issues and `0mk`.
+- [ ] Electron still open: `tva` (passwords returned to the renderer, `SERVER_TEST` by id), `gad` (raw `SERVER_TEST` error), `23u.8`/`23u.9` (`safeStorage`, config permissions, atomic writes), `3kt` (`script-*` confirmation), `23u.12` (`magnet:` and `.torrent` association), `2df` (packaged verification on Windows and Linux).
 - [ ] Remaining web items: `c07.8` (plaintext passwords in `localStorage` and exports), `c07.17` (nonce CSP), `c07.18` (Vercel Firewall rule, user action in the dashboard), `46b` (rate-limit shared-key lockout), `099` (upgrade Next past 16.4.0), tests `c07.3`, `c07.11`-`c07.15`.
 - [ ] Verify on Vercel (unconfirmed): which forwarding header is overwritten, function max duration above 30 s, CSP violations in a real browser, pinned HTTPS connections (SNI, certificate) against a real TLS server.
-- [ ] Phase 3 continued: Electron epic `seedora-transmission-23u`; bugs `0cl`; i18n `k5r` (49 keys missing in 21 locales, `k5r.1`); a11y/design `vpz`.
+- [ ] Phase 3 continued: bugs `0cl`; i18n `k5r` (49 keys missing in 21 locales, `k5r.1`); a11y/design `vpz`.
 - [ ] Phase 4 (after 2-3), epic `52c`: landing page on `seedora.app`, web app moved to `app.seedora.app`, landing SEO, Google Search Console. Hosting **Vercel**; DNS **Cloudflare** (user decision 2026-11-15).
 - [ ] Deploying the new web code needs `COOKIE_SECRET` (>= 32 characters) set on the host first, or the server will not start in production.
 - [ ] Visual review pass (`vpz.10`) needs the user to start Electron (`npm run start:debug`) and web (`npm run dev:web`).
@@ -48,7 +50,10 @@
 - release-please ships a version for any `fix:`/`feat:` reaching `main`; choose commit types deliberately.
 - `packages/shared/package.json` points `main`/`types` at a non-existent `src/index.ts`; imports work only through aliases.
 - Local-only backup tags `backup/local-staging-2026-11-15` and `backup/local-main-2026-11-15` hold the pre-realignment history. Never push them (they carry a personal author email).
-- Electron debugging for agents: `chrome-devtools` MCP on port 9222; web: `chrome-devtools-web`. Agents never start the apps.
+- Electron debugging for agents: `chrome-devtools` MCP on port 9222; web: `chrome-devtools-web`. The main session may start the apps in the background (and stops them after); subagents never do.
+
+- The packaged renderer's origin is `app://seedora`, not `file://`. Renderer-only `localStorage` from older builds resets once. Never trust a `file:` URL in `sender.ts`, never add `corsEnabled`/`bypassCSP` to the scheme.
+- A new IPC channel needs: constant in `src/shared/ipc-channels.ts`, zod schema in `security/schemas.ts`, a `handleGuarded` registration, a preload method, a `PlatformApi` entry; renderer-bound events also go in `RENDERER_EVENT_CHANNELS`.
 
 ## Pointers
 

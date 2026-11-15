@@ -6,13 +6,13 @@ The Electron app is the root package (`src/`); the UI lives in `packages/shared/
 
 ## Documentation
 
-- [Architecture](docs/architecture.md): monorepo layout, entry points, the PlatformApi abstraction, RPC data flow on Electron and web, stores, build outputs
+- [Architecture](docs/architecture.md): monorepo layout, entry points, the PlatformApi abstraction, RPC data flow on Electron and web, the Electron renderer origin (`app://seedora`) and file access, stores, build outputs
 - [Setup](docs/setup.md): prerequisites, install, running and packaging both apps, environment variables, MCP servers
 - [Conventions](docs/conventions.md): TypeScript, file layout and naming, IPC rules, UI primitives and theme tokens, commits and branches
 - [Security](docs/security.md): trust boundaries, what is enforced today, known gaps and their intended fixes, rules for new code
 - [Internationalisation](docs/i18n.md): 23 locales, key rules, the two i18n configs, the `i18n:check` gate
 - [Release](docs/release.md): staging → main flow, release-please, the release workflow, what a release contains
-- [Decisions](docs/decisions/0001-record-architecture-decisions.md): architecture decision records and their template
+- [Decisions](docs/decisions/0001-record-architecture-decisions.md): architecture decision records and their template; web: 0002 to 0005 (cookie, outbound policy, action hardening, headers); Electron: [0006](docs/decisions/0006-packaged-renderer-app-scheme.md) (packaged renderer served from `app://seedora`)
 
 ## Agent reference
 

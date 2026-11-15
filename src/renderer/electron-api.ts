@@ -56,7 +56,7 @@ export const electronApi: PlatformApi = {
   // Platform-specific (Electron-only)
   readFileBase64: (filePath) => window.api.readFileBase64(filePath),
   dialogOpenFile: (options) => window.api.dialogOpenFile(options),
-  dialogOpenDirectory: () => window.api.dialogOpenDirectory(),
+  dialogOpenDirectory: (options?: { purpose?: 'watch-folder' }) => window.api.dialogOpenDirectory(options),
   dialogSaveFile: (options, content) => window.api.dialogSaveFile(options, content),
   trayUpdate: (state) => window.api.trayUpdate(state),
   notificationShow: (title, body) => window.api.notificationShow(title, body),

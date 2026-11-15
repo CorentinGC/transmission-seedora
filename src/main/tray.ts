@@ -1,5 +1,6 @@
 import { Tray, Menu, nativeImage, BrowserWindow, app } from 'electron';
 import path from 'node:path';
+import { IPC } from '@shared/ipc-channels';
 
 let tray: Tray | null = null;
 
@@ -72,7 +73,7 @@ export function updateTrayMenu(mainWindow: BrowserWindow, state: TrayState): voi
     {
       label: state.altSpeedEnabled ? 'Disable Alt Speed' : 'Enable Alt Speed',
       click: () => {
-        mainWindow.webContents.send('tray:toggle-alt-speed');
+        mainWindow.webContents.send(IPC.TRAY_TOGGLE_ALT_SPEED);
       },
     },
     { type: 'separator' },
