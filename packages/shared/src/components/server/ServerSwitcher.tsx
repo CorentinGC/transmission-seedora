@@ -129,13 +129,7 @@ export function ServerSwitcher() {
   return (
     <div className="relative">
       {/* Hidden file input for web import fallback */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".json"
-        className="hidden"
-        onChange={handleFileInputChange}
-      />
+      <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleFileInputChange} />
       <button
         ref={triggerRef}
         type="button"
@@ -145,9 +139,7 @@ export function ServerSwitcher() {
         onClick={() => (open ? closeMenu() : setOpen(true))}
       >
         <Server size={14} aria-hidden="true" />
-        <span className="max-w-32 truncate">
-          {activeServer?.name ?? t('server.noServer')}
-        </span>
+        <span className="max-w-32 truncate">{activeServer?.name ?? t('server.noServer')}</span>
         <span
           className={`w-2 h-2 rounded-full ${
             connectionStatus === 'connected'
@@ -207,7 +199,9 @@ export function ServerSwitcher() {
                   }}
                 >
                   <Server size={14} className="shrink-0" aria-hidden="true" />
-                  <span className="flex-1 truncate" title={server.name}>{server.name}</span>
+                  <span className="flex-1 truncate" title={server.name}>
+                    {server.name}
+                  </span>
                   <span className="text-xs text-muted-foreground shrink-0">
                     {server.host}:{server.port}
                   </span>
@@ -240,7 +234,11 @@ export function ServerSwitcher() {
                     }`}
                     onClick={(e) => handleDelete(server, e)}
                     title={t('server.deleteServer')}
-                    aria-label={confirmDelete === server.id ? t('server.deleteConfirm', { name: server.name }) : `${t('server.deleteServer')}: ${server.name}`}
+                    aria-label={
+                      confirmDelete === server.id
+                        ? t('server.deleteConfirm', { name: server.name })
+                        : `${t('server.deleteServer')}: ${server.name}`
+                    }
                   >
                     <Trash2 size={12} aria-hidden="true" />
                   </button>
@@ -278,12 +276,12 @@ export function ServerSwitcher() {
                 {t('server.importServers')}
               </button>
             </div>
-            <ExportPasswordsOption className="px-3 py-2 border-t" checked={includePasswords} onChange={setIncludePasswords} />
-            {importMsg && (
-              <div className="px-3 py-1.5 text-xs text-success bg-success/10 border-t">
-                {importMsg}
-              </div>
-            )}
+            <ExportPasswordsOption
+              className="px-3 py-2 border-t"
+              checked={includePasswords}
+              onChange={setIncludePasswords}
+            />
+            {importMsg && <div className="px-3 py-1.5 text-xs text-success bg-success/10 border-t">{importMsg}</div>}
           </div>
         </>
       )}

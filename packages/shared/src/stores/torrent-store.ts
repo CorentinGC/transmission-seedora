@@ -65,7 +65,9 @@ interface TorrentStore {
   setTorrentProps: (ids: number[], props: Record<string, unknown>) => Promise<boolean>;
   moveTorrents: (ids: number[], location: string, move: boolean) => Promise<boolean>;
   queueMove: (ids: number[], direction: 'top' | 'up' | 'down' | 'bottom') => Promise<void>;
-  addTorrent: (params: Record<string, unknown>) => Promise<{ success: boolean; code?: string; duplicate?: boolean; torrentName?: string; duplicateId?: number }>;
+  addTorrent: (
+    params: Record<string, unknown>,
+  ) => Promise<{ success: boolean; code?: string; duplicate?: boolean; torrentName?: string; duplicateId?: number }>;
   startAll: () => Promise<void>;
   stopAll: () => Promise<void>;
 
@@ -120,10 +122,7 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   fetchRecentlyActive: async () => {
     const epoch = currentServerEpoch();
     try {
-      const res = await getPlatformApi().rpcTorrentGet(
-        TORRENT_LIST_FIELDS as unknown as string[],
-        'recently-active',
-      );
+      const res = await getPlatformApi().rpcTorrentGet(TORRENT_LIST_FIELDS as unknown as string[], 'recently-active');
       if (!isServerEpochCurrent(epoch)) return;
       const data = res.data as { torrents?: Torrent[]; removed?: number[] } | undefined;
       if (!res.success || !Array.isArray(data?.torrents)) {
@@ -166,9 +165,7 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
 
   selectRange: (id, allVisibleIds) => {
     set((state) => {
-      const lastIdx = state.lastSelectedId !== null
-        ? allVisibleIds.indexOf(state.lastSelectedId)
-        : -1;
+      const lastIdx = state.lastSelectedId !== null ? allVisibleIds.indexOf(state.lastSelectedId) : -1;
       const currentIdx = allVisibleIds.indexOf(id);
       if (lastIdx === -1 || currentIdx === -1) {
         return { selectedIds: new Set([id]), lastSelectedId: id };
@@ -256,7 +253,12 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
       const data = res.data as Record<string, unknown> | undefined;
       const duplicate = data?.['torrent-duplicate'] as Record<string, unknown> | undefined;
       if (duplicate) {
-        return { success: false, duplicate: true, torrentName: duplicate.name as string | undefined, duplicateId: duplicate.id as number | undefined };
+        return {
+          success: false,
+          duplicate: true,
+          torrentName: duplicate.name as string | undefined,
+          duplicateId: duplicate.id as number | undefined,
+        };
       }
       await get().fetchTorrents();
     }
@@ -282,9 +284,10 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   setLabelFilter: (label) => set({ labelFilter: label }),
   setTrackerFilter: (tracker) => set({ trackerFilter: tracker }),
   setFolderFilter: (folder) => set({ folderFilter: folder }),
-  setSortingState: (updater) => set((prev) => ({
-    sortingState: typeof updater === 'function' ? updater(prev.sortingState) : updater,
-  })),
+  setSortingState: (updater) =>
+    set((prev) => ({
+      sortingState: typeof updater === 'function' ? updater(prev.sortingState) : updater,
+    })),
 
   reset: () => {
     refreshFailing = false;

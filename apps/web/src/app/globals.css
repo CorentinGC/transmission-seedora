@@ -1,2 +1,2 @@
-@import "../../../../packages/shared/src/globals.css";
+@import '../../../../packages/shared/src/globals.css';
 @source "../../../../packages/shared/src/**/*.{ts,tsx}";

@@ -40,7 +40,10 @@ async function currentClientKey(): Promise<string | null> {
  * (`testConnection`) keep a shared key; the destination bucket and the lookup cap bound them.
  * Local-only work (`setActiveServer`, `geoip`) is not worth that lockout.
  */
-export async function takeClientToken(name: BucketName, options: { skipWithoutIdentity?: boolean } = {}): Promise<boolean> {
+export async function takeClientToken(
+  name: BucketName,
+  options: { skipWithoutIdentity?: boolean } = {},
+): Promise<boolean> {
   const key = await currentClientKey();
   if (key === null && options.skipWithoutIdentity) return true;
   return bucket(name).take(key ?? SHARED_CLIENT_KEY);

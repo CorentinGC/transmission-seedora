@@ -44,7 +44,9 @@ describe('resolveTorrentAddParams', () => {
   });
 
   it('refuses filename and metainfo together', () => {
-    expect(() => resolveTorrentAddParams({ filename: '/a.torrent', metainfo: 'AAAA' }, vi.fn())).toThrow(ApprovedPathError);
+    expect(() => resolveTorrentAddParams({ filename: '/a.torrent', metainfo: 'AAAA' }, vi.fn())).toThrow(
+      ApprovedPathError,
+    );
   });
 
   it('leaves metainfo-only params untouched', () => {

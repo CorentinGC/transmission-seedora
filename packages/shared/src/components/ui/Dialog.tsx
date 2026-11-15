@@ -26,7 +26,15 @@ function pickInitialFocus(root: HTMLElement): HTMLElement | null {
  * Modal dialog: `role="dialog"` labelled by its title, focus moves in on open, is trapped, and is
  * restored to the trigger on close. Escape and a click on the backdrop close it.
  */
-export function Dialog({ title, onClose, width = 'w-[420px]', maxHeight, footer, children, className = '' }: DialogProps) {
+export function Dialog({
+  title,
+  onClose,
+  width = 'w-[420px]',
+  maxHeight,
+  footer,
+  children,
+  className = '',
+}: DialogProps) {
   const { t } = useTranslation();
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -61,7 +69,9 @@ export function Dialog({ title, onClose, width = 'w-[420px]', maxHeight, footer,
         className={`flex max-h-full max-w-full flex-col bg-card border rounded-lg shadow-xl focus:outline-none ${width} ${maxHeight ?? ''} ${className}`}
       >
         <div className="flex items-center justify-between gap-2 p-4 border-b">
-          <h2 id={titleId} className="min-w-0 text-lg font-semibold">{title}</h2>
+          <h2 id={titleId} className="min-w-0 text-lg font-semibold">
+            {title}
+          </h2>
           <button
             type="button"
             data-dialog-close

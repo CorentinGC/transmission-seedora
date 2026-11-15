@@ -74,7 +74,10 @@ function useResizable(
       if (e.key !== grow && e.key !== shrink) return;
       e.preventDefault();
       e.stopPropagation();
-      const next = Math.max(minSize, Math.min(maxSize, sizeRef.current + (e.key === grow ? KEYBOARD_STEP : -KEYBOARD_STEP)));
+      const next = Math.max(
+        minSize,
+        Math.min(maxSize, sizeRef.current + (e.key === grow ? KEYBOARD_STEP : -KEYBOARD_STEP)),
+      );
       sizeRef.current = next;
       onSizeChange?.(next);
     },
@@ -162,7 +165,8 @@ export function AppShell() {
     if (isDesktop) setMobilePanel(null);
   }, [isDesktop]);
 
-  const toggleMobile = (panel: 'filters' | 'details') => setMobilePanel((current) => (current === panel ? null : panel));
+  const toggleMobile = (panel: 'filters' | 'details') =>
+    setMobilePanel((current) => (current === panel ? null : panel));
 
   const detailsContent = selectedTorrent ? (
     <DetailsPanel torrent={selectedTorrent} />

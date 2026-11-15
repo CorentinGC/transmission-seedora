@@ -22,8 +22,21 @@ describe('serverTargetSchema', () => {
   });
 
   it('accepts credentials and defaults the path', () => {
-    const parsed = serverTargetSchema.parse({ host: '192.168.1.5', port: 80, useSSL: true, username: 'u', password: 'p' });
-    expect(parsed).toEqual({ host: '192.168.1.5', port: 80, path: '/transmission/rpc', useSSL: true, username: 'u', password: 'p' });
+    const parsed = serverTargetSchema.parse({
+      host: '192.168.1.5',
+      port: 80,
+      useSSL: true,
+      username: 'u',
+      password: 'p',
+    });
+    expect(parsed).toEqual({
+      host: '192.168.1.5',
+      port: 80,
+      path: '/transmission/rpc',
+      useSSL: true,
+      username: 'u',
+      password: 'p',
+    });
   });
 
   it.each(['::1', '2001:db8::1', '[::1]', '127.0.0.1', 'a', 'a-b.example.com', 'xn--bcher-kva.example'])(
@@ -179,7 +192,10 @@ describe('RPC arguments', () => {
   });
 
   it('keeps unknown daemon keys (the daemon validates its own semantics)', () => {
-    const parsed = rpcCallSchema.parse({ method: 'session-set', args: JSON.stringify({ 'speed-limit-down': 100, nested: { a: [1, null] } }) });
+    const parsed = rpcCallSchema.parse({
+      method: 'session-set',
+      args: JSON.stringify({ 'speed-limit-down': 100, nested: { a: [1, null] } }),
+    });
     expect(parsed.args).toEqual({ 'speed-limit-down': 100, nested: { a: [1, null] } });
   });
 
@@ -207,7 +223,15 @@ describe('RPC arguments', () => {
   it('normalises like JSON.stringify: undefined values are dropped, NaN and Infinity become null', () => {
     const parsed = rpcCallSchema.parse({
       method: 'torrent-set',
-      args: JSON.stringify({ ids: [1], sequentialDownload: undefined, 'speed-limit-down': NaN, ratio: Infinity, nested: { gone: undefined, kept: 1 }, fn: () => 1, sym: Symbol('x') }),
+      args: JSON.stringify({
+        ids: [1],
+        sequentialDownload: undefined,
+        'speed-limit-down': NaN,
+        ratio: Infinity,
+        nested: { gone: undefined, kept: 1 },
+        fn: () => 1,
+        sym: Symbol('x'),
+      }),
     });
     expect(parsed.args).toEqual({ ids: [1], 'speed-limit-down': null, ratio: null, nested: { kept: 1 } });
     expect(parsed.args).not.toHaveProperty('sequentialDownload');
@@ -317,12 +341,19 @@ describe('geoipInputSchema', () => {
     expect(geoipInputSchema.safeParse(Array.from({ length: 513 }, () => '1.1.1.1')).success).toBe(false);
   });
 
-  it.each([['not-an-ip'], [''], ['1.1.1.1 '], ['999.1.1.1'], ['example.com'], ['1.1.1.1/24'], [1], [null], ['fe80::1%eth0']])(
-    'rejects %j',
-    (...input) => {
-      expect(geoipInputSchema.safeParse(input).success).toBe(false);
-    },
-  );
+  it.each([
+    ['not-an-ip'],
+    [''],
+    ['1.1.1.1 '],
+    ['999.1.1.1'],
+    ['example.com'],
+    ['1.1.1.1/24'],
+    [1],
+    [null],
+    ['fe80::1%eth0'],
+  ])('rejects %j', (...input) => {
+    expect(geoipInputSchema.safeParse(input).success).toBe(false);
+  });
 
   it('rejects non-arrays', () => {
     expect(geoipInputSchema.safeParse('1.1.1.1').success).toBe(false);

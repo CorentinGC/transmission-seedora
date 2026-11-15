@@ -29,7 +29,9 @@ export function useHeaderKeyboard({
   openColumnsMenuAt,
 }: Options) {
   return (e: React.KeyboardEvent<HTMLDivElement>, header: Header<Torrent, unknown>) => {
-    const cells = Array.from(headerRowRef.current?.querySelectorAll<HTMLElement>('[role="columnheader"][tabindex]') ?? []);
+    const cells = Array.from(
+      headerRowRef.current?.querySelectorAll<HTMLElement>('[role="columnheader"][tabindex]') ?? [],
+    );
     const index = cells.indexOf(e.currentTarget);
     const colId = header.column.id;
     const direction = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;

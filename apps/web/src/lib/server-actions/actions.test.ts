@@ -39,7 +39,14 @@ import { clearServerCookie, setActiveServerCookie } from './session';
 const SECRET = 'test-secret-0123456789-abcdefghijklmnop';
 const PASSWORD = 'hunter2-very-secret';
 const COOKIE = 'seedora-session';
-const target = { host: 'nas.example.com', port: 9091, path: '/transmission/rpc', useSSL: true, username: 'alice', password: PASSWORD };
+const target = {
+  host: 'nas.example.com',
+  port: 9091,
+  path: '/transmission/rpc',
+  useSSL: true,
+  username: 'alice',
+  password: PASSWORD,
+};
 const success = { status: 200, sessionId: undefined, json: { result: 'success', arguments: { ok: true } } };
 
 async function realPost(...args: Parameters<typeof import('../server/outbound').postJson>) {
@@ -75,7 +82,15 @@ describe('setActiveServerCookie', () => {
   });
 
   it('rejects malformed targets without touching the cookie', async () => {
-    for (const bad of [null, 'x', {}, { ...target, host: 'http://evil.test' }, { ...target, port: 70000 }, { ...target, path: '/a/../b' }, { ...target, useSSL: 'yes' }]) {
+    for (const bad of [
+      null,
+      'x',
+      {},
+      { ...target, host: 'http://evil.test' },
+      { ...target, port: 70000 },
+      { ...target, path: '/a/../b' },
+      { ...target, useSSL: 'yes' },
+    ]) {
       expect(await setActiveServerCookie(bad)).toMatchObject({ success: false, code: 'INVALID_INPUT' });
     }
     expect(jar.store.size).toBe(0);
@@ -136,7 +151,7 @@ describe('rpcRequest', () => {
 
   it('rejects oversized, non-object and prototype-polluting arguments', async () => {
     await activate();
-    const big = JSON.stringify({ 'metainfo': 'a'.repeat(1024 * 1024 + 1) });
+    const big = JSON.stringify({ metainfo: 'a'.repeat(1024 * 1024 + 1) });
     expect(await rpcRequest('torrent-add', big)).toMatchObject({ code: 'INVALID_INPUT' });
     expect(await rpcRequest('torrent-get', 'nope')).toMatchObject({ code: 'INVALID_INPUT' });
     expect(await rpcRequest('torrent-get', '{"__proto__":{"x":1}}')).toMatchObject({ code: 'INVALID_INPUT' });
@@ -206,22 +221,30 @@ describe('rpcRequest', () => {
 
   it('rate limits per resolved address, so another host name for the same address shares the bucket (9s8)', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
-    post.fn.mockImplementation(async (_target, _body, options: { onResolved?: (a: { address: string; family: 4 }[]) => void }) => {
-      options.onResolved?.([{ address: '93.184.216.34', family: 4 }]);
-      return success;
-    });
+    post.fn.mockImplementation(
+      async (_target, _body, options: { onResolved?: (a: { address: string; family: 4 }[]) => void }) => {
+        options.onResolved?.([{ address: '93.184.216.34', family: 4 }]);
+        return success;
+      },
+    );
     await activate();
-    for (let i = 0; i < RATE_LIMITS.rpcDestination.burst; i++) expect(await rpcRequest('session-get')).toMatchObject({ success: true });
+    for (let i = 0; i < RATE_LIMITS.rpcDestination.burst; i++)
+      expect(await rpcRequest('session-get')).toMatchObject({ success: true });
     expect(await rpcRequest('session-get')).toMatchObject({ success: false, code: 'RATE_LIMITED' });
     expect(await setActiveServerCookie({ ...target, host: 'alias.example.com' })).toEqual({ success: true });
     expect(await rpcRequest('session-get')).toMatchObject({ success: false, code: 'RATE_LIMITED' });
     // The test-connection action draws on the same address bucket.
-    expect(await testServerConnection({ ...target, host: 'wildcard-1.example.com' })).toMatchObject({ success: false, code: 'RATE_LIMITED' });
-    // A different address has its own bucket.
-    post.fn.mockImplementation(async (_target, _body, options: { onResolved?: (a: { address: string; family: 4 }[]) => void }) => {
-      options.onResolved?.([{ address: '93.184.216.35', family: 4 }]);
-      return success;
+    expect(await testServerConnection({ ...target, host: 'wildcard-1.example.com' })).toMatchObject({
+      success: false,
+      code: 'RATE_LIMITED',
     });
+    // A different address has its own bucket.
+    post.fn.mockImplementation(
+      async (_target, _body, options: { onResolved?: (a: { address: string; family: 4 }[]) => void }) => {
+        options.onResolved?.([{ address: '93.184.216.35', family: 4 }]);
+        return success;
+      },
+    );
     expect(await rpcRequest('session-get')).toMatchObject({ success: true });
     vi.useRealTimers();
   });
@@ -278,7 +301,9 @@ describe('testServerConnection', () => {
 
   it('denies private hosts by default and reports a bad login', async () => {
     post.fn.mockImplementation(realPost);
-    expect(await testServerConnection({ ...target, host: '169.254.169.254' })).toMatchObject({ code: 'HOST_NOT_ALLOWED' });
+    expect(await testServerConnection({ ...target, host: '169.254.169.254' })).toMatchObject({
+      code: 'HOST_NOT_ALLOWED',
+    });
     post.fn.mockReset().mockResolvedValue({ status: 401, sessionId: undefined, json: undefined });
     expect(await testServerConnection(target)).toMatchObject({ code: 'AUTH_FAILED' });
   });

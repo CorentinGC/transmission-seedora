@@ -123,17 +123,27 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
       if ((err as NodeJS.ErrnoException).code === 'ENOENT') return fresh();
       loadError = { kind: 'unreadable' };
       writeBlocked = true;
-      console.error('[Config] Cannot read the configuration file:', (err as NodeJS.ErrnoException).code ?? 'unknown error');
+      console.error(
+        '[Config] Cannot read the configuration file:',
+        (err as NodeJS.ErrnoException).code ?? 'unknown error',
+      );
       return fresh();
     }
     try {
       const parsed = storedDataSchema.parse(JSON.parse(raw));
-      return { servers: parsed.servers, activeServerId: parsed.activeServerId, preferences: sanitizePreferences(parsed.preferences) };
+      return {
+        servers: parsed.servers,
+        activeServerId: parsed.activeServerId,
+        preferences: sanitizePreferences(parsed.preferences),
+      };
     } catch {
       const backupPath = moveAside(file);
       loadError = { kind: 'corrupt', backupPath };
       writeBlocked = backupPath === undefined;
-      console.error('[Config] The configuration file is invalid; ' + (backupPath ? 'it was moved aside.' : 'it could not be moved aside, writes are disabled.'));
+      console.error(
+        '[Config] The configuration file is invalid; ' +
+          (backupPath ? 'it was moved aside.' : 'it could not be moved aside, writes are disabled.'),
+      );
       return fresh();
     }
   }
@@ -229,7 +239,16 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
     updateServer(id: string, updates: ServerConfigPatch): void {
       const stored = state().servers.find((s) => s.id === id);
       if (!stored) return;
-      const { password, proxyPassword, clearPassword, clearProxyPassword, hasPassword: _hp, hasProxyPassword: _hpp, id: _id, ...fields } = stripUndefined(updates);
+      const {
+        password,
+        proxyPassword,
+        clearPassword,
+        clearProxyPassword,
+        hasPassword: _hp,
+        hasProxyPassword: _hpp,
+        id: _id,
+        ...fields
+      } = stripUndefined(updates);
       const before = { ...stored };
       Object.assign(stored, fields);
 
@@ -283,7 +302,9 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
     /** Names of the servers whose stored password cannot be decrypted (the user must re-enter it). */
     getLockedServerNames(): string[] {
       return state()
-        .servers.filter((s) => (['password', 'proxyPassword'] as const).some((f) => hasSecret(s, f) && reveal(s, f) === undefined))
+        .servers.filter((s) =>
+          (['password', 'proxyPassword'] as const).some((f) => hasSecret(s, f) && reveal(s, f) === undefined),
+        )
         .map((s) => s.name);
     },
 

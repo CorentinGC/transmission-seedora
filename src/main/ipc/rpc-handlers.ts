@@ -35,16 +35,20 @@ const pathString = z.string().min(1).max(4096);
 
 /** Registers the Transmission RPC channels. Every argument is validated before the daemon is contacted. */
 export function registerRpcHandlers(isTrusted: SenderValidator): void {
-  const on = <S extends z.ZodType<unknown[]>>(channel: string, schema: S, run: (args: z.output<S>) => Promise<IpcResponse>) =>
-    handleGuarded(isTrusted, channel, schema, (_e, args) => run(args));
+  const on = <S extends z.ZodType<unknown[]>>(
+    channel: string,
+    schema: S,
+    run: (args: z.output<S>) => Promise<IpcResponse>,
+  ) => handleGuarded(isTrusted, channel, schema, (_e, args) => run(args));
   const idsOnly = (channel: string, method: string) =>
     on(channel, z.tuple([ids]), ([list]) => rpcHandler(method, { ids: list }));
-  const noArgs = (channel: string, method: string) =>
-    on(channel, z.tuple([]), () => rpcHandler(method));
+  const noArgs = (channel: string, method: string) => on(channel, z.tuple([]), () => rpcHandler(method));
 
   // Torrent actions
-  on(IPC.RPC_TORRENT_GET, z.tuple([fieldNames, z.union([ids, z.literal('recently-active')]).optional()]), ([fields, idList]) =>
-    rpcHandler('torrent-get', { fields, ...(idList !== undefined && { ids: idList }) }),
+  on(
+    IPC.RPC_TORRENT_GET,
+    z.tuple([fieldNames, z.union([ids, z.literal('recently-active')]).optional()]),
+    ([fields, idList]) => rpcHandler('torrent-get', { fields, ...(idList !== undefined && { ids: idList }) }),
   );
   on(IPC.RPC_TORRENT_SET, z.tuple([ids, rpcParamsWithoutIdsSchema]), ([idList, params]) =>
     rpcHandler('torrent-set', { ...params, ids: idList }),
@@ -82,23 +86,29 @@ export function registerRpcHandlers(isTrusted: SenderValidator): void {
     rpcHandler('session-get', fields ? { fields } : undefined),
   );
   // Script settings make the daemon run a program: a change needs the user's approval in a native dialog.
-  handleGuarded(isTrusted, IPC.RPC_SESSION_SET, z.tuple([rpcParamsSchema]), async (event, [params]): Promise<IpcResponse> => {
-    // One client for the whole check-then-write: switching server meanwhile cannot redirect the write.
-    const client = connectionManager.getActiveClient();
-    if (!client) return toIpcError(new RpcError('NO_CONNECTION', 'No active server connection'));
-    const window = BrowserWindow.fromWebContents(event.sender);
-    const server = configStore.getServers().find((s) => s.id === configStore.getActiveServerId());
-    const allowed = await isSessionChangeAllowed(params, {
-      fetchCurrent: async (fields) => (await client.request('session-get', { fields: [...fields] })) ?? undefined,
-      confirm: (changes) => confirmScriptChanges(window, changes, server && `${server.name} (${server.host}:${server.port})`),
-    });
-    if (!allowed) return { success: false, error: t('native.scriptGuard.declined'), code: 'CANCELLED' };
-    try {
-      return { success: true, data: await client.request('session-set', params) };
-    } catch (err) {
-      return toIpcError(err);
-    }
-  });
+  handleGuarded(
+    isTrusted,
+    IPC.RPC_SESSION_SET,
+    z.tuple([rpcParamsSchema]),
+    async (event, [params]): Promise<IpcResponse> => {
+      // One client for the whole check-then-write: switching server meanwhile cannot redirect the write.
+      const client = connectionManager.getActiveClient();
+      if (!client) return toIpcError(new RpcError('NO_CONNECTION', 'No active server connection'));
+      const window = BrowserWindow.fromWebContents(event.sender);
+      const server = configStore.getServers().find((s) => s.id === configStore.getActiveServerId());
+      const allowed = await isSessionChangeAllowed(params, {
+        fetchCurrent: async (fields) => (await client.request('session-get', { fields: [...fields] })) ?? undefined,
+        confirm: (changes) =>
+          confirmScriptChanges(window, changes, server && `${server.name} (${server.host}:${server.port})`),
+      });
+      if (!allowed) return { success: false, error: t('native.scriptGuard.declined'), code: 'CANCELLED' };
+      try {
+        return { success: true, data: await client.request('session-set', params) };
+      } catch (err) {
+        return toIpcError(err);
+      }
+    },
+  );
   noArgs(IPC.RPC_SESSION_STATS, 'session-stats');
   noArgs(IPC.RPC_SESSION_CLOSE, 'session-close');
 
@@ -106,8 +116,10 @@ export function registerRpcHandlers(isTrusted: SenderValidator): void {
   on(IPC.RPC_FREE_SPACE, z.tuple([pathString]), ([dir]) => rpcHandler('free-space', { path: dir }));
   noArgs(IPC.RPC_PORT_TEST, 'port-test');
   noArgs(IPC.RPC_BLOCKLIST_UPDATE, 'blocklist-update');
-  on(IPC.RPC_GROUP_GET, z.tuple([z.union([z.string().max(256), z.array(z.string().max(256)).max(200)]).optional()]), ([group]) =>
-    rpcHandler('group-get', group ? { group } : undefined),
+  on(
+    IPC.RPC_GROUP_GET,
+    z.tuple([z.union([z.string().max(256), z.array(z.string().max(256)).max(200)]).optional()]),
+    ([group]) => rpcHandler('group-get', group ? { group } : undefined),
   );
   on(IPC.RPC_GROUP_SET, z.tuple([rpcParamsSchema]), ([params]) => rpcHandler('group-set', params));
 }

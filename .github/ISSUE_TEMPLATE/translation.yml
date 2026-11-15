@@ -1,6 +1,6 @@
 name: Translation
 description: Report a wrong or missing translation, or ask for a new language
-labels: ["translation"]
+labels: ['translation']
 body:
   - type: markdown
     attributes:

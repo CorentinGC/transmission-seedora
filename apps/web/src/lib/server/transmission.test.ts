@@ -35,7 +35,8 @@ beforeEach(() => clearSessionIdCache());
 
 describe('timeoutForMethod', () => {
   it('uses 30 s for methods where the daemon fetches remote data and 15 s otherwise', () => {
-    for (const m of ['torrent-add', 'port-test', 'blocklist-update'] as const) expect(timeoutForMethod(m)).toBe(LONG_TIMEOUT_MS);
+    for (const m of ['torrent-add', 'port-test', 'blocklist-update'] as const)
+      expect(timeoutForMethod(m)).toBe(LONG_TIMEOUT_MS);
     expect(timeoutForMethod('torrent-get')).toBe(DEFAULT_TIMEOUT_MS);
     expect(LONG_TIMEOUT_MS).toBe(30_000);
     expect(DEFAULT_TIMEOUT_MS).toBe(15_000);
@@ -55,9 +56,23 @@ describe('response size per method', () => {
     const post = vi.fn().mockResolvedValue(ok());
     const onResolved = vi.fn();
     const allowedHosts = [{ host: 'nas.example.com' }];
-    await callTransmission(target, { method: 'session-get' }, 1000, { post, allowPrivate: true, allowedHosts, clientKey: 'k', onResolved });
-    expect(post.mock.calls[0][2]).toMatchObject({ maxResponseBytes: SMALL_RESPONSE_MAX_BYTES, allowedHosts, clientKey: 'k', onResolved });
-    await callTransmission(target, { method: 'torrent-get', args: { fields: ['id'] } }, 1000, { post, allowPrivate: true });
+    await callTransmission(target, { method: 'session-get' }, 1000, {
+      post,
+      allowPrivate: true,
+      allowedHosts,
+      clientKey: 'k',
+      onResolved,
+    });
+    expect(post.mock.calls[0][2]).toMatchObject({
+      maxResponseBytes: SMALL_RESPONSE_MAX_BYTES,
+      allowedHosts,
+      clientKey: 'k',
+      onResolved,
+    });
+    await callTransmission(target, { method: 'torrent-get', args: { fields: ['id'] } }, 1000, {
+      post,
+      allowPrivate: true,
+    });
     expect(post.mock.calls[1][2].maxResponseBytes).toBeUndefined();
   });
 
@@ -65,10 +80,12 @@ describe('response size per method', () => {
     vi.stubEnv('SEEDORA_ALLOWED_HOSTS', 'http://bad');
     const post = vi.fn().mockResolvedValue(ok());
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    expect(await callTransmission(target, { method: 'session-get' }, 1000, { post, allowPrivate: true })).toMatchObject({
-      success: false,
-      code: 'SERVER_MISCONFIGURED',
-    });
+    expect(await callTransmission(target, { method: 'session-get' }, 1000, { post, allowPrivate: true })).toMatchObject(
+      {
+        success: false,
+        code: 'SERVER_MISCONFIGURED',
+      },
+    );
     expect(post).not.toHaveBeenCalled();
     vi.unstubAllEnvs();
     vi.restoreAllMocks();
@@ -156,7 +173,9 @@ describe('callTransmission', () => {
 
   it('maps transport failures to their code and never leaks error text or the password', async () => {
     const timeout = vi.fn().mockRejectedValue(new OutboundError('TIMEOUT'));
-    expect(await callTransmission(target, { method: 'session-get' }, 1000, { post: timeout })).toMatchObject({ code: 'TIMEOUT' });
+    expect(await callTransmission(target, { method: 'session-get' }, 1000, { post: timeout })).toMatchObject({
+      code: 'TIMEOUT',
+    });
 
     const raw = vi.fn().mockRejectedValue(new Error(`connect ECONNREFUSED 10.0.0.5:9091 ${PASSWORD}`));
     const result = await callTransmission(target, { method: 'session-get' }, 1000, { post: raw });

@@ -31,7 +31,10 @@ export const MAX_NEGATIVE_ENTRIES = 1024;
  * whose queued lookup started a moment before its caller's deadline is not a hang.
  */
 export const MIN_HANG_MS = 3_000;
-type DnsLookup = (host: string, options: { all: true; verbatim: true }) => Promise<Array<{ address: string; family: number }>>;
+type DnsLookup = (
+  host: string,
+  options: { all: true; verbatim: true },
+) => Promise<Array<{ address: string; family: number }>>;
 
 /** One lookup in flight for a client; concurrent callers of the same name share it. */
 interface Inflight {
@@ -66,7 +69,11 @@ export interface SystemResolverOptions {
  *   domain-level rule would let an attacker block a whole public suffix for every user.
  * c-ares was rejected: it ignores /etc/hosts, which LAN self-hosters rely on.
  */
-export function createSystemResolver(lookup: DnsLookup, limiter: LookupLimiter, options: SystemResolverOptions = {}): Resolver {
+export function createSystemResolver(
+  lookup: DnsLookup,
+  limiter: LookupLimiter,
+  options: SystemResolverOptions = {},
+): Resolver {
   const { now = Date.now, negativeTtlMs = NEGATIVE_CACHE_TTL_MS, minHangMs = MIN_HANG_MS } = options;
   const inflight = new Map<string, Inflight>();
   const negative = new Map<string, number>();
@@ -104,7 +111,9 @@ export function createSystemResolver(lookup: DnsLookup, limiter: LookupLimiter, 
         entry.startedAt = now();
         return lookup(host, { all: true, verbatim: true });
       }, entry.controller.signal)
-      .then((results) => results.map(({ address, family }): ResolvedAddress => ({ address, family: family === 6 ? 6 : 4 })))
+      .then((results) =>
+        results.map(({ address, family }): ResolvedAddress => ({ address, family: family === 6 ? 6 : 4 })),
+      )
       .finally(() => {
         entry.settled = true;
         if (inflight.get(clientKey) === entry) inflight.delete(clientKey);

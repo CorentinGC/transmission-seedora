@@ -33,7 +33,7 @@ function sealRaw(payload: unknown, secret = SECRET): Promise<string> {
   // impossible for invalid payloads, so mirror the derivation here.
   return import('node:crypto').then(({ createHash }) => {
     const digest = createHash('sha256').update(`seedora-session-id:${secret}`).digest();
-    const id = (digest.readUInt32BE(0) & 0x7fffffff) || 1;
+    const id = digest.readUInt32BE(0) & 0x7fffffff || 1;
     return sealData(payload as object, { password: { [id]: secret }, ttl: SESSION_TTL_SECONDS });
   });
 }
@@ -74,13 +74,26 @@ describe('roundtrip', () => {
 
   it('stores nothing beyond the payload: no id, name or proxy fields', async () => {
     const sealed = await sealSession({ ...target, id: 'x', name: 'NAS', proxy: { host: 'p' } }, PROD);
-    expect(Object.keys((await unsealSession(sealed, PROD)) ?? {}).sort()).toEqual(
-      ['host', 'password', 'path', 'port', 'useSSL', 'username', 'v'],
-    );
+    expect(Object.keys((await unsealSession(sealed, PROD)) ?? {}).sort()).toEqual([
+      'host',
+      'password',
+      'path',
+      'port',
+      'useSSL',
+      'username',
+      'v',
+    ]);
   });
 
   it('keeps the worst-case payload under the 4096-byte cookie limit', async () => {
-    const worst = { host: ('a'.repeat(60) + '.').repeat(3) + 'com', port: 65535, path: '/' + 'a'.repeat(255), useSSL: true, username: '😀'.repeat(128), password: '😀'.repeat(128) };
+    const worst = {
+      host: ('a'.repeat(60) + '.').repeat(3) + 'com',
+      port: 65535,
+      path: '/' + 'a'.repeat(255),
+      useSSL: true,
+      username: '😀'.repeat(128),
+      password: '😀'.repeat(128),
+    };
     const sealed = await sealSession(worst, PROD);
     expect(Buffer.byteLength(sealed)).toBeLessThanOrEqual(4096);
     expect(await unsealSession(sealed, PROD)).toMatchObject({ host: worst.host });
@@ -122,7 +135,14 @@ describe('sealing input', () => {
 describe('tampering and forgery', () => {
   it('rejects a cookie whose characters are changed anywhere', async () => {
     const sealed = await sealSession(target, PROD);
-    for (const index of [0, 10, Math.floor(sealed.length / 3), Math.floor(sealed.length / 2), sealed.length - 10, sealed.length - 1]) {
+    for (const index of [
+      0,
+      10,
+      Math.floor(sealed.length / 3),
+      Math.floor(sealed.length / 2),
+      sealed.length - 10,
+      sealed.length - 1,
+    ]) {
       const original = sealed[index];
       const flipped = original === 'A' ? 'B' : 'A';
       const tampered = sealed.slice(0, index) + flipped + sealed.slice(index + 1);
@@ -183,7 +203,9 @@ describe('tampering and forgery', () => {
   });
 
   it('never treats the legacy base64 cookie as a session', async () => {
-    const legacy = Buffer.from(JSON.stringify({ host: 'nas.example.com', port: 9091, path: '/x', useSSL: false })).toString('base64');
+    const legacy = Buffer.from(
+      JSON.stringify({ host: 'nas.example.com', port: 9091, path: '/x', useSSL: false }),
+    ).toString('base64');
     expect(await unsealSession(legacy, PROD)).toBeNull();
     expect(LEGACY_COOKIE_NAME).toBe('seedora_server');
   });
@@ -193,8 +215,12 @@ describe('size', () => {
   it('throws a typed SessionTooLargeError that carries no payload detail', async () => {
     // A validated target always fits (about 2 KB at most), so the limit is forced through the byte count.
     const real = Buffer.byteLength.bind(Buffer);
-    const spy = vi.spyOn(Buffer, 'byteLength').mockImplementation(((value: string, encoding?: BufferEncoding) =>
-      typeof value === 'string' && value.startsWith('Fe26.') ? 5000 : real(value, encoding)) as typeof Buffer.byteLength);
+    const spy = vi
+      .spyOn(Buffer, 'byteLength')
+      .mockImplementation(((value: string, encoding?: BufferEncoding) =>
+        typeof value === 'string' && value.startsWith('Fe26.')
+          ? 5000
+          : real(value, encoding)) as typeof Buffer.byteLength);
     try {
       const error = await sealSession(target, PROD).catch((e: unknown) => e);
       expect(error).toBeInstanceOf(SessionTooLargeError);
@@ -268,7 +294,9 @@ describe('configuration failures', () => {
 
 describe('no secret leakage', () => {
   it('logs nothing and never exposes secrets or the password in errors', async () => {
-    const spies = (['log', 'info', 'warn', 'error', 'debug'] as const).map((m) => vi.spyOn(console, m).mockImplementation(() => undefined));
+    const spies = (['log', 'info', 'warn', 'error', 'debug'] as const).map((m) =>
+      vi.spyOn(console, m).mockImplementation(() => undefined),
+    );
     const messages: string[] = [];
     const sealed = await sealSession(target, { ...PROD, COOKIE_SECRET_PREVIOUS: OLD_SECRET });
     await unsealSession(sealed, PROD);

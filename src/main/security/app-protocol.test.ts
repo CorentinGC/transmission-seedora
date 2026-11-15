@@ -37,11 +37,22 @@ describe('resolveAppPath', () => {
 
   it('rejects traversal in every encoding', () => {
     for (const p of [
-      '/%2e%2e/secret.js', '/%2E%2E/secret.js',
-      '/assets/%2e%2e/%2e%2e/secret.js', '/..%2fsecret.js', '/assets%2f..%2f..%2fsecret.js',
-      '/%252e%252e/secret.js', '/%252e%252e%252fsecret.js', '/..%5csecret.js', '/..\\secret.js',
-      '/assets\\a.js', '//secret.js', '/assets//a.js', '/index.html%00.js', '/a%00.js',
-      '/%zz.js', '/assets/%2fa.js',
+      '/%2e%2e/secret.js',
+      '/%2E%2E/secret.js',
+      '/assets/%2e%2e/%2e%2e/secret.js',
+      '/..%2fsecret.js',
+      '/assets%2f..%2f..%2fsecret.js',
+      '/%252e%252e/secret.js',
+      '/%252e%252e%252fsecret.js',
+      '/..%5csecret.js',
+      '/..\\secret.js',
+      '/assets\\a.js',
+      '//secret.js',
+      '/assets//a.js',
+      '/index.html%00.js',
+      '/a%00.js',
+      '/%zz.js',
+      '/assets/%2fa.js',
     ]) {
       // WHATWG URL parsing folds plain and %2e dot segments into a root-relative path; anything else is refused.
       expect([null, '/secret.js'], p).toContain(get(p));
@@ -51,8 +62,13 @@ describe('resolveAppPath', () => {
 
   it('rejects other schemes, hosts, credentials, ports and garbage', () => {
     for (const url of [
-      'file:///etc/hosts', 'app://evil/index.html', 'app://seedora.evil.com/index.html',
-      'app://user@seedora/index.html', 'app://seedora:81/index.html', 'https://seedora/index.html', 'nope',
+      'file:///etc/hosts',
+      'app://evil/index.html',
+      'app://seedora.evil.com/index.html',
+      'app://user@seedora/index.html',
+      'app://seedora:81/index.html',
+      'https://seedora/index.html',
+      'nope',
     ]) {
       expect(resolveAppPath(url), url).toBeNull();
     }
@@ -97,7 +113,16 @@ describe('createAppRequestHandler', () => {
   });
 
   it('404s unknown extensions, directories and escaping symlinks', () => {
-    for (const p of ['/../secret.js', '/assets/../../secret.js', '/notes.txt', '/missing.js', '/assets', '/assets/', '/link.js', '/outdir/secret.js']) {
+    for (const p of [
+      '/../secret.js',
+      '/assets/../../secret.js',
+      '/notes.txt',
+      '/missing.js',
+      '/assets',
+      '/assets/',
+      '/link.js',
+      '/outdir/secret.js',
+    ]) {
       expect(req(`app://seedora${p}`).status, p).toBe(404);
     }
   });

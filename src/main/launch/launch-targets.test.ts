@@ -21,13 +21,31 @@ describe('parseLaunchArg', () => {
 
   it('accepts .torrent paths (absolute, relative to the launch directory, file: URLs, any case)', () => {
     const cwd = path.resolve('/work dir');
-    expect(parseLaunchArg(path.resolve('/tmp/a b/é.torrent'), cwd)).toEqual({ kind: 'torrent-file', filePath: path.resolve('/tmp/a b/é.torrent') });
-    expect(parseLaunchArg('rel/x.TORRENT', cwd)).toEqual({ kind: 'torrent-file', filePath: path.join(cwd, 'rel/x.TORRENT') });
-    expect(parseLaunchArg('file:///tmp/a%20b/x.torrent', cwd)).toEqual({ kind: 'torrent-file', filePath: path.resolve('/tmp/a b/x.torrent') });
+    expect(parseLaunchArg(path.resolve('/tmp/a b/é.torrent'), cwd)).toEqual({
+      kind: 'torrent-file',
+      filePath: path.resolve('/tmp/a b/é.torrent'),
+    });
+    expect(parseLaunchArg('rel/x.TORRENT', cwd)).toEqual({
+      kind: 'torrent-file',
+      filePath: path.join(cwd, 'rel/x.TORRENT'),
+    });
+    expect(parseLaunchArg('file:///tmp/a%20b/x.torrent', cwd)).toEqual({
+      kind: 'torrent-file',
+      filePath: path.resolve('/tmp/a b/x.torrent'),
+    });
   });
 
   it('ignores flags, other files, other schemes and non-strings', () => {
-    for (const arg of ['--inspect=9229', '-x.torrent', '/tmp/notes.txt', '/tmp/a.torrent.exe', 'https://example.com/a.torrent', 'file://evil.example/share/a.torrent', '.', '/tmp/a\n.torrent']) {
+    for (const arg of [
+      '--inspect=9229',
+      '-x.torrent',
+      '/tmp/notes.txt',
+      '/tmp/a.torrent.exe',
+      'https://example.com/a.torrent',
+      'file://evil.example/share/a.torrent',
+      '.',
+      '/tmp/a\n.torrent',
+    ]) {
       expect(parseLaunchArg(arg, '/')).toBeNull();
     }
     expect(parseLaunchArg(undefined as unknown as string, '/')).toBeNull();
@@ -45,10 +63,13 @@ describe('Windows network and device paths', () => {
   const original = process.platform;
   afterEach(() => Object.defineProperty(process, 'platform', { value: original }));
 
-  it.each(['\\\\srv\\share\\a.torrent', '\\\\?\\C:\\a.torrent', '//srv/share/a.torrent', '\\\\.\\pipe\\a.torrent'])('rejects %s on win32', (arg) => {
-    Object.defineProperty(process, 'platform', { value: 'win32' });
-    expect(parseLaunchArg(arg, 'C:\\')).toBeNull();
-  });
+  it.each(['\\\\srv\\share\\a.torrent', '\\\\?\\C:\\a.torrent', '//srv/share/a.torrent', '\\\\.\\pipe\\a.torrent'])(
+    'rejects %s on win32',
+    (arg) => {
+      Object.defineProperty(process, 'platform', { value: 'win32' });
+      expect(parseLaunchArg(arg, 'C:\\')).toBeNull();
+    },
+  );
 
   it('keeps accepting a local absolute path on posix', () => {
     Object.defineProperty(process, 'platform', { value: 'linux' });

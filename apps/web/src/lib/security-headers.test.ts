@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildContentSecurityPolicy, buildSecurityHeaders } from './security-headers';
 
-const value = (headers: { key: string; value: string }[], key: string) =>
-  headers.find((h) => h.key === key)?.value;
+const value = (headers: { key: string; value: string }[], key: string) => headers.find((h) => h.key === key)?.value;
 
 const directive = (csp: string, name: string) =>
   csp
@@ -18,7 +17,7 @@ describe('buildContentSecurityPolicy', () => {
         "script-src 'self' 'unsafe-inline'",
         "script-src-attr 'none'",
         "style-src 'self' 'unsafe-inline'",
-        'img-src \'self\' data: blob:',
+        "img-src 'self' data: blob:",
         "font-src 'self' data:",
         "connect-src 'self'",
         "worker-src 'self'",

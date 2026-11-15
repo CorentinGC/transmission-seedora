@@ -76,7 +76,9 @@ describe('loadTorrentFields', () => {
 
   const deferred = () => {
     let resolve!: (v: unknown) => void;
-    const promise = new Promise((r) => { resolve = r; });
+    const promise = new Promise((r) => {
+      resolve = r;
+    });
     return { promise, resolve };
   };
 
@@ -91,7 +93,13 @@ describe('loadTorrentFields', () => {
     const d = deferred();
     const dispatch = vi.fn();
     let cancelled = false;
-    const run = loadTorrentFields(apiWith(() => d.promise), ['n'], 4, dispatch, () => cancelled);
+    const run = loadTorrentFields(
+      apiWith(() => d.promise),
+      ['n'],
+      4,
+      dispatch,
+      () => cancelled,
+    );
     cancelled = true;
     d.resolve({ success: true, data: { torrents: [{ n: 1 }] } });
     expect(await run).toBe(false);
@@ -101,13 +109,25 @@ describe('loadTorrentFields', () => {
   it('discards a response, success or failure, that arrives after a server switch', async () => {
     const ok = deferred();
     const dispatch = vi.fn();
-    const run = loadTorrentFields(apiWith(() => ok.promise), ['n'], 4, dispatch, () => false);
+    const run = loadTorrentFields(
+      apiWith(() => ok.promise),
+      ['n'],
+      4,
+      dispatch,
+      () => false,
+    );
     bumpServerEpoch();
     ok.resolve({ success: true, data: { torrents: [{ n: 1 }] } });
     expect(await run).toBe(false);
 
     const bad = deferred();
-    const run2 = loadTorrentFields(apiWith(() => bad.promise), ['n'], 4, dispatch, () => false);
+    const run2 = loadTorrentFields(
+      apiWith(() => bad.promise),
+      ['n'],
+      4,
+      dispatch,
+      () => false,
+    );
     bumpServerEpoch();
     bad.resolve({ success: false, error: 'old server' });
     expect(await run2).toBe(false);

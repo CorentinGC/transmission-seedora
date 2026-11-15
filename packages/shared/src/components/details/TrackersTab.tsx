@@ -73,7 +73,12 @@ export function TrackersTab({ torrent }: Props) {
       await updateTrackerList((current) =>
         current
           .split('\n\n')
-          .map((tier) => tier.split('\n').filter((l) => l.trim() !== announce).join('\n'))
+          .map((tier) =>
+            tier
+              .split('\n')
+              .filter((l) => l.trim() !== announce)
+              .join('\n'),
+          )
           .filter((tier) => tier.trim() !== '')
           .join('\n\n'),
       );
@@ -98,7 +103,10 @@ export function TrackersTab({ torrent }: Props) {
         current
           .split('\n\n')
           .map((tier) =>
-            tier.split('\n').map((l) => (l.trim() === oldAnnounce ? editValue.trim() : l)).join('\n'),
+            tier
+              .split('\n')
+              .map((l) => (l.trim() === oldAnnounce ? editValue.trim() : l))
+              .join('\n'),
           )
           .join('\n\n'),
       );
@@ -116,7 +124,9 @@ export function TrackersTab({ torrent }: Props) {
   return (
     <div className="text-xs">
       {error && (
-        <div role="alert" className="mb-1 text-destructive-text">{t('details.loadFailed', { error })}</div>
+        <div role="alert" className="mb-1 text-destructive-text">
+          {t('details.loadFailed', { error })}
+        </div>
       )}
       {/* Table */}
       <table className="w-full border-collapse">
@@ -158,11 +168,7 @@ export function TrackersTab({ torrent }: Props) {
                     >
                       <Check size={12} />
                     </Button>
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      onClick={cancelEdit}
-                    >
+                    <Button size="xs" variant="ghost" onClick={cancelEdit}>
                       <X size={12} />
                     </Button>
                   </div>
@@ -178,7 +184,10 @@ export function TrackersTab({ torrent }: Props) {
               </td>
               <td className="px-1.5 py-1 text-right">{ts.seederCount >= 0 ? ts.seederCount : '-'}</td>
               <td className="px-1.5 py-1 text-right">{ts.leecherCount >= 0 ? ts.leecherCount : '-'}</td>
-              <td className="px-1.5 py-1 max-w-24 truncate" title={ts.lastAnnounceSucceeded ? 'OK' : (ts.lastAnnounceResult || '')}>
+              <td
+                className="px-1.5 py-1 max-w-24 truncate"
+                title={ts.lastAnnounceSucceeded ? 'OK' : ts.lastAnnounceResult || ''}
+              >
                 {ts.lastAnnounceSucceeded ? (
                   <span className="text-success">{t('trackersTab.ok')}</span>
                 ) : (

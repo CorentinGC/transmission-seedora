@@ -57,7 +57,10 @@ export function ServerFormDialog({ server, onClose }: Props) {
 
   const getConfig = (): NewServerConfig & ServerConfigPatch => ({
     name: name || `${host}:${port}`,
-    host, port, path, useSSL,
+    host,
+    port,
+    path,
+    useSSL,
     allowSelfSigned: useSSL ? allowSelfSigned : undefined,
     username: username || undefined,
     password: clearPassword ? undefined : password || undefined,
@@ -109,7 +112,9 @@ export function ServerFormDialog({ server, onClose }: Props) {
       footer={
         <div className="flex flex-col gap-2">
           {saveFailed && (
-            <p role="alert" className="text-sm text-destructive-text">{saveReason ?? t('server.saveFailed')}</p>
+            <p role="alert" className="text-sm text-destructive-text">
+              {saveReason ?? t('server.saveFailed')}
+            </p>
           )}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -134,21 +139,36 @@ export function ServerFormDialog({ server, onClose }: Props) {
     >
       <div className="space-y-4">
         <Field label={t('server.serverName')}>
-          <Input className="w-full" value={name} onChange={(e) => setName(e.target.value)} placeholder={t('server.serverNamePlaceholder')} />
+          <Input
+            className="w-full"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t('server.serverNamePlaceholder')}
+          />
         </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label={t('server.host')}>
             <Input className="w-full" value={host} onChange={(e) => setHost(e.target.value)} />
           </Field>
           <Field label={t('server.port')}>
-            <Input className="w-full" type="number" value={String(port)} onChange={(e) => setPort(Number(e.target.value))} />
+            <Input
+              className="w-full"
+              type="number"
+              value={String(port)}
+              onChange={(e) => setPort(Number(e.target.value))}
+            />
           </Field>
         </div>
         <Field label={t('server.path')}>
           <Input className="w-full" value={path} onChange={(e) => setPath(e.target.value)} />
         </Field>
 
-        <Checkbox label={t('server.useSSL')} checked={useSSL} onChange={(e) => setUseSSL((e.target as HTMLInputElement).checked)} className="text-sm" />
+        <Checkbox
+          label={t('server.useSSL')}
+          checked={useSSL}
+          onChange={(e) => setUseSSL((e.target as HTMLInputElement).checked)}
+          className="text-sm"
+        />
         {useSSL && (
           <div className="space-y-1">
             <Checkbox
@@ -158,7 +178,9 @@ export function ServerFormDialog({ server, onClose }: Props) {
               aria-describedby="allow-self-signed-hint"
               className="text-sm"
             />
-            <p id="allow-self-signed-hint" className="text-xs text-muted-foreground">{t('server.allowSelfSignedHint')}</p>
+            <p id="allow-self-signed-hint" className="text-xs text-muted-foreground">
+              {t('server.allowSelfSignedHint')}
+            </p>
           </div>
         )}
 
@@ -169,7 +191,15 @@ export function ServerFormDialog({ server, onClose }: Props) {
               <Input className="w-full" value={username} onChange={(e) => setUsername(e.target.value)} />
             </Field>
             <Field label={t('server.password')}>
-              <Input className="w-full" type="password" autoComplete="new-password" disabled={clearPassword} placeholder={server?.hasPassword ? t('server.passwordStored') : undefined} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input
+                className="w-full"
+                type="password"
+                autoComplete="new-password"
+                disabled={clearPassword}
+                placeholder={server?.hasPassword ? t('server.passwordStored') : undefined}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </Field>
           </div>
           {server?.hasPassword && (
@@ -194,7 +224,12 @@ export function ServerFormDialog({ server, onClose }: Props) {
 
         <div className="border-t pt-3">
           <SectionHeading>{t('server.proxy')}</SectionHeading>
-          <Select className="w-full" aria-label={t('server.proxy')} value={proxyType} onChange={(e) => setProxyType(e.target.value as 'none' | 'http' | 'socks5')}>
+          <Select
+            className="w-full"
+            aria-label={t('server.proxy')}
+            value={proxyType}
+            onChange={(e) => setProxyType(e.target.value as 'none' | 'http' | 'socks5')}
+          >
             <option value="none">{t('server.proxyNone')}</option>
             <option value="http">{t('server.proxyHTTP')}</option>
             <option value="socks5">{t('server.proxySOCKS5')}</option>
@@ -206,7 +241,12 @@ export function ServerFormDialog({ server, onClose }: Props) {
                   <Input className="w-full" value={proxyHost} onChange={(e) => setProxyHost(e.target.value)} />
                 </Field>
                 <Field label={t('server.proxyPort')}>
-                  <Input className="w-full" type="number" value={String(proxyPort)} onChange={(e) => setProxyPort(Number(e.target.value))} />
+                  <Input
+                    className="w-full"
+                    type="number"
+                    value={String(proxyPort)}
+                    onChange={(e) => setProxyPort(Number(e.target.value))}
+                  />
                 </Field>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -214,7 +254,15 @@ export function ServerFormDialog({ server, onClose }: Props) {
                   <Input className="w-full" value={proxyUsername} onChange={(e) => setProxyUsername(e.target.value)} />
                 </Field>
                 <Field label={t('server.proxyPassword')}>
-                  <Input className="w-full" type="password" autoComplete="new-password" disabled={clearProxyPassword} placeholder={server?.hasProxyPassword ? t('server.passwordStored') : undefined} value={proxyPassword} onChange={(e) => setProxyPassword(e.target.value)} />
+                  <Input
+                    className="w-full"
+                    type="password"
+                    autoComplete="new-password"
+                    disabled={clearProxyPassword}
+                    placeholder={server?.hasProxyPassword ? t('server.passwordStored') : undefined}
+                    value={proxyPassword}
+                    onChange={(e) => setProxyPassword(e.target.value)}
+                  />
                 </Field>
               </div>
               {server?.hasProxyPassword && (

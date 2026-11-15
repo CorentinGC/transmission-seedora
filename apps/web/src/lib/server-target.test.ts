@@ -24,7 +24,12 @@ describe('toServerTarget', () => {
     expect(toServerTarget({ ...base, path: '' }).path).toBe('/transmission/rpc');
     expect(toServerTarget({ ...base, path: 'rpc' }).path).toBe('/rpc');
     expect(toServerTarget({ ...base, path: '/x', username: '', password: '' })).toEqual({
-      host: 'h', port: 1, path: '/x', useSSL: true, username: undefined, password: undefined,
+      host: 'h',
+      port: 1,
+      path: '/x',
+      useSSL: true,
+      username: undefined,
+      password: undefined,
     });
     const withProxy = { ...base, path: '/x', proxyPassword: 'secret', id: 'i' };
     expect(JSON.stringify(toServerTarget(withProxy))).not.toContain('secret');

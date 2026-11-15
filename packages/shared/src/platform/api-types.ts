@@ -1,4 +1,11 @@
-import type { LaunchTarget, IpcResponse, ServerConfig, NewServerConfig, ServerConfigPatch, AppPreferences } from '../types';
+import type {
+  LaunchTarget,
+  IpcResponse,
+  ServerConfig,
+  NewServerConfig,
+  ServerConfigPatch,
+  AppPreferences,
+} from '../types';
 
 /**
  * Platform-agnostic API interface.
@@ -74,13 +81,20 @@ export interface PlatformApi {
   dialogSaveFile?(options: Record<string, unknown>, content: string): Promise<IpcResponse<string | null>>;
   /** True when stored secrets are encrypted by the OS keychain; false means they sit in plain text. Electron only. */
   secretStorageEncrypted?(): Promise<IpcResponse<boolean>>;
-  trayUpdate?(state: { downloadSpeed: number; uploadSpeed: number; activeCount: number; altSpeedEnabled: boolean }): void;
+  trayUpdate?(state: {
+    downloadSpeed: number;
+    uploadSpeed: number;
+    activeCount: number;
+    altSpeedEnabled: boolean;
+  }): void;
   notificationShow?(title: string, body: string): void;
   watcherRestart?(): void;
-  geoipLookup?(ips: string[]): Promise<IpcResponse<Record<string, { country: string; region: string; city: string } | null>>>;
+  geoipLookup?(
+    ips: string[],
+  ): Promise<IpcResponse<Record<string, { country: string; region: string; city: string } | null>>>;
   /** Pulls the magnet links / .torrent files the OS asked the app to open before the UI subscribed (then listen to the `launch:target` menu event for later ones). */
   /** Whether stored passwords are encrypted by the OS secret store; false means cleartext in a 0600 file (show a warning). Electron only. */
   secretStorageEncrypted?(): Promise<IpcResponse<boolean>>;
   launchTargetsTake?(): Promise<IpcResponse<LaunchTarget[]>>;
-  onMenuEvent?(channel: string, callback: (...args: unknown[]) => void): (() => void);
+  onMenuEvent?(channel: string, callback: (...args: unknown[]) => void): () => void;
 }

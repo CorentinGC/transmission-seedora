@@ -33,17 +33,19 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
         <div className="flex flex-wrap items-center justify-end gap-2">
           <Button onClick={onClose}>{t('dialog.cancel')}</Button>
           <Button onClick={() => handleRemove(false)}>{t('dialog.removeTorrentBtn')}</Button>
-          <Button variant="destructive" onClick={() => handleRemove(true)}>{t('dialog.removeWithData')}</Button>
+          <Button variant="destructive" onClick={() => handleRemove(true)}>
+            {t('dialog.removeWithData')}
+          </Button>
         </div>
       }
     >
       <div className="space-y-3">
-        <p className="text-sm">
-          {t('dialog.removeTorrentConfirm', { count: ids.length })}
-        </p>
+        <p className="text-sm">{t('dialog.removeTorrentConfirm', { count: ids.length })}</p>
         <div className="max-h-32 overflow-auto text-xs text-muted-foreground space-y-0.5">
           {names.map((name, i) => (
-            <div key={i} className="truncate">{name}</div>
+            <div key={i} className="truncate">
+              {name}
+            </div>
           ))}
         </div>
       </div>

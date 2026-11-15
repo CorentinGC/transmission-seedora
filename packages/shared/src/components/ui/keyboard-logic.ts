@@ -52,7 +52,13 @@ export function isTypeaheadKey(e: { key: string; ctrlKey: boolean; metaKey: bool
  * A fresh buffer (single character, or the previous one timed out) starts searching after the
  * current item so repeating a letter cycles through items; a growing buffer keeps the current one.
  */
-export function typeaheadMatch(state: TypeaheadState, key: string, now: number, labels: string[], current: number): number {
+export function typeaheadMatch(
+  state: TypeaheadState,
+  key: string,
+  now: number,
+  labels: string[],
+  current: number,
+): number {
   const char = key.toLowerCase();
   state.buffer = now - state.at > TYPEAHEAD_RESET_MS ? char : state.buffer + char;
   state.at = now;

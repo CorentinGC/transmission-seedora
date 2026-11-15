@@ -25,7 +25,9 @@ export function ContextMenuItem({ icon, label, onClick, className = '', indent, 
       {checkable ? (
         <span className="w-4 shrink-0">{checked && <Check size={14} aria-hidden="true" />}</span>
       ) : icon ? (
-        <span className="w-4 shrink-0" aria-hidden="true">{icon}</span>
+        <span className="w-4 shrink-0" aria-hidden="true">
+          {icon}
+        </span>
       ) : (
         !indent && <span className="w-4 shrink-0" />
       )}
@@ -38,7 +40,9 @@ export function ContextMenuItem({ icon, label, onClick, className = '', indent, 
 export function ContextMenuGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div role="group" aria-label={label}>
-      <div aria-hidden="true" className="px-2 py-1 text-xs text-muted-foreground">{label}</div>
+      <div aria-hidden="true" className="px-2 py-1 text-xs text-muted-foreground">
+        {label}
+      </div>
       {children}
     </div>
   );

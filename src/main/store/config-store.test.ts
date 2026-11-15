@@ -60,7 +60,12 @@ describe('credential encryption', () => {
     store.addServer({ ...server, password: 'hunter2', proxyPassword: 'proxy-secret' });
     expect(onDisk()).not.toContain('hunter2');
     expect(onDisk()).not.toContain('proxy-secret');
-    expect(store.getServers()[0]).toMatchObject({ password: 'hunter2', proxyPassword: 'proxy-secret', hasPassword: true, hasProxyPassword: true });
+    expect(store.getServers()[0]).toMatchObject({
+      password: 'hunter2',
+      proxyPassword: 'proxy-secret',
+      hasPassword: true,
+      hasProxyPassword: true,
+    });
     if (process.platform !== 'win32') expect(fs.statSync(file).mode & 0o777).toBe(0o600);
   });
 
@@ -72,7 +77,10 @@ describe('credential encryption', () => {
   });
 
   it('encrypts legacy cleartext passwords at startup without any other write', () => {
-    fs.writeFileSync(file, JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: null, preferences: {} }));
+    fs.writeFileSync(
+      file,
+      JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: null, preferences: {} }),
+    );
     open().migrateLegacySecrets();
     expect(onDisk()).not.toContain('legacy-pw');
     expect(open().getServers()[0].password).toBe('legacy-pw');
@@ -80,13 +88,19 @@ describe('credential encryption', () => {
 
   it('leaves cleartext untouched when no secret store exists', () => {
     available = false;
-    fs.writeFileSync(file, JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: null, preferences: {} }));
+    fs.writeFileSync(
+      file,
+      JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: null, preferences: {} }),
+    );
     open().migrateLegacySecrets();
     expect(onDisk()).toContain('legacy-pw');
   });
 
   it('migrates a legacy cleartext config on the first write', () => {
-    fs.writeFileSync(file, JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: 's1', preferences: {} }));
+    fs.writeFileSync(
+      file,
+      JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: 's1', preferences: {} }),
+    );
     const store = open();
     expect(store.getServers()[0].password).toBe('legacy-pw');
     store.setActiveServerId('s1');
@@ -120,7 +134,15 @@ describe('credential encryption', () => {
 describe('password update rules', () => {
   const withPasswords = () => {
     const store = open();
-    store.addServer({ ...server, username: 'u', password: 'pw', proxyType: 'http', proxyHost: 'p', proxyPort: 3128, proxyPassword: 'ppw' });
+    store.addServer({
+      ...server,
+      username: 'u',
+      password: 'pw',
+      proxyType: 'http',
+      proxyHost: 'p',
+      proxyPort: 3128,
+      proxyPassword: 'ppw',
+    });
     return store;
   };
 
@@ -256,7 +278,20 @@ describe('load failures', () => {
 
 describe('stored preferences', () => {
   it('drops removed or invalid preference keys instead of failing, keeping the valid ones', () => {
-    fs.writeFileSync(file, JSON.stringify({ servers: [], preferences: { language: 'fr', confirmOnAdd: true, pathMappings: [], pollingInterval: 5, theme: 'dark', bogus: 1 } }));
+    fs.writeFileSync(
+      file,
+      JSON.stringify({
+        servers: [],
+        preferences: {
+          language: 'fr',
+          confirmOnAdd: true,
+          pathMappings: [],
+          pollingInterval: 5,
+          theme: 'dark',
+          bogus: 1,
+        },
+      }),
+    );
     const store = open();
     expect(store.getLoadError()).toBeUndefined();
     const prefs = store.getPreferences();

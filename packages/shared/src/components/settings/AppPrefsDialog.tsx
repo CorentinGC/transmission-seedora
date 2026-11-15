@@ -66,7 +66,10 @@ export function AppPrefsDialog({ onClose }: Props) {
   const showImportFailed = () => {
     setBackupMsg(t('prefs.importFailed'));
     setBackupFailed(true);
-    setTimeout(() => { setBackupMsg(null); setBackupFailed(false); }, 3000);
+    setTimeout(() => {
+      setBackupMsg(null);
+      setBackupFailed(false);
+    }, 3000);
   };
 
   const handleExportBackup = () =>
@@ -150,10 +153,16 @@ export function AppPrefsDialog({ onClose }: Props) {
       footer={
         <div className="space-y-2">
           {!numbersValid && <p className="text-xs text-destructive-text">{t('prefs.invalidValues')}</p>}
-          {saveError && <p role="alert" className="text-xs text-destructive-text">{saveError}</p>}
+          {saveError && (
+            <p role="alert" className="text-xs text-destructive-text">
+              {saveError}
+            </p>
+          )}
           <div className="flex justify-end gap-2">
             <Button onClick={onClose}>{t('dialog.cancel')}</Button>
-            <Button variant="primary" onClick={save} disabled={!numbersValid}>{t('dialog.save')}</Button>
+            <Button variant="primary" onClick={save} disabled={!numbersValid}>
+              {t('dialog.save')}
+            </Button>
           </div>
         </div>
       }
@@ -164,7 +173,17 @@ export function AppPrefsDialog({ onClose }: Props) {
           <SectionHeading>{t('prefs.polling')}</SectionHeading>
           <div className="flex items-center gap-2">
             {t('prefs.refreshInterval')}
-            <Input inputSize="sm" type="number" min={MIN_POLLING_INTERVAL_MS} step={500} className="w-24" aria-label={t('prefs.refreshInterval')} aria-invalid={!Number.isFinite(prefs.pollingInterval) || prefs.pollingInterval < MIN_POLLING_INTERVAL_MS} value={Number.isNaN(prefs.pollingInterval) ? '' : prefs.pollingInterval} onChange={(e) => updatePref('pollingInterval', parseNumberInput(e.target.value))} />
+            <Input
+              inputSize="sm"
+              type="number"
+              min={MIN_POLLING_INTERVAL_MS}
+              step={500}
+              className="w-24"
+              aria-label={t('prefs.refreshInterval')}
+              aria-invalid={!Number.isFinite(prefs.pollingInterval) || prefs.pollingInterval < MIN_POLLING_INTERVAL_MS}
+              value={Number.isNaN(prefs.pollingInterval) ? '' : prefs.pollingInterval}
+              onChange={(e) => updatePref('pollingInterval', parseNumberInput(e.target.value))}
+            />
           </div>
         </div>
 
@@ -172,7 +191,11 @@ export function AppPrefsDialog({ onClose }: Props) {
         <SectionHeading bordered>{t('prefs.appearance')}</SectionHeading>
         <div className="flex items-center gap-2">
           {t('prefs.theme')}
-          <Select selectSize="sm" value={prefs.theme} onChange={(e) => updatePref('theme', e.target.value as AppPreferences['theme'])}>
+          <Select
+            selectSize="sm"
+            value={prefs.theme}
+            onChange={(e) => updatePref('theme', e.target.value as AppPreferences['theme'])}
+          >
             <option value="system">{t('prefs.themeSystem')}</option>
             <option value="light">{t('prefs.themeLight')}</option>
             <option value="dark">{t('prefs.themeDark')}</option>
@@ -183,27 +206,49 @@ export function AppPrefsDialog({ onClose }: Props) {
         <SectionHeading bordered>{t('prefs.language')}</SectionHeading>
         <Select selectSize="sm" value={prefs.language} onChange={(e) => updatePref('language', e.target.value)}>
           {availableLanguages.map((code) => (
-            <option key={code} value={code}>{getLanguageName(code)}</option>
+            <option key={code} value={code}>
+              {getLanguageName(code)}
+            </option>
           ))}
         </Select>
 
         {/* Tray */}
         <SectionHeading bordered>{t('prefs.tray')}</SectionHeading>
         <div className="space-y-1">
-          <Checkbox label={t('prefs.minimizeToTray')} checked={prefs.minimizeToTray} onChange={(e) => updatePref('minimizeToTray', (e.target as HTMLInputElement).checked)} />
-          <Checkbox label={t('prefs.closeToTray')} checked={prefs.closeToTray} onChange={(e) => updatePref('closeToTray', (e.target as HTMLInputElement).checked)} />
-          <Checkbox label={t('prefs.showNotifications')} checked={prefs.showNotifications} onChange={(e) => updatePref('showNotifications', (e.target as HTMLInputElement).checked)} />
+          <Checkbox
+            label={t('prefs.minimizeToTray')}
+            checked={prefs.minimizeToTray}
+            onChange={(e) => updatePref('minimizeToTray', (e.target as HTMLInputElement).checked)}
+          />
+          <Checkbox
+            label={t('prefs.closeToTray')}
+            checked={prefs.closeToTray}
+            onChange={(e) => updatePref('closeToTray', (e.target as HTMLInputElement).checked)}
+          />
+          <Checkbox
+            label={t('prefs.showNotifications')}
+            checked={prefs.showNotifications}
+            onChange={(e) => updatePref('showNotifications', (e.target as HTMLInputElement).checked)}
+          />
         </div>
 
         {/* Display */}
         <SectionHeading bordered>{t('prefs.display')}</SectionHeading>
         <div className="space-y-1">
-          <Checkbox label={t('prefs.relativeDates')} checked={prefs.relativeDates} onChange={(e) => updatePref('relativeDates', (e.target as HTMLInputElement).checked)} />
+          <Checkbox
+            label={t('prefs.relativeDates')}
+            checked={prefs.relativeDates}
+            onChange={(e) => updatePref('relativeDates', (e.target as HTMLInputElement).checked)}
+          />
         </div>
 
         {/* Watch Folder */}
         <SectionHeading bordered>{t('prefs.watchFolder')}</SectionHeading>
-        <Checkbox label={t('prefs.watchFolderEnabled')} checked={prefs.watchFolderEnabled} onChange={(e) => updatePref('watchFolderEnabled', (e.target as HTMLInputElement).checked)} />
+        <Checkbox
+          label={t('prefs.watchFolderEnabled')}
+          checked={prefs.watchFolderEnabled}
+          onChange={(e) => updatePref('watchFolderEnabled', (e.target as HTMLInputElement).checked)}
+        />
         {prefs.watchFolderEnabled && (
           <div className="mt-2 space-y-2">
             <div className="flex items-center gap-2">
@@ -214,14 +259,26 @@ export function AppPrefsDialog({ onClose }: Props) {
                 readOnly
                 placeholder={t('prefs.watchFolderPlaceholder')}
               />
-              <Button size="sm" onClick={async () => {
-                if (!api.dialogOpenDirectory) return;
-                const openDirectory = api.dialogOpenDirectory.bind(api);
-                const res = await guardedCall(() => openDirectory({ purpose: 'watch-folder' }), 'notification.pickerFailed');
-                if (res?.data) updatePref('watchFolder', res.data);
-              }}>{t('dialog.browse')}</Button>
+              <Button
+                size="sm"
+                onClick={async () => {
+                  if (!api.dialogOpenDirectory) return;
+                  const openDirectory = api.dialogOpenDirectory.bind(api);
+                  const res = await guardedCall(
+                    () => openDirectory({ purpose: 'watch-folder' }),
+                    'notification.pickerFailed',
+                  );
+                  if (res?.data) updatePref('watchFolder', res.data);
+                }}
+              >
+                {t('dialog.browse')}
+              </Button>
             </div>
-            <Checkbox label={t('prefs.deleteWatchedTorrent')} checked={prefs.deleteWatchedTorrent} onChange={(e) => updatePref('deleteWatchedTorrent', (e.target as HTMLInputElement).checked)} />
+            <Checkbox
+              label={t('prefs.deleteWatchedTorrent')}
+              checked={prefs.deleteWatchedTorrent}
+              onChange={(e) => updatePref('deleteWatchedTorrent', (e.target as HTMLInputElement).checked)}
+            />
           </div>
         )}
 
@@ -240,9 +297,24 @@ export function AppPrefsDialog({ onClose }: Props) {
         <div className="flex flex-wrap gap-2">
           {(prefs.speedPresets ?? [100, 500, 1000, 2000, 5000]).map((val, i) => (
             <div key={i} className="flex items-center gap-1">
-              <Input inputSize="sm" type="number" className="w-20 text-right" aria-label={t('prefs.speedPresets')} aria-invalid={!Number.isFinite(val) || val < 0} value={Number.isNaN(val) ? '' : val} onChange={(e) => updatePreset(i, parseNumberInput(e.target.value))} min={0} />
+              <Input
+                inputSize="sm"
+                type="number"
+                className="w-20 text-right"
+                aria-label={t('prefs.speedPresets')}
+                aria-invalid={!Number.isFinite(val) || val < 0}
+                value={Number.isNaN(val) ? '' : val}
+                onChange={(e) => updatePreset(i, parseNumberInput(e.target.value))}
+                min={0}
+              />
               <span className="text-xs text-muted-foreground">{t('statusBar.kbs')}</span>
-              <Button variant="ghost" size="xs" onClick={() => removePreset(i)} aria-label={t('prefs.removePreset')} className="text-muted-foreground p-0.5">
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={() => removePreset(i)}
+                aria-label={t('prefs.removePreset')}
+                className="text-muted-foreground p-0.5"
+              >
                 <Trash2 size={12} />
               </Button>
             </div>
@@ -262,7 +334,11 @@ export function AppPrefsDialog({ onClose }: Props) {
             <Upload size={12} /> {t('prefs.importBackup')}
           </Button>
         </div>
-        {backupMsg && <p role="status" className={`text-xs mt-2 ${backupFailed ? 'text-destructive-text' : 'text-success'}`}>{backupMsg}</p>}
+        {backupMsg && (
+          <p role="status" className={`text-xs mt-2 ${backupFailed ? 'text-destructive-text' : 'text-success'}`}>
+            {backupMsg}
+          </p>
+        )}
       </div>
     </Dialog>
   );

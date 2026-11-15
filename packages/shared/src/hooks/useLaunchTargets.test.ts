@@ -2,13 +2,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createEffectHarness } from './effect-harness';
 import type { LaunchTarget } from '../types';
 
-const harness = vi.hoisted(() => ({ current: null as null | ReturnType<typeof import('./effect-harness').createEffectHarness> }));
+const harness = vi.hoisted(() => ({
+  current: null as null | ReturnType<typeof import('./effect-harness').createEffectHarness>,
+}));
 const apiRef = vi.hoisted(() => ({ api: null as unknown }));
 
 vi.mock('react', async (importActual) => ({
   ...(await importActual<typeof import('react')>()),
   useEffect: (e: () => void | (() => void)) => harness.current!.useEffect(e),
-  useRef: <T,>(v: T) => harness.current!.useRef(v),
+  useRef: <T>(v: T) => harness.current!.useRef(v),
 }));
 vi.mock('../platform/api-context', () => ({ useApi: () => apiRef.api }));
 vi.mock('i18next', () => ({ default: { t: (k: string) => k, language: 'en' } }));
@@ -32,10 +34,14 @@ function setup(opts: { pending?: LaunchTarget[]; files?: Record<string, string>;
     }),
     launchTargetsTake: vi.fn(async () => {
       order.push('pull');
-      return opts.pullFails ? { success: false as const, error: 'x' } : { success: true as const, data: opts.pending ?? [] };
+      return opts.pullFails
+        ? { success: false as const, error: 'x' }
+        : { success: true as const, data: opts.pending ?? [] };
     }),
     readFileBase64: vi.fn(async (p: string) =>
-      p in (opts.files ?? {}) ? { success: true as const, data: opts.files![p] } : { success: false as const, error: 'nope' },
+      p in (opts.files ?? {})
+        ? { success: true as const, data: opts.files![p] }
+        : { success: false as const, error: 'nope' },
     ),
   };
   apiRef.api = api;
@@ -65,7 +71,10 @@ describe('useLaunchTargets', () => {
 
   it('opens the dialog for a pending magnet and a pending torrent file', async () => {
     const { onTarget, render } = setup({
-      pending: [{ kind: 'magnet', uri: 'magnet:?xt=urn:btih:a' }, { kind: 'torrent-file', filePath: '/t/a.torrent' }],
+      pending: [
+        { kind: 'magnet', uri: 'magnet:?xt=urn:btih:a' },
+        { kind: 'torrent-file', filePath: '/t/a.torrent' },
+      ],
       files: { '/t/a.torrent': 'QUJD' },
     });
     render();
@@ -87,7 +96,8 @@ describe('useLaunchTargets', () => {
       pending: [{ kind: 'magnet', uri: '' } as LaunchTarget, { kind: 'other' } as unknown as LaunchTarget],
     });
     render();
-    for (const bad of [null, 'magnet:?x', 42, { kind: 'torrent-file' }, { kind: 'magnet', uri: 7 }]) listeners.get('launch:target')!(bad);
+    for (const bad of [null, 'magnet:?x', 42, { kind: 'torrent-file' }, { kind: 'magnet', uri: 7 }])
+      listeners.get('launch:target')!(bad);
     await flush();
     expect(onTarget).not.toHaveBeenCalled();
     expect(notifications()).toEqual([]);

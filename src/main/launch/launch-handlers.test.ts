@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const appEvents = new Map<string, (...args: unknown[]) => void>();
 const takeHandler = vi.hoisted(() => ({ fn: undefined as undefined | (() => { data: unknown[] }) }));
-vi.mock('electron', () => ({ app: { on: (name: string, fn: (...args: unknown[]) => void) => appEvents.set(name, fn) } }));
+vi.mock('electron', () => ({
+  app: { on: (name: string, fn: (...args: unknown[]) => void) => appEvents.set(name, fn) },
+}));
 vi.mock('../security/ipc-guard', () => ({
   handleGuarded: (_trust: unknown, _channel: string, _schema: unknown, fn: () => { data: unknown[] }) => {
     takeHandler.fn = fn;
@@ -21,7 +23,8 @@ const fakeWindow = (destroyed = false) => ({
   webContents: { send: vi.fn() },
 });
 type FakeWindow = ReturnType<typeof fakeWindow>;
-const asWindow = (w: FakeWindow | null) => w as unknown as Parameters<typeof registerLaunchHandling>[1] extends () => infer R ? R : never;
+const asWindow = (w: FakeWindow | null) =>
+  w as unknown as Parameters<typeof registerLaunchHandling>[1] extends () => infer R ? R : never;
 const magnetUri = 'magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567';
 
 beforeEach(() => {
@@ -33,7 +36,10 @@ describe('registerLaunchHandling', () => {
   it('approves a .torrent from argv and delivers it once the renderer pulls', () => {
     const approve = vi.spyOn(approvedPaths, 'approve');
     const win = fakeWindow();
-    const launch = registerLaunchHandling(() => true, () => asWindow(win));
+    const launch = registerLaunchHandling(
+      () => true,
+      () => asWindow(win),
+    );
     launch.handleArgv(['--flag', '/tmp/a.torrent', 'notes.txt', 'https://x/y.torrent'], '/tmp');
     expect(approve).toHaveBeenCalledTimes(1);
     expect(approve).toHaveBeenCalledWith(['/tmp/a.torrent'], 'torrent');
@@ -43,7 +49,10 @@ describe('registerLaunchHandling', () => {
 
   it('open-url accepts magnets only, open-file accepts .torrent only', () => {
     const win = fakeWindow();
-    registerLaunchHandling(() => true, () => asWindow(win));
+    registerLaunchHandling(
+      () => true,
+      () => asWindow(win),
+    );
     const preventDefault = vi.fn();
     appEvents.get('open-url')?.({ preventDefault }, 'https://evil.example/x.torrent');
     appEvents.get('open-url')?.({ preventDefault }, magnetUri);
@@ -77,7 +86,10 @@ describe('registerLaunchHandling', () => {
   });
 
   it('does not throw when there is no window at all', () => {
-    const launch = registerLaunchHandling(() => true, () => null);
+    const launch = registerLaunchHandling(
+      () => true,
+      () => null,
+    );
     takeHandler.fn?.();
     expect(() => appEvents.get('open-url')?.({ preventDefault: vi.fn() }, magnetUri)).not.toThrow();
     launch.resetRenderer();

@@ -50,7 +50,11 @@ describe('isTrustedUrl with unusual paths (packaged-build checklist, 2df)', () =
   });
 
   it('still refuses a file: URL with the same odd paths', () => {
-    for (const url of ['file:///C:/Users/me/My%20App/index.html', 'file:///Users/%C3%A9/index.html', 'file:///etc/hosts']) {
+    for (const url of [
+      'file:///C:/Users/me/My%20App/index.html',
+      'file:///Users/%C3%A9/index.html',
+      'file:///etc/hosts',
+    ]) {
       expect(isTrustedUrl(url, origins), url).toBe(false);
     }
   });
@@ -68,8 +72,14 @@ describe('createSenderValidator', () => {
 
 describe('buildTrustedOrigins', () => {
   it('trusts the dev server in development and the app origin when built', () => {
-    expect(buildTrustedOrigins('http://localhost:5173', false, 'app://seedora')).toEqual({ devServerUrl: 'http://localhost:5173', appOrigin: undefined });
-    expect(buildTrustedOrigins(undefined, true, 'app://seedora')).toEqual({ devServerUrl: undefined, appOrigin: 'app://seedora' });
+    expect(buildTrustedOrigins('http://localhost:5173', false, 'app://seedora')).toEqual({
+      devServerUrl: 'http://localhost:5173',
+      appOrigin: undefined,
+    });
+    expect(buildTrustedOrigins(undefined, true, 'app://seedora')).toEqual({
+      devServerUrl: undefined,
+      appOrigin: 'app://seedora',
+    });
     expect(buildTrustedOrigins(undefined, false, 'app://seedora').appOrigin).toBe('app://seedora');
   });
 

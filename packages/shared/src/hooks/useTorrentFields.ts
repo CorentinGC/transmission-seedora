@@ -77,7 +77,11 @@ export async function loadTorrentFields<T>(
     return true;
   } catch (err) {
     if (isCancelled() || !isServerEpochCurrent(epoch)) return false;
-    dispatch({ type: 'failed', torrentId, error: err instanceof Error ? err.message : i18n.t('details.requestFailed') });
+    dispatch({
+      type: 'failed',
+      torrentId,
+      error: err instanceof Error ? err.message : i18n.t('details.requestFailed'),
+    });
     return false;
   }
 }
@@ -123,7 +127,8 @@ export function useTorrentFields<T>(
       const loaded = await loadTorrentFields<T>(api, fieldKey.split(','), torrentId, dispatch, () => cancelled);
       if (loaded && once) stop();
     };
-    refreshRef.current = () => loadTorrentFields<T>(api, fieldKey.split(','), torrentId, dispatch, () => cancelled).then(() => {});
+    refreshRef.current = () =>
+      loadTorrentFields<T>(api, fieldKey.split(','), torrentId, dispatch, () => cancelled).then(() => {});
 
     // `load` surfaces its own errors in state, so the poller never sees a rejection.
     stop = startPolling(load, pollingInterval, () => {});

@@ -18,10 +18,25 @@ let hits = 0;
 
 beforeAll(async () => {
   dir = mkdtempSync(path.join(tmpdir(), 'seedora-tls-'));
-  execFileSync('openssl', [
-    'req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '1', '-subj', '/CN=self-signed.invalid',
-    '-keyout', path.join(dir, 'key.pem'), '-out', path.join(dir, 'cert.pem'),
-  ], { stdio: 'ignore' });
+  execFileSync(
+    'openssl',
+    [
+      'req',
+      '-x509',
+      '-newkey',
+      'rsa:2048',
+      '-nodes',
+      '-days',
+      '1',
+      '-subj',
+      '/CN=self-signed.invalid',
+      '-keyout',
+      path.join(dir, 'key.pem'),
+      '-out',
+      path.join(dir, 'cert.pem'),
+    ],
+    { stdio: 'ignore' },
+  );
   server = https.createServer(
     { key: readFileSync(path.join(dir, 'key.pem')), cert: readFileSync(path.join(dir, 'cert.pem')) },
     (_req, res) => {
@@ -41,7 +56,11 @@ afterAll(async () => {
 });
 
 const target = (over: Partial<OutboundTarget> = {}): OutboundTarget => ({
-  host: '127.0.0.1', port, path: '/transmission/rpc', useSSL: true, ...over,
+  host: '127.0.0.1',
+  port,
+  path: '/transmission/rpc',
+  useSSL: true,
+  ...over,
 });
 const options = { allowPrivate: true, allowedHosts: null, signal: undefined as AbortSignal | undefined };
 
@@ -61,25 +80,40 @@ describe('self-signed certificates', () => {
   });
 
   it('rejects it when the flag is explicitly false', async () => {
-    expect(await codeOf(postJson(target({ allowSelfSigned: false }), {}, { ...options, signal: AbortSignal.timeout(5000) }))).toBe('TLS_FAILED');
+    expect(
+      await codeOf(postJson(target({ allowSelfSigned: false }), {}, { ...options, signal: AbortSignal.timeout(5000) })),
+    ).toBe('TLS_FAILED');
   });
 
   it('accepts it only when the server opted in', async () => {
-    const response = await postJson(target({ allowSelfSigned: true }), {}, { ...options, signal: AbortSignal.timeout(5000) });
+    const response = await postJson(
+      target({ allowSelfSigned: true }),
+      {},
+      { ...options, signal: AbortSignal.timeout(5000) },
+    );
     expect(response.status).toBe(200);
   });
 
   it('keeps the address policy: an opted-in target on a private address is still refused, with no connection', async () => {
     const before = hits;
-    const code = await codeOf(postJson(target({ allowSelfSigned: true }), {}, { allowPrivate: false, allowedHosts: null }));
+    const code = await codeOf(
+      postJson(target({ allowSelfSigned: true }), {}, { allowPrivate: false, allowedHosts: null }),
+    );
     expect(code).toBe('HOST_NOT_ALLOWED');
     expect(hits).toBe(before);
   });
 
   it('keeps resolve-once validation: a name with a denied address among the answers is refused', async () => {
-    const resolver = vi.fn(async () => [{ address: '8.8.8.8', family: 4 as const }, { address: '169.254.169.254', family: 4 as const }]);
+    const resolver = vi.fn(async () => [
+      { address: '8.8.8.8', family: 4 as const },
+      { address: '169.254.169.254', family: 4 as const },
+    ]);
     const code = await codeOf(
-      postJson(target({ host: 'mixed.example.com', allowSelfSigned: true }), {}, { allowPrivate: true, allowedHosts: null, resolver }),
+      postJson(
+        target({ host: 'mixed.example.com', allowSelfSigned: true }),
+        {},
+        { allowPrivate: true, allowedHosts: null, resolver },
+      ),
     );
     expect(code).toBe('HOST_NOT_ALLOWED');
     expect(resolver).toHaveBeenCalledTimes(1);
@@ -88,7 +122,9 @@ describe('self-signed certificates', () => {
   it('connects to the pinned address, not to what the name would resolve to later', async () => {
     const resolver = vi.fn(async () => [{ address: '127.0.0.1', family: 4 as const }]);
     const response = await postJson(
-      target({ host: 'pinned.example.com', allowSelfSigned: true }), {}, { allowPrivate: true, allowedHosts: null, resolver, signal: AbortSignal.timeout(5000) },
+      target({ host: 'pinned.example.com', allowSelfSigned: true }),
+      {},
+      { allowPrivate: true, allowedHosts: null, resolver, signal: AbortSignal.timeout(5000) },
     );
     expect(response.status).toBe(200);
     expect(resolver).toHaveBeenCalledTimes(1);
@@ -103,7 +139,10 @@ describe('callTransmission with allowSelfSigned', () => {
   it('fails with TLS_FAILED by default and succeeds with the opt-in', async () => {
     const base = makeBase();
     expect(await callTransmission(base, call, 5000, common)).toMatchObject({ success: false, code: 'TLS_FAILED' });
-    expect(await callTransmission({ ...base, allowSelfSigned: true }, call, 5000, common)).toEqual({ success: true, data: { ok: true } });
+    expect(await callTransmission({ ...base, allowSelfSigned: true }, call, 5000, common)).toEqual({
+      success: true,
+      data: { ok: true },
+    });
   });
 
   it('passes the flag to the outbound layer and never when absent', async () => {

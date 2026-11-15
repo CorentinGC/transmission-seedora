@@ -75,18 +75,21 @@ export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
       </button>
 
       {/* Preset buttons */}
-      {presets.filter(v => v > 0).sort((a, b) => a - b).map((value) => (
-        <button
-          key={value}
-          aria-pressed={currentEnabled && currentLimit === value}
-          className={`w-full text-left px-2 py-1 pointer-coarse:py-3 text-xs rounded hover:bg-accent ${
-            currentEnabled && currentLimit === value ? 'bg-primary/10 text-primary font-medium' : ''
-          }`}
-          onClick={() => applyPreset(value)}
-        >
-          {value} {t('statusBar.kbs')}
-        </button>
-      ))}
+      {presets
+        .filter((v) => v > 0)
+        .sort((a, b) => a - b)
+        .map((value) => (
+          <button
+            key={value}
+            aria-pressed={currentEnabled && currentLimit === value}
+            className={`w-full text-left px-2 py-1 pointer-coarse:py-3 text-xs rounded hover:bg-accent ${
+              currentEnabled && currentLimit === value ? 'bg-primary/10 text-primary font-medium' : ''
+            }`}
+            onClick={() => applyPreset(value)}
+          >
+            {value} {t('statusBar.kbs')}
+          </button>
+        ))}
 
       {/* Custom input */}
       <div className="border-t mt-1.5 pt-1.5">
@@ -96,7 +99,9 @@ export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
             aria-label={t('statusBar.speedLimit')}
             value={customValue}
             onChange={(e) => setCustomValue(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') applyCustom(); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') applyCustom();
+            }}
             className="min-w-0 flex-1 px-2 py-1 pointer-coarse:py-3 text-xs border rounded bg-background"
             placeholder={String(currentLimit || '')}
             min={0}

@@ -152,15 +152,11 @@ export function createMenu(mainWindow: BrowserWindow): void {
       submenu: [
         {
           label: m('rpcSpec'),
-          click: () =>
-            shell.openExternal(
-              'https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md',
-            ),
+          click: () => shell.openExternal('https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md'),
         },
         {
           label: m('reportIssue'),
-          click: () =>
-            shell.openExternal('https://github.com/CorentinGC/transmission-seedora/issues'),
+          click: () => shell.openExternal('https://github.com/CorentinGC/transmission-seedora/issues'),
         },
       ],
     },

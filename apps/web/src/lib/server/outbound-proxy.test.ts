@@ -74,7 +74,14 @@ describe('postJson: ignores proxy environment variables (agent: false)', () => {
     writeFileSync(script, CHILD_SOURCE(bundle));
 
     const { stdout } = await run(process.execPath, [script], {
-      env: { ...process.env, HTTP_PROXY: proxyUrl, http_proxy: proxyUrl, NODE_USE_ENV_PROXY: '1', NO_PROXY: '', no_proxy: '' },
+      env: {
+        ...process.env,
+        HTTP_PROXY: proxyUrl,
+        http_proxy: proxyUrl,
+        NODE_USE_ENV_PROXY: '1',
+        NO_PROXY: '',
+        no_proxy: '',
+      },
       encoding: 'utf8',
       timeout: 20_000,
     });

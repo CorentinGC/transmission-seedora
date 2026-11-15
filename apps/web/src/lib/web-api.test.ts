@@ -21,8 +21,14 @@ vi.mock('./web-storage', () => ({
   getPreferences: () => storage.prefs,
   setPreferences: (p: Record<string, unknown>) => (storage.prefs = { ...storage.prefs, ...p }),
 }));
-vi.mock('./server-actions/rpc', () => ({ rpcRequest: actions.rpcRequest, testServerConnection: actions.testServerConnection }));
-vi.mock('./server-actions/session', () => ({ setActiveServerCookie: actions.setActiveServerCookie, clearServerCookie: actions.clearServerCookie }));
+vi.mock('./server-actions/rpc', () => ({
+  rpcRequest: actions.rpcRequest,
+  testServerConnection: actions.testServerConnection,
+}));
+vi.mock('./server-actions/session', () => ({
+  setActiveServerCookie: actions.setActiveServerCookie,
+  clearServerCookie: actions.clearServerCookie,
+}));
 vi.mock('./server-actions/geoip', () => ({ geoipLookup: actions.geoipLookup }));
 
 import { resetSessionRecovery } from './session-recovery';
@@ -90,7 +96,9 @@ describe('webApi.serverSetActive', () => {
     let releaseFirst!: () => void;
     actions.setActiveServerCookie.mockImplementationOnce(async (target: { host: string }) => {
       sealed.push(target.host);
-      await new Promise<void>((resolve) => { releaseFirst = resolve; });
+      await new Promise<void>((resolve) => {
+        releaseFirst = resolve;
+      });
       return { success: true };
     });
     actions.setActiveServerCookie.mockImplementation(async (target: { host: string }) => {
@@ -116,7 +124,11 @@ describe('webApi.serverSetActive', () => {
 
   it('keeps the previous id and reports the failure when the cookie cannot be set', async () => {
     storage.servers = [server, { ...server, id: 'b' }];
-    actions.setActiveServerCookie.mockResolvedValue({ success: false, error: 'Invalid request', code: 'INVALID_INPUT' });
+    actions.setActiveServerCookie.mockResolvedValue({
+      success: false,
+      error: 'Invalid request',
+      code: 'INVALID_INPUT',
+    });
     expect(await webApi.serverSetActive('b')).toMatchObject({ success: false, code: 'INVALID_INPUT' });
     expect(storage.activeId).toBe('a');
     expect(await webApi.serverSetActive('missing')).toMatchObject({ success: false });
@@ -149,11 +161,26 @@ describe('webApi.serverSetActive', () => {
 
 describe('webApi.serverUpdate', () => {
   it('re-seals the cookie with the new target when the active server is edited', async () => {
-    expect(await webApi.serverUpdate('a', { host: ' new.example.com ', port: 1234, path: 'rpc', username: 'u', password: 'p', allowSelfSigned: true } as never)).toMatchObject({ success: true });
+    expect(
+      await webApi.serverUpdate('a', {
+        host: ' new.example.com ',
+        port: 1234,
+        path: 'rpc',
+        username: 'u',
+        password: 'p',
+        allowSelfSigned: true,
+      } as never),
+    ).toMatchObject({ success: true });
     expect(storage.servers[0]).toMatchObject({ host: ' new.example.com ', port: 1234 });
     expect(actions.setActiveServerCookie).toHaveBeenCalledTimes(1);
     expect(actions.setActiveServerCookie).toHaveBeenCalledWith({
-      host: 'new.example.com', port: 1234, path: '/rpc', useSSL: true, username: 'u', password: 'p', allowSelfSigned: true,
+      host: 'new.example.com',
+      port: 1234,
+      path: '/rpc',
+      useSSL: true,
+      username: 'u',
+      password: 'p',
+      allowSelfSigned: true,
     });
   });
 
@@ -171,7 +198,10 @@ describe('webApi.serverUpdate', () => {
 
   it('reports a failed re-seal and reports an unknown server', async () => {
     actions.setActiveServerCookie.mockResolvedValue({ success: false, error: 'x', code: 'INVALID_INPUT' });
-    expect(await webApi.serverUpdate('a', { host: 'x.example.com' })).toMatchObject({ success: false, code: 'INVALID_INPUT' });
+    expect(await webApi.serverUpdate('a', { host: 'x.example.com' })).toMatchObject({
+      success: false,
+      code: 'INVALID_INPUT',
+    });
     expect(await webApi.serverUpdate('missing', {})).toMatchObject({ success: false });
   });
 
@@ -189,7 +219,10 @@ describe('webApi.serverUpdate', () => {
 describe('webApi fail-closed re-seal', () => {
   it('clears the old cookie when the re-seal of an edited active server fails', async () => {
     actions.setActiveServerCookie.mockResolvedValueOnce({ success: false, error: 'x', code: 'RATE_LIMITED' });
-    expect(await webApi.serverUpdate('a', { host: 'new.example.com', allowSelfSigned: false } as never)).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    expect(await webApi.serverUpdate('a', { host: 'new.example.com', allowSelfSigned: false } as never)).toMatchObject({
+      success: false,
+      code: 'RATE_LIMITED',
+    });
     expect(actions.clearServerCookie).toHaveBeenCalledTimes(1);
     actions.setActiveServerCookie.mockClear();
     actions.rpcRequest
@@ -203,7 +236,10 @@ describe('webApi fail-closed re-seal', () => {
   it('still returns the re-seal failure when the clear fails too', async () => {
     actions.setActiveServerCookie.mockResolvedValue({ success: false, error: 'x', code: 'RATE_LIMITED' });
     actions.clearServerCookie.mockResolvedValue({ success: false, error: 'y', code: 'SERVER_MISCONFIGURED' });
-    expect(await webApi.serverUpdate('a', { host: 'new.example.com' })).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    expect(await webApi.serverUpdate('a', { host: 'new.example.com' })).toMatchObject({
+      success: false,
+      code: 'RATE_LIMITED',
+    });
   });
 });
 
@@ -225,7 +261,12 @@ describe('webApi.configImport', () => {
 
   it('skips duplicates (host+port+path) against existing and earlier entries, never updating them', async () => {
     const result = await webApi.configImport({
-      servers: [{ ...server, name: 'Renamed', username: 'u' }, fresh, { ...fresh, name: 'again' }, { ...fresh, path: '/other' }],
+      servers: [
+        { ...server, name: 'Renamed', username: 'u' },
+        fresh,
+        { ...fresh, name: 'again' },
+        { ...fresh, path: '/other' },
+      ],
     });
     expect(result).toEqual({ success: true, data: { serversAdded: 2, serversSkipped: 2, prefsImported: false } });
     expect(storage.servers[0]).toEqual(server);
@@ -239,7 +280,12 @@ describe('webApi.configImport', () => {
   });
 
   it('leaves the active server, active id and cookie untouched', async () => {
-    await webApi.configImport({ servers: [{ ...server, name: 'Renamed' }, { ...fresh, host: 'imported.example.com' }] });
+    await webApi.configImport({
+      servers: [
+        { ...server, name: 'Renamed' },
+        { ...fresh, host: 'imported.example.com' },
+      ],
+    });
     expect(storage.activeId).toBe('a');
     expect(actions.setActiveServerCookie).not.toHaveBeenCalled();
     expect(actions.clearServerCookie).not.toHaveBeenCalled();
@@ -247,7 +293,10 @@ describe('webApi.configImport', () => {
 
   it('applies nothing when any server is invalid', async () => {
     storage.prefs = { theme: 'light' };
-    const result = await webApi.configImport({ servers: [fresh, { ...fresh, host: 'a/b' }], preferences: { theme: 'dark' } });
+    const result = await webApi.configImport({
+      servers: [fresh, { ...fresh, host: 'a/b' }],
+      preferences: { theme: 'dark' },
+    });
     expect(result).toEqual(INVALID);
     expect(storage.servers).toEqual([server]);
     expect(storage.prefs).toEqual({ theme: 'light' });
@@ -299,7 +348,13 @@ describe('webApi.geoipLookup', () => {
 });
 
 describe('webApi configExport (c07.8)', () => {
-  const withSecrets = { ...server, username: 'alice', password: 'hunter2', proxyType: 'http', proxyPassword: 'proxy-secret' };
+  const withSecrets = {
+    ...server,
+    username: 'alice',
+    password: 'hunter2',
+    proxyType: 'http',
+    proxyPassword: 'proxy-secret',
+  };
 
   it('omits server and proxy passwords by default, keeping usernames', async () => {
     storage.servers = [withSecrets];
@@ -346,8 +401,16 @@ describe('webApi failures carry a code the UI can translate (q45)', () => {
   });
 
   it('passes the code of a server action failure through unchanged', async () => {
-    actions.rpcRequest.mockResolvedValue({ success: false, error: 'Too many requests, try again shortly', code: 'RATE_LIMITED' });
-    expect(await webApi.rpcSessionGet()).toEqual({ success: false, error: 'Too many requests, try again shortly', code: 'RATE_LIMITED' });
+    actions.rpcRequest.mockResolvedValue({
+      success: false,
+      error: 'Too many requests, try again shortly',
+      code: 'RATE_LIMITED',
+    });
+    expect(await webApi.rpcSessionGet()).toEqual({
+      success: false,
+      error: 'Too many requests, try again shortly',
+      code: 'RATE_LIMITED',
+    });
   });
 });
 

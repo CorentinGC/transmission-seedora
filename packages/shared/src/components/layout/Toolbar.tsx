@@ -36,7 +36,12 @@ interface ToolbarProps {
   onToggleDetailsPanel: () => void;
 }
 
-export function Toolbar({ filterPanelOpen, detailsPanelOpen, onToggleFilterPanel, onToggleDetailsPanel }: ToolbarProps) {
+export function Toolbar({
+  filterPanelOpen,
+  detailsPanelOpen,
+  onToggleFilterPanel,
+  onToggleDetailsPanel,
+}: ToolbarProps) {
   const { t } = useTranslation();
   const selectedIds = useTorrentStore((s) => s.selectedIds);
   const startTorrents = useTorrentStore((s) => s.startTorrents);
@@ -168,7 +173,11 @@ export function Toolbar({ filterPanelOpen, detailsPanelOpen, onToggleFilterPanel
         <div className="flex-1" />
 
         <div className="relative basis-full sm:basis-auto">
-          <Search size={14} aria-hidden="true" className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search
+            size={14}
+            aria-hidden="true"
+            className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
           <input
             type="text"
             data-search-input
@@ -206,7 +215,9 @@ export function Toolbar({ filterPanelOpen, detailsPanelOpen, onToggleFilterPanel
         />
       </div>
 
-      {moreMenu && <TorrentContextMenu x={moreMenu.x} y={moreMenu.y} torrentIds={ids} onClose={() => setMoreMenu(null)} />}
+      {moreMenu && (
+        <TorrentContextMenu x={moreMenu.x} y={moreMenu.y} torrentIds={ids} onClose={() => setMoreMenu(null)} />
+      )}
       {launchQueue.length > 0 ? (
         <AddTorrentDialog
           key={launchQueue[0].id}
@@ -272,7 +283,9 @@ function ToolbarButton({
         onKeyDown={(e) => e.key === 'Escape' && showTooltip && (e.stopPropagation(), hideTooltip())}
         disabled={disabled}
       >
-        <span aria-hidden="true" className="inline-flex">{icon}</span>
+        <span aria-hidden="true" className="inline-flex">
+          {icon}
+        </span>
       </button>
       {showTooltip && (
         <div

@@ -62,8 +62,12 @@ describe('getCookieSecrets in production', () => {
   });
 
   it('ignores an empty or identical previous secret', () => {
-    expect(getCookieSecrets({ ...prod, COOKIE_SECRET: SECRET_A, COOKIE_SECRET_PREVIOUS: '' })).toEqual({ current: SECRET_A });
-    expect(getCookieSecrets({ ...prod, COOKIE_SECRET: SECRET_A, COOKIE_SECRET_PREVIOUS: SECRET_A })).toEqual({ current: SECRET_A });
+    expect(getCookieSecrets({ ...prod, COOKIE_SECRET: SECRET_A, COOKIE_SECRET_PREVIOUS: '' })).toEqual({
+      current: SECRET_A,
+    });
+    expect(getCookieSecrets({ ...prod, COOKIE_SECRET: SECRET_A, COOKIE_SECRET_PREVIOUS: SECRET_A })).toEqual({
+      current: SECRET_A,
+    });
   });
 
   it('throws on a short previous secret without echoing it', () => {
@@ -158,7 +162,9 @@ describe('getAllowedHosts (f3u)', () => {
 
   it('parses host, host:port, IPv4 and IPv6 entries, trimmed and lowercased', () => {
     expect(
-      getAllowedHosts({ SEEDORA_ALLOWED_HOSTS: ' NAS.lan , nas2.lan:9091,192.168.1.5,192.168.1.6:8080,[fd00::1],[fd00::2]:9091,fd00::3' }),
+      getAllowedHosts({
+        SEEDORA_ALLOWED_HOSTS: ' NAS.lan , nas2.lan:9091,192.168.1.5,192.168.1.6:8080,[fd00::1],[fd00::2]:9091,fd00::3',
+      }),
     ).toEqual([
       { host: 'nas.lan' },
       { host: 'nas2.lan', port: 9091 },

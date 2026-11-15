@@ -5,12 +5,7 @@ import { readActiveServer } from '../server/active-session';
 import { failure } from '../server/errors';
 import { currentLookupKey, takeClientToken, takeDestinationTokens } from '../server/limits';
 import { rpcCallSchema, serverTargetSchema } from '../server/schemas';
-import {
-  TEST_TIMEOUT_MS,
-  callTransmission,
-  timeoutForMethod,
-  type ActionResult,
-} from '../server/transmission';
+import { TEST_TIMEOUT_MS, callTransmission, timeoutForMethod, type ActionResult } from '../server/transmission';
 
 /**
  * Forwards one allowlisted RPC call to the daemon of the sealed session (ADR 0004). Order:

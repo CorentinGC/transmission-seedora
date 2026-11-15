@@ -7,7 +7,9 @@ import { useServerStore } from '../stores/server-store';
 export function isEditableTarget(target: EventTarget | null): boolean {
   const el = target as Partial<HTMLElement> | null;
   if (!el) return false;
-  return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable === true;
+  return (
+    el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable === true
+  );
 }
 
 /** True when the key event target sits inside a modal dialog, which owns the keyboard. */
@@ -26,7 +28,9 @@ export function ownsActivationKeys(target: EventTarget | null): boolean {
   const el = target as Partial<HTMLElement> | null;
   if (!el || typeof el.closest !== 'function') return false;
   if (isEditableTarget(target)) return true;
-  return el.closest(INTERACTIVE_SELECTOR) !== null || el.closest('[role="dialog"], [role="menu"], [role="listbox"]') !== null;
+  return (
+    el.closest(INTERACTIVE_SELECTOR) !== null || el.closest('[role="dialog"], [role="menu"], [role="listbox"]') !== null
+  );
 }
 
 /**
@@ -94,7 +98,8 @@ export function useKeyboardShortcuts(allVisibleIds: number[]) {
       if (isInput) return;
 
       const connected = useServerStore.getState().connectionStatus === 'connected';
-      if (handleDeleteKey(e, selectedIds.size, () => useUiStore.getState().setRemoveDialogOpen(true), connected)) return;
+      if (handleDeleteKey(e, selectedIds.size, () => useUiStore.getState().setRemoveDialogOpen(true), connected))
+        return;
 
       const ids = Array.from(selectedIds);
 
@@ -114,7 +119,16 @@ export function useKeyboardShortcuts(allVisibleIds: number[]) {
 
       // Alt+1-8: status filters
       if (e.altKey && e.key >= '1' && e.key <= '8') {
-        const filters = ['all', 'downloading', 'seeding', 'completed', 'active', 'inactive', 'stopped', 'error'] as const;
+        const filters = [
+          'all',
+          'downloading',
+          'seeding',
+          'completed',
+          'active',
+          'inactive',
+          'stopped',
+          'error',
+        ] as const;
         const index = parseInt(e.key) - 1;
         if (index < filters.length) {
           setStatusFilter(filters[index]);

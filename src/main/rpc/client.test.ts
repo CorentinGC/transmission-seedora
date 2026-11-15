@@ -22,7 +22,7 @@ vi.mock('https-proxy-agent', async () => {
       baseAddRequest.call(this, req, options);
     }
   }
-  return new Promise(resolve => setTimeout(() => resolve({ HttpsProxyAgent }), agentUse.delayMs));
+  return new Promise((resolve) => setTimeout(() => resolve({ HttpsProxyAgent }), agentUse.delayMs));
 });
 
 const { TransmissionRpcClient, RpcError } = await import('./client');
@@ -33,14 +33,14 @@ const ok = JSON.stringify({ result: 'success', arguments: { hello: 'world' } });
 
 const servers: Array<http.Server | https.Server> = [];
 const listen = (server: http.Server | https.Server) =>
-  new Promise<number>(resolve => {
+  new Promise<number>((resolve) => {
     servers.push(server);
     server.listen(0, '127.0.0.1', () => resolve((server.address() as AddressInfo).port));
   });
 afterEach(() => {
   agentUse.requests = 0;
 });
-afterAll(() => servers.forEach(s => s.close()));
+afterAll(() => servers.forEach((s) => s.close()));
 
 describe('TransmissionRpcClient', () => {
   it('performs the session-id handshake and sends basic auth', async () => {
@@ -79,7 +79,13 @@ describe('TransmissionRpcClient', () => {
 
   it('routes the very first request through the proxy agent even when it loads slowly', async () => {
     const port = await listen(http.createServer((_req, res) => res.writeHead(200).end(ok)));
-    const client = new TransmissionRpcClient({ ...base, port, proxyType: 'http', proxyHost: 'p.example', proxyPort: 3128 });
+    const client = new TransmissionRpcClient({
+      ...base,
+      port,
+      proxyType: 'http',
+      proxyHost: 'p.example',
+      proxyPort: 3128,
+    });
     await client.request('session-get');
     expect(agentUse.requests).toBe(1);
   });
@@ -94,7 +100,23 @@ describe('TLS', () => {
     try {
       execFileSync(
         'openssl',
-        ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', 'k.pem', '-out', 'c.pem', '-days', '1', '-subj', '/CN=127.0.0.1', '-addext', 'subjectAltName=IP:127.0.0.1'],
+        [
+          'req',
+          '-x509',
+          '-newkey',
+          'rsa:2048',
+          '-nodes',
+          '-keyout',
+          'k.pem',
+          '-out',
+          'c.pem',
+          '-days',
+          '1',
+          '-subj',
+          '/CN=127.0.0.1',
+          '-addext',
+          'subjectAltName=IP:127.0.0.1',
+        ],
         { cwd: dir, stdio: 'ignore' },
       );
     } catch {
@@ -154,12 +176,12 @@ describe('TLS', () => {
 
   it('sanitises and truncates a control-character statusText near the parser header limit', async () => {
     const hostile = `${'A'.repeat(50)}\x07\x1b[31m${'\x01'.repeat(8000)}${'B'.repeat(500)}`;
-    const server = net.createServer(socket => {
+    const server = net.createServer((socket) => {
       socket.on('error', () => undefined);
       socket.once('data', () => socket.end(`HTTP/1.1 500 ${hostile}\r\nContent-Length: 0\r\n\r\n`));
     });
     servers.push(server as unknown as http.Server);
-    const port = await new Promise<number>(resolve =>
+    const port = await new Promise<number>((resolve) =>
       server.listen(0, '127.0.0.1', () => resolve((server.address() as AddressInfo).port)),
     );
     const client = new TransmissionRpcClient({ ...base, port });
@@ -196,17 +218,18 @@ describe('TLS', () => {
 
   it('gives every failure a stable code: AUTH, HTTP_ERROR, INVALID_RESPONSE, RPC_FAILURE, SESSION', async () => {
     const replies: Array<(res: http.ServerResponse) => void> = [
-      res => res.writeHead(401, 'Unauthorized').end(),
-      res => res.writeHead(403, 'Forbidden').end(),
-      res => res.writeHead(500, 'Oops').end(),
-      res => res.writeHead(200).end('<html>'),
-      res => res.writeHead(200).end(JSON.stringify({ result: 'no such method' })),
-      res => res.writeHead(409).end(),
+      (res) => res.writeHead(401, 'Unauthorized').end(),
+      (res) => res.writeHead(403, 'Forbidden').end(),
+      (res) => res.writeHead(500, 'Oops').end(),
+      (res) => res.writeHead(200).end('<html>'),
+      (res) => res.writeHead(200).end(JSON.stringify({ result: 'no such method' })),
+      (res) => res.writeHead(409).end(),
     ];
     const port = await listen(http.createServer((_req, res) => replies.shift()?.(res)));
     const client = new TransmissionRpcClient({ ...base, port });
     const codes: unknown[] = [];
-    for (let i = 0; i < 6; i++) codes.push(await client.request('x').catch((e: InstanceType<typeof RpcError>) => e.code));
+    for (let i = 0; i < 6; i++)
+      codes.push(await client.request('x').catch((e: InstanceType<typeof RpcError>) => e.code));
     expect(codes).toEqual(['AUTH', 'AUTH', 'HTTP_ERROR', 'INVALID_RESPONSE', 'RPC_FAILURE', 'SESSION']);
   });
 });

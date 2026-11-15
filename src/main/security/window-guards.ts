@@ -12,8 +12,9 @@ export function denyAllPermissions(origins: TrustedOrigins): void {
   ses.setPermissionRequestHandler((_wc, permission, callback, details) =>
     callback(permission === ALLOWED_PERMISSION && isTrustedUrl(details.requestingUrl, origins)),
   );
-  ses.setPermissionCheckHandler((_wc, permission, requestingOrigin, details) =>
-    permission === ALLOWED_PERMISSION && isTrustedUrl(details.requestingUrl ?? requestingOrigin, origins),
+  ses.setPermissionCheckHandler(
+    (_wc, permission, requestingOrigin, details) =>
+      permission === ALLOWED_PERMISSION && isTrustedUrl(details.requestingUrl ?? requestingOrigin, origins),
   );
   ses.setDevicePermissionHandler(() => false);
 }
@@ -22,7 +23,9 @@ export function denyAllPermissions(origins: TrustedOrigins): void {
  * Builds the listener shared by `will-navigate`, `will-redirect` and `will-frame-navigate`: it cancels any
  * navigation (top-level or subframe) whose target is not the app's own origin.
  */
-export function createNavigationGuard(origins: TrustedOrigins): (event: { preventDefault: () => void }, url: string) => void {
+export function createNavigationGuard(
+  origins: TrustedOrigins,
+): (event: { preventDefault: () => void }, url: string) => void {
   return (event, url) => {
     if (!isTrustedUrl(url, origins)) event.preventDefault();
   };

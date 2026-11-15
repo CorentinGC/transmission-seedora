@@ -1,12 +1,6 @@
 import { useMemo, useCallback, useId, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  flexRender,
-  type ColumnDef,
-} from '@tanstack/react-table';
+import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useUiStore } from '../../stores/ui-store';
@@ -58,7 +52,9 @@ export function TorrentTable({ torrents }: Props) {
 
   // Build effective column order: use saved order if it exists, otherwise use definition order
   const effectiveColumnOrder = useMemo(() => {
-    const allColIds = columns.map((c) => (c as { accessorKey?: string; id?: string }).accessorKey ?? (c as { id?: string }).id ?? '');
+    const allColIds = columns.map(
+      (c) => (c as { accessorKey?: string; id?: string }).accessorKey ?? (c as { id?: string }).id ?? '',
+    );
     if (columnOrder.length > 0) {
       // Merge: saved order first (filtering removed cols), then any new cols not in saved order
       const ordered = columnOrder.filter((id) => allColIds.includes(id));
@@ -143,20 +139,23 @@ export function TorrentTable({ torrents }: Props) {
     }
   }, []);
 
-  const handleHeaderMouseDown = useCallback((e: React.MouseEvent, columnId: string) => {
-    // Don't start long-press if clicking on the resize handle area (right 6px)
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    if (e.clientX > rect.right - 6) return;
-    // Only left button
-    if (e.button !== 0) return;
+  const handleHeaderMouseDown = useCallback(
+    (e: React.MouseEvent, columnId: string) => {
+      // Don't start long-press if clicking on the resize handle area (right 6px)
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      if (e.clientX > rect.right - 6) return;
+      // Only left button
+      if (e.button !== 0) return;
 
-    cancelLongPress();
-    longPressTimer.current = setTimeout(() => {
-      longPressTimer.current = null;
-      setDragColumnId(columnId);
-      suppressClick.current = true;
-    }, LONG_PRESS_MS);
-  }, [cancelLongPress]);
+      cancelLongPress();
+      longPressTimer.current = setTimeout(() => {
+        longPressTimer.current = null;
+        setDragColumnId(columnId);
+        suppressClick.current = true;
+      }, LONG_PRESS_MS);
+    },
+    [cancelLongPress],
+  );
 
   const handleHeaderMouseUp = useCallback(() => {
     cancelLongPress();
@@ -193,7 +192,9 @@ export function TorrentTable({ torrents }: Props) {
       setDragColumnId(null);
       setDropTargetId(null);
       // Suppress the click event that follows mouseup so sorting doesn't trigger
-      setTimeout(() => { suppressClick.current = false; }, 50);
+      setTimeout(() => {
+        suppressClick.current = false;
+      }, 50);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -213,19 +214,22 @@ export function TorrentTable({ torrents }: Props) {
     toggleSort?.(e);
   }, []);
 
-  const handleResizeDoubleClick = useCallback((columnId: string, headerIndex: number) => {
-    const bodyContainer = parentRef.current;
-    if (!bodyContainer) return;
-    const sources: HTMLElement[] = [];
-    const headerEl = headerRefs.current.get(columnId);
-    if (headerEl) sources.push(headerEl);
-    bodyContainer.querySelectorAll(':scope > div > div').forEach((row) => {
-      const cell = row.children[headerIndex];
-      if (cell instanceof HTMLElement) sources.push(cell);
-    });
-    const minSize = table.getColumn(columnId)?.columnDef.minSize ?? 40;
-    setColumnSizing({ ...columnSizing, [columnId]: fitColumnWidth(measureContentWidth(sources), minSize) });
-  }, [columnSizing, setColumnSizing, table]);
+  const handleResizeDoubleClick = useCallback(
+    (columnId: string, headerIndex: number) => {
+      const bodyContainer = parentRef.current;
+      if (!bodyContainer) return;
+      const sources: HTMLElement[] = [];
+      const headerEl = headerRefs.current.get(columnId);
+      if (headerEl) sources.push(headerEl);
+      bodyContainer.querySelectorAll(':scope > div > div').forEach((row) => {
+        const cell = row.children[headerIndex];
+        if (cell instanceof HTMLElement) sources.push(cell);
+      });
+      const minSize = table.getColumn(columnId)?.columnDef.minSize ?? 40;
+      setColumnSizing({ ...columnSizing, [columnId]: fitColumnWidth(measureContentWidth(sources), minSize) });
+    },
+    [columnSizing, setColumnSizing, table],
+  );
 
   const gridId = useId();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -316,7 +320,10 @@ export function TorrentTable({ torrents }: Props) {
             ref={headerRowRef}
             className="flex border-b bg-muted/50 select-none"
             style={{ minWidth: table.getTotalSize() }}
-            onContextMenu={(e) => { e.preventDefault(); setHeaderMenu({ x: e.clientX, y: e.clientY }); }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setHeaderMenu({ x: e.clientX, y: e.clientY });
+            }}
           >
             {table.getHeaderGroups().map((headerGroup) =>
               headerGroup.headers.map((header) => {
@@ -327,7 +334,10 @@ export function TorrentTable({ torrents }: Props) {
                     role="columnheader"
                     aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : 'none'}
                     tabIndex={(headerTabId ?? visibleColumnIds[0]) === header.column.id ? 0 : -1}
-                    ref={(el) => { if (el) headerRefs.current.set(header.column.id, el); else headerRefs.current.delete(header.column.id); }}
+                    ref={(el) => {
+                      if (el) headerRefs.current.set(header.column.id, el);
+                      else headerRefs.current.delete(header.column.id);
+                    }}
                     className={`relative flex items-center px-2 py-1 pointer-coarse:py-3 text-xs font-medium text-muted-foreground hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${
                       dragColumnId === header.column.id ? 'opacity-40 bg-accent' : ''
                     } ${dropTargetId === header.column.id ? 'border-l-2 border-info' : ''} ${
@@ -351,7 +361,10 @@ export function TorrentTable({ torrents }: Props) {
                       onMouseDown={header.getResizeHandler()}
                       onTouchStart={header.getResizeHandler()}
                       onClick={(e) => e.stopPropagation()}
-                      onDoubleClick={(e) => { e.stopPropagation(); handleResizeDoubleClick(header.column.id, header.index); }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        handleResizeDoubleClick(header.column.id, header.index);
+                      }}
                       className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-info"
                     />
                   </div>
@@ -379,7 +392,10 @@ export function TorrentTable({ torrents }: Props) {
           className="min-h-0 flex-1 overflow-auto select-none"
           onScroll={(e) => syncScroll(e.currentTarget, headerScrollRef.current)}
         >
-          <div role="presentation" style={{ height: virtualizer.getTotalSize(), minWidth: table.getTotalSize(), position: 'relative' }}>
+          <div
+            role="presentation"
+            style={{ height: virtualizer.getTotalSize(), minWidth: table.getTotalSize(), position: 'relative' }}
+          >
             {virtualItems.map((virtualRow) => {
               const row = rows[virtualRow.index];
               const isSelected = selectedIds.has(row.original.id);
@@ -401,7 +417,10 @@ export function TorrentTable({ torrents }: Props) {
                     height: virtualRow.size,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  onClick={(e) => { nav.setActiveId(row.original.id); handleRowClick(row.original.id, e); }}
+                  onClick={(e) => {
+                    nav.setActiveId(row.original.id);
+                    handleRowClick(row.original.id, e);
+                  }}
                   onContextMenu={(e) => handleContextMenu(row.original.id, e)}
                 >
                   {row.getVisibleCells().map((cell, cellIndex) => (

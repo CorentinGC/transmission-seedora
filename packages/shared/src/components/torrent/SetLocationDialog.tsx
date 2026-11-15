@@ -38,18 +38,31 @@ export function SetLocationDialog({ ids, currentLocation, onClose }: Props) {
       footer={
         <div className="flex items-center justify-end gap-2">
           <Button onClick={onClose}>{t('dialog.cancel')}</Button>
-          <Button variant="primary" onClick={handleApply} disabled={!location.trim()}>{t('dialog.apply')}</Button>
+          <Button variant="primary" onClick={handleApply} disabled={!location.trim()}>
+            {t('dialog.apply')}
+          </Button>
         </div>
       }
     >
       <div className="space-y-3">
         <Field label={t('dialog.newLocation')}>
           <div className="flex gap-2">
-            <Input className="min-w-0 flex-1" type="text" data-autofocus value={location} onChange={(e) => setLocation(e.target.value)} />
+            <Input
+              className="min-w-0 flex-1"
+              type="text"
+              data-autofocus
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
             <Button onClick={handleBrowse}>{t('dialog.browse')}</Button>
           </div>
         </Field>
-        <Checkbox label={t('dialog.moveData')} checked={move} onChange={(e) => setMove(e.target.checked)} className="text-sm" />
+        <Checkbox
+          label={t('dialog.moveData')}
+          checked={move}
+          onChange={(e) => setMove(e.target.checked)}
+          className="text-sm"
+        />
       </div>
     </Dialog>
   );

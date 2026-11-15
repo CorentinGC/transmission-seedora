@@ -12,7 +12,10 @@ const bundles = import.meta.glob<MessageTree>('../../../packages/shared/src/loca
 
 const trees = new Map<string, MessageTree>();
 for (const [file, tree] of Object.entries(bundles)) {
-  const code = file.split('/').pop()?.replace(/\.json$/, '');
+  const code = file
+    .split('/')
+    .pop()
+    ?.replace(/\.json$/, '');
   if (code) trees.set(code, { native: tree });
 }
 
@@ -65,5 +68,7 @@ function find(language: string, key: string, count: number | undefined): string 
 export function t(key: string, vars: Record<string, string | number> = {}): string {
   const count = typeof vars.count === 'number' ? vars.count : undefined;
   const template = find(current, key, count) ?? find(FALLBACK_LANGUAGE, key, count) ?? key;
-  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_m, name: string) => (Object.hasOwn(vars, name) ? String(vars[name]) : ''));
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_m, name: string) =>
+    Object.hasOwn(vars, name) ? String(vars[name]) : '',
+  );
 }

@@ -26,6 +26,7 @@ export const CSP_MARKER = '<!--seedora-csp-->';
 
 /** Replaces the CSP marker in `html` with the CSP meta tag. Throws when the marker is missing, so a build can never ship without a policy. */
 export function injectCspMeta(html: string, isDev: boolean): string {
-  if (!html.includes(CSP_MARKER)) throw new Error(`index.html is missing the ${CSP_MARKER} marker; refusing to build without a CSP`);
+  if (!html.includes(CSP_MARKER))
+    throw new Error(`index.html is missing the ${CSP_MARKER} marker; refusing to build without a CSP`);
   return html.replace(CSP_MARKER, `<meta http-equiv="Content-Security-Policy" content="${buildRendererCsp(isDev)}" />`);
 }

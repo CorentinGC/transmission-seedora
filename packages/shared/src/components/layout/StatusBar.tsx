@@ -35,13 +35,24 @@ export function StatusBar() {
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-3 py-1 border-t bg-card text-xs text-muted-foreground select-none">
-      <div className="flex items-center gap-1" title={connectionStatus === 'error' ? connectionError ?? undefined : undefined}>
+      <div
+        className="flex items-center gap-1"
+        title={connectionStatus === 'error' ? (connectionError ?? undefined) : undefined}
+      >
         <span
           className={`w-2 h-2 rounded-full ${
             isConnected ? 'bg-success' : connectionStatus === 'error' ? 'bg-destructive-text' : 'bg-muted-foreground'
           }`}
         />
-        <span>{isConnected ? t('statusBar.connected') : connectionStatus === 'connecting' ? t('statusBar.connecting') : connectionStatus === 'error' ? t('statusBar.connectionError') : t('statusBar.disconnected')}</span>
+        <span>
+          {isConnected
+            ? t('statusBar.connected')
+            : connectionStatus === 'connecting'
+              ? t('statusBar.connecting')
+              : connectionStatus === 'error'
+                ? t('statusBar.connectionError')
+                : t('statusBar.disconnected')}
+        </span>
       </div>
 
       {isConnected && stats && (
@@ -52,7 +63,10 @@ export function StatusBar() {
             aria-label={`${t('statusBar.downloadLimit')}: ${formatSpeed(stats.downloadSpeed)}`}
             className={SPEED_BUTTON}
             onClick={(e) => openSpeedPopover(e, 'down')}
-            onContextMenu={(e) => { e.preventDefault(); setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'down' }); }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'down' });
+            }}
           >
             <ArrowDown size={12} className="text-info" aria-hidden="true" />
             <span>{formatSpeed(stats.downloadSpeed)}</span>
@@ -63,7 +77,10 @@ export function StatusBar() {
             aria-label={`${t('statusBar.uploadLimit')}: ${formatSpeed(stats.uploadSpeed)}`}
             className={SPEED_BUTTON}
             onClick={(e) => openSpeedPopover(e, 'up')}
-            onContextMenu={(e) => { e.preventDefault(); setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'up' }); }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'up' });
+            }}
           >
             <ArrowUp size={12} className="text-success" aria-hidden="true" />
             <span>{formatSpeed(stats.uploadSpeed)}</span>
@@ -92,14 +109,15 @@ export function StatusBar() {
           >
             <BarChart3 size={12} aria-hidden="true" />
             <span>
-              ↓ {formatBytes(stats.cumulativeStats.downloadedBytes)} ↑ {formatBytes(stats.cumulativeStats.uploadedBytes)}
+              ↓ {formatBytes(stats.cumulativeStats.downloadedBytes)} ↑{' '}
+              {formatBytes(stats.cumulativeStats.uploadedBytes)}
             </span>
           </button>
 
           {freeSpace !== null && (
             <button
               type="button"
-            className="flex items-center gap-1 hover:bg-accent px-1 rounded cursor-pointer pointer-coarse:min-h-11"
+              className="flex items-center gap-1 hover:bg-accent px-1 rounded cursor-pointer pointer-coarse:min-h-11"
               onClick={() => setShowDiskSpace(true)}
             >
               <HardDrive size={12} aria-hidden="true" />

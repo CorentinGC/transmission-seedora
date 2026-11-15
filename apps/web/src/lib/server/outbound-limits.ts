@@ -49,7 +49,10 @@ export interface ByteBudget {
 }
 
 /** Creates a byte budget of `limit` bytes where one key may hold at most `perKeyLimit` (default half). */
-export function createByteBudget(limit: number, perKeyLimit = Math.floor(limit / DESTINATION_BUDGET_FRACTION)): ByteBudget {
+export function createByteBudget(
+  limit: number,
+  perKeyLimit = Math.floor(limit / DESTINATION_BUDGET_FRACTION),
+): ByteBudget {
   let used = 0;
   const byKey = new Map<string, number>();
   return {

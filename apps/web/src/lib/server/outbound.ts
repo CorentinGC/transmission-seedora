@@ -167,7 +167,10 @@ export function createPinnedLookup(addresses: readonly ResolvedAddress[]): Looku
       return;
     }
     if (all) {
-      (callback as unknown as (e: null, a: ResolvedAddress[]) => void)(null, candidates.map((a) => ({ ...a })));
+      (callback as unknown as (e: null, a: ResolvedAddress[]) => void)(
+        null,
+        candidates.map((a) => ({ ...a })),
+      );
       return;
     }
     callback(null, candidates[0].address, candidates[0].family);
@@ -220,7 +223,13 @@ export async function postJson(
   // The private opt-in holds for this host only if the operator allowlist (when set) lists it.
   const allowedHosts = options.allowedHosts === undefined ? getAllowedHosts() : options.allowedHosts;
   const allowPrivate = options.allowPrivate && (allowedHosts === null || isListedHost(allowedHosts, host, target.port));
-  const addresses = await resolveAndValidate(host, allowPrivate, options.resolver ?? systemResolver, signal, options.clientKey);
+  const addresses = await resolveAndValidate(
+    host,
+    allowPrivate,
+    options.resolver ?? systemResolver,
+    signal,
+    options.clientKey,
+  );
   const exchange: Exchange = {
     target,
     host,
@@ -240,7 +249,8 @@ export async function postJson(
     // One retry with the next validated address, only when the TCP connection never came up
     // (nothing was sent) and the shared deadline still runs.
     const next = addresses[1];
-    const retryable = error instanceof OutboundError && error.code === 'CONNECTION_FAILED' && first.admitted && !first.connected;
+    const retryable =
+      error instanceof OutboundError && error.code === 'CONNECTION_FAILED' && first.admitted && !first.connected;
     if (!retryable || next === undefined || signal.aborted) throw error;
     const second: Progress = { admitted: false, connected: false };
     try {

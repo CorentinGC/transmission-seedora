@@ -3,7 +3,11 @@ import type { ServerConfig } from '@shared/types';
 /** A server as the renderer may see it: no password, only whether one is stored. */
 export function toPublicServer(server: ServerConfig): ServerConfig {
   const { password, proxyPassword, ...rest } = server;
-  return { ...rest, hasPassword: server.hasPassword ?? Boolean(password), hasProxyPassword: server.hasProxyPassword ?? Boolean(proxyPassword) };
+  return {
+    ...rest,
+    hasPassword: server.hasPassword ?? Boolean(password),
+    hasProxyPassword: server.hasProxyPassword ?? Boolean(proxyPassword),
+  };
 }
 
 /** A server without any credential (for exports that must not carry secrets): keeps usernames, drops passwords and flags. */
@@ -27,12 +31,23 @@ type ProxyFields = Pick<ServerConfig, 'proxyType' | 'proxyHost' | 'proxyPort' | 
  */
 export function sameEndpoint(previous: EndpointFields, next: EndpointFields): boolean {
   const relaxedTls = next.allowSelfSigned === true && previous.allowSelfSigned !== true;
-  return previous.host === next.host && previous.port === next.port && previous.path === next.path && previous.useSSL === next.useSSL && !relaxedTls;
+  return (
+    previous.host === next.host &&
+    previous.port === next.port &&
+    previous.path === next.path &&
+    previous.useSSL === next.useSSL &&
+    !relaxedTls
+  );
 }
 
 /** Whether two configs use the same proxy (a stored proxy password may only follow an unchanged proxy). */
 export function sameProxy(a: ProxyFields, b: ProxyFields): boolean {
-  return (a.proxyType ?? 'none') === (b.proxyType ?? 'none') && a.proxyHost === b.proxyHost && a.proxyPort === b.proxyPort && (a.proxyUsername ?? '') === (b.proxyUsername ?? '');
+  return (
+    (a.proxyType ?? 'none') === (b.proxyType ?? 'none') &&
+    a.proxyHost === b.proxyHost &&
+    a.proxyPort === b.proxyPort &&
+    (a.proxyUsername ?? '') === (b.proxyUsername ?? '')
+  );
 }
 
 /**
@@ -41,9 +56,17 @@ export function sameProxy(a: ProxyFields, b: ProxyFields): boolean {
  * a compromised renderer could aim a stored password at a host of its choosing. An empty password means
  * "not typed", like an absent one.
  */
-export function resolveTestServer(config: ServerConfig | (Omit<ServerConfig, 'id'> & { id?: string }), stored: ServerConfig | undefined): ServerConfig {
+export function resolveTestServer(
+  config: ServerConfig | (Omit<ServerConfig, 'id'> & { id?: string }),
+  stored: ServerConfig | undefined,
+): ServerConfig {
   const { hasPassword: _hp, hasProxyPassword: _hpp, ...input } = config;
-  const base: ServerConfig = { ...input, id: input.id ?? 'test', password: input.password || undefined, proxyPassword: input.proxyPassword || undefined };
+  const base: ServerConfig = {
+    ...input,
+    id: input.id ?? 'test',
+    password: input.password || undefined,
+    proxyPassword: input.proxyPassword || undefined,
+  };
   if (!stored || stored.id !== input.id) return base;
 
   return {

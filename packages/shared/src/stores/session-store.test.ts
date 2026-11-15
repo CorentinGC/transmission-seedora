@@ -20,13 +20,19 @@ describe('session store', () => {
 
     await useSessionStore.getState().toggleAltSpeed();
 
-    expect(useNotificationStore.getState().notifications.map((n) => n.messageKey)).toEqual(['notification.actionFailed']);
+    expect(useNotificationStore.getState().notifications.map((n) => n.messageKey)).toEqual([
+      'notification.actionFailed',
+    ]);
     expect(api.rpcSessionGet).not.toHaveBeenCalled();
   });
 
   it('discards settings that arrive after the server changed', async () => {
     let resolve!: (v: unknown) => void;
-    api.rpcSessionGet.mockReturnValue(new Promise((r) => { resolve = r; }));
+    api.rpcSessionGet.mockReturnValue(
+      new Promise((r) => {
+        resolve = r;
+      }),
+    );
 
     const pending = useSessionStore.getState().fetchSettings();
     bumpServerEpoch();
@@ -38,7 +44,11 @@ describe('session store', () => {
 
   it('discards stats that arrive after the server changed', async () => {
     let resolve!: (v: unknown) => void;
-    api.rpcSessionStats.mockReturnValue(new Promise((r) => { resolve = r; }));
+    api.rpcSessionStats.mockReturnValue(
+      new Promise((r) => {
+        resolve = r;
+      }),
+    );
 
     const pending = useSessionStore.getState().fetchStats();
     bumpServerEpoch();

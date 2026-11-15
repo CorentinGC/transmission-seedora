@@ -21,8 +21,12 @@ export function DownloadTab({ settings: s }: Props) {
   const [scriptTorrentDoneFilename, setScriptTorrentDoneFilename] = useState(s.scriptTorrentDoneFilename);
   const [scriptTorrentAddedEnabled, setScriptTorrentAddedEnabled] = useState(s.scriptTorrentAddedEnabled);
   const [scriptTorrentAddedFilename, setScriptTorrentAddedFilename] = useState(s.scriptTorrentAddedFilename);
-  const [scriptTorrentDoneSeedingEnabled, setScriptTorrentDoneSeedingEnabled] = useState(s.scriptTorrentDoneSeedingEnabled);
-  const [scriptTorrentDoneSeedingFilename, setScriptTorrentDoneSeedingFilename] = useState(s.scriptTorrentDoneSeedingFilename);
+  const [scriptTorrentDoneSeedingEnabled, setScriptTorrentDoneSeedingEnabled] = useState(
+    s.scriptTorrentDoneSeedingEnabled,
+  );
+  const [scriptTorrentDoneSeedingFilename, setScriptTorrentDoneSeedingFilename] = useState(
+    s.scriptTorrentDoneSeedingFilename,
+  );
 
   const [applyStatus, setApplyStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -49,31 +53,57 @@ export function DownloadTab({ settings: s }: Props) {
     <div className="space-y-4 text-sm">
       <div>
         <h3 className="font-medium mb-2">{t('downloadTab.downloadDirectory')}</h3>
-        <input type="text" className="w-full h-7 px-2 rounded border bg-background" value={downloadDir} onChange={(e) => setDownloadDir(e.target.value)} />
+        <input
+          type="text"
+          className="w-full h-7 px-2 rounded border bg-background"
+          value={downloadDir}
+          onChange={(e) => setDownloadDir(e.target.value)}
+        />
       </div>
 
       <div className="border-t pt-4">
         <h3 className="font-medium mb-2">{t('downloadTab.incompleteDirectory')}</h3>
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={incompleteDirEnabled} onChange={(e) => setIncompleteDirEnabled(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={incompleteDirEnabled}
+            onChange={(e) => setIncompleteDirEnabled(e.target.checked)}
+          />
           {t('downloadTab.useIncompleteDir')}
         </label>
         {incompleteDirEnabled && (
-          <input type="text" className="w-full h-7 px-2 mt-1 rounded border bg-background" value={incompleteDir} onChange={(e) => setIncompleteDir(e.target.value)} />
+          <input
+            type="text"
+            className="w-full h-7 px-2 mt-1 rounded border bg-background"
+            value={incompleteDir}
+            onChange={(e) => setIncompleteDir(e.target.value)}
+          />
         )}
       </div>
 
       <div className="border-t pt-4 space-y-1">
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={renamePartialFiles} onChange={(e) => setRenamePartialFiles(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={renamePartialFiles}
+            onChange={(e) => setRenamePartialFiles(e.target.checked)}
+          />
           {t('downloadTab.appendPart')}
         </label>
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={startAddedTorrents} onChange={(e) => setStartAddedTorrents(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={startAddedTorrents}
+            onChange={(e) => setStartAddedTorrents(e.target.checked)}
+          />
           {t('downloadTab.startAutomatically')}
         </label>
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={trashOriginalTorrentFiles} onChange={(e) => setTrashOriginalTorrentFiles(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={trashOriginalTorrentFiles}
+            onChange={(e) => setTrashOriginalTorrentFiles(e.target.checked)}
+          />
           {t('downloadTab.deleteTorrentFile')}
         </label>
       </div>
@@ -82,31 +112,66 @@ export function DownloadTab({ settings: s }: Props) {
         <h3 className="font-medium mb-2">{t('downloadTab.scripts')}</h3>
         <div className="space-y-2">
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={scriptTorrentAddedEnabled} onChange={(e) => setScriptTorrentAddedEnabled(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={scriptTorrentAddedEnabled}
+              onChange={(e) => setScriptTorrentAddedEnabled(e.target.checked)}
+            />
             {t('downloadTab.scriptOnAdded')}
           </label>
           {scriptTorrentAddedEnabled && (
-            <input type="text" className="w-full h-7 px-2 rounded border bg-background" value={scriptTorrentAddedFilename} onChange={(e) => setScriptTorrentAddedFilename(e.target.value)} placeholder={t('downloadTab.scriptPlaceholder')} />
+            <input
+              type="text"
+              className="w-full h-7 px-2 rounded border bg-background"
+              value={scriptTorrentAddedFilename}
+              onChange={(e) => setScriptTorrentAddedFilename(e.target.value)}
+              placeholder={t('downloadTab.scriptPlaceholder')}
+            />
           )}
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={scriptTorrentDoneEnabled} onChange={(e) => setScriptTorrentDoneEnabled(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={scriptTorrentDoneEnabled}
+              onChange={(e) => setScriptTorrentDoneEnabled(e.target.checked)}
+            />
             {t('downloadTab.scriptOnCompleted')}
           </label>
           {scriptTorrentDoneEnabled && (
-            <input type="text" className="w-full h-7 px-2 rounded border bg-background" value={scriptTorrentDoneFilename} onChange={(e) => setScriptTorrentDoneFilename(e.target.value)} placeholder={t('downloadTab.scriptPlaceholder')} />
+            <input
+              type="text"
+              className="w-full h-7 px-2 rounded border bg-background"
+              value={scriptTorrentDoneFilename}
+              onChange={(e) => setScriptTorrentDoneFilename(e.target.value)}
+              placeholder={t('downloadTab.scriptPlaceholder')}
+            />
           )}
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={scriptTorrentDoneSeedingEnabled} onChange={(e) => setScriptTorrentDoneSeedingEnabled(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={scriptTorrentDoneSeedingEnabled}
+              onChange={(e) => setScriptTorrentDoneSeedingEnabled(e.target.checked)}
+            />
             {t('downloadTab.scriptOnDoneSeeding')}
           </label>
           {scriptTorrentDoneSeedingEnabled && (
-            <input type="text" className="w-full h-7 px-2 rounded border bg-background" value={scriptTorrentDoneSeedingFilename} onChange={(e) => setScriptTorrentDoneSeedingFilename(e.target.value)} placeholder={t('downloadTab.scriptPlaceholder')} />
+            <input
+              type="text"
+              className="w-full h-7 px-2 rounded border bg-background"
+              value={scriptTorrentDoneSeedingFilename}
+              onChange={(e) => setScriptTorrentDoneSeedingFilename(e.target.value)}
+              placeholder={t('downloadTab.scriptPlaceholder')}
+            />
           )}
         </div>
       </div>
 
       <div className="border-t pt-4 flex items-center gap-3">
-        <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={apply}>{t('dialog.apply')}</button>
+        <button
+          className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90"
+          onClick={apply}
+        >
+          {t('dialog.apply')}
+        </button>
         {applyStatus === 'success' && <span className="text-xs text-success">{t('settings.applied')}</span>}
         {applyStatus === 'error' && <span className="text-xs text-destructive-text">{t('settings.applyError')}</span>}
       </div>

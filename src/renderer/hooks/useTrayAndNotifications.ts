@@ -44,10 +44,7 @@ export function useTrayAndNotifications() {
     for (const [id, torrent] of torrents) {
       const prevTorrent = prev.get(id);
       if (prevTorrent && prevTorrent.percentDone < 1 && torrent.percentDone >= 1) {
-        api.notificationShow?.(
-          i18n.t('notification.downloadComplete'),
-          torrent.name,
-        );
+        api.notificationShow?.(i18n.t('notification.downloadComplete'), torrent.name);
       }
     }
 

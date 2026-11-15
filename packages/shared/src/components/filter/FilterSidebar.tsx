@@ -57,7 +57,9 @@ function CollapsibleSection({
         className="w-full flex items-center gap-1 px-3 py-1 pointer-coarse:py-2.5 text-xs font-medium text-muted-foreground uppercase hover:text-foreground min-w-0"
         onClick={() => setOpen(!open)}
       >
-        <span className="flex-shrink-0" aria-hidden="true">{open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}</span>
+        <span className="flex-shrink-0" aria-hidden="true">
+          {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+        </span>
         <span className="truncate">{title}</span>
       </button>
       {open && children}
@@ -79,8 +81,14 @@ export function FilterSidebar({ torrents, onSelect }: Props) {
   const statusCounts = useMemo(() => {
     const counts: Record<StatusFilter, number> = {
       all: torrents.length,
-      downloading: 0, seeding: 0, completed: 0,
-      active: 0, inactive: 0, stopped: 0, error: 0, waiting: 0,
+      downloading: 0,
+      seeding: 0,
+      completed: 0,
+      active: 0,
+      inactive: 0,
+      stopped: 0,
+      error: 0,
+      waiting: 0,
     };
     for (const t of torrents) {
       for (const f of Object.keys(counts) as StatusFilter[]) {

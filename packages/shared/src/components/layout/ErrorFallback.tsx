@@ -16,11 +16,16 @@ export function ErrorFallback({ onRetry, onReload = () => window.location.reload
   const { t } = useTranslation();
 
   return (
-    <div role="alert" className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background p-8 text-center text-foreground">
+    <div
+      role="alert"
+      className="flex h-full w-full flex-col items-center justify-center gap-4 bg-background p-8 text-center text-foreground"
+    >
       <h1 className="text-lg font-semibold">{t('errorBoundary.title')}</h1>
       <p className="max-w-md text-sm text-muted-foreground">{t('errorBoundary.description')}</p>
       <div className="flex gap-2">
-        <Button variant="primary" onClick={onRetry}>{t('errorBoundary.retry')}</Button>
+        <Button variant="primary" onClick={onRetry}>
+          {t('errorBoundary.retry')}
+        </Button>
         <Button onClick={onReload}>{t('errorBoundary.reload')}</Button>
       </div>
     </div>

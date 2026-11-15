@@ -58,7 +58,9 @@ test('adds a torrent from a magnet link', async ({ page }) => {
   await page.goto('/');
   await addServer(page, 'Fake NAS');
   await page.getByRole('button', { name: 'Add Torrent' }).click();
-  await page.getByPlaceholder('magnet:?xt= or https://...').fill('magnet:?xt=urn:btih:abcdef0123456789abcdef0123456789abcdef01&dn=Added%20By%20E2E');
+  await page
+    .getByPlaceholder('magnet:?xt= or https://...')
+    .fill('magnet:?xt=urn:btih:abcdef0123456789abcdef0123456789abcdef01&dn=Added%20By%20E2E');
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await expect(page.getByText('Added By E2E').first()).toBeVisible();
 });
@@ -119,7 +121,10 @@ test.describe('mobile viewport (390px)', () => {
   test('details open in a full-screen sheet for the selected torrent', async ({ page }) => {
     await page.goto('/');
     await addServer(page, 'Fake NAS');
-    await page.getByRole('grid', { name: 'Torrents' }).getByRole('row', { name: /ubuntu-24\.04/ }).click();
+    await page
+      .getByRole('grid', { name: 'Torrents' })
+      .getByRole('row', { name: /ubuntu-24\.04/ })
+      .click();
     await page.getByRole('button', { name: 'Toggle Details Panel' }).click();
     const sheet = page.getByRole('dialog', { name: 'Toggle Details Panel' });
     await expect(sheet).toBeVisible();

@@ -24,7 +24,12 @@ const store = vi.hoisted(() => ({
   updatePreferences: vi.fn(),
 }));
 vi.mock('../store/config-store', () => ({ configStore: store }));
-const manager = vi.hoisted(() => ({ refreshClient: vi.fn(), removeClient: vi.fn(), setActiveServer: vi.fn(), createTemporaryClient: vi.fn() }));
+const manager = vi.hoisted(() => ({
+  refreshClient: vi.fn(),
+  removeClient: vi.fn(),
+  setActiveServer: vi.fn(),
+  createTemporaryClient: vi.fn(),
+}));
 vi.mock('../rpc/connection-manager', () => ({ connectionManager: manager }));
 
 const { IPC } = await import('@ipc/ipc-channels');
@@ -111,7 +116,12 @@ describe('applyImport', () => {
   });
 
   it('dedupes duplicates inside the file itself and regenerates ids', () => {
-    const res = applyImport({ servers: [{ ...server, id: 'from-file' }, { ...server, id: 'other-id' }] });
+    const res = applyImport({
+      servers: [
+        { ...server, id: 'from-file' },
+        { ...server, id: 'other-id' },
+      ],
+    });
     expect(res.data).toEqual({ serversAdded: 1, serversSkipped: 1, prefsImported: false });
     const added = store.addServer.mock.calls[0]?.[0];
     expect(added.id).not.toBe('from-file');
@@ -129,9 +139,17 @@ describe('applyImport', () => {
   });
 
   it('reports a servers-only and a preferences-only import', () => {
-    expect(applyImport({ servers: [server] }).data).toEqual({ serversAdded: 1, serversSkipped: 0, prefsImported: false });
+    expect(applyImport({ servers: [server] }).data).toEqual({
+      serversAdded: 1,
+      serversSkipped: 0,
+      prefsImported: false,
+    });
     expect(store.updatePreferences).not.toHaveBeenCalled();
-    expect(applyImport({ preferences: { theme: 'dark' } }).data).toEqual({ serversAdded: 0, serversSkipped: 0, prefsImported: true });
+    expect(applyImport({ preferences: { theme: 'dark' } }).data).toEqual({
+      serversAdded: 0,
+      serversSkipped: 0,
+      prefsImported: true,
+    });
     expect(store.addServer).toHaveBeenCalledTimes(1);
   });
 });
@@ -219,7 +237,16 @@ describe('SERVER_TEST', () => {
   });
 });
 
-const secretServer = { id: 's1', ...server, username: 'u', password: 'pw', proxyType: 'http' as const, proxyHost: 'p', proxyPort: 3128, proxyPassword: 'ppw' };
+const secretServer = {
+  id: 's1',
+  ...server,
+  username: 'u',
+  password: 'pw',
+  proxyType: 'http' as const,
+  proxyHost: 'p',
+  proxyPort: 3128,
+  proxyPassword: 'ppw',
+};
 
 describe('passwords never reach the renderer', () => {
   it('SERVER_LIST returns servers without passwords, with has-flags', async () => {
@@ -227,7 +254,9 @@ describe('passwords never reach the renderer', () => {
     const res = await call(IPC.SERVER_LIST);
     expect(JSON.stringify(res)).not.toContain('"pw"');
     expect(JSON.stringify(res)).not.toContain('ppw');
-    expect(res.data).toEqual([expect.objectContaining({ id: 's1', username: 'u', hasPassword: true, hasProxyPassword: true })]);
+    expect(res.data).toEqual([
+      expect.objectContaining({ id: 's1', username: 'u', hasPassword: true, hasProxyPassword: true }),
+    ]);
   });
 
   it('SERVER_ADD stores the password but does not return it', async () => {
@@ -239,7 +268,9 @@ describe('passwords never reach the renderer', () => {
 
   it('accepts a listed server echoed back with its has-flags, without storing them', async () => {
     store.getServers.mockReturnValue([secretServer]);
-    expect((await call(IPC.SERVER_UPDATE, 's1', { name: 'x', hasPassword: true, hasProxyPassword: false })).success).toBe(true);
+    expect(
+      (await call(IPC.SERVER_UPDATE, 's1', { name: 'x', hasPassword: true, hasProxyPassword: false })).success,
+    ).toBe(true);
     expect(store.updateServer).toHaveBeenCalledWith('s1', { name: 'x' });
     expect((await call(IPC.SERVER_ADD, { ...server, hasPassword: true })).success).toBe(true);
     expect(store.addServer.mock.calls[0]?.[0]).not.toHaveProperty('hasPassword');
@@ -255,8 +286,17 @@ describe('SERVER_TEST credentials and errors', () => {
   });
 
   it('uses the stored password when editing a server whose endpoint is unchanged', async () => {
-    await call(IPC.SERVER_TEST, { ...server, id: 's1', username: 'u', proxyType: 'http', proxyHost: 'p', proxyPort: 3128 });
-    expect(manager.createTemporaryClient).toHaveBeenCalledWith(expect.objectContaining({ password: 'pw', proxyPassword: 'ppw' }));
+    await call(IPC.SERVER_TEST, {
+      ...server,
+      id: 's1',
+      username: 'u',
+      proxyType: 'http',
+      proxyHost: 'p',
+      proxyPort: 3128,
+    });
+    expect(manager.createTemporaryClient).toHaveBeenCalledWith(
+      expect.objectContaining({ password: 'pw', proxyPassword: 'ppw' }),
+    );
   });
 
   it('does not send the stored password to a different host', async () => {
@@ -266,7 +306,11 @@ describe('SERVER_TEST credentials and errors', () => {
 
   it('returns the code and credential-free message of an RpcError', async () => {
     request.mockRejectedValue(new RpcError('AUTH', 'HTTP 401: Unauthorized'));
-    expect(await call(IPC.SERVER_TEST, server)).toEqual({ success: false, error: 'HTTP 401: Unauthorized', code: 'AUTH' });
+    expect(await call(IPC.SERVER_TEST, server)).toEqual({
+      success: false,
+      error: 'HTTP 401: Unauthorized',
+      code: 'AUTH',
+    });
   });
 
   it('never returns the text of an unexpected error', async () => {
@@ -300,7 +344,9 @@ describe('CONFIG_EXPORT', () => {
     dialogMock.showSaveDialog.mockResolvedValue({ canceled: false, filePath: target });
     const res = await call(IPC.CONFIG_EXPORT, { servers: true, includePasswords: true });
     expect(res).toEqual({ success: true });
-    expect((JSON.parse(fs.readFileSync(target, 'utf-8')) as { servers: Array<Record<string, unknown>> }).servers[0]).toMatchObject({ password: 'pw', proxyPassword: 'ppw' });
+    expect(
+      (JSON.parse(fs.readFileSync(target, 'utf-8')) as { servers: Array<Record<string, unknown>> }).servers[0],
+    ).toMatchObject({ password: 'pw', proxyPassword: 'ppw' });
     if (process.platform !== 'win32') expect(fs.statSync(target).mode & 0o777).toBe(0o600);
   });
 

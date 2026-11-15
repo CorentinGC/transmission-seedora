@@ -11,7 +11,11 @@ const deps = (current: Record<string, unknown> | 'fail', answer: boolean) => ({
 
 describe('findScriptChanges', () => {
   it('finds script keys in both spellings and ignores other settings', () => {
-    const found = findScriptChanges({ 'script-torrent-done-filename': '/x.sh', script_torrent_added_enabled: true, 'speed-limit-down': 5 });
+    const found = findScriptChanges({
+      'script-torrent-done-filename': '/x.sh',
+      script_torrent_added_enabled: true,
+      'speed-limit-down': 5,
+    });
     expect(found).toEqual([
       { key: 'script-torrent-done-filename', value: '/x.sh' },
       { key: 'script-torrent-added-enabled', value: true },
@@ -29,13 +33,18 @@ describe('isSessionChangeAllowed', () => {
 
   it('does not ask when the script settings keep their current value', async () => {
     const d = deps({ 'script-torrent-done-enabled': false, 'script-torrent-done-filename': '' }, false);
-    expect(await isSessionChangeAllowed({ 'script-torrent-done-enabled': false, 'script-torrent-done-filename': '' }, d)).toBe(true);
+    expect(
+      await isSessionChangeAllowed({ 'script-torrent-done-enabled': false, 'script-torrent-done-filename': '' }, d),
+    ).toBe(true);
     expect(d.confirm).not.toHaveBeenCalled();
   });
 
   it('asks about the changed settings only, and refuses when declined', async () => {
     const d = deps({ 'script-torrent-done-enabled': false, 'script-torrent-done-filename': '' }, false);
-    const allowed = await isSessionChangeAllowed({ 'script-torrent-done-enabled': true, 'script-torrent-done-filename': '' }, d);
+    const allowed = await isSessionChangeAllowed(
+      { 'script-torrent-done-enabled': true, 'script-torrent-done-filename': '' },
+      d,
+    );
     expect(allowed).toBe(false);
     expect(d.confirm).toHaveBeenCalledWith([
       { key: 'script-torrent-done-enabled', value: true },
@@ -82,8 +91,8 @@ describe('effective filename', () => {
     const d = deps({}, true);
     await isSessionChangeAllowed({ 'script-torrent-done-enabled': true, 'script-torrent-done-filename': '/n.sh' }, d);
     expect(d.confirm).toHaveBeenCalledWith([
-      { key: "script-torrent-done-enabled", value: true },
-      { key: "script-torrent-done-filename", value: "/n.sh" },
+      { key: 'script-torrent-done-enabled', value: true },
+      { key: 'script-torrent-done-filename', value: '/n.sh' },
     ]);
   });
 });

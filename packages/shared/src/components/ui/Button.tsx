@@ -21,7 +21,13 @@ const sizeClasses: Record<Size, string> = {
   xs: 'h-6 px-2 text-xs pointer-coarse:h-11',
 };
 
-export function Button({ variant = 'secondary', size = 'default', className = '', type = 'button', ...rest }: ButtonProps) {
+export function Button({
+  variant = 'secondary',
+  size = 'default',
+  className = '',
+  type = 'button',
+  ...rest
+}: ButtonProps) {
   return (
     <button
       type={type}

@@ -26,7 +26,9 @@ function originOf(url: string): string | null {
 export function isTrustedUrl(url: string, origins: TrustedOrigins): boolean {
   const origin = originOf(url);
   if (!origin || origin.startsWith('file:')) return false;
-  return [origins.devServerUrl, origins.appOrigin].some((trusted) => trusted !== undefined && originOf(trusted) === origin);
+  return [origins.devServerUrl, origins.appOrigin].some(
+    (trusted) => trusted !== undefined && originOf(trusted) === origin,
+  );
 }
 
 /** Builds the sender check used by every IPC handler: top-level frame, app URL only. */
@@ -42,7 +44,11 @@ export function createSenderValidator(origins: TrustedOrigins): (event: SenderEv
  * Builds the trusted origins from the build mode: the dev server in development, `appOrigin` in a packaged
  * build. A packaged build that carries a dev server URL is a misbuild and throws instead of trusting it.
  */
-export function buildTrustedOrigins(devServerUrl: string | undefined, isPackaged: boolean, appOrigin: string): TrustedOrigins {
+export function buildTrustedOrigins(
+  devServerUrl: string | undefined,
+  isPackaged: boolean,
+  appOrigin: string,
+): TrustedOrigins {
   if (isPackaged && devServerUrl) throw new Error('Packaged build must not carry a dev server URL');
   return devServerUrl ? { devServerUrl, appOrigin: undefined } : { devServerUrl: undefined, appOrigin };
 }

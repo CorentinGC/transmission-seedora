@@ -3,9 +3,21 @@ import type { ServerConfig } from '@shared/types';
 import { resolveTestServer, toPublicServer, withoutSecrets, withSecrets } from './server-credentials';
 
 const stored: ServerConfig = {
-  id: 's1', name: 'n', host: 'nas', port: 9091, path: '/transmission/rpc', useSSL: false,
-  username: 'u', password: 'pw', proxyType: 'http', proxyHost: 'p', proxyPort: 3128, proxyUsername: 'pu', proxyPassword: 'ppw',
-  hasPassword: true, hasProxyPassword: true,
+  id: 's1',
+  name: 'n',
+  host: 'nas',
+  port: 9091,
+  path: '/transmission/rpc',
+  useSSL: false,
+  username: 'u',
+  password: 'pw',
+  proxyType: 'http',
+  proxyHost: 'p',
+  proxyPort: 3128,
+  proxyUsername: 'pu',
+  proxyPassword: 'ppw',
+  hasPassword: true,
+  hasProxyPassword: true,
 };
 const { password: _p, proxyPassword: _pp, hasPassword: _h1, hasProxyPassword: _h2, ...form } = stored;
 
@@ -32,7 +44,10 @@ describe('export helpers', () => {
 describe('resolveTestServer', () => {
   it('uses the stored passwords when the endpoint and proxy are unchanged', () => {
     expect(resolveTestServer(form, stored)).toMatchObject({ password: 'pw', proxyPassword: 'ppw' });
-    expect(resolveTestServer({ ...form, password: '', proxyPassword: '' }, stored)).toMatchObject({ password: 'pw', proxyPassword: 'ppw' });
+    expect(resolveTestServer({ ...form, password: '', proxyPassword: '' }, stored)).toMatchObject({
+      password: 'pw',
+      proxyPassword: 'ppw',
+    });
   });
 
   it('prefers a password typed in the form', () => {
@@ -62,7 +77,9 @@ describe('resolveTestServer', () => {
   it('never sends the stored password once certificate checks are relaxed', () => {
     expect(resolveTestServer({ ...form, allowSelfSigned: true }, stored).password).toBeUndefined();
     expect(resolveTestServer({ ...form, allowSelfSigned: false }, stored).password).toBe('pw');
-    expect(resolveTestServer({ ...form, allowSelfSigned: true }, { ...stored, allowSelfSigned: true }).password).toBe('pw');
+    expect(resolveTestServer({ ...form, allowSelfSigned: true }, { ...stored, allowSelfSigned: true }).password).toBe(
+      'pw',
+    );
   });
 
   it('uses no stored secret for a new server or an unknown id', () => {

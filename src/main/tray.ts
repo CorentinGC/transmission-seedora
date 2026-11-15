@@ -32,9 +32,7 @@ export function createTray(mainWindow: BrowserWindow): Tray {
   tray?.destroy(); // a re-created window (macOS) must not leave a second tray icon behind
   const icon = nativeImage.createFromPath(getIconPath());
   // Fallback: create a small empty icon if file doesn't exist
-  const trayIcon = icon.isEmpty()
-    ? nativeImage.createEmpty()
-    : icon.resize({ width: 16, height: 16 });
+  const trayIcon = icon.isEmpty() ? nativeImage.createEmpty() : icon.resize({ width: 16, height: 16 });
 
   tray = new Tray(trayIcon);
   tray.setToolTip('Seedora');
@@ -96,9 +94,7 @@ export function updateTrayMenu(mainWindow: BrowserWindow, state: TrayState): voi
   ]);
 
   tray.setContextMenu(contextMenu);
-  tray.setToolTip(
-    `Seedora\n↓ ${formatSpeed(state.downloadSpeed)}  ↑ ${formatSpeed(state.uploadSpeed)}`,
-  );
+  tray.setToolTip(`Seedora\n↓ ${formatSpeed(state.downloadSpeed)}  ↑ ${formatSpeed(state.uploadSpeed)}`);
 }
 
 /** Rebuilds the tray menu with the last known state, e.g. after a language change. */

@@ -104,7 +104,9 @@ describe('destinationKey', () => {
   });
 
   it('dedupes keys of a multi-address answer', () => {
-    expect(destinationKeys([{ address: '2606:4700:1:2::1' }, { address: '2606:4700:1:2::2' }, { address: '1.1.1.1' }])).toHaveLength(2);
+    expect(
+      destinationKeys([{ address: '2606:4700:1:2::1' }, { address: '2606:4700:1:2::2' }, { address: '1.1.1.1' }]),
+    ).toHaveLength(2);
   });
 });
 
@@ -208,7 +210,11 @@ describe('createLookupLimiter', () => {
   it('frees the slot when the task throws synchronously or rejects', async () => {
     const limiter = createLookupLimiter(1, 1);
     const signal = new AbortController().signal;
-    await expect(limiter.run(() => { throw new Error('x'); }, signal)).rejects.toThrow('x');
+    await expect(
+      limiter.run(() => {
+        throw new Error('x');
+      }, signal),
+    ).rejects.toThrow('x');
     await expect(limiter.run(() => Promise.reject(new Error('y')), signal)).rejects.toThrow('y');
     expect(limiter.active()).toBe(0);
   });
@@ -216,14 +222,23 @@ describe('createLookupLimiter', () => {
   it('refuses an already aborted signal without starting', async () => {
     const limiter = createLookupLimiter(1, 1);
     let ran = false;
-    expect(await codeOf(limiter.run(async () => { ran = true; }, AbortSignal.abort()))).toBe('TIMEOUT');
+    expect(
+      await codeOf(
+        limiter.run(async () => {
+          ran = true;
+        }, AbortSignal.abort()),
+      ),
+    ).toBe('TIMEOUT');
     expect(ran).toBe(false);
   });
 });
 
 describe('createSystemResolver', () => {
   type Answer = Array<{ address: string; family: number }>;
-  const OK: Answer = [{ address: '2606:4700::1', family: 6 }, { address: '1.1.1.1', family: 4 }];
+  const OK: Answer = [
+    { address: '2606:4700::1', family: 6 },
+    { address: '1.1.1.1', family: 4 },
+  ];
   const signal = () => new AbortController().signal;
 
   it('maps lookup results and bounds concurrent getaddrinfo calls', async () => {
@@ -239,7 +254,9 @@ describe('createSystemResolver', () => {
   });
 
   it('a never-settling lookup for client A does not block client B (z1o)', async () => {
-    const lookup = vi.fn((host: string) => (host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
+    const lookup = vi.fn((host: string) =>
+      host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK),
+    );
     const resolver = createSystemResolver(lookup, createLookupLimiter(3, 10));
     const controller = new AbortController();
     const hung = resolver('hang.test', controller.signal, 'A');
@@ -265,7 +282,10 @@ describe('createSystemResolver', () => {
 
   it('a waiting call for another name gets TIMEOUT at its own deadline, and the waiters are bounded', async () => {
     const hold = deferred<Answer>();
-    const resolver = createSystemResolver((host) => (host === 'hang.test' ? hold.promise : Promise.resolve(OK)), createLookupLimiter(3, 10));
+    const resolver = createSystemResolver(
+      (host) => (host === 'hang.test' ? hold.promise : Promise.resolve(OK)),
+      createLookupLimiter(3, 10),
+    );
     void resolver('hang.test', signal(), 'A');
     const controller = new AbortController();
     const waiting = resolver('other.test', controller.signal, 'A');
@@ -279,7 +299,10 @@ describe('createSystemResolver', () => {
 
   it('with no trusted identity there is no per-client slot: a hung name does not block another', async () => {
     for (const clientKey of [undefined, 'shared']) {
-      const resolver = createSystemResolver((host) => (host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)), createLookupLimiter(3, 10));
+      const resolver = createSystemResolver(
+        (host) => (host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)),
+        createLookupLimiter(3, 10),
+      );
       void resolver('hang.test', signal(), clientKey);
       expect(await resolver('b.test', signal(), clientKey)).toHaveLength(2);
       expect(await resolver('c.test', signal(), clientKey)).toHaveLength(2);
@@ -288,7 +311,10 @@ describe('createSystemResolver', () => {
 
   it('keeps A on its slot after a timeout until the lookup really returns', async () => {
     const hold = deferred<Answer>();
-    const resolver = createSystemResolver((host) => (host === 'hang.test' ? hold.promise : Promise.resolve(OK)), createLookupLimiter(3, 10));
+    const resolver = createSystemResolver(
+      (host) => (host === 'hang.test' ? hold.promise : Promise.resolve(OK)),
+      createLookupLimiter(3, 10),
+    );
     const controller = new AbortController();
     const hung = resolver('hang.test', controller.signal, 'A');
     controller.abort();
@@ -305,7 +331,11 @@ describe('createSystemResolver', () => {
     const hold = deferred<Answer>();
     const lookup = vi.fn(() => hold.promise);
     const resolver = createSystemResolver(lookup, createLookupLimiter(3, 10));
-    const calls = [resolver('same.test', signal(), 'A'), resolver('SAME.test', signal(), 'A'), resolver('same.test', signal(), 'A')];
+    const calls = [
+      resolver('same.test', signal(), 'A'),
+      resolver('SAME.test', signal(), 'A'),
+      resolver('same.test', signal(), 'A'),
+    ];
     hold.resolve(OK);
     for (const answer of await Promise.all(calls)) expect(answer).toHaveLength(2);
     expect(lookup).toHaveBeenCalledTimes(1);
@@ -325,7 +355,9 @@ describe('createSystemResolver', () => {
 
   it('refuses a name whose lookup timed out for a short time (negative cache), for every client, then retries', async () => {
     let now = 1_000;
-    const lookup = vi.fn((host: string) => (host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
+    const lookup = vi.fn((host: string) =>
+      host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK),
+    );
     const resolver = createSystemResolver(lookup, createLookupLimiter(3, 10), { now: () => now });
     const controller = new AbortController();
     const hung = resolver('hang.test', controller.signal, 'A');
@@ -345,7 +377,10 @@ describe('createSystemResolver', () => {
 
   it('does not put a name that never started (queued behind others) in the negative cache', async () => {
     const busy = deferred<Answer>();
-    const resolver = createSystemResolver((host) => (host === 'busy.test' ? busy.promise : Promise.resolve(OK)), createLookupLimiter(1, 10));
+    const resolver = createSystemResolver(
+      (host) => (host === 'busy.test' ? busy.promise : Promise.resolve(OK)),
+      createLookupLimiter(1, 10),
+    );
     void resolver('busy.test', signal(), 'A');
     const controller = new AbortController();
     const queued = resolver('queued.test', controller.signal, 'B');
@@ -358,7 +393,9 @@ describe('createSystemResolver', () => {
     let now = 1_000;
     const slow = deferred<Answer>();
     const fast = deferred<Answer>();
-    const lookup = vi.fn((host: string) => (host === 'hog.test' ? slow.promise : host === 'fast.test' ? fast.promise : Promise.resolve(OK)));
+    const lookup = vi.fn((host: string) =>
+      host === 'hog.test' ? slow.promise : host === 'fast.test' ? fast.promise : Promise.resolve(OK),
+    );
     const resolver = createSystemResolver(lookup, createLookupLimiter(1, 10), { now: () => now });
     void resolver('hog.test', signal(), 'A');
     const controller = new AbortController();
@@ -376,7 +413,9 @@ describe('createSystemResolver', () => {
 
   it('hung names under a shared public suffix never refuse other names of that suffix', async () => {
     let now = 1_000;
-    const lookup = vi.fn((host: string) => (host.includes('attacker') ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
+    const lookup = vi.fn((host: string) =>
+      host.includes('attacker') ? new Promise<Answer>(() => undefined) : Promise.resolve(OK),
+    );
     const resolver = createSystemResolver(lookup, createLookupLimiter(8, 10), { now: () => now });
     for (const name of ['x1.attacker.co.uk', 'x2.attacker.co.uk', 'x3.attacker.co.uk', 'x4.attacker.co.uk']) {
       const controller = new AbortController();
@@ -394,7 +433,9 @@ describe('createSystemResolver', () => {
 
   it('an expired negative entry leaves no state: the name is looked up again and can hang again', async () => {
     let now = 1_000;
-    const lookup = vi.fn((host: string) => (host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
+    const lookup = vi.fn((host: string) =>
+      host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK),
+    );
     const resolver = createSystemResolver(lookup, createLookupLimiter(4, 10), { now: () => now });
     for (let round = 0; round < 2; round++) {
       const controller = new AbortController();
@@ -410,7 +451,11 @@ describe('createSystemResolver', () => {
 
   it('keeps the negative cache within MAX_NEGATIVE_ENTRIES', async () => {
     let now = 1_000;
-    const resolver = createSystemResolver(() => new Promise<Answer>(() => undefined), createLookupLimiter(MAX_NEGATIVE_ENTRIES + 10, 10), { now: () => now });
+    const resolver = createSystemResolver(
+      () => new Promise<Answer>(() => undefined),
+      createLookupLimiter(MAX_NEGATIVE_ENTRIES + 10, 10),
+      { now: () => now },
+    );
     for (let i = 0; i < MAX_NEGATIVE_ENTRIES + 5; i++) {
       const controller = new AbortController();
       const hung = resolver(`h.d${i}.test`, controller.signal);

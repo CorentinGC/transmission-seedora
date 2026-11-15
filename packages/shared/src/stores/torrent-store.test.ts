@@ -122,7 +122,11 @@ describe('torrent store failure handling', () => {
 
   it('discards a response that arrives after the server changed', async () => {
     let resolve!: (v: unknown) => void;
-    api.rpcTorrentGet.mockReturnValue(new Promise((r) => { resolve = r; }));
+    api.rpcTorrentGet.mockReturnValue(
+      new Promise((r) => {
+        resolve = r;
+      }),
+    );
 
     const pending = useTorrentStore.getState().fetchTorrents();
     bumpServerEpoch();
@@ -134,7 +138,11 @@ describe('torrent store failure handling', () => {
 
   it('discards a stale recently-active response too', async () => {
     let resolve!: (v: unknown) => void;
-    api.rpcTorrentGet.mockReturnValue(new Promise((r) => { resolve = r; }));
+    api.rpcTorrentGet.mockReturnValue(
+      new Promise((r) => {
+        resolve = r;
+      }),
+    );
 
     const pending = useTorrentStore.getState().fetchRecentlyActive();
     bumpServerEpoch();

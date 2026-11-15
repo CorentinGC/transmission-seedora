@@ -32,7 +32,11 @@ const MAX_DAEMON_TEXT_LENGTH = 120;
 export function sanitizeDaemonText(value: unknown, fallback: string): string {
   if (typeof value !== 'string') return fallback;
   // Bound the work first: the status line can be large.
-  const printable = value.slice(0, 4096).replace(/[^\x20-\x7e]/g, '').slice(0, MAX_DAEMON_TEXT_LENGTH).trim();
+  const printable = value
+    .slice(0, 4096)
+    .replace(/[^\x20-\x7e]/g, '')
+    .slice(0, MAX_DAEMON_TEXT_LENGTH)
+    .trim();
   return printable || fallback;
 }
 
@@ -59,7 +63,10 @@ export type RpcErrorCode =
 
 /** Transport error with a stable `code` and a message that never contains credentials. */
 export class RpcError extends Error {
-  constructor(readonly code: RpcErrorCode, message: string) {
+  constructor(
+    readonly code: RpcErrorCode,
+    message: string,
+  ) {
     super(message);
     this.name = 'RpcError';
   }
@@ -82,7 +89,10 @@ function toRpcError(err: unknown, timeoutMs: number): RpcError {
     return new RpcError('TIMEOUT', `Request timed out after ${Math.round(timeoutMs / 1000)}s`);
   }
   if (UNTRUSTED_CERT_CODES.has(code)) {
-    return new RpcError('TLS_UNTRUSTED', 'The server certificate is not trusted (self-signed or unknown issuer). Enable "Accept self-signed certificate" for this server to connect anyway.');
+    return new RpcError(
+      'TLS_UNTRUSTED',
+      'The server certificate is not trusted (self-signed or unknown issuer). Enable "Accept self-signed certificate" for this server to connect anyway.',
+    );
   }
   if (code === 'CERT_HAS_EXPIRED') {
     return new RpcError('TLS_EXPIRED', 'The server certificate has expired.');
@@ -101,7 +111,10 @@ export class TransmissionRpcClient {
   /** Resolves once the proxy agent (if any) is built; every request awaits it, so none can bypass the proxy. */
   private readonly agentReady: Promise<http.Agent | undefined>;
 
-  constructor(private readonly config: ServerConfig, private readonly timeoutMs: number = DEFAULT_RPC_TIMEOUT_MS) {
+  constructor(
+    private readonly config: ServerConfig,
+    private readonly timeoutMs: number = DEFAULT_RPC_TIMEOUT_MS,
+  ) {
     const protocol = config.useSSL ? 'https' : 'http';
     const rpcPath = config.path.startsWith('/') ? config.path : `/${config.path}`;
     this.url = new URL(`${protocol}://${config.host}:${config.port}${rpcPath}`);

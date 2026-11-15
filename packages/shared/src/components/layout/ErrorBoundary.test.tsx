@@ -17,8 +17,7 @@ i18n.init({
   },
 });
 
-const render = (node: React.ReactNode) =>
-  renderToStaticMarkup(<I18nextProvider i18n={i18n}>{node}</I18nextProvider>);
+const render = (node: React.ReactNode) => renderToStaticMarkup(<I18nextProvider i18n={i18n}>{node}</I18nextProvider>);
 
 describe('ErrorBoundary', () => {
   it('flags the error state without keeping the error', () => {
@@ -26,7 +25,13 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders children when nothing failed', () => {
-    expect(render(<ErrorBoundary><p>ok</p></ErrorBoundary>)).toContain('ok');
+    expect(
+      render(
+        <ErrorBoundary>
+          <p>ok</p>
+        </ErrorBoundary>,
+      ),
+    ).toContain('ok');
   });
 
   it('logs the caught error', () => {

@@ -23,19 +23,23 @@ export function SessionStatsDialog({ onClose }: Props) {
       maxHeight="max-h-[80vh]"
       footer={
         <div className="flex justify-end">
-          <Button size="sm" onClick={onClose}>{t('app.close')}</Button>
+          <Button size="sm" onClick={onClose}>
+            {t('app.close')}
+          </Button>
         </div>
       }
     >
       <div>
-
         {/* Current session */}
         <div className="mb-3">
           <h3 className="text-xs font-medium text-muted-foreground mb-1.5">{t('sessionStats.currentSession')}</h3>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
             <StatRow label={t('sessionStats.downloaded')} value={formatBytes(current.downloadedBytes)} />
             <StatRow label={t('sessionStats.uploaded')} value={formatBytes(current.uploadedBytes)} />
-            <StatRow label={t('sessionStats.ratio')} value={current.downloadedBytes > 0 ? (current.uploadedBytes / current.downloadedBytes).toFixed(2) : '—'} />
+            <StatRow
+              label={t('sessionStats.ratio')}
+              value={current.downloadedBytes > 0 ? (current.uploadedBytes / current.downloadedBytes).toFixed(2) : '—'}
+            />
             <StatRow label={t('sessionStats.filesAdded')} value={current.filesAdded.toLocaleString()} />
             <StatRow label={t('sessionStats.activeTime')} value={formatDuration(current.secondsActive)} />
             <StatRow label={t('sessionStats.downloadSpeed')} value={`${formatBytes(stats.downloadSpeed)}/s`} />
@@ -51,7 +55,14 @@ export function SessionStatsDialog({ onClose }: Props) {
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
             <StatRow label={t('sessionStats.downloaded')} value={formatBytes(cumulative.downloadedBytes)} />
             <StatRow label={t('sessionStats.uploaded')} value={formatBytes(cumulative.uploadedBytes)} />
-            <StatRow label={t('sessionStats.ratio')} value={cumulative.downloadedBytes > 0 ? (cumulative.uploadedBytes / cumulative.downloadedBytes).toFixed(2) : '—'} />
+            <StatRow
+              label={t('sessionStats.ratio')}
+              value={
+                cumulative.downloadedBytes > 0
+                  ? (cumulative.uploadedBytes / cumulative.downloadedBytes).toFixed(2)
+                  : '—'
+              }
+            />
             <StatRow label={t('sessionStats.filesAdded')} value={cumulative.filesAdded.toLocaleString()} />
             <StatRow label={t('sessionStats.activeTime')} value={formatDuration(cumulative.secondsActive)} />
             <StatRow label={t('sessionStats.sessionCount')} value={cumulative.sessionCount.toLocaleString()} />
@@ -66,7 +77,6 @@ export function SessionStatsDialog({ onClose }: Props) {
           <StatRow label={t('sessionStats.pausedTorrents')} value={String(stats.pausedTorrentCount)} />
           <StatRow label={t('sessionStats.totalTorrents')} value={String(stats.torrentCount)} />
         </div>
-
       </div>
     </Dialog>
   );

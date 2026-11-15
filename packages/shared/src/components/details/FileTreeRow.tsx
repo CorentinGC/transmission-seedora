@@ -100,7 +100,12 @@ export function FileTreeRow({
         >
           <PriorityBadge priority={folderPriority} name={node.name} onClick={handlePriorityClick} t={t} />
           {/* Click handling lives on the row; this button makes the toggle focusable and announced. */}
-          <button type="button" aria-expanded={isExpanded} title={node.name} className="flex min-w-0 flex-1 items-center gap-1 text-left">
+          <button
+            type="button"
+            aria-expanded={isExpanded}
+            title={node.name}
+            className="flex min-w-0 flex-1 items-center gap-1 text-left"
+          >
             {isExpanded ? <ChevronDown size={12} aria-hidden="true" /> : <ChevronRight size={12} aria-hidden="true" />}
             <Folder size={14} className="shrink-0 text-muted-foreground" aria-hidden="true" />
             <span className="flex-1 truncate">{node.name}</span>
@@ -161,7 +166,9 @@ export function FileTreeRow({
         className="w-3.5"
       />
       <File size={14} className="text-muted-foreground" />
-      <span className="flex-1 truncate" title={node.name}>{node.name}</span>
+      <span className="flex-1 truncate" title={node.name}>
+        {node.name}
+      </span>
       <span className="w-20 text-right text-muted-foreground">{formatBytes(node.totalSize)}</span>
       <span className="w-16 text-right">{formatPercent(progress)}</span>
     </div>

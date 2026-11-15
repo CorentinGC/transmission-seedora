@@ -209,6 +209,11 @@ export type RpcCall = z.infer<typeof rpcCallSchema>;
 
 /** A GeoIP batch: at most 512 valid IPs (raw length), deduplicated. */
 export const geoipInputSchema = z
-  .array(z.string().max(45).refine((ip) => !ip.includes('%') && isIP(ip) !== 0, { message: 'Invalid IP' }))
+  .array(
+    z
+      .string()
+      .max(45)
+      .refine((ip) => !ip.includes('%') && isIP(ip) !== 0, { message: 'Invalid IP' }),
+  )
   .max(MAX_GEOIP_IPS)
   .transform((ips) => [...new Set(ips)]);

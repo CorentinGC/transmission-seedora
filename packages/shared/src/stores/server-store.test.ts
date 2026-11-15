@@ -8,7 +8,11 @@ import { useServerStore } from './server-store';
 beforeAll(async () => {
   await i18n.init({
     lng: 'en',
-    resources: { en: { translation: { notification: { unknownError: 'Unknown error' }, errors: { rpc: { NETWORK: 'Network error' } } } } },
+    resources: {
+      en: {
+        translation: { notification: { unknownError: 'Unknown error' }, errors: { rpc: { NETWORK: 'Network error' } } },
+      },
+    },
   });
 });
 
@@ -63,7 +67,11 @@ describe('server store setActiveServer', () => {
   it('ignores a stale activation that settles after a newer one started', async () => {
     let resolveFirst!: (v: unknown) => void;
     api.serverSetActive
-      .mockReturnValueOnce(new Promise((r) => { resolveFirst = r; }))
+      .mockReturnValueOnce(
+        new Promise((r) => {
+          resolveFirst = r;
+        }),
+      )
       .mockResolvedValueOnce({ success: true });
     api.rpcSessionGet.mockResolvedValue({ success: true });
 
@@ -80,7 +88,11 @@ describe('server store setActiveServer', () => {
   it('ignores a stale activation failure after a newer one succeeded', async () => {
     let rejectFirst!: (v: unknown) => void;
     api.serverSetActive
-      .mockReturnValueOnce(new Promise((r) => { rejectFirst = r; }))
+      .mockReturnValueOnce(
+        new Promise((r) => {
+          rejectFirst = r;
+        }),
+      )
       .mockResolvedValueOnce({ success: true });
     api.rpcSessionGet.mockResolvedValue({ success: true });
 
@@ -97,7 +109,11 @@ describe('server store setActiveServer', () => {
     let resolveProbe!: (v: unknown) => void;
     api.serverSetActive.mockResolvedValue({ success: true });
     api.rpcSessionGet
-      .mockReturnValueOnce(new Promise((r) => { resolveProbe = r; }))
+      .mockReturnValueOnce(
+        new Promise((r) => {
+          resolveProbe = r;
+        }),
+      )
       .mockResolvedValueOnce({ success: true });
 
     const first = useServerStore.getState().setActiveServer('srv-old');
@@ -237,12 +253,34 @@ describe('server store updateServer', () => {
 
   it('web flow: a changed password is never stale on the next edit', async () => {
     useServerStore.setState({
-      servers: [{ id: 's1', name: 'Home', host: 'h', port: 9091, path: '/rpc', useSSL: false, password: 'old', hasPassword: true }],
+      servers: [
+        {
+          id: 's1',
+          name: 'Home',
+          host: 'h',
+          port: 9091,
+          path: '/rpc',
+          useSSL: false,
+          password: 'old',
+          hasPassword: true,
+        },
+      ],
     });
     api.serverUpdate.mockResolvedValue({ success: true });
     api.serverList.mockResolvedValue({
       success: true,
-      data: [{ id: 's1', name: 'Home', host: 'h', port: 9091, path: '/rpc', useSSL: false, password: 'new', hasPassword: true }],
+      data: [
+        {
+          id: 's1',
+          name: 'Home',
+          host: 'h',
+          port: 9091,
+          path: '/rpc',
+          useSSL: false,
+          password: 'new',
+          hasPassword: true,
+        },
+      ],
     });
     await useServerStore.getState().updateServer('s1', { password: 'new' });
     expect(useServerStore.getState().servers[0]?.password).toBe('new');

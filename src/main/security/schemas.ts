@@ -56,7 +56,9 @@ export const serverUpdateSchema = z
  * Server entry inside an import file: lenient about extra keys (older exports), `id` is regenerated.
  * `allowSelfSigned` is omitted (and therefore stripped): a backup must never silently disable TLS verification.
  */
-export const importedServerSchema = z.object({ ...serverFields, id: z.string().optional() }).omit({ allowSelfSigned: true });
+export const importedServerSchema = z
+  .object({ ...serverFields, id: z.string().optional() })
+  .omit({ allowSelfSigned: true });
 
 /** Field schemas of the preferences (also used to sanitise stored preferences one field at a time). */
 export const preferenceFields = {
@@ -98,7 +100,10 @@ export const importDataSchema = z.object({
 });
 
 /** `CONFIG_IMPORT` argument: either `{ filePath }` (dialog-approved) or the parsed data. */
-export const importRequestSchema = z.union([z.strictObject({ filePath: z.string().min(1).max(4096) }), importDataSchema]);
+export const importRequestSchema = z.union([
+  z.strictObject({ filePath: z.string().min(1).max(4096) }),
+  importDataSchema,
+]);
 
 /** Open-directory dialog request: `{ purpose? }` only; `watch-folder` selects the watch-folder approval. */
 export const openDirectoryRequestSchema = z.strictObject({ purpose: z.enum(['watch-folder']).optional() }).optional();
@@ -107,7 +112,10 @@ export const openDirectoryRequestSchema = z.strictObject({ purpose: z.enum(['wat
 export const openFileRequestSchema = z
   .looseObject({
     preset: z.enum(['torrent', 'json']).optional(),
-    filters: z.array(z.looseObject({ extensions: z.array(z.string()).max(20).optional() })).max(10).optional(),
+    filters: z
+      .array(z.looseObject({ extensions: z.array(z.string()).max(20).optional() }))
+      .max(10)
+      .optional(),
   })
   .optional();
 
@@ -117,7 +125,11 @@ export const saveFileArgsSchema = z.tuple([
   z.string().max(5_000_000),
 ]);
 
-const rpcKey = z.string().min(1).max(64).regex(/^[A-Za-z0-9_-]+$/);
+const rpcKey = z
+  .string()
+  .min(1)
+  .max(64)
+  .regex(/^[A-Za-z0-9_-]+$/);
 
 /** Free-form RPC argument bag: bounded keys and JSON values (the daemon validates semantics). */
 export const rpcParamsSchema = z
@@ -130,7 +142,11 @@ export const rpcParamsWithoutIdsSchema = rpcParamsSchema.refine((v) => !('ids' i
 /** `torrent-add` params: allowlisted keys only. */
 export const torrentAddSchema = z.strictObject({
   filename: z.string().min(1).max(8192).optional(),
-  metainfo: z.string().max(MAX_METAINFO_CHARS).regex(/^[A-Za-z0-9+/=\s]*$/).optional(),
+  metainfo: z
+    .string()
+    .max(MAX_METAINFO_CHARS)
+    .regex(/^[A-Za-z0-9+/=\s]*$/)
+    .optional(),
   'download-dir': shortString(4096).optional(),
   labels: z.array(shortString(256)).max(100).optional(),
   paused: z.boolean().optional(),

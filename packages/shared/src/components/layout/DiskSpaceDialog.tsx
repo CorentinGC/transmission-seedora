@@ -58,9 +58,12 @@ export function DiskSpaceDialog({ onClose }: Props) {
         {deduped.map((detail) => (
           <div key={detail.path} className="text-sm">
             <div className="flex justify-between mb-1">
-              <span className="font-mono text-xs truncate flex-1 mr-2" title={detail.path}>{detail.path}</span>
+              <span className="font-mono text-xs truncate flex-1 mr-2" title={detail.path}>
+                {detail.path}
+              </span>
               <span className="text-xs text-muted-foreground whitespace-nowrap">
-                {formatBytes(detail.freeSpace)} {t('statusBar.freeSpace', { space: '' }).replace(' ', '').length > 0 ? '' : 'free'}
+                {formatBytes(detail.freeSpace)}{' '}
+                {t('statusBar.freeSpace', { space: '' }).replace(' ', '').length > 0 ? '' : 'free'}
               </span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">

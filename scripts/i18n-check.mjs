@@ -15,11 +15,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const LOCALES_DIR = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '..',
-  'packages/shared/src/locales',
-);
+const LOCALES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'packages/shared/src/locales');
 const SOURCE_LOCALE = 'en';
 const asJson = process.argv.includes('--json');
 const showUntranslated = process.argv.includes('--untranslated');
@@ -112,7 +108,8 @@ if (asJson) {
     if (result.missing.length) problems.push(`${result.missing.length} missing`);
     if (result.extra.length) problems.push(`${result.extra.length} extra`);
     if (result.placeholderMismatch.length) problems.push(`${result.placeholderMismatch.length} placeholder mismatch`);
-    if (showUntranslated && result.untranslated.length) problems.push(`${result.untranslated.length} identical to English`);
+    if (showUntranslated && result.untranslated.length)
+      problems.push(`${result.untranslated.length} identical to English`);
     if (!problems.length) continue;
     console.log(`  ${locale}: ${problems.join(', ')}`);
     for (const key of result.missing) console.log(`      missing      ${key}`);

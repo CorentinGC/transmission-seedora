@@ -51,14 +51,19 @@ export async function isSessionChangeAllowed(params: Record<string, unknown>, de
     current = undefined;
   }
   // The daemon may answer in either spelling: compare under the canonical name.
-  const currentByKey = current && Object.fromEntries(Object.entries(current).map(([key, value]) => [canonicalKey(key), value]));
+  const currentByKey =
+    current && Object.fromEntries(Object.entries(current).map(([key, value]) => [canonicalKey(key), value]));
   const changed = wanted.filter(({ key, value }) => currentByKey === undefined || currentByKey[key] !== value);
   if (changed.length === 0) return true;
   return deps.confirm(withEffectiveFilenames(changed, params, currentByKey));
 }
 
 /** Pairs each enabled/filename key: whenever a script is switched on, the user sees which file would run. */
-function withEffectiveFilenames(changed: ScriptChange[], params: Record<string, unknown>, current: Record<string, unknown> | undefined): ScriptChange[] {
+function withEffectiveFilenames(
+  changed: ScriptChange[],
+  params: Record<string, unknown>,
+  current: Record<string, unknown> | undefined,
+): ScriptChange[] {
   const requested = Object.fromEntries(Object.entries(params).map(([key, value]) => [canonicalKey(key), value]));
   const result = [...changed];
   for (const { key, value } of changed) {

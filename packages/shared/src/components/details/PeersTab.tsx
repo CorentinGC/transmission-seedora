@@ -19,7 +19,10 @@ export function PeersTab({ torrent }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const api = useApi();
   const peers = data?.peers ?? [];
-  const addressKey = peers.map((p) => p.address).sort().join(',');
+  const addressKey = peers
+    .map((p) => p.address)
+    .sort()
+    .join(',');
 
   const virtualizer = useVirtualizer({
     count: peers.length,
@@ -39,11 +42,17 @@ export function PeersTab({ torrent }: Props) {
       .catch(() => {
         // GeoIP is a cosmetic enrichment: peers stay listed without flags.
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [addressKey, api]);
 
   if (error && !data) {
-    return <div role="alert" className="text-destructive-text text-xs">{t('details.loadFailed', { error })}</div>;
+    return (
+      <div role="alert" className="text-destructive-text text-xs">
+        {t('details.loadFailed', { error })}
+      </div>
+    );
   }
 
   if (peers.length === 0) {
@@ -51,19 +60,44 @@ export function PeersTab({ torrent }: Props) {
   }
 
   return (
-    <div role="table" aria-label={t('details.peers')} aria-rowcount={peers.length + 1} className="flex h-full min-h-0 flex-col text-xs">
+    <div
+      role="table"
+      aria-label={t('details.peers')}
+      aria-rowcount={peers.length + 1}
+      className="flex h-full min-h-0 flex-col text-xs"
+    >
       <div role="row" className="flex items-center gap-2 px-1 py-1 font-medium text-muted-foreground border-b">
-        <span role="columnheader" className="w-8"><span className="sr-only">{t('peersTab.country')}</span></span>
-        <span role="columnheader" className="w-36">{t('peersTab.address')}</span>
-        <span role="columnheader" className="w-32">{t('peersTab.client')}</span>
-        <span role="columnheader" className="w-12">{t('peersTab.flags')}</span>
-        <span role="columnheader" className="w-14 text-right">{t('peersTab.progress')}</span>
-        <span role="columnheader" className="w-20 text-right">{t('peersTab.down')}</span>
-        <span role="columnheader" className="w-20 text-right">{t('peersTab.up')}</span>
+        <span role="columnheader" className="w-8">
+          <span className="sr-only">{t('peersTab.country')}</span>
+        </span>
+        <span role="columnheader" className="w-36">
+          {t('peersTab.address')}
+        </span>
+        <span role="columnheader" className="w-32">
+          {t('peersTab.client')}
+        </span>
+        <span role="columnheader" className="w-12">
+          {t('peersTab.flags')}
+        </span>
+        <span role="columnheader" className="w-14 text-right">
+          {t('peersTab.progress')}
+        </span>
+        <span role="columnheader" className="w-20 text-right">
+          {t('peersTab.down')}
+        </span>
+        <span role="columnheader" className="w-20 text-right">
+          {t('peersTab.up')}
+        </span>
       </div>
       {/* Focusable so keyboard users can scroll the list. */}
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
-      <div ref={scrollRef} role="rowgroup" tabIndex={0} aria-label={t('details.peers')} className="min-h-0 flex-1 overflow-auto focus-visible:outline-2 focus-visible:outline-ring">
+      <div
+        ref={scrollRef}
+        role="rowgroup"
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+        tabIndex={0}
+        aria-label={t('details.peers')}
+        className="min-h-0 flex-1 overflow-auto focus-visible:outline-2 focus-visible:outline-ring"
+      >
         <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
           {virtualizer.getVirtualItems().map((item) => {
             const peer = peers[item.index];

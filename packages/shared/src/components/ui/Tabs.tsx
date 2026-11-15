@@ -33,11 +33,15 @@ export function Tabs({ tabs, activeTab, onTabChange, size = 'default', id, label
     const index = tabs.findIndex((tab) => tab.id === activeTab);
     const last = tabs.length - 1;
     const next =
-      e.key === 'ArrowRight' ? (index + 1) % tabs.length
-      : e.key === 'ArrowLeft' ? (index - 1 + tabs.length) % tabs.length
-      : e.key === 'Home' ? 0
-      : e.key === 'End' ? last
-      : -1;
+      e.key === 'ArrowRight'
+        ? (index + 1) % tabs.length
+        : e.key === 'ArrowLeft'
+          ? (index - 1 + tabs.length) % tabs.length
+          : e.key === 'Home'
+            ? 0
+            : e.key === 'End'
+              ? last
+              : -1;
     if (next === -1) return;
     e.preventDefault();
     onTabChange(tabs[next].id);

@@ -35,7 +35,10 @@ describe('web-storage', () => {
   });
 
   it('loads preferences stored before confirmOnAdd and pathMappings were dropped, without those keys (e2c)', () => {
-    data.set('seedora:preferences', JSON.stringify({ theme: 'dark', confirmOnAdd: false, pathMappings: [{ remote: '/a', local: '/b' }] }));
+    data.set(
+      'seedora:preferences',
+      JSON.stringify({ theme: 'dark', confirmOnAdd: false, pathMappings: [{ remote: '/a', local: '/b' }] }),
+    );
     const prefs = getPreferences();
     expect(prefs.theme).toBe('dark');
     expect(prefs).not.toHaveProperty('confirmOnAdd');

@@ -24,11 +24,28 @@ export interface RecordedRequest {
 
 const SESSION_ID = 'fake-session-id-0001';
 const ARRAY_FIELDS = new Set([
-  'files', 'fileStats', 'peers', 'trackers', 'trackerStats', 'availability', 'priorities', 'wanted', 'labels',
+  'files',
+  'fileStats',
+  'peers',
+  'trackers',
+  'trackerStats',
+  'availability',
+  'priorities',
+  'wanted',
+  'labels',
 ]);
 const STRING_FIELDS = new Set([
-  'name', 'hashString', 'magnetLink', 'errorString', 'downloadDir', 'comment', 'creator', 'trackerList',
-  'pieces', 'primaryMimeType', 'group',
+  'name',
+  'hashString',
+  'magnetLink',
+  'errorString',
+  'downloadDir',
+  'comment',
+  'creator',
+  'trackerList',
+  'pieces',
+  'primaryMimeType',
+  'group',
 ]);
 
 function torrentFields(t: FakeTorrent, fields: string[]): Record<string, unknown> {
@@ -71,15 +88,31 @@ function torrentFields(t: FakeTorrent, fields: string[]): Record<string, unknown
 }
 
 const SESSION = {
-  'alt-speed-down': 50, 'alt-speed-enabled': false, 'alt-speed-up': 50, 'download-dir': '/downloads',
-  'download-queue-enabled': true, 'download-queue-size': 5, 'peer-port': 51413, 'rpc-version': 18,
-  'rpc-version-semver': '5.3.0', 'seed-queue-enabled': false, 'seed-queue-size': 10, 'session-id': SESSION_ID,
-  'speed-limit-down': 100, 'speed-limit-down-enabled': false, 'speed-limit-up': 100, 'speed-limit-up-enabled': false,
-  'start-added-torrents': true, version: '4.0.6 (fake)',
+  'alt-speed-down': 50,
+  'alt-speed-enabled': false,
+  'alt-speed-up': 50,
+  'download-dir': '/downloads',
+  'download-queue-enabled': true,
+  'download-queue-size': 5,
+  'peer-port': 51413,
+  'rpc-version': 18,
+  'rpc-version-semver': '5.3.0',
+  'seed-queue-enabled': false,
+  'seed-queue-size': 10,
+  'session-id': SESSION_ID,
+  'speed-limit-down': 100,
+  'speed-limit-down-enabled': false,
+  'speed-limit-up': 100,
+  'speed-limit-up-enabled': false,
+  'start-added-torrents': true,
+  version: '4.0.6 (fake)',
   units: {
-    'speed-units': ['kB/s', 'MB/s', 'GB/s', 'TB/s'], 'speed-bytes': 1000,
-    'size-units': ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'], 'size-bytes': 1000,
-    'memory-units': ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'], 'memory-bytes': 1024,
+    'speed-units': ['kB/s', 'MB/s', 'GB/s', 'TB/s'],
+    'speed-bytes': 1000,
+    'size-units': ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'],
+    'size-bytes': 1000,
+    'memory-units': ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'],
+    'memory-bytes': 1024,
   },
 };
 
@@ -98,7 +131,14 @@ export async function startFakeTransmission(
   let nextId = 1;
   const make = (partial: Partial<FakeTorrent> & { name: string }): FakeTorrent => {
     const id = nextId++;
-    return { id, hashString: id.toString(16).padStart(40, '0'), status: 4, totalSize: 1_000_000, percentDone: 0.5, ...partial };
+    return {
+      id,
+      hashString: id.toString(16).padStart(40, '0'),
+      status: 4,
+      totalSize: 1_000_000,
+      percentDone: 0.5,
+      ...partial,
+    };
   };
   const torrents = initial.map(make);
   const requests: RecordedRequest[] = [];
@@ -129,8 +169,18 @@ export async function startFakeTransmission(
           break;
         case 'session-stats':
           result = {
-            activeTorrentCount: torrents.length, downloadSpeed: 0, pausedTorrentCount: 0, torrentCount: torrents.length, uploadSpeed: 0,
-            'cumulative-stats': { uploadedBytes: 0, downloadedBytes: 0, filesAdded: 0, secondsActive: 0, sessionCount: 1 },
+            activeTorrentCount: torrents.length,
+            downloadSpeed: 0,
+            pausedTorrentCount: 0,
+            torrentCount: torrents.length,
+            uploadSpeed: 0,
+            'cumulative-stats': {
+              uploadedBytes: 0,
+              downloadedBytes: 0,
+              filesAdded: 0,
+              secondsActive: 0,
+              sessionCount: 1,
+            },
             'current-stats': { uploadedBytes: 0, downloadedBytes: 0, filesAdded: 0, secondsActive: 0, sessionCount: 1 },
           };
           break;
@@ -142,7 +192,12 @@ export async function startFakeTransmission(
         }
         case 'torrent-add': {
           const source = String(args.filename ?? 'uploaded.torrent');
-          const added = make({ name: source.startsWith('magnet:') ? decodeURIComponent(/dn=([^&]+)/.exec(source)?.[1] ?? 'magnet') : source, percentDone: 0 });
+          const added = make({
+            name: source.startsWith('magnet:')
+              ? decodeURIComponent(/dn=([^&]+)/.exec(source)?.[1] ?? 'magnet')
+              : source,
+            percentDone: 0,
+          });
           torrents.push(added);
           result = { 'torrent-added': { id: added.id, name: added.name, hashString: added.hashString } };
           break;
@@ -164,7 +219,9 @@ export async function startFakeTransmission(
         default:
           break;
       }
-      res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify({ result: 'success', arguments: result }));
+      res
+        .writeHead(200, { 'Content-Type': 'application/json' })
+        .end(JSON.stringify({ result: 'success', arguments: result }));
     });
   });
 
@@ -173,7 +230,11 @@ export async function startFakeTransmission(
     port: (server.address() as AddressInfo).port,
     torrents,
     requests,
-    close: () => new Promise<void>((resolve) => { server.closeAllConnections(); server.close(() => resolve()); }),
+    close: () =>
+      new Promise<void>((resolve) => {
+        server.closeAllConnections();
+        server.close(() => resolve());
+      }),
   };
 }
 

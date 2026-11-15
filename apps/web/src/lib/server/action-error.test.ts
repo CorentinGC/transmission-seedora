@@ -36,7 +36,10 @@ describe('failureFromError', () => {
     failureFromError(new ConfigError(SECRET_TEXT));
     expect(errorLog).toHaveBeenCalledTimes(2);
     expect(errorLog.mock.calls[0]).toEqual(['Server action failed', { name: 'TypeError', code: 'CONNECTION_FAILED' }]);
-    expect(errorLog.mock.calls[1]).toEqual(['Server action failed', { name: 'ConfigError', code: 'SERVER_MISCONFIGURED' }]);
+    expect(errorLog.mock.calls[1]).toEqual([
+      'Server action failed',
+      { name: 'ConfigError', code: 'SERVER_MISCONFIGURED' },
+    ]);
     expect(JSON.stringify(errorLog.mock.calls)).not.toMatch(/hunter2|10\.1\.2\.3|internal/);
   });
 });

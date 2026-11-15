@@ -58,7 +58,11 @@ export function FilesTab({ torrent }: Props) {
   }, []);
 
   const applyFileChange = useCallback(
-    async (props: Record<string, unknown>, optimistic: (stat: TorrentFileStat) => TorrentFileStat, indices: number[]) => {
+    async (
+      props: Record<string, unknown>,
+      optimistic: (stat: TorrentFileStat) => TorrentFileStat,
+      indices: number[],
+    ) => {
       mutate((prev) => {
         const newStats = [...prev.fileStats];
         for (const idx of indices) {
@@ -88,15 +92,17 @@ export function FilesTab({ torrent }: Props) {
     [applyFileChange],
   );
 
-  const handleContextMenu = useCallback(
-    (e: React.MouseEvent, indices: number[], priority: number, wanted: boolean) => {
-      setContextMenu({ x: e.clientX, y: e.clientY, fileIndices: indices, currentPriority: priority, isWanted: wanted });
-    },
-    [],
-  );
+  const handleContextMenu = useCallback((e: React.MouseEvent, indices: number[], priority: number, wanted: boolean) => {
+    setContextMenu({ x: e.clientX, y: e.clientY, fileIndices: indices, currentPriority: priority, isWanted: wanted });
+  }, []);
 
   if (!tree || !fileStats) {
-    if (error) return <div role="alert" className="text-destructive-text">{t('details.loadFailed', { error })}</div>;
+    if (error)
+      return (
+        <div role="alert" className="text-destructive-text">
+          {t('details.loadFailed', { error })}
+        </div>
+      );
     return <div className="text-muted-foreground">{t('details.loadingFiles')}</div>;
   }
 

@@ -43,8 +43,7 @@ const MAX_RPC_ERROR_LENGTH = 200;
 
 /** Result of an action: success with data, or a fixed code and message. */
 export type ActionResult<T = unknown> =
-  | { success: true; data?: T }
-  | { success: false; error: string; code: ErrorCode };
+  { success: true; data?: T } | { success: false; error: string; code: ErrorCode };
 
 /** Injection points, used by tests. */
 export interface TransmissionOptions {
@@ -68,7 +67,15 @@ export interface TransmissionOptions {
 const sessionIds = new Map<string, string>();
 
 function cacheKey(target: ServerTarget): string {
-  const parts = [target.useSSL, target.allowSelfSigned === true, target.host.toLowerCase(), target.port, target.path, target.username ?? '', target.password ?? ''];
+  const parts = [
+    target.useSSL,
+    target.allowSelfSigned === true,
+    target.host.toLowerCase(),
+    target.port,
+    target.path,
+    target.username ?? '',
+    target.password ?? '',
+  ];
   return createHash('sha256').update(JSON.stringify(parts)).digest('hex');
 }
 
@@ -126,7 +133,13 @@ export async function callTransmission(
   const post = options.post ?? postJson;
   const deadline = AbortSignal.timeout(timeoutMs);
   const signal = options.signal ? AbortSignal.any([deadline, options.signal]) : deadline;
-  const outboundTarget: OutboundTarget = { host: target.host, port: target.port, path: target.path, useSSL: target.useSSL, allowSelfSigned: target.allowSelfSigned };
+  const outboundTarget: OutboundTarget = {
+    host: target.host,
+    port: target.port,
+    path: target.path,
+    useSSL: target.useSSL,
+    allowSelfSigned: target.allowSelfSigned,
+  };
   const body: { method: RpcMethod; arguments?: Record<string, unknown> } = { method: call.method };
   if (call.args) body.arguments = call.args;
   const key = cacheKey(target);

@@ -58,7 +58,10 @@ export function registerLaunchHandling(
     if (target?.kind === 'torrent-file') submit(target);
   });
 
-  handleGuarded(isTrusted, IPC.LAUNCH_TAKE, z.tuple([]), (): IpcResponse<LaunchTargetPayload[]> => ({ success: true, data: queue.take() }));
+  handleGuarded(isTrusted, IPC.LAUNCH_TAKE, z.tuple([]), (): IpcResponse<LaunchTargetPayload[]> => ({
+    success: true,
+    data: queue.take(),
+  }));
 
   return {
     handleArgv,

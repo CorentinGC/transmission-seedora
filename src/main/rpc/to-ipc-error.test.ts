@@ -4,7 +4,11 @@ import { toIpcError } from './to-ipc-error';
 
 describe('toIpcError', () => {
   it('keeps the message and code of an RpcError', () => {
-    expect(toIpcError(new RpcError('AUTH', 'HTTP 401: Unauthorized'))).toEqual({ success: false, error: 'HTTP 401: Unauthorized', code: 'AUTH' });
+    expect(toIpcError(new RpcError('AUTH', 'HTTP 401: Unauthorized'))).toEqual({
+      success: false,
+      error: 'HTTP 401: Unauthorized',
+      code: 'AUTH',
+    });
   });
 
   it('hides the text of any other error, which could carry credentials', () => {

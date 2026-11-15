@@ -17,10 +17,7 @@ export interface HeaderEntry {
 const VERCEL_LIVE = 'https://vercel.live';
 
 /** Picks the header profile from the process environment. Fails closed to production. */
-export function resolveSecurityEnvironment(env: {
-  NODE_ENV?: string;
-  VERCEL_ENV?: string;
-}): SecurityEnvironment {
+export function resolveSecurityEnvironment(env: { NODE_ENV?: string; VERCEL_ENV?: string }): SecurityEnvironment {
   if (env.NODE_ENV === 'development') return 'development';
   if (env.VERCEL_ENV === 'preview') return 'preview';
   return 'production';

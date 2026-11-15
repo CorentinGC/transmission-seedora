@@ -15,7 +15,8 @@ export function getStatusLabelKey(status: number, error: number): string {
   return STATUS_LABEL_KEYS[status] ?? 'status.unknown';
 }
 
-export type StatusFilter = 'all' | 'downloading' | 'seeding' | 'completed' | 'active' | 'inactive' | 'stopped' | 'error' | 'waiting';
+export type StatusFilter =
+  'all' | 'downloading' | 'seeding' | 'completed' | 'active' | 'inactive' | 'stopped' | 'error' | 'waiting';
 
 export function matchesStatusFilter(
   status: number,
@@ -43,7 +44,11 @@ export function matchesStatusFilter(
     case 'error':
       return error > 0;
     case 'waiting':
-      return status === TorrentStatus.DOWNLOAD_WAIT || status === TorrentStatus.SEED_WAIT || status === TorrentStatus.CHECK_WAIT;
+      return (
+        status === TorrentStatus.DOWNLOAD_WAIT ||
+        status === TorrentStatus.SEED_WAIT ||
+        status === TorrentStatus.CHECK_WAIT
+      );
     default:
       return true;
   }

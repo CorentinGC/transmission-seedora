@@ -12,9 +12,15 @@ function setup() {
   };
   const deps: MenuEventDeps = {
     selectedIds: () => [4, 5],
-    startTorrents: vi.fn(), stopTorrents: vi.fn(), verifyTorrents: vi.fn(), reannounceTorrents: vi.fn(),
-    startAll: vi.fn(), stopAll: vi.fn(), toggleAltSpeed: vi.fn(),
-    toggleFilterPanel: vi.fn(), toggleDetailsPanel: vi.fn(),
+    startTorrents: vi.fn(),
+    stopTorrents: vi.fn(),
+    verifyTorrents: vi.fn(),
+    reannounceTorrents: vi.fn(),
+    startAll: vi.fn(),
+    stopAll: vi.fn(),
+    toggleAltSpeed: vi.fn(),
+    toggleFilterPanel: vi.fn(),
+    toggleDetailsPanel: vi.fn(),
     handlers: () => ({ onAddTorrent: vi.fn() }),
   };
   return { api, listeners, unsubscribe, deps };

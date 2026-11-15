@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createEffectHarness } from './effect-harness';
 import type { ServerConfig } from '../types/server';
 
-const harness = vi.hoisted(() => ({ current: null as null | ReturnType<typeof import('./effect-harness').createEffectHarness> }));
+const harness = vi.hoisted(() => ({
+  current: null as null | ReturnType<typeof import('./effect-harness').createEffectHarness>,
+}));
 const world = vi.hoisted(() => ({
   api: null as unknown,
   serverState: {} as Record<string, unknown>,
@@ -42,10 +44,19 @@ const { useAppBootstrap } = await import('./useAppBootstrap');
 const runHook = useAppBootstrap;
 const { useNotificationStore } = await import('../stores/notification-store');
 
-const server = (id: string): ServerConfig => ({ id, name: id, host: 'h', port: 9091, path: '/transmission/rpc', useSSL: false });
+const server = (id: string): ServerConfig => ({
+  id,
+  name: id,
+  host: 'h',
+  port: 9091,
+  path: '/transmission/rpc',
+  useSSL: false,
+});
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
-function setup(opts: { servers?: ServerConfig[]; activeServerId?: string | null; prefs?: unknown; prefsThrows?: boolean } = {}) {
+function setup(
+  opts: { servers?: ServerConfig[]; activeServerId?: string | null; prefs?: unknown; prefsThrows?: boolean } = {},
+) {
   const actions = {
     fetchServers: vi.fn(),
     setActiveServer: vi.fn(),
@@ -59,11 +70,17 @@ function setup(opts: { servers?: ServerConfig[]; activeServerId?: string | null;
     fetchServers: actions.fetchServers,
     setActiveServer: actions.setActiveServer,
   };
-  world.uiState = { setTheme: actions.setTheme, setPollingInterval: actions.setPollingInterval, setRelativeDates: actions.setRelativeDates };
+  world.uiState = {
+    setTheme: actions.setTheme,
+    setPollingInterval: actions.setPollingInterval,
+    setRelativeDates: actions.setRelativeDates,
+  };
   world.api = {
     prefsGet: vi.fn(async () => {
       if (opts.prefsThrows) throw new Error('boom');
-      return opts.prefs === undefined ? { success: false as const, error: 'x' } : { success: true as const, data: opts.prefs };
+      return opts.prefs === undefined
+        ? { success: false as const, error: 'x' }
+        : { success: true as const, data: opts.prefs };
     }),
   };
   const render = (pick?: (s: readonly ServerConfig[]) => string | null) => {
@@ -87,8 +104,14 @@ describe('useAppBootstrap: preferences', () => {
   it('loads servers, applies theme/interval/dates/language and the stored layout', async () => {
     const { actions, render } = setup({
       prefs: {
-        theme: 'dark', pollingInterval: 5000, relativeDates: true, language: 'fr',
-        columnVisibility: { name: false }, columnSizing: { name: 120 }, columnOrder: ['name', 'size'], speedPresets: [1, 2],
+        theme: 'dark',
+        pollingInterval: 5000,
+        relativeDates: true,
+        language: 'fr',
+        columnVisibility: { name: false },
+        columnSizing: { name: 120 },
+        columnOrder: ['name', 'size'],
+        speedPresets: [1, 2],
       },
     });
     render();
@@ -99,14 +122,25 @@ describe('useAppBootstrap: preferences', () => {
     expect(actions.setRelativeDates).toHaveBeenCalledWith(true);
     expect(world.changeLanguage).toHaveBeenCalledWith('fr');
     expect(world.uiSetState).toHaveBeenCalledWith({
-      columnVisibility: { name: false }, columnSizing: { name: 120 }, columnOrder: ['name', 'size'], speedPresets: [1, 2],
+      columnVisibility: { name: false },
+      columnSizing: { name: 120 },
+      columnOrder: ['name', 'size'],
+      speedPresets: [1, 2],
     });
     expect(world.applyTheme).toHaveBeenCalled();
   });
 
   it('does not touch the language when it already matches, and skips empty layout state', async () => {
     const { render } = setup({
-      prefs: { theme: 'light', pollingInterval: 1000, relativeDates: false, language: 'en', columnVisibility: {}, columnSizing: {}, columnOrder: [] },
+      prefs: {
+        theme: 'light',
+        pollingInterval: 1000,
+        relativeDates: false,
+        language: 'en',
+        columnVisibility: {},
+        columnSizing: {},
+        columnOrder: [],
+      },
     });
     render();
     await flush();
@@ -118,7 +152,9 @@ describe('useAppBootstrap: preferences', () => {
     const { actions, render } = setup({});
     render();
     await flush();
-    expect(useNotificationStore.getState().notifications.map((n) => n.messageKey)).toEqual(['notification.prefsLoadFailed']);
+    expect(useNotificationStore.getState().notifications.map((n) => n.messageKey)).toEqual([
+      'notification.prefsLoadFailed',
+    ]);
     expect(actions.setTheme).not.toHaveBeenCalled();
   });
 
@@ -126,7 +162,9 @@ describe('useAppBootstrap: preferences', () => {
     const { render } = setup({ prefsThrows: true });
     render();
     await flush();
-    expect(useNotificationStore.getState().notifications.map((n) => n.messageKey)).toEqual(['notification.prefsLoadFailed']);
+    expect(useNotificationStore.getState().notifications.map((n) => n.messageKey)).toEqual([
+      'notification.prefsLoadFailed',
+    ]);
   });
 });
 

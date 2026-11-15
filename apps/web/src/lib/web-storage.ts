@@ -54,13 +54,20 @@ const DEFAULT_PREFERENCES: AppPreferences = {
 };
 
 /** Preference keys without a default (layout state and the watch folder, which web ignores). */
-const OPTIONAL_PREFERENCE_KEYS: ReadonlySet<string> = new Set(['columnVisibility', 'columnSizing', 'columnOrder', 'speedPresets']);
+const OPTIONAL_PREFERENCE_KEYS: ReadonlySet<string> = new Set([
+  'columnVisibility',
+  'columnSizing',
+  'columnOrder',
+  'speedPresets',
+]);
 
 export function getPreferences(): AppPreferences {
   const stored = getItem<Partial<AppPreferences>>(STORAGE_KEYS.preferences);
   if (typeof stored !== 'object' || stored === null || Array.isArray(stored)) return { ...DEFAULT_PREFERENCES };
   // Keys of removed features (`confirmOnAdd`, `pathMappings`) in old stored values are ignored.
-  const known = Object.fromEntries(Object.entries(stored).filter(([key]) => key in DEFAULT_PREFERENCES || OPTIONAL_PREFERENCE_KEYS.has(key)));
+  const known = Object.fromEntries(
+    Object.entries(stored).filter(([key]) => key in DEFAULT_PREFERENCES || OPTIONAL_PREFERENCE_KEYS.has(key)),
+  );
   return { ...DEFAULT_PREFERENCES, ...known };
 }
 

@@ -24,7 +24,23 @@ let opensslAvailable = true;
 try {
   execFileSync(
     'openssl',
-    ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', 'k.pem', '-out', 'c.pem', '-days', '1', '-subj', '/CN=127.0.0.1', '-addext', 'subjectAltName=IP:127.0.0.1'],
+    [
+      'req',
+      '-x509',
+      '-newkey',
+      'rsa:2048',
+      '-nodes',
+      '-keyout',
+      'k.pem',
+      '-out',
+      'c.pem',
+      '-days',
+      '1',
+      '-subj',
+      '/CN=127.0.0.1',
+      '-addext',
+      'subjectAltName=IP:127.0.0.1',
+    ],
     { cwd: dir, stdio: 'ignore' },
   );
 } catch {
@@ -58,7 +74,13 @@ function startHttpConnectProxy(connects: string[]) {
   server.on('connect', (req, clientSocket) => {
     connects.push(req.url ?? '');
     const [host, port] = (req.url ?? '').split(':');
-    tunnel(clientSocket as net.Socket, host, Number(port), () => clientSocket.write('HTTP/1.1 200 Connection Established\r\n\r\n'), () => undefined);
+    tunnel(
+      clientSocket as net.Socket,
+      host,
+      Number(port),
+      () => clientSocket.write('HTTP/1.1 200 Connection Established\r\n\r\n'),
+      () => undefined,
+    );
   });
   return listen(server);
 }
@@ -81,7 +103,13 @@ function startSocks5Proxy(connects: string[]) {
         }
         const port = req.readUInt16BE(offset);
         connects.push(`${host}:${port}`);
-        tunnel(client, host, port, () => client.write(Buffer.from([5, 0, 0, 1, 0, 0, 0, 0, 0, 0])), () => undefined);
+        tunnel(
+          client,
+          host,
+          port,
+          () => client.write(Buffer.from([5, 0, 0, 1, 0, 0, 0, 0, 0, 0])),
+          () => undefined,
+        );
       });
     });
     client.on('error', () => undefined);
@@ -117,7 +145,14 @@ describe.skipIf(!opensslAvailable).each(proxies)('self-signed target through a $
   const config = async (extra: Partial<ServerConfig>) => {
     const connects: string[] = [];
     const proxyPort = await start(connects);
-    const client = new TransmissionRpcClient({ ...base, port: targetPort, proxyType: type, proxyHost: '127.0.0.1', proxyPort, ...extra });
+    const client = new TransmissionRpcClient({
+      ...base,
+      port: targetPort,
+      proxyType: type,
+      proxyHost: '127.0.0.1',
+      proxyPort,
+      ...extra,
+    });
     return { client, connects };
   };
 

@@ -90,7 +90,8 @@ export interface AllowedHost {
 const ALLOWED_HOST_PORT = /^\d{1,5}$/;
 
 function parseAllowedHost(entry: string): AllowedHost {
-  const invalid = () => new ConfigError('SEEDORA_ALLOWED_HOSTS has an invalid entry: use host or host:port, IPv6 as [addr] or [addr]:port');
+  const invalid = () =>
+    new ConfigError('SEEDORA_ALLOWED_HOSTS has an invalid entry: use host or host:port, IPv6 as [addr] or [addr]:port');
   let host = entry;
   let portText: string | undefined;
   if (entry.startsWith('[')) {

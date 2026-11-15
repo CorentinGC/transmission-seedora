@@ -51,7 +51,10 @@ const target = (over: Partial<OutboundTarget> = {}): OutboundTarget => ({
   ...over,
 });
 const local = (over: Partial<OutboundTarget> = {}) => target({ port, ...over });
-const neverCalled = (): Resolver => vi.fn(async () => { throw new Error('resolver must not run'); });
+const neverCalled = (): Resolver =>
+  vi.fn(async () => {
+    throw new Error('resolver must not run');
+  });
 
 async function codeOf(promise: Promise<unknown>): Promise<ErrorCode> {
   try {
@@ -64,33 +67,52 @@ async function codeOf(promise: Promise<unknown>): Promise<ErrorCode> {
 }
 
 describe('postJson: policy before any I/O', () => {
-  it.each(['127.0.0.1', '[::1]', '::1', '10.1.2.3', '172.16.0.1', '192.168.1.1', '100.64.0.1', '169.254.1.1', '::ffff:127.0.0.1', '0.0.0.0'])(
-    'refuses IP literal %s by default without connecting or resolving',
-    async (host) => {
-      const resolver = neverCalled();
-      expect(await codeOf(postJson(local({ host }), {}, { allowPrivate: false, resolver }))).toBe('HOST_NOT_ALLOWED');
-      expect(resolver).not.toHaveBeenCalled();
-      expect(requests).toHaveLength(0);
-    },
-  );
+  it.each([
+    '127.0.0.1',
+    '[::1]',
+    '::1',
+    '10.1.2.3',
+    '172.16.0.1',
+    '192.168.1.1',
+    '100.64.0.1',
+    '169.254.1.1',
+    '::ffff:127.0.0.1',
+    '0.0.0.0',
+  ])('refuses IP literal %s by default without connecting or resolving', async (host) => {
+    const resolver = neverCalled();
+    expect(await codeOf(postJson(local({ host }), {}, { allowPrivate: false, resolver }))).toBe('HOST_NOT_ALLOWED');
+    expect(resolver).not.toHaveBeenCalled();
+    expect(requests).toHaveLength(0);
+  });
 
-  it.each(['169.254.169.254', '[fd00:ec2::254]', '100.100.100.200', '0.0.0.0', '::', '::ffff:169.254.169.254', '64:ff9b::7f00:1'])(
-    'refuses %s even with allowPrivate',
-    async (host) => {
-      expect(await codeOf(postJson(local({ host }), {}, { allowPrivate: true, resolver: neverCalled() }))).toBe('HOST_NOT_ALLOWED');
-      expect(requests).toHaveLength(0);
-    },
-  );
+  it.each([
+    '169.254.169.254',
+    '[fd00:ec2::254]',
+    '100.100.100.200',
+    '0.0.0.0',
+    '::',
+    '::ffff:169.254.169.254',
+    '64:ff9b::7f00:1',
+  ])('refuses %s even with allowPrivate', async (host) => {
+    expect(await codeOf(postJson(local({ host }), {}, { allowPrivate: true, resolver: neverCalled() }))).toBe(
+      'HOST_NOT_ALLOWED',
+    );
+    expect(requests).toHaveLength(0);
+  });
 
   it.each([25, 22, 6667, 21])('refuses bad port %d before resolving', async (p) => {
     const resolver = neverCalled();
-    expect(await codeOf(postJson(target({ host: 'daemon.example', port: p }), {}, { allowPrivate: true, resolver }))).toBe('HOST_NOT_ALLOWED');
+    expect(
+      await codeOf(postJson(target({ host: 'daemon.example', port: p }), {}, { allowPrivate: true, resolver })),
+    ).toBe('HOST_NOT_ALLOWED');
     expect(resolver).not.toHaveBeenCalled();
   });
 
   it.each([0, 65536, -1, 1.5, NaN])('rejects invalid port %d as INVALID_INPUT', async (p) => {
     const resolver = neverCalled();
-    expect(await codeOf(postJson(target({ host: 'daemon.example', port: p }), {}, { allowPrivate: true, resolver }))).toBe('INVALID_INPUT');
+    expect(
+      await codeOf(postJson(target({ host: 'daemon.example', port: p }), {}, { allowPrivate: true, resolver })),
+    ).toBe('INVALID_INPUT');
     expect(resolver).not.toHaveBeenCalled();
   });
 
@@ -133,7 +155,10 @@ describe('resolveAndValidate', () => {
   const signal = () => new AbortController().signal;
 
   it('allows a name resolving only to public addresses', async () => {
-    const resolver: Resolver = async () => [{ address: '93.184.216.34', family: 4 }, { address: '2606:4700::1111', family: 6 }];
+    const resolver: Resolver = async () => [
+      { address: '93.184.216.34', family: 4 },
+      { address: '2606:4700::1111', family: 6 },
+    ];
     await expect(resolveAndValidate('example.org', false, resolver, signal())).resolves.toHaveLength(2);
   });
 
@@ -144,22 +169,35 @@ describe('resolveAndValidate', () => {
 
   it('refuses one public plus one private address, in either order', async () => {
     for (const list of [
-      [{ address: '93.184.216.34', family: 4 as const }, { address: '127.0.0.1', family: 4 as const }],
-      [{ address: '::1', family: 6 as const }, { address: '93.184.216.34', family: 4 as const }],
+      [
+        { address: '93.184.216.34', family: 4 as const },
+        { address: '127.0.0.1', family: 4 as const },
+      ],
+      [
+        { address: '::1', family: 6 as const },
+        { address: '93.184.216.34', family: 4 as const },
+      ],
     ]) {
-      expect(await codeOf(resolveAndValidate('mixed.example', false, async () => list, signal()))).toBe('HOST_NOT_ALLOWED');
+      expect(await codeOf(resolveAndValidate('mixed.example', false, async () => list, signal()))).toBe(
+        'HOST_NOT_ALLOWED',
+      );
     }
   });
 
   it('allows private answers with the opt-in but never metadata', async () => {
     const lan: Resolver = async () => [{ address: '192.168.1.10', family: 4 }];
     await expect(resolveAndValidate('nas.example', true, lan, signal())).resolves.toHaveLength(1);
-    const meta: Resolver = async () => [{ address: '192.168.1.10', family: 4 }, { address: '169.254.169.254', family: 4 }];
+    const meta: Resolver = async () => [
+      { address: '192.168.1.10', family: 4 },
+      { address: '169.254.169.254', family: 4 },
+    ];
     expect(await codeOf(resolveAndValidate('nas.example', true, meta, signal()))).toBe('HOST_NOT_ALLOWED');
   });
 
   it('maps resolver failures and empty answers to DNS_FAILED without leaking the message', async () => {
-    const boom: Resolver = async () => { throw new Error('getaddrinfo ENOTFOUND secret.internal'); };
+    const boom: Resolver = async () => {
+      throw new Error('getaddrinfo ENOTFOUND secret.internal');
+    };
     expect(await codeOf(resolveAndValidate('x.example', false, boom, signal()))).toBe('DNS_FAILED');
     expect(await codeOf(resolveAndValidate('x.example', false, async () => [], signal()))).toBe('DNS_FAILED');
   });
@@ -172,12 +210,17 @@ describe('resolveAndValidate', () => {
   it('does not call the resolver for an IP literal and still classifies it', async () => {
     const resolver = neverCalled();
     expect(await codeOf(resolveAndValidate('127.0.0.1', false, resolver, signal()))).toBe('HOST_NOT_ALLOWED');
-    await expect(resolveAndValidate('1.1.1.1', false, resolver, signal())).resolves.toEqual([{ address: '1.1.1.1', family: 4 }]);
+    await expect(resolveAndValidate('1.1.1.1', false, resolver, signal())).resolves.toEqual([
+      { address: '1.1.1.1', family: 4 },
+    ]);
   });
 });
 
 describe('createPinnedLookup', () => {
-  const addrs = [{ address: '93.184.216.34', family: 4 as const }, { address: '2606:4700::1111', family: 6 as const }];
+  const addrs = [
+    { address: '93.184.216.34', family: 4 as const },
+    { address: '2606:4700::1111', family: 6 as const },
+  ];
 
   it('answers all:true with the validated addresses only', () => {
     const cb = vi.fn();
@@ -207,7 +250,11 @@ describe('postJson: connection', () => {
       res.setHeader('x-transmission-session-id', 'abc');
       res.end('{"result":"success"}');
     };
-    const res = await postJson(local(), { method: 'session-get' }, { allowPrivate: true, authorization: 'Basic eDp5', sessionId: 'sid' });
+    const res = await postJson(
+      local(),
+      { method: 'session-get' },
+      { allowPrivate: true, authorization: 'Basic eDp5', sessionId: 'sid' },
+    );
     expect(res).toEqual({ status: 200, sessionId: 'abc', json: { result: 'success' } });
     expect(requests[0].body).toBe('{"method":"session-get"}');
     expect(requests[0].headers.authorization).toBe('Basic eDp5');
@@ -222,14 +269,20 @@ describe('postJson: connection', () => {
       res.setHeader('x-transmission-session-id', 'new');
       res.end('<html>409</html>');
     };
-    expect(await postJson(local(), {}, { allowPrivate: true })).toEqual({ status: 409, sessionId: 'new', json: undefined });
+    expect(await postJson(local(), {}, { allowPrivate: true })).toEqual({
+      status: 409,
+      sessionId: 'new',
+      json: undefined,
+    });
   });
 
   it('pins the connection to the validated address and keeps the Host header (rebinding)', async () => {
     let calls = 0;
     const resolver = vi.fn<Resolver>(async () => {
       calls += 1;
-      return calls === 1 ? [{ address: '127.0.0.1', family: 4 as const }] : [{ address: '10.0.0.1', family: 4 as const }];
+      return calls === 1
+        ? [{ address: '127.0.0.1', family: 4 as const }]
+        : [{ address: '10.0.0.1', family: 4 as const }];
     });
     const res = await postJson(target({ host: 'rebind.example', port }), {}, { allowPrivate: true, resolver });
     expect(res.status).toBe(200);
@@ -239,7 +292,9 @@ describe('postJson: connection', () => {
 
   it('refuses a rebinding host whose first answer is private, without a second resolution', async () => {
     const resolver = vi.fn<Resolver>(async () => [{ address: '127.0.0.1', family: 4 }]);
-    expect(await codeOf(postJson(target({ host: 'rebind.example', port }), {}, { allowPrivate: false, resolver }))).toBe('HOST_NOT_ALLOWED');
+    expect(
+      await codeOf(postJson(target({ host: 'rebind.example', port }), {}, { allowPrivate: false, resolver })),
+    ).toBe('HOST_NOT_ALLOWED');
     expect(resolver).toHaveBeenCalledTimes(1);
     expect(requests).toHaveLength(0);
   });
@@ -258,7 +313,9 @@ describe('postJson: connection', () => {
 
   it('times out on a server that never answers', async () => {
     handler = () => undefined;
-    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, signal: AbortSignal.timeout(80) }))).toBe('TIMEOUT');
+    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, signal: AbortSignal.timeout(80) }))).toBe(
+      'TIMEOUT',
+    );
   });
 
   it('times out on a server that stalls mid-body', async () => {
@@ -266,12 +323,22 @@ describe('postJson: connection', () => {
       res.writeHead(200);
       res.write('{"a":');
     };
-    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, signal: AbortSignal.timeout(80) }))).toBe('TIMEOUT');
+    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, signal: AbortSignal.timeout(80) }))).toBe(
+      'TIMEOUT',
+    );
   });
 
   it('refuses a pre-aborted signal without resolving', async () => {
     const resolver = neverCalled();
-    expect(await codeOf(postJson(target({ host: 'x.example', port }), {}, { allowPrivate: true, resolver, signal: AbortSignal.abort() }))).toBe('TIMEOUT');
+    expect(
+      await codeOf(
+        postJson(
+          target({ host: 'x.example', port }),
+          {},
+          { allowPrivate: true, resolver, signal: AbortSignal.abort() },
+        ),
+      ),
+    ).toBe('TIMEOUT');
     expect(resolver).not.toHaveBeenCalled();
   });
 
@@ -281,7 +348,9 @@ describe('postJson: connection', () => {
       res.write('x'.repeat(600));
       res.write('x'.repeat(600));
     };
-    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, maxResponseBytes: 1000 }))).toBe('RESPONSE_TOO_LARGE');
+    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, maxResponseBytes: 1000 }))).toBe(
+      'RESPONSE_TOO_LARGE',
+    );
   });
 
   it('rejects a declared content-length above the cap', async () => {
@@ -289,7 +358,9 @@ describe('postJson: connection', () => {
       res.setHeader('content-length', '5000');
       res.end('x'.repeat(5000));
     };
-    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, maxResponseBytes: 1000 }))).toBe('RESPONSE_TOO_LARGE');
+    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, maxResponseBytes: 1000 }))).toBe(
+      'RESPONSE_TOO_LARGE',
+    );
   });
 
   it('enforces the 8 MiB cap and ignores an override that raises it', async () => {
@@ -299,7 +370,15 @@ describe('postJson: connection', () => {
       for (let i = 0; i < 33; i++) res.write(chunk);
     };
     expect(MAX_RESPONSE_BYTES).toBe(8 * 1024 * 1024);
-    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, maxResponseBytes: Number.MAX_SAFE_INTEGER, signal: AbortSignal.timeout(10_000) }))).toBe('RESPONSE_TOO_LARGE');
+    expect(
+      await codeOf(
+        postJson(
+          local(),
+          {},
+          { allowPrivate: true, maxResponseBytes: Number.MAX_SAFE_INTEGER, signal: AbortSignal.timeout(10_000) },
+        ),
+      ),
+    ).toBe('RESPONSE_TOO_LARGE');
   });
 
   it('maps a refused connection to CONNECTION_FAILED with a fixed message', async () => {
@@ -307,7 +386,11 @@ describe('postJson: connection', () => {
     await new Promise<void>((resolve) => closed.listen(0, '127.0.0.1', resolve));
     const closedPort = (closed.address() as AddressInfo).port;
     await new Promise((resolve) => closed.close(resolve));
-    const error = await postJson(target({ port: closedPort, host: '127.0.0.1' }), {}, { allowPrivate: true, authorization: 'Basic c2VjcmV0' }).catch((e: unknown) => e);
+    const error = await postJson(
+      target({ port: closedPort, host: '127.0.0.1' }),
+      {},
+      { allowPrivate: true, authorization: 'Basic c2VjcmV0' },
+    ).catch((e: unknown) => e);
     expect(error).toBeInstanceOf(OutboundError);
     expect((error as OutboundError).code).toBe('CONNECTION_FAILED');
     expect((error as OutboundError).message).not.toMatch(/127\.0\.0\.1|ECONNREFUSED|c2VjcmV0|\d{4,}/);
@@ -315,7 +398,9 @@ describe('postJson: connection', () => {
   });
 
   it('maps TLS against a plain HTTP server to TLS_FAILED (not a successful connection)', async () => {
-    const code = await codeOf(postJson(local({ useSSL: true }), {}, { allowPrivate: true, signal: AbortSignal.timeout(3000) }));
+    const code = await codeOf(
+      postJson(local({ useSSL: true }), {}, { allowPrivate: true, signal: AbortSignal.timeout(3000) }),
+    );
     expect(['TLS_FAILED', 'CONNECTION_FAILED']).toContain(code);
   });
 });
@@ -339,20 +424,33 @@ describe('postJson: serialisation (cfh)', () => {
 describe('postJson: validated addresses are exposed (onResolved)', () => {
   it('passes them to onResolved before connecting', async () => {
     const seen: string[] = [];
-    await postJson(local({ host: 'daemon.test' }), {}, {
-      allowPrivate: true,
-      resolver: async () => [{ address: '127.0.0.1', family: 4 }],
-      onResolved: (addresses) => {
-        expect(requests).toHaveLength(0);
-        seen.push(...addresses.map((a) => a.address));
+    await postJson(
+      local({ host: 'daemon.test' }),
+      {},
+      {
+        allowPrivate: true,
+        resolver: async () => [{ address: '127.0.0.1', family: 4 }],
+        onResolved: (addresses) => {
+          expect(requests).toHaveLength(0);
+          seen.push(...addresses.map((a) => a.address));
+        },
       },
-    });
+    );
     expect(seen).toEqual(['127.0.0.1']);
   });
 
   it('lets onResolved refuse the call with its own OutboundError, before any socket', async () => {
     const code = await codeOf(
-      postJson(local(), {}, { allowPrivate: true, onResolved: () => { throw new OutboundError('RATE_LIMITED'); } }),
+      postJson(
+        local(),
+        {},
+        {
+          allowPrivate: true,
+          onResolved: () => {
+            throw new OutboundError('RATE_LIMITED');
+          },
+        },
+      ),
     );
     expect(code).toBe('RATE_LIMITED');
     expect(requests).toHaveLength(0);
@@ -360,17 +458,21 @@ describe('postJson: validated addresses are exposed (onResolved)', () => {
 
   it('does not call onResolved for a denied address', async () => {
     const onResolved = vi.fn();
-    expect(await codeOf(postJson(local({ host: '10.0.0.1' }), {}, { allowPrivate: false, onResolved }))).toBe('HOST_NOT_ALLOWED');
+    expect(await codeOf(postJson(local({ host: '10.0.0.1' }), {}, { allowPrivate: false, onResolved }))).toBe(
+      'HOST_NOT_ALLOWED',
+    );
     expect(onResolved).not.toHaveBeenCalled();
   });
 });
 
 describe('postJson: memory bounds (917)', () => {
-  const sendBig = (bytes: number): Handler => (_req, res) => {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.write(Buffer.alloc(bytes, 0x20));
-    res.end('{}');
-  };
+  const sendBig =
+    (bytes: number): Handler =>
+    (_req, res) => {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.write(Buffer.alloc(bytes, 0x20));
+      res.end('{}');
+    };
 
   it('lowers the per-response cap to 8 MiB', () => {
     expect(MAX_RESPONSE_BYTES).toBe(8 * 1024 * 1024);
@@ -423,14 +525,18 @@ describe('postJson: memory bounds (917)', () => {
     };
     const controller = new AbortController();
     setTimeout(() => controller.abort(), 100);
-    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, byteBudget: budget, signal: controller.signal }))).toBe('TIMEOUT');
+    expect(
+      await codeOf(postJson(local(), {}, { allowPrivate: true, byteBudget: budget, signal: controller.signal })),
+    ).toBe('TIMEOUT');
     expect(budget.inUse()).toBe(0);
   });
 
   it('caps concurrent calls per destination and frees the slot afterwards', async () => {
     const gate = createConcurrencyGate(2);
     const pending: http.ServerResponse[] = [];
-    handler = (_req, res) => { pending.push(res); };
+    handler = (_req, res) => {
+      pending.push(res);
+    };
     const run = () => postJson(local(), {}, { allowPrivate: true, destinationGate: gate });
     const first = run();
     const second = run();
@@ -447,11 +553,15 @@ describe('postJson: memory bounds (917)', () => {
   it('counts the destination by resolved address, so alias host names share one cap', async () => {
     const gate = createConcurrencyGate(1);
     const pending: http.ServerResponse[] = [];
-    handler = (_req, res) => { pending.push(res); };
+    handler = (_req, res) => {
+      pending.push(res);
+    };
     const resolver: Resolver = async () => [{ address: '127.0.0.1', family: 4 }];
     const a = postJson(local({ host: 'a.test' }), {}, { allowPrivate: true, resolver, destinationGate: gate });
     await vi.waitFor(() => expect(pending).toHaveLength(1));
-    expect(await codeOf(postJson(local({ host: 'b.test' }), {}, { allowPrivate: true, resolver, destinationGate: gate }))).toBe('RATE_LIMITED');
+    expect(
+      await codeOf(postJson(local({ host: 'b.test' }), {}, { allowPrivate: true, resolver, destinationGate: gate })),
+    ).toBe('RATE_LIMITED');
     pending.forEach((res) => res.end('{}'));
     await a;
   });

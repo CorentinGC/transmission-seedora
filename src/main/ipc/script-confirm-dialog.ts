@@ -18,7 +18,11 @@ export function describeChange({ key, value }: ScriptChange): string {
 }
 
 /** Native confirmation (default button: cancel). Resolves true only when the user explicitly allows. */
-export async function confirmScriptChanges(window: BrowserWindow | null, changes: ScriptChange[], serverLabel?: string): Promise<boolean> {
+export async function confirmScriptChanges(
+  window: BrowserWindow | null,
+  changes: ScriptChange[],
+  serverLabel?: string,
+): Promise<boolean> {
   const lines = changes.map(describeChange);
   if (serverLabel) lines.unshift(sanitizeForDialog(serverLabel, 120));
   const options: Electron.MessageBoxOptions = {

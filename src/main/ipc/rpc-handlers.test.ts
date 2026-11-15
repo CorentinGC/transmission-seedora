@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-type Handler = (event: unknown, ...args: unknown[]) => Promise<{ success: boolean; error?: string; code?: string; data?: unknown }>;
+type Handler = (
+  event: unknown,
+  ...args: unknown[]
+) => Promise<{ success: boolean; error?: string; code?: string; data?: unknown }>;
 const handlers = new Map<string, Handler>();
 
 const confirm = vi.hoisted(() => ({ confirmScriptChanges: vi.fn() }));

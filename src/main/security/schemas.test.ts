@@ -16,7 +16,9 @@ const server = { name: 'n', host: 'h', port: 9091, path: '/transmission/rpc', us
 
 describe('schemas', () => {
   it('accepts what the server form sends (undefined optionals)', () => {
-    expect(newServerSchema.safeParse({ ...server, username: undefined, proxyType: 'none', proxyPort: undefined }).success).toBe(true);
+    expect(
+      newServerSchema.safeParse({ ...server, username: undefined, proxyType: 'none', proxyPort: undefined }).success,
+    ).toBe(true);
   });
 
   it('rejects unknown keys on SERVER_UPDATE and PREFS_SET', () => {
@@ -67,10 +69,30 @@ describe('schemas', () => {
   });
 
   it('accepts hostnames, IPv4 and bracketed IPv6 only as server host', () => {
-    for (const host of ['localhost', 'nas.local', 'my_box-1.example.com', '192.168.1.10', '[::1]', '[fe80::1]', '[::ffff:1.2.3.4]']) {
+    for (const host of [
+      'localhost',
+      'nas.local',
+      'my_box-1.example.com',
+      '192.168.1.10',
+      '[::1]',
+      '[fe80::1]',
+      '[::ffff:1.2.3.4]',
+    ]) {
       expect(newServerSchema.safeParse({ ...server, host }).success, host).toBe(true);
     }
-    for (const host of ['user@evil.com', 'evil.com/path', 'evil.com#x', 'evil.com?x=1', 'a b', 'a\tb', '::1', '[::1]:80', '[fe80::1%en0]', 'a:80', 'a\\b']) {
+    for (const host of [
+      'user@evil.com',
+      'evil.com/path',
+      'evil.com#x',
+      'evil.com?x=1',
+      'a b',
+      'a\tb',
+      '::1',
+      '[::1]:80',
+      '[fe80::1%en0]',
+      'a:80',
+      'a\\b',
+    ]) {
       expect(newServerSchema.safeParse({ ...server, host }).success, host).toBe(false);
     }
   });
@@ -107,15 +129,20 @@ describe('schemas', () => {
 
 describe('proxyHost and password-clear flags', () => {
   it('accepts a hostname, an IPv6 literal and an empty proxy host', () => {
-    for (const proxyHost of ['proxy.lan', '10.0.0.1', '[::1]', '']) expect(serverUpdateSchema.safeParse({ proxyHost }).success).toBe(true);
+    for (const proxyHost of ['proxy.lan', '10.0.0.1', '[::1]', ''])
+      expect(serverUpdateSchema.safeParse({ proxyHost }).success).toBe(true);
   });
 
   it('rejects a proxy host that could change the proxy URL', () => {
-    for (const proxyHost of ['evil.com/x', 'a b', 'u:p@host', 'host?x=1', 'a#b']) expect(serverUpdateSchema.safeParse({ proxyHost }).success).toBe(false);
+    for (const proxyHost of ['evil.com/x', 'a b', 'u:p@host', 'host?x=1', 'a#b'])
+      expect(serverUpdateSchema.safeParse({ proxyHost }).success).toBe(false);
   });
 
   it('accepts clearPassword flags on update only', () => {
-    expect(serverUpdateSchema.parse({ clearPassword: true, clearProxyPassword: true })).toEqual({ clearPassword: true, clearProxyPassword: true });
+    expect(serverUpdateSchema.parse({ clearPassword: true, clearProxyPassword: true })).toEqual({
+      clearPassword: true,
+      clearProxyPassword: true,
+    });
     expect(newServerSchema.safeParse({ ...server, clearPassword: true }).success).toBe(false);
   });
 });

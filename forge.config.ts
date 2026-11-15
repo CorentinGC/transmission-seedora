@@ -31,7 +31,13 @@ const config: ForgeConfig = {
       unpack: '**/node_modules/geoip-lite/**',
     },
     afterCopy: [
-      (buildPath: string, _electronVersion: string, _platform: string, _arch: string, callback: (err?: Error) => void) => {
+      (
+        buildPath: string,
+        _electronVersion: string,
+        _platform: string,
+        _arch: string,
+        callback: (err?: Error) => void,
+      ) => {
         try {
           copyExternalModules(buildPath);
           callback();

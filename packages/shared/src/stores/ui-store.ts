@@ -3,7 +3,11 @@ import { getPlatformApi } from '../platform/api-store';
 import { guardedCall } from '../lib/guarded-call';
 
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
-function debouncedPersistColumns(state: { columnVisibility: Record<string, boolean>; columnSizing: Record<string, number>; columnOrder: string[] }) {
+function debouncedPersistColumns(state: {
+  columnVisibility: Record<string, boolean>;
+  columnSizing: Record<string, number>;
+  columnOrder: string[];
+}) {
   if (persistTimer) clearTimeout(persistTimer);
   persistTimer = setTimeout(() => {
     void guardedCall(
@@ -71,11 +75,9 @@ export const useUiStore = create<UiStore>((set) => ({
   removeDialogOpen: false,
 
   setRemoveDialogOpen: (open) => set({ removeDialogOpen: open }),
-  toggleDetailsPanel: () =>
-    set((state) => ({ detailsPanelVisible: !state.detailsPanelVisible })),
+  toggleDetailsPanel: () => set((state) => ({ detailsPanelVisible: !state.detailsPanelVisible })),
   setDetailsPanelSize: (size) => set({ detailsPanelSize: size }),
-  toggleFilterPanel: () =>
-    set((state) => ({ filterPanelVisible: !state.filterPanelVisible })),
+  toggleFilterPanel: () => set((state) => ({ filterPanelVisible: !state.filterPanelVisible })),
   setFilterPanelSize: (size) => set({ filterPanelSize: size }),
   setColumnVisibility: (vis) => {
     set({ columnVisibility: vis });

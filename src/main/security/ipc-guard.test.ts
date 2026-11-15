@@ -11,7 +11,11 @@ const schema = z.tuple([z.strictObject({ a: z.number() })]);
 describe('guardHandler', () => {
   it('runs the handler with parsed arguments', async () => {
     const run = vi.fn((_arg: unknown) => ({ success: true }));
-    const result = await guardHandler(() => true, schema, (_e, [arg]) => run(arg))(event, { a: 1 });
+    const result = await guardHandler(
+      () => true,
+      schema,
+      (_e, [arg]) => run(arg),
+    )(event, { a: 1 });
     expect(result).toEqual({ success: true });
     expect(run).toHaveBeenCalledWith({ a: 1 });
   });
@@ -33,9 +37,13 @@ describe('guardHandler', () => {
   });
 
   it('does not leak the error message of a failing handler', async () => {
-    const result = await guardHandler(() => true, schema, () => {
-      throw new Error('password=hunter2');
-    })(event, { a: 1 });
+    const result = await guardHandler(
+      () => true,
+      schema,
+      () => {
+        throw new Error('password=hunter2');
+      },
+    )(event, { a: 1 });
     expect(JSON.stringify(result)).not.toContain('hunter2');
   });
 });
@@ -52,9 +60,13 @@ describe('guardListener', () => {
 
   it('does not let a throwing handler escape or leak its message', () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const throwing = guardListener(() => true, schema, () => {
-      throw new Error('password=hunter2');
-    });
+    const throwing = guardListener(
+      () => true,
+      schema,
+      () => {
+        throw new Error('password=hunter2');
+      },
+    );
     expect(() => throwing(event, { a: 1 })).not.toThrow();
     expect(JSON.stringify(log.mock.calls)).not.toContain('hunter2');
     log.mockRestore();

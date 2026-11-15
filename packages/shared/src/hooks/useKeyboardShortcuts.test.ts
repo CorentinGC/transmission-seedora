@@ -33,7 +33,9 @@ describe('handleDeleteKey', () => {
   it('does nothing while typing in an input or contenteditable', () => {
     const open = vi.fn();
     expect(handleDeleteKey(press('Delete', el({ tagName: 'INPUT' })), 1, open, true)).toBe(false);
-    expect(handleDeleteKey(press('Delete', el({ tagName: 'DIV', isContentEditable: true })), 1, open, true)).toBe(false);
+    expect(handleDeleteKey(press('Delete', el({ tagName: 'DIV', isContentEditable: true })), 1, open, true)).toBe(
+      false,
+    );
     expect(open).not.toHaveBeenCalled();
   });
   it('ignores other keys', () => {
@@ -59,8 +61,14 @@ describe('handleDeleteKey', () => {
 });
 
 describe('handleSpaceKey', () => {
-  const key = (target: object, k = ' ') => ({ key: k, target: target as unknown as EventTarget, preventDefault: vi.fn() });
-  const within = (selectors: string[]) => ({ closest: (sel: string) => (selectors.some((s) => sel.includes(s)) ? {} : null) });
+  const key = (target: object, k = ' ') => ({
+    key: k,
+    target: target as unknown as EventTarget,
+    preventDefault: vi.fn(),
+  });
+  const within = (selectors: string[]) => ({
+    closest: (sel: string) => (selectors.some((s) => sel.includes(s)) ? {} : null),
+  });
 
   it('toggles on body or a plain grid container', () => {
     const toggle = vi.fn();
@@ -71,7 +79,16 @@ describe('handleSpaceKey', () => {
   });
 
   it('ignores Space on interactive controls, dialogs and menus', () => {
-    for (const s of ['button', 'role="tab"', 'role="menuitem"', 'role="checkbox"', 'role="gridcell"', 'role="row"', 'role="dialog"', 'role="menu"']) {
+    for (const s of [
+      'button',
+      'role="tab"',
+      'role="menuitem"',
+      'role="checkbox"',
+      'role="gridcell"',
+      'role="row"',
+      'role="dialog"',
+      'role="menu"',
+    ]) {
       const toggle = vi.fn();
       const e = key(within([s]));
       expect(handleSpaceKey(e, [1], toggle)).toBe(false);

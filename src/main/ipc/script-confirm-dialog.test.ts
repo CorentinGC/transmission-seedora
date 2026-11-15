@@ -16,7 +16,9 @@ describe('sanitizeForDialog', () => {
 
 describe('describeChange', () => {
   it('shows key and sanitised value, JSON for non-strings', () => {
-    expect(describeChange({ key: 'script-torrent-done-enabled', value: true })).toBe('script-torrent-done-enabled: true');
+    expect(describeChange({ key: 'script-torrent-done-enabled', value: true })).toBe(
+      'script-torrent-done-enabled: true',
+    );
     expect(describeChange({ key: 'k', value: '/a⁦b' })).toBe('k: /a b');
   });
 });

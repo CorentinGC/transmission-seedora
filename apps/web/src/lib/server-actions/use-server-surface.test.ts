@@ -10,7 +10,9 @@ import { describe, expect, it } from 'vitest';
 const dir = __dirname;
 const modules = fs.readdirSync(dir).filter((f) => f.endsWith('.ts') && !f.endsWith('.test.ts'));
 const exportedNames = (source: string) =>
-  [...source.matchAll(/^export\s+(?:async\s+)?(?:function|const|let|var|class|type|interface|enum)\s+(\w+)/gm)].map((m) => m[1]).sort();
+  [...source.matchAll(/^export\s+(?:async\s+)?(?:function|const|let|var|class|type|interface|enum)\s+(\w+)/gm)]
+    .map((m) => m[1])
+    .sort();
 
 const EXPECTED: Record<string, string[]> = {
   'geoip.ts': ['geoipLookup'],

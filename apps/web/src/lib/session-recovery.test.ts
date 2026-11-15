@@ -25,7 +25,14 @@ describe('withSessionRecovery', () => {
   it('re-seals from the stored active server and retries once on NO_SESSION', async () => {
     const call = vi.fn().mockResolvedValueOnce(noSession).mockResolvedValueOnce({ success: true, data: 1 });
     expect(await withSessionRecovery(call)).toEqual({ success: true, data: 1 });
-    expect(setCookie.fn).toHaveBeenCalledWith({ host: 'nas.example.com', port: 9091, path: '/transmission/rpc', useSSL: false, username: undefined, password: undefined });
+    expect(setCookie.fn).toHaveBeenCalledWith({
+      host: 'nas.example.com',
+      port: 9091,
+      path: '/transmission/rpc',
+      useSSL: false,
+      username: undefined,
+      password: undefined,
+    });
     expect(call).toHaveBeenCalledTimes(2);
   });
 
@@ -73,7 +80,11 @@ describe('withSessionRecovery', () => {
 
   it('a re-seal refused with RATE_LIMITED starts the cool-down: a NO_SESSION within 30 s does not re-seal again (zcw)', async () => {
     vi.useFakeTimers();
-    setCookie.fn.mockResolvedValue({ success: false, error: 'Too many requests, try again shortly', code: 'RATE_LIMITED' });
+    setCookie.fn.mockResolvedValue({
+      success: false,
+      error: 'Too many requests, try again shortly',
+      code: 'RATE_LIMITED',
+    });
     const call = vi.fn().mockResolvedValue(noSession);
     await withSessionRecovery(call);
     expect(setCookie.fn).toHaveBeenCalledTimes(1);
@@ -96,7 +107,10 @@ describe('withSessionRecovery', () => {
     });
     const call = vi.fn().mockResolvedValueOnce(noSession).mockResolvedValueOnce({ success: true });
     await withSessionRecovery(call);
-    expect(setCookie.fn.mock.calls.map(([t]) => (t as { host: string }).host)).toEqual(['old.example.com', 'new.example.com']);
+    expect(setCookie.fn.mock.calls.map(([t]) => (t as { host: string }).host)).toEqual([
+      'old.example.com',
+      'new.example.com',
+    ]);
   });
 
   it('shares one re-seal between concurrent calls', async () => {

@@ -56,7 +56,7 @@ export function getSessionCookieOptions(env: EnvSource = process.env): {
 /** iron-session id for a secret: a positive 31-bit integer derived from its SHA-256, so ids need no management. */
 function secretId(secret: string): number {
   const digest = createHash('sha256').update(`seedora-session-id:${secret}`).digest();
-  return (digest.readUInt32BE(0) & 0x7fffffff) || 1;
+  return digest.readUInt32BE(0) & 0x7fffffff || 1;
 }
 
 /**

@@ -4,7 +4,9 @@
  */
 
 type BencodeList = BencodeValue[];
-interface BencodeDict { [key: string]: BencodeValue }
+interface BencodeDict {
+  [key: string]: BencodeValue;
+}
 type BencodeValue = string | number | BencodeList | BencodeDict;
 
 /** Maximum list/dict nesting accepted; real .torrent files nest ~5 levels. */
@@ -32,10 +34,12 @@ export class TorrentParseError extends Error {
   }
 }
 
-interface Decoded<T> { value: T; offset: number }
+interface Decoded<T> {
+  value: T;
+  offset: number;
+}
 
-const isDigit = (byte: number | undefined): boolean =>
-  byte !== undefined && byte >= CHAR_0 && byte <= CHAR_9;
+const isDigit = (byte: number | undefined): boolean => byte !== undefined && byte >= CHAR_0 && byte <= CHAR_9;
 
 const utf8 = new TextDecoder('utf-8', { fatal: true });
 

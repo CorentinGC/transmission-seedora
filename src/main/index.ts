@@ -136,10 +136,14 @@ function registerMainProcessHandlers(): void {
   guardWebContents(trustedOrigins);
 
   // Magnet links and .torrent files from the OS; before `ready` because macOS can deliver them that early.
-  launch = registerLaunchHandling(isTrustedSender, () => mainWindow, () => {
-    if (app.isReady() && !mainWindow) createWindow();
-    return mainWindow;
-  });
+  launch = registerLaunchHandling(
+    isTrustedSender,
+    () => mainWindow,
+    () => {
+      if (app.isReady() && !mainWindow) createWindow();
+      return mainWindow;
+    },
+  );
   launch.handleArgv(process.argv.slice(1), process.cwd());
 }
 
@@ -155,7 +159,11 @@ app.on('second-instance', (_event, argv, workingDirectory) => {
 /** Tells the user when the configuration file was invalid or unreadable (see `configStore.getLoadError`). */
 function reportConfigLoadProblem(): void {
   const locked = configStore.getLockedServerNames();
-  if (locked.length > 0) dialog.showErrorBox(t('native.configError.title'), t('native.configError.passwordsLocked', { names: locked.join(', ') }));
+  if (locked.length > 0)
+    dialog.showErrorBox(
+      t('native.configError.title'),
+      t('native.configError.passwordsLocked', { names: locked.join(', ') }),
+    );
   const problem = configStore.getLoadError();
   if (!problem) return;
   const configPath = path.join(app.getPath('userData'), 'config.json');

@@ -16,7 +16,10 @@ describe('isLaunchTarget', () => {
 describe('resolveLaunchTarget', () => {
   it('maps a magnet to the url mode without reading anything', async () => {
     const read = vi.fn();
-    expect(await resolveLaunchTarget({ kind: 'magnet', uri: 'magnet:?x' }, read)).toEqual({ mode: 'url', url: 'magnet:?x' });
+    expect(await resolveLaunchTarget({ kind: 'magnet', uri: 'magnet:?x' }, read)).toEqual({
+      mode: 'url',
+      url: 'magnet:?x',
+    });
     expect(read).not.toHaveBeenCalled();
   });
 
@@ -32,7 +35,10 @@ describe('resolveLaunchTarget', () => {
 
   it('resolves null when the file cannot be read', async () => {
     expect(
-      await resolveLaunchTarget({ kind: 'torrent-file', filePath: '/a' }, vi.fn().mockResolvedValue({ success: false })),
+      await resolveLaunchTarget(
+        { kind: 'torrent-file', filePath: '/a' },
+        vi.fn().mockResolvedValue({ success: false }),
+      ),
     ).toBeNull();
     expect(
       await resolveLaunchTarget({ kind: 'torrent-file', filePath: '/a' }, vi.fn().mockRejectedValue(new Error('x'))),
