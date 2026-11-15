@@ -1,139 +1,49 @@
 'use server';
 
-import { getActiveServerFromCookie } from './session';
+import { failureFromError } from '../server/action-error';
+import { readActiveServer } from '../server/active-session';
+import { failure } from '../server/errors';
+import { takeClientToken, takeDestinationToken } from '../server/limits';
+import { rpcCallSchema, serverTargetSchema } from '../server/schemas';
+import {
+  TEST_TIMEOUT_MS,
+  callTransmission,
+  timeoutForMethod,
+  type ActionResult,
+} from '../server/transmission';
 
-interface RpcRequest {
-  method: string;
-  arguments?: Record<string, unknown>;
-}
-
-interface RpcResponse {
-  result: string;
-  arguments?: Record<string, unknown>;
-}
-
-// Per-server session IDs (in-memory, per serverless instance)
-const sessionIds = new Map<string, string>();
-
-function getServerKey(config: { host?: string; port?: number; path?: string }): string {
-  return `${config.host}:${config.port}${config.path}`;
-}
-
-async function doFetch(
-  baseUrl: string,
-  body: RpcRequest,
-  sessionId: string,
-  authHeader?: string,
-): Promise<Response> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  if (sessionId) headers['X-Transmission-Session-Id'] = sessionId;
-  if (authHeader) headers['Authorization'] = authHeader;
-
-  return fetch(baseUrl, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-    cache: 'no-store',
-  });
-}
-
-export async function rpcRequest(
-  method: string,
-  args?: Record<string, unknown>,
-): Promise<{ success: boolean; data?: unknown; error?: string }> {
-  const config = await getActiveServerFromCookie();
-  if (!config || !config.host || !config.port) {
-    return { success: false, error: 'No active server configured' };
-  }
-
-  const protocol = config.useSSL ? 'https' : 'http';
-  const rpcPath = config.path?.startsWith('/') ? config.path : `/${config.path ?? 'transmission/rpc'}`;
-  const baseUrl = `${protocol}://${config.host}:${config.port}${rpcPath}`;
-
-  const authHeader = config.username
-    ? `Basic ${Buffer.from(`${config.username}:${config.password ?? ''}`).toString('base64')}`
-    : undefined;
-
-  const serverKey = getServerKey(config);
-  const body: RpcRequest = { method };
-  if (args) body.arguments = args;
-
+/**
+ * Forwards one allowlisted RPC call to the daemon of the sealed session (ADR 0004). Order:
+ * client rate limit, validation, session, destination rate limit, call. Failures carry a fixed code.
+ */
+export async function rpcRequest(method: string, args?: unknown): Promise<ActionResult> {
   try {
-    let response = await doFetch(baseUrl, body, sessionIds.get(serverKey) ?? '', authHeader);
-
-    // CSRF 409 retry
-    if (response.status === 409) {
-      const newSessionId = response.headers.get('x-transmission-session-id');
-      if (newSessionId) {
-        sessionIds.set(serverKey, newSessionId);
-        response = await doFetch(baseUrl, body, newSessionId, authHeader);
-        if (response.status === 409) {
-          return { success: false, error: 'CSRF session ID rejected after retry' };
-        }
-      } else {
-        return { success: false, error: 'Failed to obtain session ID from Transmission' };
-      }
-    }
-
-    if (!response.ok) {
-      return { success: false, error: `HTTP ${response.status}: ${response.statusText}` };
-    }
-
-    const json = (await response.json()) as RpcResponse;
-    if (json.result !== 'success') {
-      return { success: false, error: `RPC error: ${json.result}` };
-    }
-
-    return { success: true, data: json.arguments };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+    if (!(await takeClientToken('rpcClient', { skipWithoutIdentity: true }))) return failure('RATE_LIMITED');
+    const call = rpcCallSchema.safeParse({ method, args });
+    if (!call.success) return failure('INVALID_INPUT');
+    const target = await readActiveServer();
+    if (!target) return failure('NO_SESSION');
+    if (!takeDestinationToken(target.host)) return failure('RATE_LIMITED');
+    return await callTransmission(target, call.data, timeoutForMethod(call.data.method));
+  } catch (error) {
+    return failureFromError(error);
   }
 }
 
-// Test connection to a server without saving it
-export async function testServerConnection(config: {
-  host: string;
-  port: number;
-  path: string;
-  useSSL: boolean;
-  username?: string;
-  password?: string;
-}): Promise<{ success: boolean; error?: string }> {
-  const protocol = config.useSSL ? 'https' : 'http';
-  const rpcPath = config.path.startsWith('/') ? config.path : `/${config.path}`;
-  const baseUrl = `${protocol}://${config.host}:${config.port}${rpcPath}`;
-
-  const authHeader = config.username
-    ? `Basic ${Buffer.from(`${config.username}:${config.password ?? ''}`).toString('base64')}`
-    : undefined;
-
-  const body: RpcRequest = { method: 'session-get', arguments: { fields: ['version'] } };
-
+/** Tests a server without saving it: `session-get` for the version, within 8 s. */
+export async function testServerConnection(input: unknown): Promise<ActionResult<never>> {
   try {
-    let response = await doFetch(baseUrl, body, '', authHeader);
-
-    if (response.status === 409) {
-      const sessionId = response.headers.get('x-transmission-session-id');
-      if (sessionId) {
-        response = await doFetch(baseUrl, body, sessionId, authHeader);
-      }
-    }
-
-    if (response.status === 401) {
-      return { success: false, error: 'Authentication failed' };
-    }
-
-    if (!response.ok) {
-      return { success: false, error: `HTTP ${response.status}` };
-    }
-
-    const json = (await response.json()) as RpcResponse;
-    return json.result === 'success'
-      ? { success: true }
-      : { success: false, error: json.result };
-  } catch (err) {
-    return { success: false, error: err instanceof Error ? err.message : 'Connection failed' };
+    if (!(await takeClientToken('testConnection'))) return failure('RATE_LIMITED');
+    const target = serverTargetSchema.safeParse(input);
+    if (!target.success) return failure('INVALID_INPUT');
+    if (!takeDestinationToken(target.data.host)) return failure('RATE_LIMITED');
+    const result = await callTransmission(
+      target.data,
+      { method: 'session-get', args: { fields: ['version'] } },
+      TEST_TIMEOUT_MS,
+    );
+    return result.success ? { success: true } : result;
+  } catch (error) {
+    return failureFromError(error);
   }
 }

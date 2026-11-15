@@ -77,13 +77,6 @@ export default tseslint.config(
   },
 
   {
-    // Unused COOKIE_SECRET fallback, removed when the session cookie is rewritten
-    // (beads c07.1 / c07.10, owned by dev-web). Delete this override then.
-    files: ['apps/web/src/lib/server-actions/session.ts'],
-    rules: { '@typescript-eslint/no-unused-vars': 'warn' },
-  },
-
-  {
     files: ['**/*.test.{ts,tsx}'],
     rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
   },

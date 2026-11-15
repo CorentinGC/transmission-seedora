@@ -1,8 +1,9 @@
 import type { PlatformApi } from '@shared/platform/api-types';
 import type { ServerConfig, NewServerConfig, IpcResponse, AppPreferences } from '@shared/types';
-import { rpcRequest, testServerConnection } from './server-actions/rpc';
+import { rpcRequest as rpcAction, testServerConnection } from './server-actions/rpc';
 import { setActiveServerCookie, clearServerCookie } from './server-actions/session';
 import { geoipLookup as serverGeoipLookup } from './server-actions/geoip';
+import { GEOIP_CHUNK_SIZE, chunk, toServerTarget, withSessionRecovery } from './session-recovery';
 import {
   getServers,
   setServers,
@@ -11,6 +12,13 @@ import {
   getPreferences,
   setPreferences,
 } from './web-storage';
+
+type RpcArgs = Record<string, unknown> | undefined;
+
+/** One RPC call through the server action, recovering once from a lost session cookie. */
+function rpcRequest(method: string, args?: RpcArgs): Promise<IpcResponse> {
+  return withSessionRecovery(() => rpcAction(method, args));
+}
 
 function generateId(): string {
   return crypto.randomUUID();
@@ -51,28 +59,21 @@ export const webApi: PlatformApi = {
   },
 
   async serverSetActive(id: string | null): Promise<IpcResponse> {
-    setActiveServerId(id);
-    if (id) {
-      const server = getServers().find((s) => s.id === id);
-      if (server) {
-        await setActiveServerCookie(server);
-      }
-    } else {
+    if (!id) {
+      setActiveServerId(null);
       await clearServerCookie();
+      return { success: true };
     }
+    const server = getServers().find((s) => s.id === id);
+    if (!server) return { success: false, error: 'Server not found' };
+    const result = await setActiveServerCookie(toServerTarget(server));
+    if (!result.success) return result;
+    setActiveServerId(id);
     return { success: true };
   },
 
   async serverTest(config: ServerConfig | NewServerConfig): Promise<IpcResponse> {
-    const result = await testServerConnection({
-      host: config.host,
-      port: config.port,
-      path: config.path,
-      useSSL: config.useSSL,
-      username: config.username,
-      password: config.password,
-    });
-    return result;
+    return testServerConnection(toServerTarget(config));
   },
 
   // ── RPC torrent (via Server Actions) ──
@@ -237,6 +238,12 @@ export const webApi: PlatformApi = {
 
   // GeoIP via server action
   async geoipLookup(ips: string[]) {
-    return serverGeoipLookup(ips);
+    const data: Record<string, { country: string; region: string; city: string } | null> = {};
+    for (const batch of chunk([...new Set(ips)], GEOIP_CHUNK_SIZE)) {
+      const result = await serverGeoipLookup(batch);
+      if (!result.success) return result;
+      Object.assign(data, result.data);
+    }
+    return { success: true, data };
   },
 };
