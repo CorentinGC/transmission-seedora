@@ -1,6 +1,6 @@
 # Architecture
 
-Seedora is a remote GUI for the Transmission BitTorrent daemon. One React UI ships in two shells: an Electron desktop app and a Next.js web app (PWA). Both talk to the daemon through its RPC endpoint; neither talks to it from the browser context directly.
+Seedora is a remote GUI for the Transmission BitTorrent daemon. One React UI ships in two shells: an Electron desktop app and a Next.js web app (installable via a static web manifest; there is no service worker). Both talk to the daemon through its RPC endpoint; neither talks to it from the browser context directly.
 
 ## Monorepo layout
 
@@ -140,6 +140,6 @@ Native menu (`src/main/menu.ts`, sends `menu:*` events to the renderer; the prel
 |---|---|
 | `npm start` | Vite dev server for the renderer + main/preload bundles in `.vite/build/` |
 | `npm run package` / `make` | `out/` (packaged app, installers in `out/make/`) |
-| `npm run build:web` | `apps/web/.next/`, generated service worker in `apps/web/public/` |
+| `npm run build:web` | `apps/web/.next/` (no service worker is generated; `apps/web/public/manifest.json` is static) |
 
 `geoip-lite` is not bundled: it is `external` in `vite.main.config.ts`, copied into the package by `copyExternalModules` in `forge.config.ts`, and unpacked from the asar.

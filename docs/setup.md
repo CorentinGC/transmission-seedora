@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js >= 22.12 (CI builds on Node 22), npm >= 10
+- Node.js >= 22.17 (`engines.node`; `.nvmrc`, CI and the release workflow use 22.18), npm >= 10
 - A Transmission daemon with RPC enabled, reachable from your machine
 
 ## Install
@@ -26,7 +26,7 @@ npm run start:debug    # same, with --remote-debugging-port=9222
 
 ```bash
 npm run dev:web          # next dev --turbopack, http://localhost:3000
-npm run dev:web:https    # same with --experimental-https (needed to test PWA / notifications)
+npm run dev:web:https    # same with --experimental-https (needed to test installation / notifications)
 npm run build:web        # production build
 npm run start:web        # serve the production build
 ```
@@ -62,7 +62,7 @@ Web app only, read lazily by `apps/web/src/lib/server/env.ts` (decisions: [ADR 0
 | `SEEDORA_ALLOW_PRIVATE_HOSTS` | no | Only the exact value `true` enables it. Lets the server reach loopback, private, CGNAT and link-local addresses, which are denied by default. Needed when the daemon is on the same LAN as the web server. Leave unset on a public deployment. Cloud-metadata addresses stay denied. |
 | `SEEDORA_ALLOWED_HOSTS` | no | Comma-separated `host` or `host:port` entries (IPv6 as `[addr]` or `[addr]:port`), for example `nas.lan:9091`. With `SEEDORA_ALLOW_PRIVATE_HOSTS=true`, private addresses are reachable only for the listed hosts. An entry without a port matches every port, so prefer `host:port`. Matched against the name the user typed, so list only names whose DNS you control. A malformed entry stops the server at startup; without the opt-in the list has no effect and a warning is logged. |
 | `SEEDORA_TRUST_PROXY_HEADERS` | no | Only the exact value `true` enables it. The client IP for per-client rate limiting is then read from the last entry of `X-Forwarded-For`. Set it only behind a reverse proxy that overwrites that header; elsewhere the header is caller-controlled. On Vercel it is not needed. Without a trusted client identity there is no per-client limit. |
-| `NODE_ENV` | no | Standard. In Electron, enables DevTools on window creation. In web dev it disables the service worker, drops the `Secure` flag and `__Host-` prefix of the cookie, and relaxes the CSP and HSTS. |
+| `NODE_ENV` | no | Standard. In Electron, enables DevTools on window creation. In web dev it drops the `Secure` flag and `__Host-` prefix of the cookie, and relaxes the CSP and HSTS. |
 
 A host refused by the guard shows a "host not allowed" error in the UI. If your daemon is on a private address and you see it, set `SEEDORA_ALLOW_PRIVATE_HOSTS=true` on a self-hosted instance. The production session cookie is `Secure`, so a self-hosted production build must be served over HTTPS (for example behind a TLS reverse proxy); plain `http://` never receives the cookie.
 

@@ -1,6 +1,6 @@
 # Seedora
 
-> Seedora is a cross-platform remote GUI for the Transmission BitTorrent daemon: one shared React 19 UI shipped as an Electron desktop app and a Next.js 16 web app (PWA), in an npm-workspaces TypeScript monorepo.
+> Seedora is a cross-platform remote GUI for the Transmission BitTorrent daemon: one shared React 19 UI shipped as an Electron desktop app and a Next.js 16 web app (web manifest, no service worker), in an npm-workspaces TypeScript monorepo.
 
 The Electron app is the root package (`src/`); the UI lives in `packages/shared/src/`; the web app in `apps/web/`. Both apps reach the daemon's RPC endpoint through a trusted process (Electron main, Next.js server), never from the page.
 

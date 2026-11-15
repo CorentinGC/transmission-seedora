@@ -3,7 +3,7 @@
 [![Licence: MIT](https://img.shields.io/github/license/CorentinGC/transmission-seedora)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/CorentinGC/transmission-seedora)](https://github.com/CorentinGC/transmission-seedora/releases)
 
-A cross-platform application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon. One shared React UI ships as a **desktop app** (macOS, Windows, Linux, built with Electron) and as a **web app** (Next.js, installable as a PWA), hosted at [seedora.app](https://www.seedora.app/).
+A cross-platform application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon. One shared React UI ships as a **desktop app** (macOS, Windows, Linux, built with Electron) and as a **web app** (Next.js, with a web manifest; no service worker, so no offline mode), hosted at [seedora.app](https://www.seedora.app/).
 
 ## Why this project?
 
@@ -41,7 +41,7 @@ Builds are **unsigned and not notarized**, and there is **no auto-update**: down
 
 ## Run from source
 
-Prerequisites: [Node.js](https://nodejs.org/) 22.12 or later (`.nvmrc` pins the version used in CI and releases), npm 10 or later, and a Transmission daemon with RPC enabled.
+Prerequisites: [Node.js](https://nodejs.org/) 22.17 or later (`.nvmrc` pins 22.18, the version used in CI and releases), npm 10 or later, and a Transmission daemon with RPC enabled.
 
 ```bash
 git clone https://github.com/CorentinGC/transmission-seedora.git
@@ -60,7 +60,7 @@ Web app (Next.js, http://localhost:3000):
 
 ```bash
 npm run dev:web        # development server
-npm run dev:web:https  # with HTTPS, needed to test the PWA and notifications
+npm run dev:web:https  # with HTTPS, needed to test notifications and installation
 npm run build:web      # production build
 npm run start:web      # serve the production build
 ```
@@ -98,7 +98,7 @@ The UI reaches the platform only through a `PlatformApi` abstraction. See [docs/
 
 ## Tech stack
 
-Electron 40 and Electron Forge with Vite 6; Next.js 16 (App Router); TypeScript 5.7; React 19; Tailwind CSS v4; TanStack Table and react-virtual; Zustand; i18next; lucide-react; chokidar; geoip-lite.
+Electron 45 and Electron Forge 8 with Vite 8; Next.js 16 (App Router); TypeScript 5.7; React 19; Tailwind CSS v4; TanStack Table and react-virtual; Zustand; i18next; lucide-react; chokidar; geoip-lite.
 
 ## Known gaps and security
 

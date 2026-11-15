@@ -2,13 +2,13 @@
 
 @AGENTS.md
 
-Seedora is a cross-platform remote GUI for the Transmission BitTorrent daemon: one shared React UI shipped as an Electron desktop app and as a Next.js web app (PWA). Open source, MIT.
+Seedora is a cross-platform remote GUI for the Transmission BitTorrent daemon: one shared React UI shipped as an Electron desktop app and as a Next.js web app (installable via a web manifest). Open source, MIT.
 
 Before any task, read `MEMORY.md` (current state) and `llms.txt` (index of `docs/`). The directory you work in may have its own `CLAUDE.md` (`src/main/`, `packages/shared/`, `apps/web/`).
 
 ## Stack
 
-- Electron 40 (Electron Forge + Vite 6) · Next.js 16 (App Router, Turbopack, PWA) · TypeScript 5.7 strict
+- Electron 45 (Electron Forge 8 + Vite 8) · Next.js 16 (App Router, Turbopack, static web manifest, no service worker) · TypeScript 5.7 strict
 - React 19 · Tailwind CSS v4 with shadcn-style CSS variables · lucide-react
 - TanStack Table v8 + @tanstack/react-virtual · Zustand stores (server, torrent, session, ui)
 - i18next / react-i18next, 23 languages

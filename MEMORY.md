@@ -31,7 +31,7 @@
 
 1. Three `gh` commands in `docs/release.md` ("Self-hosted runner on a public repository" and "Community settings"): require approval for all external contributors on fork PR workflows, enable private vulnerability reporting, create the `translation` label.
 2. Create the Vercel firewall rate-limit rule for server actions (command in `docs/security.md`, "Platform rate limiting"; `c07.18`). Confirm the plan allows rate limiting first.
-3. Decide on Node 24 (`gt3`): `geoip-lite@2.0.3`, which fixes the `ip-address` advisories, requires Node >=24 while the project targets >=22.12 (CI, web hosting, contributors).
+3. Decide on Node 24 (`gt3`): `geoip-lite@2.0.3`, which fixes the `ip-address` advisories, requires Node >=24 while the project targets >=22.17 (CI on 22.18, web hosting, contributors). Owner decision 2026-11-15: stay on `geoip-lite` 1.4.10.
 4. Confirm the landing epic `52c` before it starts.
 
 ## Gate baseline (re-measured 2026-11-15 on `chore/repo-cleanup`)
@@ -43,7 +43,15 @@
 - `npm run format:check`: passes after the repo-wide Prettier commit (`00q`).
 - `npm run build:web`: passes.
 - CI (`.github/workflows/ci.yml`) runs lint, format check, typecheck, tests, i18n parity, web build and a Linux package smoke test on pull requests. Every job is blocking (`continue-on-error` is gone). A `commitlint` job checks the PR title and commits.
-- `npm audit`: triaged 2026-11-15, 64 to 52 after non-breaking fixes and Electron 40.10.6 (prod path 9, none reachable at runtime except the Electron advisories that need a 41/42 major). Details: `docs/dependency-audit.md`.
+- `npm audit`: triaged 2026-11-15, 64 to 52 after non-breaking fixes; then Electron 45.3.2 and Forge 8 / Vite 8 / sharp 0.35 cleared the Electron, `tar` and Forge-chain advisories. Remaining audit items: `appdmg` / `image-size`, `typescript-eslint` / `minimatch`, `geoip-lite` (`ip-address`, pinned at 1.4.10 because 2.0.3 needs Node >=24, owner decision). Details: `docs/dependency-audit.md`.
+
+## Dependency state (2026-11-15)
+
+- Electron 45.3.2 (exact pin), Electron Forge 8, Vite 8, sharp 0.35, Next 16. `engines.node` is `>=22.17` (Forge 8 floor); `.nvmrc`, the CI setup action and the release workflow use 22.18.
+- `@ducanh2912/next-pwa` is gone (`0yd`): it never produced a service worker under Next 16 Turbopack. The manifest is static; there is no offline mode. A real service worker is a separate issue (`0nw`, mind ADR 0007).
+- `safeStorage` sync methods (`isEncryptionAvailable`, `encryptString`, `decryptString`) are deprecated in Electron 45 and removed in 46. `src/main/store/secret-crypto.ts` uses them: migrate to the async API before any Electron 46 upgrade (`fu8`).
+- `geoip-lite` stays on 1.4.10: 2.0.3 needs Node >=24 (owner decision, `gt3`).
+- Open audit items: `appdmg` / `image-size`, `typescript-eslint` / `minimatch`, `geoip-lite` / `ip-address`. See `docs/dependency-audit.md`.
 
 ## Recent decisions
 
