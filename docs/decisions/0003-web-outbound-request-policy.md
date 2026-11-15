@@ -37,7 +37,7 @@ Classification normalises first: an IPv4-mapped (`::ffff:a.b.c.d`) address is ch
 | Range | Why |
 |---|---|
 | `0.0.0.0/8`, `::/128` | Unspecified; `0.0.0.0` reaches loopback on Linux |
-| `169.254.169.254/32`, `fd00:ec2::254/128`, `100.100.100.200/32`, `192.0.0.192/32` | Cloud metadata (AWS/GCP/Azure, AWS IPv6, Alibaba, Oracle) — see "Open question" |
+| `169.254.169.254/32`, `169.254.170.2/32`, `169.254.170.23/32`, `fd00:ec2::254/128`, `fd00:ec2::23/128`, `fd20:ce::254/128`, `100.100.100.200/32`, `192.0.0.192/32`, `168.63.129.16/32` | Cloud metadata and platform endpoints (AWS/GCP/Azure, AWS ECS task metadata and EKS pod identity, AWS and GCP IPv6, Alibaba, Oracle, Azure WireServer) — see "Open question" |
 | `224.0.0.0/4`, `ff00::/8` | Multicast |
 | `240.0.0.0/4`, `255.255.255.255/32` | Reserved, broadcast |
 | `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `2001:db8::/32` | Documentation |
@@ -54,8 +54,8 @@ Classification normalises first: an IPv4-mapped (`::ffff:a.b.c.d`) address is ch
 | `127.0.0.0/8`, `::1/128` | Loopback |
 | `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` | RFC 1918 |
 | `100.64.0.0/10` (except the Alibaba metadata address) | CGNAT (Tailscale and similar overlays live here) |
-| `169.254.0.0/16` (except metadata), `fe80::/10` | Link-local |
-| `fc00::/7` (except `fd00:ec2::254`) | IPv6 ULA |
+| `169.254.0.0/16` (except the metadata addresses above), `fe80::/10` | Link-local |
+| `fc00::/7` (except the metadata addresses above) | IPv6 ULA |
 
 The variable is read only through `env.ts`, and only the exact string `true` enables it. A public deployment must leave it unset. When it is set, the server logs one startup warning (without addresses).
 
@@ -68,7 +68,12 @@ The variable is read only through `env.ts`, and only the exact string `true` ena
 - Method `POST` only. Headers are built by the server: `Content-Type: application/json`, optional `Authorization` and `X-Transmission-Session-Id`. No caller-supplied header names.
 - **Redirects are not followed.** Node's `http` never follows them; any 3xx is a failure (`UNEXPECTED_REDIRECT`). Transmission does not redirect its RPC endpoint.
 - One `AbortSignal.timeout` deadline covers DNS, connect, the 409 session-id retry and the body read (values in ADR 0004).
-- The response body is read up to a cap of 32 MiB, then aborted (`RESPONSE_TOO_LARGE`). It is parsed as JSON in a `try`.
+- The response body is read up to a cap of **8 MiB** per request, then aborted (`RESPONSE_TOO_LARGE`). It is parsed as JSON in a `try`. Parsing multiplies the heap cost about twelve-fold, so the cap alone is not a memory bound; three more bounds apply (`outbound-limits.ts`, all in memory and per process):
+  - a **global budget of 32 MiB** of buffered response bytes across in-flight calls; a chunk that does not fit aborts that call with `RATE_LIMITED`;
+  - at most **8 concurrent calls per destination** (key: the sorted validated addresses plus the port, so alias host names share one cap), else `RATE_LIMITED`;
+  - at most **3 concurrent `getaddrinfo` lookups**, 64 waiting. `getaddrinfo` runs on libuv's 4-thread pool and cannot be cancelled: an aborted lookup keeps its slot until it really returns, while the waiting call gets `TIMEOUT` at the deadline. c-ares (`dns.Resolver`, cancellable) was rejected because it ignores `/etc/hosts`, which self-hosters on a LAN rely on.
+- Requests use `agent: false`, which ignores `HTTP_PROXY` / `NODE_USE_ENV_PROXY`: a proxy configured by the host environment can neither be bypassed by nor intercept the pinned connection (regression test in `outbound.test.ts`).
+- The addresses that passed validation are available to callers through the optional `onResolved` option, called before any connection (used for per-destination rate limiting).
 - TLS certificates are verified. There is no `rejectUnauthorized: false`, now or as an option.
 - Errors become fixed codes (ADR 0004). Raw `err.message`, resolved addresses and the daemon's `statusText` never reach the caller or the logs.
 

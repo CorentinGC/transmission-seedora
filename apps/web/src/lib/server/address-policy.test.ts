@@ -28,6 +28,11 @@ const FORBIDDEN = [
   '127.1', '1:2:3:4:5:6:7:8:9', '1::2::3', '::g',
 ];
 
+const METADATA = [
+  '169.254.170.2', '169.254.170.23', '168.63.129.16', 'fd00:ec2::23', 'fd20:ce::254',
+  '::ffff:169.254.170.2', '::ffff:a9fe:aa17', '[fd20:ce::254]', 'FD20:CE:0:0:0:0:0:254',
+];
+
 const PRIVATE = [
   '127.0.0.1', '127.1.2.3', '127.255.255.255', '::1', '0:0:0:0:0:0:0:1', '[::1]',
   '::ffff:127.0.0.1', '::FFFF:127.0.0.1', '::ffff:7f00:1', '0:0:0:0:0:ffff:7f00:1',
@@ -45,6 +50,15 @@ const PUBLIC = [
 ];
 
 describe('classifyAddress', () => {
+  it.each(METADATA)('forbids metadata endpoint %s', (address) => {
+    expect(classifyAddress(address)).toBe('forbidden');
+    expect(isAddressAllowed(address, true)).toBe(false);
+  });
+  it('keeps neighbours of the new metadata endpoints reachable', () => {
+    expect(classifyAddress('169.254.170.3')).toBe('private');
+    expect(classifyAddress('fd20:ce::255')).toBe('private');
+    expect(classifyAddress('168.63.129.17')).toBe('public');
+  });
   it.each(FORBIDDEN)('forbids %j', (address) => {
     expect(classifyAddress(address)).toBe('forbidden');
   });

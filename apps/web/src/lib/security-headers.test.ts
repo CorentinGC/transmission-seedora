@@ -16,6 +16,7 @@ describe('buildContentSecurityPolicy', () => {
       [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline'",
+        "script-src-attr 'none'",
         "style-src 'self' 'unsafe-inline'",
         'img-src \'self\' data: blob:',
         "font-src 'self' data:",
@@ -61,6 +62,7 @@ describe('buildContentSecurityPolicy', () => {
       expect(directive(csp, 'object-src')).toBe("object-src 'none'");
       expect(directive(csp, 'base-uri')).toBe("base-uri 'none'");
       expect(directive(csp, 'default-src')).toBe("default-src 'self'");
+      expect(directive(csp, 'script-src-attr')).toBe("script-src-attr 'none'");
     }
   });
 });

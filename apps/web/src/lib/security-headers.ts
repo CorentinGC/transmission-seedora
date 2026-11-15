@@ -3,7 +3,7 @@
  *
  * A static policy: `'unsafe-inline'` for scripts keeps the page static and
  * compatible with the service worker's precache (Next injects inline RSC
- * payload scripts). Everything else stays same-origin. Any new third-party
+ * payload scripts), while inline event-handler attributes stay blocked. Everything else stays same-origin. Any new third-party
  * origin needs a CSP change reviewed by security-auditor.
  */
 
@@ -35,6 +35,7 @@ export function buildContentSecurityPolicy(environment: SecurityEnvironment): st
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ''}${live}`,
+    "script-src-attr 'none'",
     `style-src 'self' 'unsafe-inline'${live}`,
     `img-src 'self' data: blob:${live}`,
     `font-src 'self' data:${live}`,

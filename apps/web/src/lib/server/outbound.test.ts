@@ -1,7 +1,13 @@
 import http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { buildSync } from 'esbuild';
 import { OutboundError, type ErrorCode } from './errors';
+import { createByteBudget, createConcurrencyGate } from './outbound-limits';
 import {
   createPinnedLookup,
   MAX_RESPONSE_BYTES,
@@ -291,13 +297,13 @@ describe('postJson: connection', () => {
     expect(await codeOf(postJson(local(), {}, { allowPrivate: true, maxResponseBytes: 1000 }))).toBe('RESPONSE_TOO_LARGE');
   });
 
-  it('enforces the 32 MiB cap and ignores an override that raises it', async () => {
+  it('enforces the 8 MiB cap and ignores an override that raises it', async () => {
     handler = (_req, res) => {
       res.writeHead(200);
       const chunk = Buffer.alloc(1024 * 1024, 120);
       for (let i = 0; i < 33; i++) res.write(chunk);
     };
-    expect(MAX_RESPONSE_BYTES).toBe(33554432);
+    expect(MAX_RESPONSE_BYTES).toBe(8 * 1024 * 1024);
     expect(await codeOf(postJson(local(), {}, { allowPrivate: true, maxResponseBytes: Number.MAX_SAFE_INTEGER, signal: AbortSignal.timeout(10_000) }))).toBe('RESPONSE_TOO_LARGE');
   });
 
@@ -316,5 +322,213 @@ describe('postJson: connection', () => {
   it('maps TLS against a plain HTTP server to TLS_FAILED (not a successful connection)', async () => {
     const code = await codeOf(postJson(local({ useSSL: true }), {}, { allowPrivate: true, signal: AbortSignal.timeout(3000) }));
     expect(['TLS_FAILED', 'CONNECTION_FAILED']).toContain(code);
+  });
+});
+
+describe('postJson: serialisation (cfh)', () => {
+  it('maps BigInt and circular bodies to INVALID_INPUT without leaking structure', async () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    for (const body of [{ n: 1n }, circular, undefined, () => 1]) {
+      const resolver = neverCalled();
+      const error = await postJson(local(), body, { allowPrivate: true, resolver }).catch((e: unknown) => e);
+      expect(error).toBeInstanceOf(OutboundError);
+      expect((error as OutboundError).code).toBe('INVALID_INPUT');
+      expect((error as OutboundError).message).toBe('Invalid request');
+      expect(resolver).not.toHaveBeenCalled();
+    }
+    expect(requests).toHaveLength(0);
+  });
+});
+
+describe('postJson: validated addresses are exposed (onResolved)', () => {
+  it('passes them to onResolved before connecting', async () => {
+    const seen: string[] = [];
+    await postJson(local({ host: 'daemon.test' }), {}, {
+      allowPrivate: true,
+      resolver: async () => [{ address: '127.0.0.1', family: 4 }],
+      onResolved: (addresses) => {
+        expect(requests).toHaveLength(0);
+        seen.push(...addresses.map((a) => a.address));
+      },
+    });
+    expect(seen).toEqual(['127.0.0.1']);
+  });
+
+  it('lets onResolved refuse the call with its own OutboundError, before any socket', async () => {
+    const code = await codeOf(
+      postJson(local(), {}, { allowPrivate: true, onResolved: () => { throw new OutboundError('RATE_LIMITED'); } }),
+    );
+    expect(code).toBe('RATE_LIMITED');
+    expect(requests).toHaveLength(0);
+  });
+
+  it('does not call onResolved for a denied address', async () => {
+    const onResolved = vi.fn();
+    expect(await codeOf(postJson(local({ host: '10.0.0.1' }), {}, { allowPrivate: false, onResolved }))).toBe('HOST_NOT_ALLOWED');
+    expect(onResolved).not.toHaveBeenCalled();
+  });
+});
+
+describe('postJson: memory bounds (917)', () => {
+  const sendBig = (bytes: number): Handler => (_req, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.write(Buffer.alloc(bytes, 0x20));
+    res.end('{}');
+  };
+
+  it('lowers the per-response cap to 8 MiB', () => {
+    expect(MAX_RESPONSE_BYTES).toBe(8 * 1024 * 1024);
+  });
+
+  it('refuses a response above the per-request cap', async () => {
+    handler = sendBig(MAX_RESPONSE_BYTES + 1024);
+    expect(await codeOf(postJson(local(), {}, { allowPrivate: true }))).toBe('RESPONSE_TOO_LARGE');
+  });
+
+  it('concurrent near-cap bodies stay inside the global budget and the budget is returned', async () => {
+    const budget = createByteBudget(3 * 1024 * 1024);
+    let peak = 0;
+    const reserve = budget.reserve.bind(budget);
+    budget.reserve = (bytes) => {
+      const ok = reserve(bytes);
+      peak = Math.max(peak, budget.inUse());
+      return ok;
+    };
+    let arrived = 0;
+    handler = (_req, res) => {
+      arrived += 1;
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.write(Buffer.alloc(1024 * 1024, 0x20));
+      const finishWhenAllArrived = setInterval(() => {
+        if (arrived < 12) return;
+        clearInterval(finishWhenAllArrived);
+        res.end('{}');
+      }, 10);
+    };
+    const gate = createConcurrencyGate(100);
+    const results = await Promise.allSettled(
+      Array.from({ length: 12 }, () =>
+        postJson(local(), {}, { allowPrivate: true, byteBudget: budget, destinationGate: gate }),
+      ),
+    );
+    const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+    expect(failures.length).toBeGreaterThan(0);
+    for (const failure of failures) expect((failure.reason as OutboundError).code).toBe('RATE_LIMITED');
+    expect(peak).toBeLessThanOrEqual(3 * 1024 * 1024);
+    expect(budget.inUse()).toBe(0);
+    expect(gate.size()).toBe(0);
+  });
+
+  it('releases the budget when a request fails or is aborted mid-body', async () => {
+    const budget = createByteBudget(64 * 1024 * 1024);
+    handler = (_req, res) => {
+      res.writeHead(200);
+      res.write(Buffer.alloc(100_000, 0x20));
+    };
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 100);
+    expect(await codeOf(postJson(local(), {}, { allowPrivate: true, byteBudget: budget, signal: controller.signal }))).toBe('TIMEOUT');
+    expect(budget.inUse()).toBe(0);
+  });
+
+  it('caps concurrent calls per destination and frees the slot afterwards', async () => {
+    const gate = createConcurrencyGate(2);
+    const pending: http.ServerResponse[] = [];
+    handler = (_req, res) => { pending.push(res); };
+    const run = () => postJson(local(), {}, { allowPrivate: true, destinationGate: gate });
+    const first = run();
+    const second = run();
+    await vi.waitFor(() => expect(pending).toHaveLength(2));
+    expect(await codeOf(run())).toBe('RATE_LIMITED');
+    expect(pending).toHaveLength(2);
+    pending.forEach((res) => res.end('{}'));
+    await Promise.all([first, second]);
+    expect(gate.size()).toBe(0);
+    handler = (_req, res) => res.end('{}');
+    await expect(run()).resolves.toMatchObject({ status: 200 });
+  });
+
+  it('counts the destination by resolved address, so alias host names share one cap', async () => {
+    const gate = createConcurrencyGate(1);
+    const pending: http.ServerResponse[] = [];
+    handler = (_req, res) => { pending.push(res); };
+    const resolver: Resolver = async () => [{ address: '127.0.0.1', family: 4 }];
+    const a = postJson(local({ host: 'a.test' }), {}, { allowPrivate: true, resolver, destinationGate: gate });
+    await vi.waitFor(() => expect(pending).toHaveLength(1));
+    expect(await codeOf(postJson(local({ host: 'b.test' }), {}, { allowPrivate: true, resolver, destinationGate: gate }))).toBe('RATE_LIMITED');
+    pending.forEach((res) => res.end('{}'));
+    await a;
+  });
+});
+
+describe('resolveAndValidate: resolver receives the deadline signal (ztu)', () => {
+  it('passes the signal and rejects with TIMEOUT when it aborts while the resolver hangs', async () => {
+    const controller = new AbortController();
+    let received: AbortSignal | undefined;
+    const resolver: Resolver = (_host, signal) => {
+      received = signal;
+      return new Promise(() => undefined);
+    };
+    const pending = resolveAndValidate('slow.test', false, resolver, controller.signal);
+    controller.abort();
+    expect(await codeOf(pending)).toBe('TIMEOUT');
+    expect(received).toBe(controller.signal);
+  });
+});
+
+describe('postJson: ignores proxy environment variables (agent: false)', () => {
+  it('connects directly even with HTTP_PROXY and NODE_USE_ENV_PROXY set', async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), 'seedora-proxy-'));
+    try {
+      const bundle = path.join(dir, 'outbound.mjs');
+      buildSync({
+        entryPoints: [path.join(__dirname, 'outbound.ts')],
+        bundle: true,
+        platform: 'node',
+        format: 'esm',
+        outfile: bundle,
+        logLevel: 'silent',
+      });
+      const script = path.join(dir, 'child.mjs');
+      writeFileSync(
+        script,
+        `import http from 'node:http';
+import { postJson } from ${JSON.stringify(bundle)};
+const hits = { proxy: 0, target: 0 };
+const proxy = http.createServer((q, r) => { hits.proxy++; q.resume(); r.end('{"via":"proxy"}'); });
+const target = http.createServer((q, r) => { hits.target++; q.resume(); r.end('{"via":"target"}'); });
+await Promise.all([[proxy, Number(process.env.PROXY_PORT)], [target, 0]].map(([s, p]) => new Promise((ok) => s.listen(p, '127.0.0.1', ok))));
+const targetPort = target.address().port;
+const resolver = async () => [{ address: '127.0.0.1', family: 4 }];
+const res = await postJson({ host: 'daemon.test', port: targetPort, path: '/x', useSSL: false }, {}, { allowPrivate: true, resolver, signal: AbortSignal.timeout(5000) });
+const viaGuard = { json: res.json, ...hits };
+// Control: the global agent really is proxied in this process, so the check above is not vacuous.
+const before = hits.proxy;
+await new Promise((ok) => { const q = http.request({ host: 'daemon.test', port: targetPort, path: '/y', method: 'POST', lookup: (h, o, cb) => cb(null, '127.0.0.1', 4) }, (r) => { r.resume(); r.on('end', ok); }); q.on('error', ok); q.end(); });
+console.log(JSON.stringify({ viaGuard, controlProxied: hits.proxy > before }));
+process.exit(0);`,
+      );
+      const probe = http.createServer();
+      await new Promise<void>((resolve) => probe.listen(0, '127.0.0.1', resolve));
+      const proxyPort = (probe.address() as AddressInfo).port;
+      await new Promise((resolve) => probe.close(resolve));
+      const proxyUrl = `http://127.0.0.1:${proxyPort}`;
+      const output = execFileSync(process.execPath, [script], {
+        env: { ...process.env, PROXY_PORT: String(proxyPort), HTTP_PROXY: proxyUrl, http_proxy: proxyUrl, NODE_USE_ENV_PROXY: '1', NO_PROXY: '', no_proxy: '' },
+        encoding: 'utf8',
+        timeout: 20_000,
+      });
+      const result = JSON.parse(output.trim().split('\n').pop() ?? '{}') as {
+        viaGuard: { json: { via: string }; proxy: number; target: number };
+        controlProxied: boolean;
+      };
+      expect(result.controlProxied).toBe(true);
+      expect(result.viaGuard.json).toEqual({ via: 'target' });
+      expect(result.viaGuard.proxy).toBe(0);
+      expect(result.viaGuard.target).toBe(1);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

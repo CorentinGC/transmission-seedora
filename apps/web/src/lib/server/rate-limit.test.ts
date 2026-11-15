@@ -139,19 +139,52 @@ describe('clientKey', () => {
     expect(clientKey(h, trusted)).toBe('203.0.113.7');
   });
 
-  it('returns null when trusted but the header is missing', () => {
-    expect(clientKey(headers({}), trusted)).toBeNull();
-    expect(clientKey(headers({}), vercel)).toBeNull();
+  it('falls back to the shared key, never null, when trusted but the header is missing', () => {
+    expect(clientKey(headers({}), trusted)).toBe(SHARED_CLIENT_KEY);
+    expect(clientKey(headers({}), vercel)).toBe(SHARED_CLIENT_KEY);
   });
 
-  it('returns null for garbage instead of keying on attacker text', () => {
-    for (const bad of ['', ' ', 'not-an-ip', '1.2.3.4:80', '<script>', 'a'.repeat(5000), '999.1.1.1']) {
-      expect(clientKey(headers({ 'x-forwarded-for': bad }), trusted)).toBeNull();
+  it('falls back to the shared key for garbage instead of keying on attacker text', () => {
+    for (const bad of ['', ' ', 'not-an-ip', '<script>', 'a'.repeat(5000), '999.1.1.1', '[::1', '1.2.3.4:99999x']) {
+      expect(clientKey(headers({ 'x-forwarded-for': bad }), trusted)).toBe(SHARED_CLIENT_KEY);
     }
   });
 
-  it('accepts IPv6 and normalises case', () => {
-    expect(clientKey(headers({ 'x-forwarded-for': '2001:DB8::1' }), trusted)).toBe('2001:db8::1');
+  it('still reads the proxy-appended entry after a very long caller-supplied prefix', () => {
+    const h = headers({ 'x-forwarded-for': `${'6.6.6.6, '.repeat(500)}203.0.113.7` });
+    expect(clientKey(h, trusted)).toBe('203.0.113.7');
+  });
+
+  it('strips a port from the last hop', () => {
+    expect(clientKey(headers({ 'x-forwarded-for': '203.0.113.7:51234' }), trusted)).toBe('203.0.113.7');
+    expect(clientKey(headers({ 'x-forwarded-for': '[2001:db8:1:2::9]:443' }), trusted)).toBe(
+      clientKey(headers({ 'x-forwarded-for': '2001:db8:1:2::1' }), trusted),
+    );
+    expect(clientKey(headers({ 'x-forwarded-for': '[2001:db8:1:2::9]' }), trusted)).toMatch(/\/64$/);
+  });
+
+  it('shares one key per IPv6 /64 and separates different /64s', () => {
+    const key = (ip: string) => clientKey(headers({ 'x-forwarded-for': ip }), trusted);
+    expect(key('2001:db8:1:2::1')).toBe(key('2001:DB8:1:2:ffff:ffff:ffff:ffff'));
+    expect(key('2001:db8:1:2::1')).not.toBe(key('2001:db8:1:3::1'));
+  });
+
+  it('rotating the interface id inside a /64 cannot refill a bucket', () => {
+    const bucket = createTokenBucket(RATE_LIMITS.testConnection);
+    let allowed = 0;
+    for (let i = 0; i < 200; i++) {
+      const k = clientKey(headers({ 'x-vercel-forwarded-for': `2001:db8:1:2::${i.toString(16)}` }), vercel);
+      if (bucket.take(k ?? 'x')) allowed++;
+    }
+    expect(allowed).toBe(RATE_LIMITS.testConnection.burst);
+  });
+
+  it('canonicalises case, zero forms and IPv4-mapped addresses', () => {
+    const key = (ip: string) => clientKey(headers({ 'x-forwarded-for': ip }), trusted);
+    expect(key('2001:DB8::1')).toBe(key('2001:db8:0:0::1'));
+    expect(key('::ffff:1.2.3.4')).toBe('1.2.3.4');
+    expect(key('::FFFF:102:304')).toBe('1.2.3.4');
+    expect(key('fe80::1%eth0')).toBe(key('fe80::2'));
   });
 
   it('exposes a shared key for buckets that cannot identify the client', () => {

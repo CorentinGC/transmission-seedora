@@ -13,7 +13,7 @@ type Cidr4 = readonly [string, number];
 type Cidr6 = readonly [string, number];
 
 /** Bytes of an IPv4 address, or null when not a canonical dotted quad. */
-function parseIPv4(text: string): number[] | null {
+export function parseIPv4(text: string): number[] | null {
   const parts = text.split('.');
   if (parts.length !== 4) return null;
   const bytes: number[] = [];
@@ -27,7 +27,7 @@ function parseIPv4(text: string): number[] | null {
 }
 
 /** The 16 bytes of an IPv6 address (any textual form, including `::` and a dotted tail), or null. */
-function parseIPv6(text: string): number[] | null {
+export function parseIPv6(text: string): number[] | null {
   if (text.includes('%')) return null;
   let work = text;
   const lastColon = work.lastIndexOf(':');
@@ -86,6 +86,10 @@ const V4_FORBIDDEN = v4([
   ['169.254.169.254', 32],
   ['100.100.100.200', 32],
   ['192.0.0.192', 32],
+  // ECS task metadata, EKS pod identity, Azure WireServer (a public address, but a platform endpoint).
+  ['169.254.170.2', 32],
+  ['169.254.170.23', 32],
+  ['168.63.129.16', 32],
   ['224.0.0.0', 4],
   ['240.0.0.0', 4],
   ['192.0.2.0', 24],
@@ -108,6 +112,8 @@ const V4_PRIVATE = v4([
 const V6_FORBIDDEN = v6([
   ['::', 128],
   ['fd00:ec2::254', 128],
+  ['fd00:ec2::23', 128],
+  ['fd20:ce::254', 128],
   ['ff00::', 8],
   ['2001:db8::', 32],
   ['::', 96],

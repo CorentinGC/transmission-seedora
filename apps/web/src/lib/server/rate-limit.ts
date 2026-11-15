@@ -1,4 +1,5 @@
 import { isIP } from 'node:net';
+import { parseIPv4, parseIPv6 } from './address-policy';
 
 /**
  * In-process token-bucket rate limiter (ADR 0004 section 6).
@@ -104,21 +105,62 @@ export interface ClientKeyOptions {
   trustProxy: boolean;
 }
 
+const MAX_ENTRY_LENGTH = 64;
+
+/** Splits `host`, `host:port`, `[v6]` and `[v6]:port` into the bare address text, or null. */
+function stripPort(entry: string): string | null {
+  if (entry.startsWith('[')) {
+    const end = entry.indexOf(']');
+    if (end < 0) return null;
+    const rest = entry.slice(end + 1);
+    if (rest !== '' && !/^:\d{1,5}$/.test(rest)) return null;
+    return entry.slice(1, end);
+  }
+  const colons = entry.split(':').length - 1;
+  if (colons === 1) {
+    const [host, port] = entry.split(':');
+    return /^\d{1,5}$/.test(port) ? host : null;
+  }
+  return entry;
+}
+
 /**
- * Derives the rate-limit key of the calling client, or null when there is no
- * trustworthy identity (the per-client bucket is then skipped, ADR 0004).
+ * Canonical rate-limit key of an address, or null when it is not an IP.
+ * IPv4-mapped IPv6 maps to the IPv4 key; other IPv6 addresses share one key per /64
+ * (one subscriber's allocation), so rotating the interface id gains nothing.
+ */
+export function canonicalClientKey(text: string): string | null {
+  const bare = stripPort(text);
+  if (bare === null) return null;
+  const address = bare.includes('%') && isIP(bare.split('%')[0]) === 6 ? bare.split('%')[0] : bare;
+  const family = isIP(address);
+  if (family === 4) return parseIPv4(address)?.join('.') ?? null;
+  if (family !== 6) return null;
+  const bytes = parseIPv6(address);
+  if (!bytes) return null;
+  const mapped = bytes.slice(0, 10).every((b) => b === 0) && bytes[10] === 0xff && bytes[11] === 0xff;
+  if (mapped) return bytes.slice(12).join('.');
+  const groups = [0, 2, 4, 6].map((i) => ((bytes[i] << 8) | bytes[i + 1]).toString(16));
+  return `${groups.join(':')}::/64`;
+}
+
+/**
+ * Derives the rate-limit key of the calling client. Returns null only when no proxy is trusted
+ * at all (nothing to key on, ADR 0004). When a proxy is trusted but the header is missing or
+ * unusable the result is `SHARED_CLIENT_KEY`: a strict shared bucket, never "no limit".
  *
- * On Vercel the platform sets `x-vercel-forwarded-for` and overwrites
- * `x-forwarded-for` rather than appending to a caller-supplied value. Elsewhere
- * the headers are caller-controlled, so they are used only when a trusted
- * proxy is declared. The last entry is the one our proxy appended.
+ * On Vercel the platform sets `x-vercel-forwarded-for` and overwrites `x-forwarded-for` rather
+ * than appending to a caller-supplied value. Elsewhere the headers are caller-controlled, so they
+ * are used only when a trusted proxy is declared. Only the last entry (the one our proxy
+ * appended) is read, found with `lastIndexOf`, so a long caller-supplied prefix cannot matter.
  */
 export function clientKey(headers: HeaderReader, options: ClientKeyOptions): string | null {
   if (!options.onVercel && !options.trustProxy) return null;
   const raw = options.onVercel
     ? (headers.get('x-vercel-forwarded-for') ?? headers.get('x-forwarded-for'))
     : headers.get('x-forwarded-for');
-  if (!raw || raw.length > 1024) return null;
-  const last = raw.split(',').pop()?.trim() ?? '';
-  return isIP(last) ? last.toLowerCase() : null;
+  if (!raw) return SHARED_CLIENT_KEY;
+  const last = raw.slice(raw.lastIndexOf(',') + 1).trim();
+  if (last.length === 0 || last.length > MAX_ENTRY_LENGTH) return SHARED_CLIENT_KEY;
+  return canonicalClientKey(last) ?? SHARED_CLIENT_KEY;
 }

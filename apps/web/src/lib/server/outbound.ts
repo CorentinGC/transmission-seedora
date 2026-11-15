@@ -4,6 +4,18 @@ import https from 'node:https';
 import { isIP, type LookupFunction } from 'node:net';
 import { isAddressAllowed, isPortAllowed, isValidPort } from './address-policy';
 import { OutboundError } from './errors';
+import {
+  MAX_CONCURRENT_LOOKUPS,
+  MAX_CONCURRENT_PER_DESTINATION,
+  MAX_IN_FLIGHT_BYTES,
+  MAX_QUEUED_LOOKUPS,
+  createByteBudget,
+  createConcurrencyGate,
+  createLookupLimiter,
+  type ByteBudget,
+  type ConcurrencyGate,
+  type LookupLimiter,
+} from './outbound-limits';
 
 /**
  * The only module allowed to contact a caller-influenced destination (ADR 0003).
@@ -17,7 +29,7 @@ export interface ResolvedAddress {
 }
 
 /** Resolves a host name to all its addresses. Injectable for tests; the default uses the system resolver. */
-export type Resolver = (host: string) => Promise<ResolvedAddress[]>;
+export type Resolver = (host: string, signal?: AbortSignal) => Promise<ResolvedAddress[]>;
 
 /** Where to POST. */
 export interface OutboundTarget {
@@ -36,8 +48,17 @@ export interface OutboundOptions {
   authorization?: string;
   sessionId?: string;
   resolver?: Resolver;
-  /** Can only lower the 32 MiB cap. */
+  /** Can only lower the 8 MiB cap. */
   maxResponseBytes?: number;
+  /**
+   * Called with the validated addresses after policy passes and before any connection. It may
+   * throw an `OutboundError` (e.g. RATE_LIMITED) to refuse the call; that error propagates as is.
+   */
+  onResolved?: (addresses: readonly ResolvedAddress[]) => void;
+  /** Process-wide buffered-bytes budget. Injectable for tests. */
+  byteBudget?: ByteBudget;
+  /** Per-destination concurrency cap. Injectable for tests. */
+  destinationGate?: ConcurrencyGate;
 }
 
 /** Response of a completed exchange. `json` is undefined when the body is not valid JSON. */
@@ -47,17 +68,30 @@ export interface OutboundResponse {
   json: unknown;
 }
 
-export const MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
+export const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
+const processByteBudget = createByteBudget(MAX_IN_FLIGHT_BYTES);
+const processDestinationGate = createConcurrencyGate(MAX_CONCURRENT_PER_DESTINATION);
 const DEFAULT_TIMEOUT_MS = 15_000;
 const HOST_PATTERN = /^[A-Za-z0-9.:-]+$/;
 const PATH_PATTERN = /^\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*$/;
 const HEADER_VALUE_PATTERN = /^[\x20-\x7e]*$/;
 const TLS_CODES = /^(ERR_TLS_|ERR_SSL_|CERT_|DEPTH_ZERO|SELF_SIGNED|UNABLE_TO_|HOSTNAME_MISMATCH|ERR_CERT)/;
 
-const systemResolver: Resolver = async (host) => {
-  const results = await dnsLookup(host, { all: true, verbatim: true });
-  return results.map(({ address, family }) => ({ address, family: family === 6 ? 6 : 4 }));
-};
+type DnsLookup = (host: string, options: { all: true; verbatim: true }) => Promise<Array<{ address: string; family: number }>>;
+
+/**
+ * Builds a resolver on `getaddrinfo`. It cannot be cancelled and runs on libuv's small thread
+ * pool, so lookups are capped (a slow answer holds its slot until it really returns) and the
+ * wait for a slot honours the request deadline. c-ares was rejected: it ignores /etc/hosts.
+ */
+export function createSystemResolver(lookup: DnsLookup, limiter: LookupLimiter): Resolver {
+  return async (host, signal = new AbortController().signal) => {
+    const results = await limiter.run(() => lookup(host, { all: true, verbatim: true }), signal);
+    return results.map(({ address, family }) => ({ address, family: family === 6 ? 6 : 4 }));
+  };
+}
+
+const systemResolver = createSystemResolver(dnsLookup, createLookupLimiter(MAX_CONCURRENT_LOOKUPS, MAX_QUEUED_LOOKUPS));
 
 /** Rejects with TIMEOUT as soon as the signal aborts, without waiting for `promise`. */
 function abortable<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
@@ -108,7 +142,7 @@ export async function resolveAndValidate(
     addresses = [{ address: host, family: family === 6 ? 6 : 4 }];
   } else {
     try {
-      addresses = await abortable(resolver(host), signal);
+      addresses = await abortable(resolver(host, signal), signal);
     } catch (error) {
       if (error instanceof OutboundError) throw error;
       throw new OutboundError('DNS_FAILED');
@@ -142,6 +176,18 @@ export function createPinnedLookup(addresses: readonly ResolvedAddress[]): Looku
   };
 }
 
+/** JSON-encodes the body; BigInt, cycles and other unserialisable values become INVALID_INPUT. */
+function serialise(body: unknown): string {
+  let payload: string | undefined;
+  try {
+    payload = JSON.stringify(body);
+  } catch {
+    throw new OutboundError('INVALID_INPUT');
+  }
+  if (typeof payload !== 'string') throw new OutboundError('INVALID_INPUT');
+  return payload;
+}
+
 function mapTransportError(error: unknown): OutboundError {
   if (error instanceof OutboundError) return error;
   const code = typeof error === 'object' && error !== null ? (error as NodeJS.ErrnoException).code : undefined;
@@ -169,12 +215,17 @@ export async function postJson(
   options: OutboundOptions,
 ): Promise<OutboundResponse> {
   const host = validateInput(target, options);
-  const payload = JSON.stringify(body);
-  if (typeof payload !== 'string') throw new OutboundError('INVALID_INPUT');
+  const payload = serialise(body);
   const signal = options.signal ?? AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
   if (signal.aborted) throw new OutboundError('TIMEOUT');
 
   const addresses = await resolveAndValidate(host, options.allowPrivate, options.resolver ?? systemResolver, signal);
+  options.onResolved?.(addresses);
+  const destination = `${addresses.map((a) => a.address).sort().join(',')}|${target.port}`;
+  const releaseDestination = (options.destinationGate ?? processDestinationGate).tryAcquire(destination);
+  if (!releaseDestination) throw new OutboundError('RATE_LIMITED');
+  const budget = options.byteBudget ?? processByteBudget;
+  let held = 0;
   const cap = Math.min(options.maxResponseBytes ?? MAX_RESPONSE_BYTES, MAX_RESPONSE_BYTES);
   const headers: Record<string, string | number> = {
     'Content-Type': 'application/json',
@@ -190,6 +241,9 @@ export async function postJson(
       if (settled) return;
       settled = true;
       signal.removeEventListener('abort', onAbort);
+      budget.release(held);
+      held = 0;
+      releaseDestination();
       if (error) {
         request?.destroy();
         reject(error);
@@ -232,11 +286,17 @@ export async function postJson(
       const chunks: Buffer[] = [];
       let received = 0;
       response.on('data', (chunk: Buffer) => {
+        if (settled) return;
         received += chunk.length;
         if (received > cap) {
           finish(new OutboundError('RESPONSE_TOO_LARGE'));
           return;
         }
+        if (!budget.reserve(chunk.length)) {
+          finish(new OutboundError('RATE_LIMITED'));
+          return;
+        }
+        held += chunk.length;
         chunks.push(chunk);
       });
       response.on('error', (error) => finish(mapTransportError(error)));
