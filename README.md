@@ -160,7 +160,7 @@ Contributions are welcome! Here are some areas where help is appreciated:
 
 ## License
 
-[Non-Commercial Open Source License](LICENSE) — Free to use, modify, and distribute. Commercial use and resale are prohibited.
+[MIT](LICENSE)
 
 ## Acknowledgments
 

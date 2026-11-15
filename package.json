@@ -25,7 +25,16 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p apps/web",
     "i18n:check": "node scripts/i18n-check.mjs"
   },
-  "keywords": [],
+  "keywords": [
+    "transmission",
+    "bittorrent",
+    "torrent",
+    "remote",
+    "gui",
+    "electron",
+    "pwa",
+    "seedbox"
+  ],
   "author": {
     "name": "CorentinGC",
     "email": "contact@eden-solutions.pro"
@@ -75,5 +84,16 @@
     "socks-proxy-agent": "^8.0.5",
     "tailwind-merge": "^3.5.0",
     "zustand": "^5.0.11"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CorentinGC/transmission-seedora.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CorentinGC/transmission-seedora/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.12.1"
 }

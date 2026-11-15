@@ -12,7 +12,7 @@
 
 - [ ] Phase 2 — repo cleanup: epic `seedora-transmission-mi9` and tests/CI epic `seedora-transmission-we5` (Vitest foundation `we5.1` unblocks several fixes — do it first).
 - [ ] Phase 3 — P0 security first: web epic `seedora-transmission-c07`, Electron epic `seedora-transmission-23u`; then bugs `0cl`, i18n `k5r`, a11y/design `vpz`.
-- [ ] Phase 4 (after 2–3) — epic `seedora-transmission-52c`: landing page on `seedora.app`, web app moved to `app.seedora.app`, landing SEO, Google Search Console registration (via the browser, with the user's confirmation). Hosting and DNS are not defined in the repo — ask the user first.
+- [ ] Phase 4 (after 2–3) — epic `seedora-transmission-52c`: landing page on `seedora.app`, web app moved to `app.seedora.app`, landing SEO, Google Search Console registration (via the browser, with the user's confirmation). Hosting: **Vercel**; DNS: **Cloudflare** (via the Cloudflare MCP) — user decision 2026-11-15.
 - [ ] Do not push `chore/agentic-setup` before the P0 web fixes are ready to ship: `docs/security.md` describes gaps that are live on seedora.app.
 - [ ] Visual review pass (`vpz.10`) needs the user to start Electron (`npm run start:debug`) and web (`npm run dev:web`).
 
@@ -26,7 +26,7 @@
 
 ## Recent decisions
 
-- 2026-11-15 — Licence is **MIT** (the `LICENSE` file still holds the old non-commercial text until Phase 2 replaces it).
+- 2026-11-15 — Licence is **MIT** (`LICENSE` replaced on `chore/repo-cleanup`).
 - 2026-11-15 — Backlog in **beads**; GitHub Issues stay the public inbox, mirrored by `product-owner`.
 - 2026-11-15 — Everything found in review gets fixed in this overhaul, not deferred.
 - 2026-11-15 — Web SSRF design: default-deny loopback/private/link-local/metadata addresses, `SEEDORA_ALLOW_PRIVATE_HOSTS` opt-in for LAN self-hosting.
