@@ -20,7 +20,8 @@
     "detailsPanel": "Ayrıntı Panelini Aç/Kapat",
     "searchPlaceholder": "Torrent ara...",
     "preferences": "Tercihler",
-    "serverSettings": "Sunucu Ayarları"
+    "serverSettings": "Sunucu Ayarları",
+    "clearSearch": "Aramayı temizle"
   },
   "statusBar": {
     "connected": "Bağlı",
@@ -157,7 +158,8 @@
     "flags": "Bayraklar",
     "progress": "İlerleme",
     "down": "İndirme",
-    "up": "Gönderme"
+    "up": "Gönderme",
+    "country": "Ülke"
   },
   "trackersTab": {
     "tier": "Seviye",
@@ -172,7 +174,7 @@
     "cancel": "İptal",
     "remove": "Kaldır",
     "ok": "Tamam",
-    "na": "N/A"
+    "na": "Yok"
   },
   "optionsTab": {
     "bandwidth": "Bant Genişliği",
@@ -277,7 +279,15 @@
     "exportAll": "Tümünü dışa aktar",
     "importServers": "İçe aktar...",
     "importSuccess": "{{added}} eklendi, {{skipped}} atlandı",
-    "importFailed": "İçe aktarma başarısız oldu."
+    "importFailed": "İçe aktarma başarısız oldu.",
+    "saveFailed": "Sunucu kaydedilemedi. Değerleri kontrol edip tekrar deneyin.",
+    "exportPasswords": "Şifreleri dışa aktarmaya dahil et",
+    "exportPasswordsWarning": "Şifreler dosyaya düz metin olarak yazılır. Dosyayı gizli tutun.",
+    "webStorageWarning": "Web sürümünde sunucu şifreleri bu tarayıcıda şifrelenmeden saklanır. Bunları yalnızca güvendiğiniz bir cihaza girin.",
+    "passwordStored": "Şifre kaydedildi. Korumak için boş bırakın.",
+    "removeStoredPassword": "Kayıtlı parolayı kaldır",
+    "removeStoredProxyPassword": "Kayıtlı proxy parolasını kaldır",
+    "secretStorageUnencrypted": "Bu sistemde güvenli depolama kullanılamıyor: kayıtlı parolalar diskte şifrelenmeden saklanır."
   },
   "settings": {
     "applied": "Ayarlar uygulandı",
@@ -394,7 +404,8 @@
     "importSuccess": "Yedek başarıyla geri yüklendi.",
     "saveFailed": "Tercihler kaydedilemedi. Değerleri kontrol edip tekrar deneyin.",
     "invalidValues": "Yenileme aralığı en az 250 ms olmalı ve hız ön ayarları sayı olmalıdır.",
-    "importFailed": "İçe aktarma başarısız oldu."
+    "importFailed": "İçe aktarma başarısız oldu.",
+    "removePreset": "Hız ön ayarını kaldır"
   },
   "columnMenu": {
     "setupColumns": "Sütunları ayarla"
@@ -405,7 +416,17 @@
     "refreshFailed": "Torrent'ler yenilenemedi: {{error}}",
     "statsRefreshFailed": "Sunucu istatistikleri yenilenemedi: {{error}}",
     "unknownError": "Bilinmeyen hata",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "columnsSaveFailed": "Sütun düzeni kaydedilemedi.",
+    "serversLoadFailed": "Sunucu listesi yüklenemedi.",
+    "serverRemoveFailed": "Sunucu kaldırılamadı.",
+    "exportFailed": "Yapılandırma dışa aktarılamadı.",
+    "prefsLoadFailed": "Tercihleriniz yüklenemedi.",
+    "pickerFailed": "Dosya veya klasör seçici açılamadı.",
+    "fileReadFailed": "Seçilen dosya okunamadı.",
+    "renameFailed": "Torrent yeniden adlandırılamadı.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Seedora'nın başlatıldığı dosya veya bağlantı açılamadı."
   },
   "filesTab": {
     "clickToChangePriority": "Önceliği değiştirmek için tıklayın",
@@ -417,5 +438,131 @@
     "description": "Uygulama beklenmeyen bir hatayla karşılaştı. Tekrar deneyebilir veya pencereyi yeniden yükleyebilirsiniz.",
     "retry": "Tekrar dene",
     "reload": "Yeniden yükle"
+  },
+  "format": {
+    "done": "Tamamlandı",
+    "justNow": "Az önce",
+    "perSecond": "{{size}}/sn",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} g",
+      "hours": "{{n}} sa",
+      "minutes": "{{n}} dk",
+      "seconds": "{{n}} sn"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Dosya",
+      "edit": "Düzen",
+      "view": "Görünüm",
+      "torrent": "Torrent",
+      "tools": "Araçlar",
+      "help": "Yardım",
+      "preferences": "Tercihler…",
+      "addTorrent": "Torrent ekle…",
+      "addMagnet": "Magnet bağlantısı ekle…",
+      "toggleFilter": "Filtre kenar çubuğunu aç/kapat",
+      "toggleDetails": "Ayrıntı panelini aç/kapat",
+      "start": "Başlat",
+      "stop": "Durdur",
+      "verify": "Doğrula",
+      "reannounce": "Yeniden duyur",
+      "startAll": "Tümünü başlat",
+      "stopAll": "Tümünü durdur",
+      "remove": "Kaldır…",
+      "serverSettings": "Sunucu ayarları…",
+      "rpcSpec": "Transmission RPC belirtimi",
+      "reportIssue": "Sorun bildir",
+      "about": "{{appName}} hakkında",
+      "hide": "{{appName}} uygulamasını gizle",
+      "hideOthers": "Diğerlerini gizle",
+      "unhide": "Tümünü göster",
+      "quit": "{{appName}} uygulamasından çık",
+      "close": "Pencereyi kapat",
+      "undo": "Geri al",
+      "redo": "Yinele",
+      "cut": "Kes",
+      "copy": "Kopyala",
+      "paste": "Yapıştır",
+      "selectAll": "Tümünü seç",
+      "reload": "Yeniden yükle",
+      "forceReload": "Zorla yeniden yükle",
+      "resetZoom": "Gerçek boyut",
+      "zoomIn": "Yakınlaştır",
+      "zoomOut": "Uzaklaştır",
+      "toggleFullscreen": "Tam ekranı aç/kapat"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} etkin aktarım",
+      "activeTransfers_other": "{{count}} etkin aktarım",
+      "enableAltSpeed": "Alternatif hızı etkinleştir",
+      "disableAltSpeed": "Alternatif hızı devre dışı bırak",
+      "showWindow": "Pencereyi göster",
+      "quit": "Çık"
+    },
+    "scriptGuard": {
+      "title": "Daemon'ın betik ayarları değiştirilsin mi?",
+      "message": "Seedora, Transmission daemon'ının sunucusunda bir program çalıştırmasına yol açan ayarları değiştirmek üzere.",
+      "detail": "{{changes}}\n\nYalnızca bu değişikliği kendiniz yaptıysanız devam edin.",
+      "allow": "İzin ver",
+      "cancel": "İptal",
+      "declined": "Betik ayarı değişikliği reddedildi."
+    },
+    "exportSecrets": {
+      "title": "Parolalar yedeğe dahil edilsin mi?",
+      "message": "Yedek dosyası sunucu ve proxy parolalarınızı düz metin olarak içerecek. Dosyayı okuyabilen herkes bunları kullanabilir.",
+      "allow": "Parolaları dahil et",
+      "cancel": "İptal",
+      "declined": "Parolaların dışa aktarılması reddedildi."
+    },
+    "configError": {
+      "title": "Yapılandırma sorunu",
+      "corrupt": "Seedora yapılandırma dosyasını okuyamadı ve varsayılan ayarlarla başladı. Okunamayan dosya şu adla kaydedildi:\n{{path}}",
+      "unreadable": "Seedora yapılandırma dosyasını okuyamıyor. Dosyaya dokunulmadı ve sorun giderilene kadar değişiklikler kaydedilmeyecek:\n{{path}}",
+      "passwordsLocked": "Bu sunucular için kayıtlı parola çözülemedi (sistem anahtar zinciri kilitli olabilir veya sıfırlanmış olabilir): {{names}}. Seedora’da her sunucuyu açın ve parolayı yeniden girin."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Geçersiz istek.",
+      "NO_SESSION": "Etkin sunucu yok. Bir sunucu seçip tekrar deneyin.",
+      "SESSION_UNAVAILABLE": "Oturum geri yüklenemedi. Çerezlerin etkin olduğunu kontrol edin.",
+      "RATE_LIMITED": "Çok fazla istek. Biraz sonra tekrar deneyin.",
+      "HOST_NOT_ALLOWED": "Bu ana bilgisayara izin verilmiyor.",
+      "DNS_FAILED": "Ana bilgisayar adı çözümlenemedi.",
+      "CONNECTION_FAILED": "Sunucuya bağlanılamadı.",
+      "TIMEOUT": "Sunucu zamanında yanıt vermedi.",
+      "TLS_FAILED": "Güvenli bağlantı başarısız oldu.",
+      "UNEXPECTED_REDIRECT": "Sunucu bir yönlendirmeyle yanıt verdi.",
+      "RESPONSE_TOO_LARGE": "Sunucu yanıtı çok büyük.",
+      "AUTH_FAILED": "Kimlik doğrulama başarısız oldu. Kullanıcı adını ve şifreyi kontrol edin.",
+      "HTTP_ERROR": "Sunucu bir hatayla yanıt verdi.",
+      "SESSION_ID_REJECTED": "Sunucu oturum kimliğini reddetti.",
+      "RPC_ERROR": "Sunucu bir hata bildirdi.",
+      "SERVER_MISCONFIGURED": "Web sunucusu doğru yapılandırılmamış.",
+      "SERVER_NOT_FOUND": "Sunucu bulunamadı.",
+      "IMPORT_INVALID": "İçe aktarma başarısız oldu: dosya geçerli bir Seedora yedeği değil."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Sunucu sertifikasına güvenilmiyor.",
+      "TLS_EXPIRED": "Sunucu sertifikasının süresi dolmuş.",
+      "TLS_HOSTNAME": "Sunucu sertifikası ana bilgisayar adıyla eşleşmiyor.",
+      "NETWORK": "Sunucuya ulaşılamadı.",
+      "TOO_LARGE": "Sunucu yanıtı çok büyük.",
+      "AUTH": "Kimlik doğrulama başarısız oldu. Kullanıcı adını ve şifreyi kontrol edin.",
+      "INVALID_RESPONSE": "Sunucu bir Transmission arka plan programı gibi yanıt vermedi.",
+      "SESSION": "Sunucu oturum el sıkışmasını reddetti.",
+      "RPC_FAILURE": "Sunucu bir hata bildirdi.",
+      "NO_CONNECTION": "Bağlı sunucu yok.",
+      "UNKNOWN": "Bilinmeyen bir hata oluştu."
+    }
   }
 }

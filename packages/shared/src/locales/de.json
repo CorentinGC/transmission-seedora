@@ -20,7 +20,8 @@
     "detailsPanel": "Detailpanel umschalten",
     "searchPlaceholder": "Torrents suchen...",
     "preferences": "Einstellungen",
-    "serverSettings": "Server-Einstellungen"
+    "serverSettings": "Server-Einstellungen",
+    "clearSearch": "Suche löschen"
   },
   "statusBar": {
     "connected": "Verbunden",
@@ -92,7 +93,7 @@
     "seeds": "Seeds",
     "peers": "Peers",
     "downSpeed": "Download",
-    "upSpeed": "Up",
+    "upSpeed": "Upload",
     "eta": "Verbleibend",
     "ratio": "Verhältnis",
     "added": "Hinzugefügt",
@@ -157,7 +158,8 @@
     "flags": "Flags",
     "progress": "Fortschritt",
     "down": "Download",
-    "up": "Up"
+    "up": "Upload",
+    "country": "Land"
   },
   "trackersTab": {
     "tier": "Stufe",
@@ -277,7 +279,15 @@
     "exportAll": "Alle exportieren",
     "importServers": "Importieren...",
     "importSuccess": "{{added}} hinzugefügt, {{skipped}} übersprungen",
-    "importFailed": "Import fehlgeschlagen."
+    "importFailed": "Import fehlgeschlagen.",
+    "saveFailed": "Server konnte nicht gespeichert werden. Prüfen Sie die Werte und versuchen Sie es erneut.",
+    "exportPasswords": "Passwörter in den Export einschließen",
+    "exportPasswordsWarning": "Passwörter werden im Klartext in die Datei geschrieben. Datei vertraulich behandeln.",
+    "webStorageWarning": "In der Web-Version werden Serverpasswörter unverschlüsselt in diesem Browser gespeichert. Nur auf einem vertrauenswürdigen Gerät eingeben.",
+    "passwordStored": "Passwort gespeichert. Leer lassen, um es beizubehalten.",
+    "removeStoredPassword": "Gespeichertes Passwort entfernen",
+    "removeStoredProxyPassword": "Gespeichertes Proxy-Passwort entfernen",
+    "secretStorageUnencrypted": "Auf diesem System ist kein sicherer Speicher verfügbar: Gespeicherte Passwörter liegen unverschlüsselt auf der Festplatte."
   },
   "settings": {
     "applied": "Einstellungen angewendet",
@@ -394,7 +404,8 @@
     "importSuccess": "Sicherung erfolgreich wiederhergestellt.",
     "saveFailed": "Einstellungen konnten nicht gespeichert werden. Prüfen Sie die Werte und versuchen Sie es erneut.",
     "invalidValues": "Das Aktualisierungsintervall muss mindestens 250 ms betragen und die Geschwindigkeitsvorgaben müssen Zahlen sein.",
-    "importFailed": "Import fehlgeschlagen."
+    "importFailed": "Import fehlgeschlagen.",
+    "removePreset": "Geschwindigkeitsvorgabe entfernen"
   },
   "columnMenu": {
     "setupColumns": "Spalten einrichten"
@@ -405,7 +416,17 @@
     "refreshFailed": "Torrents konnten nicht aktualisiert werden: {{error}}",
     "statsRefreshFailed": "Serverstatistiken konnten nicht aktualisiert werden: {{error}}",
     "unknownError": "Unbekannter Fehler",
-    "dismiss": "Schließen"
+    "dismiss": "Schließen",
+    "columnsSaveFailed": "Spaltenanordnung konnte nicht gespeichert werden.",
+    "serversLoadFailed": "Serverliste konnte nicht geladen werden.",
+    "serverRemoveFailed": "Server konnte nicht entfernt werden.",
+    "exportFailed": "Konfiguration konnte nicht exportiert werden.",
+    "prefsLoadFailed": "Einstellungen konnten nicht geladen werden.",
+    "pickerFailed": "Datei- oder Ordnerauswahl konnte nicht geöffnet werden.",
+    "fileReadFailed": "Die ausgewählte Datei konnte nicht gelesen werden.",
+    "renameFailed": "Torrent konnte nicht umbenannt werden.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Datei oder Link, mit der Seedora gestartet wurde, konnte nicht geöffnet werden."
   },
   "filesTab": {
     "clickToChangePriority": "Klicken, um Priorität zu ändern",
@@ -417,5 +438,131 @@
     "description": "Die App ist auf einen unerwarteten Fehler gestoßen. Sie können es erneut versuchen oder das Fenster neu laden.",
     "retry": "Erneut versuchen",
     "reload": "Neu laden"
+  },
+  "format": {
+    "done": "Fertig",
+    "justNow": "Gerade eben",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} T",
+      "hours": "{{n}} Std.",
+      "minutes": "{{n}} Min.",
+      "seconds": "{{n}} Sek."
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Datei",
+      "edit": "Bearbeiten",
+      "view": "Ansicht",
+      "torrent": "Torrent",
+      "tools": "Werkzeuge",
+      "help": "Hilfe",
+      "preferences": "Einstellungen…",
+      "addTorrent": "Torrent hinzufügen…",
+      "addMagnet": "Magnet-Link hinzufügen…",
+      "toggleFilter": "Filterleiste ein-/ausblenden",
+      "toggleDetails": "Detailbereich ein-/ausblenden",
+      "start": "Starten",
+      "stop": "Stoppen",
+      "verify": "Überprüfen",
+      "reannounce": "Neu ankündigen",
+      "startAll": "Alle starten",
+      "stopAll": "Alle stoppen",
+      "remove": "Entfernen…",
+      "serverSettings": "Servereinstellungen…",
+      "rpcSpec": "Transmission-RPC-Spezifikation",
+      "reportIssue": "Problem melden",
+      "about": "Über {{appName}}",
+      "hide": "{{appName}} ausblenden",
+      "hideOthers": "Andere ausblenden",
+      "unhide": "Alle einblenden",
+      "quit": "{{appName}} beenden",
+      "close": "Fenster schließen",
+      "undo": "Widerrufen",
+      "redo": "Wiederholen",
+      "cut": "Ausschneiden",
+      "copy": "Kopieren",
+      "paste": "Einfügen",
+      "selectAll": "Alles auswählen",
+      "reload": "Neu laden",
+      "forceReload": "Neu laden erzwingen",
+      "resetZoom": "Tatsächliche Größe",
+      "zoomIn": "Vergrößern",
+      "zoomOut": "Verkleinern",
+      "toggleFullscreen": "Vollbildmodus umschalten"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} aktive Übertragung",
+      "activeTransfers_other": "{{count}} aktive Übertragungen",
+      "enableAltSpeed": "Alternative Geschwindigkeit aktivieren",
+      "disableAltSpeed": "Alternative Geschwindigkeit deaktivieren",
+      "showWindow": "Fenster anzeigen",
+      "quit": "Beenden"
+    },
+    "scriptGuard": {
+      "title": "Skripteinstellungen des Daemons ändern?",
+      "message": "Seedora ist dabei, Einstellungen zu ändern, durch die der Transmission-Daemon auf seinem Server ein Programm ausführt.",
+      "detail": "{{changes}}\n\nFahren Sie nur fort, wenn Sie diese Änderung selbst vorgenommen haben.",
+      "allow": "Zulassen",
+      "cancel": "Abbrechen",
+      "declined": "Die Änderung der Skripteinstellungen wurde abgelehnt."
+    },
+    "exportSecrets": {
+      "title": "Passwörter in die Sicherung aufnehmen?",
+      "message": "Die Sicherungsdatei enthält Ihre Server- und Proxy-Passwörter im Klartext. Jeder, der die Datei lesen kann, kann sie verwenden.",
+      "allow": "Passwörter aufnehmen",
+      "cancel": "Abbrechen",
+      "declined": "Der Export der Passwörter wurde abgelehnt."
+    },
+    "configError": {
+      "title": "Konfigurationsproblem",
+      "corrupt": "Seedora konnte seine Konfigurationsdatei nicht lesen und wurde mit den Standardeinstellungen gestartet. Die nicht lesbare Datei wurde gespeichert unter:\n{{path}}",
+      "unreadable": "Seedora kann seine Konfigurationsdatei nicht lesen. Die Datei wurde nicht verändert, und Änderungen werden erst gespeichert, wenn das Problem behoben ist:\n{{path}}",
+      "passwordsLocked": "Das gespeicherte Passwort für diese Server konnte nicht entschlüsselt werden (der System-Schlüsselbund ist möglicherweise gesperrt oder wurde zurückgesetzt): {{names}}. Öffnen Sie jeden Server in Seedora und geben Sie das Passwort erneut ein."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Ungültige Anfrage.",
+      "NO_SESSION": "Kein Server aktiv. Server auswählen und erneut versuchen.",
+      "SESSION_UNAVAILABLE": "Die Sitzung konnte nicht wiederhergestellt werden. Prüfen, ob Cookies aktiviert sind.",
+      "RATE_LIMITED": "Zu viele Anfragen. Gleich erneut versuchen.",
+      "HOST_NOT_ALLOWED": "Dieser Host ist nicht zulässig.",
+      "DNS_FAILED": "Hostname konnte nicht aufgelöst werden.",
+      "CONNECTION_FAILED": "Verbindung zum Server fehlgeschlagen.",
+      "TIMEOUT": "Der Server hat nicht rechtzeitig geantwortet.",
+      "TLS_FAILED": "Die sichere Verbindung ist fehlgeschlagen.",
+      "UNEXPECTED_REDIRECT": "Der Server hat mit einer Weiterleitung geantwortet.",
+      "RESPONSE_TOO_LARGE": "Die Serverantwort ist zu groß.",
+      "AUTH_FAILED": "Authentifizierung fehlgeschlagen. Benutzername und Passwort prüfen.",
+      "HTTP_ERROR": "Der Server hat mit einem Fehler geantwortet.",
+      "SESSION_ID_REJECTED": "Der Server hat die Sitzungs-ID abgelehnt.",
+      "RPC_ERROR": "Der Server hat einen Fehler gemeldet.",
+      "SERVER_MISCONFIGURED": "Der Webserver ist nicht korrekt konfiguriert.",
+      "SERVER_NOT_FOUND": "Server nicht gefunden.",
+      "IMPORT_INVALID": "Import fehlgeschlagen: Die Datei ist keine gültige Seedora-Sicherung."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Dem Serverzertifikat wird nicht vertraut.",
+      "TLS_EXPIRED": "Das Serverzertifikat ist abgelaufen.",
+      "TLS_HOSTNAME": "Das Serverzertifikat passt nicht zum Hostnamen.",
+      "NETWORK": "Server nicht erreichbar.",
+      "TOO_LARGE": "Die Serverantwort ist zu groß.",
+      "AUTH": "Authentifizierung fehlgeschlagen. Benutzername und Passwort prüfen.",
+      "INVALID_RESPONSE": "Der Server hat nicht wie ein Transmission-Daemon geantwortet.",
+      "SESSION": "Der Server hat den Sitzungsaufbau abgelehnt.",
+      "RPC_FAILURE": "Der Server hat einen Fehler gemeldet.",
+      "NO_CONNECTION": "Kein Server verbunden.",
+      "UNKNOWN": "Ein unbekannter Fehler ist aufgetreten."
+    }
   }
 }

@@ -15,6 +15,7 @@ vi.mock('electron', () => ({
 
 const { shell } = await import('electron');
 const { createMenu } = await import('./menu');
+const { setLanguage } = await import('./i18n/main-i18n');
 
 const items = () => built.template.flatMap(m => m.submenu ?? []);
 
@@ -37,5 +38,30 @@ describe('application menu', () => {
     const report = items().find(i => i.label === 'Report an Issue');
     (report?.click as () => void)();
     expect(shell.openExternal).toHaveBeenCalledWith('https://github.com/CorentinGC/transmission-seedora/issues');
+  });
+});
+
+describe('application menu (packaging and language)', () => {
+  const allItems = (): Array<Record<string, unknown>> => built.template.flatMap(m => [m, ...(m.submenu ?? [])] as Array<Record<string, unknown>>);
+
+  it('has no DevTools item in a packaged build', () => {
+    createMenu({ webContents: { send: vi.fn() } } as never);
+    expect(allItems().some(i => i.role === 'toggleDevTools')).toBe(false);
+  });
+
+  it('translates every label (no raw key is ever shown) and follows the language', () => {
+    const labels = () => allItems().map(i => i.label).filter((l): l is string => typeof l === 'string');
+    createMenu({ webContents: { send: vi.fn() } } as never);
+    const english = labels();
+    expect(english.some(l => l.startsWith('native.'))).toBe(false);
+    expect(english).toContain('File');
+
+    setLanguage('fr');
+    createMenu({ webContents: { send: vi.fn() } } as never);
+    const french = labels();
+    expect(french).not.toContain('File');
+    expect(french.some(l => l.startsWith('native.'))).toBe(false);
+    expect(french).toHaveLength(english.length);
+    setLanguage('en');
   });
 });

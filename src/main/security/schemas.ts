@@ -29,20 +29,28 @@ const serverFields = {
   username: shortString(500).optional(),
   password: shortString(2000).optional(),
   proxyType: z.enum(['none', 'http', 'socks5']).optional(),
-  proxyHost: shortString(255).optional(),
+  proxyHost: z.union([z.literal(''), z.string().max(255).regex(HOST_PATTERN)]).optional(),
   proxyPort: z.number().int().min(1).max(65535).optional(),
   proxyUsername: shortString(500).optional(),
   proxyPassword: shortString(2000).optional(),
 };
 
+/** Flags main adds to the servers it lists; a renderer that echoes a listed server back must not be rejected for them. */
+const echoedFlags = { hasPassword: z.boolean().optional(), hasProxyPassword: z.boolean().optional() };
+
 /** `NewServerConfig`; unknown keys are rejected. */
-export const newServerSchema = z.strictObject(serverFields);
+export const newServerSchema = z
+  .strictObject({ ...serverFields, ...echoedFlags })
+  .transform(({ hasPassword: _hp, hasProxyPassword: _hpp, ...server }) => server);
 
 /** Server connection test: new or existing config. */
-export const testServerSchema = z.strictObject({ ...serverFields, id: serverIdSchema.optional() });
+export const testServerSchema = z.strictObject({ ...serverFields, ...echoedFlags, id: serverIdSchema.optional() });
 
 /** `SERVER_UPDATE` patch: any server field except `id`; unknown keys are rejected. */
-export const serverUpdateSchema = z.strictObject(serverFields).partial().transform(stripUndefined);
+export const serverUpdateSchema = z
+  .strictObject({ ...serverFields, ...echoedFlags, clearPassword: z.boolean(), clearProxyPassword: z.boolean() })
+  .partial()
+  .transform(({ hasPassword: _hp, hasProxyPassword: _hpp, ...patch }) => stripUndefined(patch));
 
 /**
  * Server entry inside an import file: lenient about extra keys (older exports), `id` is regenerated.
@@ -50,19 +58,18 @@ export const serverUpdateSchema = z.strictObject(serverFields).partial().transfo
  */
 export const importedServerSchema = z.object({ ...serverFields, id: z.string().optional() }).omit({ allowSelfSigned: true });
 
-const preferenceFields = {
+/** Field schemas of the preferences (also used to sanitise stored preferences one field at a time). */
+export const preferenceFields = {
   pollingInterval: z.number().int().min(250).max(3_600_000),
   theme: z.enum(['light', 'dark', 'system']),
   minimizeToTray: z.boolean(),
   closeToTray: z.boolean(),
   showNotifications: z.boolean(),
-  confirmOnAdd: z.boolean(),
   relativeDates: z.boolean(),
   language: z.string().min(2).max(16),
   watchFolder: shortString(4096).optional(),
   watchFolderEnabled: z.boolean(),
   deleteWatchedTorrent: z.boolean(),
-  pathMappings: z.array(z.strictObject({ remote: shortString(4096), local: shortString(4096) })).max(200),
   columnVisibility: z.record(shortString(100), z.boolean()).optional(),
   columnSizing: z.record(shortString(100), z.number().finite().min(0).max(10_000)).optional(),
   columnOrder: z.array(shortString(100)).max(200).optional(),
@@ -78,6 +85,8 @@ export const importedPrefsSchema = z.object(preferenceFields).partial();
 /** `CONFIG_EXPORT` options. */
 export const exportOptionsSchema = z.strictObject({
   servers: z.boolean().optional(),
+  /** Needs the user's approval in a native dialog; without it passwords never leave main. */
+  includePasswords: z.boolean().optional(),
   preferences: z.boolean().optional(),
   serverIds: z.array(serverIdSchema).max(1000).optional(),
 });

@@ -19,6 +19,8 @@ import { useTorrentStore } from '../../stores/torrent-store';
 import { useServerStore } from '../../stores/server-store';
 import { useUiStore } from '../../stores/ui-store';
 import { useMenuEvents } from '../../hooks/useMenuEvents';
+import { useLaunchTargets } from '../../hooks/useLaunchTargets';
+import type { AddDialogInitial } from '../../lib/launch-target';
 import { ServerSwitcher } from '../server/ServerSwitcher';
 import { AddTorrentDialog } from '../torrent/AddTorrentDialog';
 import { RemoveTorrentDialog } from '../torrent/RemoveTorrentDialog';
@@ -42,8 +44,13 @@ export function Toolbar() {
   const setShowRemoveDialog = useUiStore((s) => s.setRemoveDialogOpen);
 
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [launchQueue, setLaunchQueue] = useState<{ id: number; initial: AddDialogInitial }[]>([]);
+  const launchIdRef = useRef(0);
   const [showSettings, setShowSettings] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
+
+  // Magnet links and .torrent files opened through the OS
+  useLaunchTargets((initial) => setLaunchQueue((queue) => [...queue, { id: launchIdRef.current++, initial }]));
 
   // Native menu events
   useMenuEvents({
@@ -72,7 +79,7 @@ export function Toolbar() {
           tooltip={t('toolbar.addTorrent')}
           onClick={() => setShowAddDialog(true)}
           disabled={!isConnected}
-          colorClass="text-blue-400/80"
+          colorClass="text-info/80"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -82,28 +89,28 @@ export function Toolbar() {
           tooltip={t('toolbar.start')}
           onClick={() => hasSelection && startTorrents(ids)}
           disabled={!hasSelection || !isConnected}
-          colorClass="text-green-400/80"
+          colorClass="text-success/80"
         />
         <ToolbarButton
           icon={<Pause size={16} />}
           tooltip={t('toolbar.stop')}
           onClick={() => hasSelection && stopTorrents(ids)}
           disabled={!hasSelection || !isConnected}
-          colorClass="text-amber-400/80"
+          colorClass="text-warning/80"
         />
         <ToolbarButton
           icon={<Trash2 size={16} />}
           tooltip={t('toolbar.remove')}
           onClick={() => setShowRemoveDialog(true)}
           disabled={!hasSelection || !isConnected}
-          colorClass="text-red-400/70"
+          colorClass="text-destructive-text/70"
         />
         <ToolbarButton
           icon={<CheckCircle size={16} />}
           tooltip={t('toolbar.verify')}
           onClick={() => hasSelection && verifyTorrents(ids)}
           disabled={!hasSelection || !isConnected}
-          colorClass="text-cyan-400/70"
+          colorClass="text-info-alt/70"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -113,14 +120,14 @@ export function Toolbar() {
           tooltip={t('toolbar.startAll')}
           onClick={startAll}
           disabled={!isConnected}
-          colorClass="text-green-400/80"
+          colorClass="text-success/80"
         />
         <ToolbarButton
           icon={<StopCircle size={16} />}
           tooltip={t('toolbar.stopAll')}
           onClick={stopAll}
           disabled={!isConnected}
-          colorClass="text-amber-400/80"
+          colorClass="text-warning/80"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -142,7 +149,9 @@ export function Toolbar() {
           <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
+            data-search-input
             placeholder={t('toolbar.searchPlaceholder')}
+            aria-label={t('toolbar.searchPlaceholder')}
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="h-7 pl-7 pr-7 w-48 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
@@ -150,6 +159,7 @@ export function Toolbar() {
           {globalFilter && (
             <button
               onClick={() => setGlobalFilter('')}
+              aria-label={t('toolbar.clearSearch')}
               className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               <X size={14} />
@@ -174,7 +184,15 @@ export function Toolbar() {
         />
       </div>
 
-      {showAddDialog && <AddTorrentDialog onClose={() => setShowAddDialog(false)} />}
+      {launchQueue.length > 0 ? (
+        <AddTorrentDialog
+          key={launchQueue[0].id}
+          initial={launchQueue[0].initial}
+          onClose={() => setLaunchQueue((queue) => queue.slice(1))}
+        />
+      ) : (
+        showAddDialog && <AddTorrentDialog onClose={() => setShowAddDialog(false)} />
+      )}
       {showRemoveDialog && <RemoveTorrentDialog ids={ids} onClose={() => setShowRemoveDialog(false)} />}
       {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
       {showPrefs && <AppPrefsDialog onClose={() => setShowPrefs(false)} />}

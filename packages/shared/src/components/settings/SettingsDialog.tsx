@@ -31,7 +31,7 @@ export function SettingsDialog({ onClose }: Props) {
 
   if (!settings) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
         <div className="bg-card border rounded-lg shadow-xl p-8">
           {t('settings.loading')}
         </div>
@@ -40,7 +40,7 @@ export function SettingsDialog({ onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
       <div className="bg-card border rounded-lg shadow-xl w-[600px] max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">{t('settings.title')}</h2>

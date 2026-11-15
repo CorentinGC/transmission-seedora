@@ -33,4 +33,14 @@ describe('web-storage', () => {
     data.set('seedora:servers', '{not json');
     expect(getServers()).toEqual([]);
   });
+
+  it('loads preferences stored before confirmOnAdd and pathMappings were dropped, without those keys (e2c)', () => {
+    data.set('seedora:preferences', JSON.stringify({ theme: 'dark', confirmOnAdd: false, pathMappings: [{ remote: '/a', local: '/b' }] }));
+    const prefs = getPreferences();
+    expect(prefs.theme).toBe('dark');
+    expect(prefs).not.toHaveProperty('confirmOnAdd');
+    expect(prefs).not.toHaveProperty('pathMappings');
+    setPreferences({ pollingInterval: 1000 });
+    expect(JSON.parse(data.get('seedora:preferences')!)).not.toHaveProperty('pathMappings');
+  });
 });

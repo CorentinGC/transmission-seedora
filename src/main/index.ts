@@ -1,8 +1,8 @@
-import { app, BrowserWindow, Notification } from 'electron';
+import { app, BrowserWindow, dialog, Notification } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { registerIpcHandlers } from './ipc/handlers';
-import { createTray, updateTrayMenu, destroyTray } from './tray';
+import { createTray, updateTrayMenu, destroyTray, refreshTrayLabels } from './tray';
 import { createMenu } from './menu';
 import { startWatcher, stopWatcher, restartWatcher } from './watcher';
 import { configStore } from './store/config-store';
@@ -14,6 +14,8 @@ import { denyAllPermissions, guardWebContents } from './security/window-guards';
 import { APP_INDEX_URL, APP_ORIGIN } from './security/app-protocol';
 import { registerAppScheme, serveRendererFrom } from './security/app-scheme';
 import { notificationSchema, trayStateSchema } from './security/schemas';
+import { registerLaunchHandling, revealWindow } from './launch/launch-handlers';
+import { onLanguageChange, setLanguage, t } from './i18n/main-i18n';
 
 // One instance only, claimed before anything is registered: a second launch quits here and focuses the
 // existing window (see `second-instance`) instead of opening another one.
@@ -27,6 +29,7 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 
 let mainWindow: BrowserWindow | null = null;
 let forceQuit = false;
+let launch: ReturnType<typeof registerLaunchHandling> | undefined;
 
 // The scheme must be declared before `ready`.
 registerAppScheme();
@@ -62,6 +65,15 @@ const createWindow = () => {
 
   // Native menu
   createMenu(mainWindow);
+
+  // A closed window must not keep receiving launch targets (macOS keeps the app alive without a window).
+  mainWindow.on('closed', () => {
+    launch?.resetRenderer();
+    mainWindow = null;
+  });
+
+  // A page (re)load means the renderer has not subscribed yet: launch targets wait until it pulls them.
+  mainWindow.webContents.on('did-start-loading', () => launch?.resetRenderer());
 
   // System tray
   const prefs = configStore.getPreferences();
@@ -122,24 +134,57 @@ function registerMainProcessHandlers(): void {
 
   registerIpcHandlers(isTrustedSender);
   guardWebContents(trustedOrigins);
+
+  // Magnet links and .torrent files from the OS; before `ready` because macOS can deliver them that early.
+  launch = registerLaunchHandling(isTrustedSender, () => mainWindow, () => {
+    if (app.isReady() && !mainWindow) createWindow();
+    return mainWindow;
+  });
+  launch.handleArgv(process.argv.slice(1), process.cwd());
 }
 
 if (hasSingleInstanceLock) {
   registerMainProcessHandlers();
 }
 
-app.on('second-instance', () => {
-  if (!mainWindow) return;
-  if (mainWindow.isMinimized()) mainWindow.restore();
-  mainWindow.show();
-  mainWindow.focus();
+app.on('second-instance', (_event, argv, workingDirectory) => {
+  revealWindow(mainWindow);
+  launch?.handleArgv(argv.slice(1), workingDirectory);
 });
+
+/** Tells the user when the configuration file was invalid or unreadable (see `configStore.getLoadError`). */
+function reportConfigLoadProblem(): void {
+  const locked = configStore.getLockedServerNames();
+  if (locked.length > 0) dialog.showErrorBox(t('native.configError.title'), t('native.configError.passwordsLocked', { names: locked.join(', ') }));
+  const problem = configStore.getLoadError();
+  if (!problem) return;
+  const configPath = path.join(app.getPath('userData'), 'config.json');
+  const message =
+    problem.kind === 'corrupt' && problem.backupPath
+      ? t('native.configError.corrupt', { path: problem.backupPath })
+      : t('native.configError.unreadable', { path: configPath });
+  dialog.showErrorBox(t('native.configError.title'), message);
+}
+
+/** Registers Seedora for `magnet:` links when no other application handles them (never takes the default over). */
+function registerAsMagnetHandlerIfUnclaimed(): void {
+  if (!app.isPackaged || app.getApplicationNameForProtocol('magnet://') !== '') return;
+  app.setAsDefaultProtocolClient('magnet');
+}
 
 app.on('ready', () => {
   if (!hasSingleInstanceLock) return;
   if (!MAIN_WINDOW_VITE_DEV_SERVER_URL) serveRendererFrom(rendererRoot);
   denyAllPermissions(trustedOrigins);
+  setLanguage(configStore.getPreferences().language);
+  onLanguageChange(() => {
+    if (mainWindow) createMenu(mainWindow);
+    refreshTrayLabels();
+  });
   createWindow();
+  registerAsMagnetHandlerIfUnclaimed();
+  reportConfigLoadProblem();
+  configStore.migrateLegacySecrets();
 });
 
 app.on('before-quit', () => {

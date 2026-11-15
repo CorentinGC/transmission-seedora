@@ -33,7 +33,7 @@ export function createTorrentColumns(relativeDates: boolean, t: (key: string) =>
         <div className="flex items-center gap-1">
           <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-blue-500 rounded-full transition-all"
+              className="h-full bg-info rounded-full transition-all"
               style={{ width: `${val * 100}%` }}
             />
           </div>

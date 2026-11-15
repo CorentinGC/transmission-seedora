@@ -18,8 +18,9 @@ concurrency:
 # runners for CI). The repository is public, so jobs are skipped for pull requests from forks:
 # their code must never execute on the runner (see beads seedora-transmission-3o1).
 #
-# Jobs marked `continue-on-error` are red on the baseline. They are NOT hidden: the failure shows
-# in the run. Each one references the issue that removes the flag when it is fixed.
+# The only job marked `continue-on-error` is the format check: it is red on the baseline until the
+# repo-wide Prettier commit lands. It is NOT hidden (the failure shows in the run) and the flag is
+# removed by seedora-transmission-00q.
 jobs:
   lint:
     name: Lint
@@ -27,7 +28,7 @@ jobs:
     runs-on: [self-hosted, helmut]
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: ./.github/actions/setup
       - run: npm run lint
 
@@ -39,7 +40,7 @@ jobs:
     # Red on baseline: the repo-wide format commit has not landed (seedora-transmission-00q).
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: ./.github/actions/setup
       - run: npm run format:check
 
@@ -49,7 +50,7 @@ jobs:
     runs-on: [self-hosted, helmut]
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: ./.github/actions/setup
       - run: npm run typecheck
 
@@ -59,7 +60,7 @@ jobs:
     runs-on: [self-hosted, helmut]
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: ./.github/actions/setup
       - run: npm test
 
@@ -68,11 +69,8 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, helmut]
     timeout-minutes: 10
-    # Red on baseline: 21 locales miss 49 keys (seedora-transmission-k5r.1). Remove this flag
-    # when that lands; seedora-transmission-we5.5 stays open until then.
-    continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: ./.github/actions/setup
       - run: npm run i18n:check
 
@@ -82,7 +80,7 @@ jobs:
     runs-on: [self-hosted, helmut]
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: ./.github/actions/setup
       - run: npm run build:web
 
@@ -92,6 +90,31 @@ jobs:
     runs-on: [self-hosted, helmut]
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: ./.github/actions/setup
       - run: npm run package
+
+  commitlint:
+    name: Conventional Commits
+    # Commit types are release decisions (docs/release.md). Pull requests only: the check reads the
+    # PR title and, for PRs into staging, the commits it adds. Values go through env, never inlined.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, helmut]
+    timeout-minutes: 10
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_REF: ${{ github.event.pull_request.base.ref }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - name: Lint the PR title
+        run: printf '%s\n' "$PR_TITLE" | npx commitlint
+      # The staging -> main PR also carries history that predates commitlint; its commits were
+      # already checked when they entered staging.
+      - name: Lint the commits added by the PR
+        if: env.BASE_REF == 'staging'
+        run: npx commitlint --from "$BASE_SHA" --to "$HEAD_SHA"

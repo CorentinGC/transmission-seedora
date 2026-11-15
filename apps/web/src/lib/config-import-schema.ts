@@ -3,7 +3,8 @@ import { z } from 'zod';
 /**
  * Validation of a parsed backup file for the web `configImport`. Mirrors `importedServerSchema` and
  * `importedPrefsSchema` in `src/main/security/schemas.ts` (Electron contract); kept separate because
- * the web bundle must not import from `src/`. Unknown keys are dropped, not rejected.
+ * the web bundle must not import from `src/`. Unknown keys are dropped, not rejected, which is how
+ * backups that still carry the removed `confirmOnAdd` and `pathMappings` keep loading (e2c).
  */
 
 const shortString = (max: number) => z.string().max(max);
@@ -37,13 +38,11 @@ export const importedPrefsSchema = z
     minimizeToTray: z.boolean(),
     closeToTray: z.boolean(),
     showNotifications: z.boolean(),
-    confirmOnAdd: z.boolean(),
     relativeDates: z.boolean(),
     language: z.string().min(2).max(16),
     watchFolder: shortString(4096).optional(),
     watchFolderEnabled: z.boolean(),
     deleteWatchedTorrent: z.boolean(),
-    pathMappings: z.array(z.strictObject({ remote: shortString(4096), local: shortString(4096) })).max(200),
     columnVisibility: z.record(shortString(100), z.boolean()).optional(),
     columnSizing: z.record(shortString(100), z.number().finite().min(0).max(10_000)).optional(),
     columnOrder: z.array(shortString(100)).max(200).optional(),

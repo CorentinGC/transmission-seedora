@@ -106,7 +106,7 @@ export function TorrentContextMenu({ x, y, torrentIds, onClose }: Props) {
       <MenuItem icon={<ArrowDown size={14} />} label={t('contextMenu.moveDown')} onClick={() => act(() => queueMove(torrentIds, 'down'))} indent />
       <MenuItem icon={<ChevronsDown size={14} />} label={t('contextMenu.moveToBottom')} onClick={() => act(() => queueMove(torrentIds, 'bottom'))} indent />
       <Separator />
-      <MenuItem icon={<Trash2 size={14} />} label={t('contextMenu.remove')} onClick={() => setShowRemove(true)} className="text-destructive" />
+      <MenuItem icon={<Trash2 size={14} />} label={t('contextMenu.remove')} onClick={() => setShowRemove(true)} className="text-destructive-text" />
     </div>
   );
 }

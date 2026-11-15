@@ -267,7 +267,7 @@ export function TorrentTable({ torrents }: Props) {
               ref={(el) => { if (el) headerRefs.current.set(header.column.id, el); else headerRefs.current.delete(header.column.id); }}
               className={`relative flex items-center px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-accent ${
                 dragColumnId === header.column.id ? 'opacity-40 bg-accent' : ''
-              } ${dropTargetId === header.column.id ? 'border-l-2 border-blue-500' : ''} ${
+              } ${dropTargetId === header.column.id ? 'border-l-2 border-info' : ''} ${
                 dragColumnId ? 'cursor-grabbing' : 'cursor-pointer'
               }`}
               style={{ width: header.getSize(), minWidth: header.column.columnDef.minSize }}
@@ -286,7 +286,7 @@ export function TorrentTable({ torrents }: Props) {
                 onTouchStart={header.getResizeHandler()}
                 onClick={(e) => e.stopPropagation()}
                 onDoubleClick={(e) => { e.stopPropagation(); handleResizeDoubleClick(header.column.id, header.index); }}
-                className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500"
+                className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-info"
               />
             </div>
           )),
@@ -305,7 +305,7 @@ export function TorrentTable({ torrents }: Props) {
                 key={row.id}
                 className={`absolute flex items-center w-full text-xs cursor-default border-b border-border/50 ${
                   isSelected ? 'bg-primary/10' : 'hover:bg-accent/50'
-                } ${row.original.error > 0 ? 'text-red-500' : ''}`}
+                } ${row.original.error > 0 ? 'text-destructive-text' : ''}`}
                 style={{
                   height: virtualRow.size,
                   transform: `translateY(${virtualRow.start}px)`,

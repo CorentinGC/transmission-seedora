@@ -62,6 +62,10 @@ Adding a language touches three places: the locale file, `apps/web/src/lib/i18n.
 
 Model and known gaps: [docs/security.md](docs/security.md).
 
+## Design source files
+
+The logo source (`seedora_logo.psd`) lives in `resources/design/`. Shipped icons stay in `resources/`; regenerate them with `npm run generate:icons`. `resources/design/` is not part of the packaged app.
+
 ## Code style in short
 
 TypeScript strict, no `any`, no `@ts-ignore`; reuse existing helpers and the primitives in `packages/shared/src/components/ui`; theme colour tokens instead of raw Tailwind palette classes; keyboard-operable elements with accessible names; `packages/shared` imports nothing from Electron, Node or Next.js; code, comments and commit messages in English.

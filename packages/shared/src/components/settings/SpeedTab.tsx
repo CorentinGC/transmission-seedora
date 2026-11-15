@@ -115,8 +115,8 @@ export function SpeedTab({ settings: s }: Props) {
         <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={apply}>
           {t('dialog.apply')}
         </button>
-        {applyStatus === 'success' && <span className="text-xs text-green-600">{t('settings.applied')}</span>}
-        {applyStatus === 'error' && <span className="text-xs text-destructive">{t('settings.applyError')}</span>}
+        {applyStatus === 'success' && <span className="text-xs text-success">{t('settings.applied')}</span>}
+        {applyStatus === 'error' && <span className="text-xs text-destructive-text">{t('settings.applyError')}</span>}
       </div>
     </div>
   );

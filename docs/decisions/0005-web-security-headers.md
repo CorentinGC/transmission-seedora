@@ -80,3 +80,5 @@ That cost should be weighed with evidence, not under P0 pressure.
 - `includeSubDomains` on `app.seedora.app` covers only its own subdomains. HSTS for the apex `seedora.app`, and any `preload` submission, are decisions for the landing page (epic 52c), not for the app.
 - Any future third-party origin, such as an error reporter or CDN, needs a CSP change reviewed by `security-auditor`.
 - The PWA install and offline shell, notifications and HMR in development must be verified in the running app after the change (`verify-ui` skill), with the browser console checked for CSP violations.
+
+**Follow-up resolved:** the nonce evaluation (`c07.17`) is recorded in [ADR 0007](0007-web-csp-nonce-evaluation.md): the static policy stays.

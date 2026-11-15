@@ -28,8 +28,8 @@
 - `npm test`: passes, 23 files, 726 tests.
 - `npm run lint`: 0 errors, 29 warnings.
 - `npm run i18n:check`: **fails**, 21 of 23 locales each miss 49 keys (`en` has 357); tracked in `k5r.1`.
-- CI (`.github/workflows/ci.yml`) runs lint, format check, typecheck, tests, i18n parity, web build and a Linux package smoke test on pull requests. Format check and i18n parity are `continue-on-error` until `00q` and `k5r.1` land.
-- `npm audit`: 64 advisories (2 critical, 47 high) as measured before any fix; not re-run, untriaged.
+- CI (`.github/workflows/ci.yml`) runs lint, format check, typecheck, tests, i18n parity, web build and a Linux package smoke test on pull requests. Only the format check is `continue-on-error` (until `00q`); i18n parity is green and enforced. A `commitlint` job checks the PR title and commits.
+- `npm audit`: triaged 2026-11-15, 64 to 52 after non-breaking fixes and Electron 40.10.6 (prod path 9, none reachable at runtime except the Electron advisories that need a 41/42 major). Details: `docs/dependency-audit.md`.
 
 ## Recent decisions
 

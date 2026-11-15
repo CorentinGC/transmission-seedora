@@ -104,3 +104,18 @@ describe('schemas', () => {
     expect(resolveOpenPreset({ properties: ['openDirectory'], filters: [{ extensions: ['*'] }] })).toBe('torrent');
   });
 });
+
+describe('proxyHost and password-clear flags', () => {
+  it('accepts a hostname, an IPv6 literal and an empty proxy host', () => {
+    for (const proxyHost of ['proxy.lan', '10.0.0.1', '[::1]', '']) expect(serverUpdateSchema.safeParse({ proxyHost }).success).toBe(true);
+  });
+
+  it('rejects a proxy host that could change the proxy URL', () => {
+    for (const proxyHost of ['evil.com/x', 'a b', 'u:p@host', 'host?x=1', 'a#b']) expect(serverUpdateSchema.safeParse({ proxyHost }).success).toBe(false);
+  });
+
+  it('accepts clearPassword flags on update only', () => {
+    expect(serverUpdateSchema.parse({ clearPassword: true, clearProxyPassword: true })).toEqual({ clearPassword: true, clearProxyPassword: true });
+    expect(newServerSchema.safeParse({ ...server, clearPassword: true }).success).toBe(false);
+  });
+});

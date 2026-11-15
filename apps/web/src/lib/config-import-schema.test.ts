@@ -52,10 +52,17 @@ describe('importDataSchema', () => {
     expect(parsed.servers?.[0]).not.toHaveProperty('extra');
   });
 
+  it('loads backups written before confirmOnAdd and pathMappings were dropped, discarding both (e2c)', () => {
+    const parsed = importDataSchema.parse({
+      preferences: { theme: 'dark', confirmOnAdd: true, pathMappings: [{ remote: '/a', local: '/b' }] },
+    });
+    expect(parsed.preferences).toEqual({ theme: 'dark' });
+    expect(importDataSchema.safeParse({ preferences: { pathMappings: 'x', confirmOnAdd: 'y' } }).success).toBe(true);
+  });
+
   it('rejects invalid preference values but drops unknown preference keys', () => {
     expect(importDataSchema.safeParse({ preferences: { pollingInterval: 1 } }).success).toBe(false);
     expect(importDataSchema.safeParse({ preferences: { theme: 'neon' } }).success).toBe(false);
-    expect(importDataSchema.safeParse({ preferences: { pathMappings: 'x' } }).success).toBe(false);
     const parsed = importDataSchema.parse({ preferences: { theme: 'dark', bogus: 1 } });
     expect(parsed.preferences).toEqual({ theme: 'dark' });
   });

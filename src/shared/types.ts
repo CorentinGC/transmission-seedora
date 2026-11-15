@@ -16,9 +16,16 @@ export interface ServerConfig {
   proxyPort?: number;
   proxyUsername?: string;
   proxyPassword?: string;
+  /** Set by main on every server it returns to the renderer: a password is stored (the password itself is never sent). */
+  hasPassword?: boolean;
+  /** Same as `hasPassword`, for the proxy password. */
+  hasProxyPassword?: boolean;
 }
 
 export type NewServerConfig = Omit<ServerConfig, 'id'>;
+
+/** A server update: any server field, plus explicit requests to remove a stored password (empty means unchanged). */
+export type ServerConfigPatch = Partial<ServerConfig> & { clearPassword?: boolean; clearProxyPassword?: boolean };
 
 // ── App Preferences ──
 
@@ -28,22 +35,15 @@ export interface AppPreferences {
   minimizeToTray: boolean;
   closeToTray: boolean;
   showNotifications: boolean;
-  confirmOnAdd: boolean;
   relativeDates: boolean;
   language: string;
   watchFolder?: string;
   watchFolderEnabled: boolean;
   deleteWatchedTorrent: boolean;
-  pathMappings: PathMapping[];
   columnVisibility?: Record<string, boolean>;
   columnSizing?: Record<string, number>;
   columnOrder?: string[];
   speedPresets?: number[];
-}
-
-export interface PathMapping {
-  remote: string;
-  local: string;
 }
 
 // ── IPC Response Envelope ──
@@ -52,4 +52,11 @@ export interface IpcResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
+  /** Machine-readable failure kind (RPC transport errors, user-declined confirmations) the renderer can translate. */
+  code?: string;
 }
+
+// ── Launch targets (magnet links and .torrent files the OS asks the app to open) ──
+
+/** Validated by main. A `torrent-file` path is already approved for reading through `readFileBase64` / `rpcTorrentAdd`. */
+export type LaunchTarget = { kind: 'magnet'; uri: string } | { kind: 'torrent-file'; filePath: string };

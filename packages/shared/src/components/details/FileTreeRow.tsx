@@ -22,10 +22,10 @@ interface PriorityBadgeProps {
 function PriorityBadge({ priority, onClick, t }: PriorityBadgeProps) {
   const colorClass =
     priority === PRIORITY_HIGH
-      ? 'bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30'
+      ? 'bg-destructive-text/15 text-destructive-text border-destructive-text/30'
       : priority === PRIORITY_LOW
         ? 'bg-muted text-muted-foreground border-border'
-        : 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30';
+        : 'bg-info/15 text-info border-info/30';
 
   const label =
     priority === PRIORITY_HIGH

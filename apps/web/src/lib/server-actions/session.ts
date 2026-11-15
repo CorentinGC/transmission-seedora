@@ -13,7 +13,7 @@ import type { ActionResult } from '../server/transmission';
  */
 export async function setActiveServerCookie(input: unknown): Promise<ActionResult<never>> {
   try {
-    if (!(await takeClientToken('setActiveServer'))) return failure('RATE_LIMITED');
+    if (!(await takeClientToken('setActiveServer', { skipWithoutIdentity: true }))) return failure('RATE_LIMITED');
     const parsed = serverTargetSchema.safeParse(input);
     if (!parsed.success) return failure('INVALID_INPUT');
     await writeActiveServer(parsed.data);

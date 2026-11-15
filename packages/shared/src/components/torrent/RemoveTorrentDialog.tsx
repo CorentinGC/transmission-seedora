@@ -16,15 +16,14 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
   const names = ids.map((id) => torrents.get(id)?.name ?? `#${id}`);
 
   const handleRemove = async (deleteData: boolean) => {
-    await removeTorrents(ids, deleteData);
-    onClose();
+    if (await removeTorrents(ids, deleteData)) onClose();
   };
 
   return (
     <Dialog
       title={
         <span className="flex items-center gap-2">
-          <AlertTriangle size={18} className="text-destructive" />
+          <AlertTriangle size={18} className="text-destructive-text" />
           {ids.length > 1 ? t('dialog.removeTorrents') : t('dialog.removeTorrent')}
         </span>
       }

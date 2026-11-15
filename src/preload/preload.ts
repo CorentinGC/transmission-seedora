@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { IPC, RENDERER_EVENT_CHANNELS } from '@shared/ipc-channels';
-import type { IpcResponse, ServerConfig, NewServerConfig, AppPreferences } from '@shared/types';
+import type { IpcResponse, ServerConfig, ServerConfigPatch, NewServerConfig, AppPreferences, LaunchTarget } from '@shared/types';
 
 const api = {
   // Server management
@@ -8,7 +8,7 @@ const api = {
     ipcRenderer.invoke(IPC.SERVER_LIST),
   serverAdd: (config: NewServerConfig): Promise<IpcResponse<ServerConfig>> =>
     ipcRenderer.invoke(IPC.SERVER_ADD, config),
-  serverUpdate: (id: string, updates: Partial<ServerConfig>): Promise<IpcResponse> =>
+  serverUpdate: (id: string, updates: ServerConfigPatch): Promise<IpcResponse> =>
     ipcRenderer.invoke(IPC.SERVER_UPDATE, id, updates),
   serverRemove: (id: string): Promise<IpcResponse> =>
     ipcRenderer.invoke(IPC.SERVER_REMOVE, id),
@@ -112,6 +112,14 @@ const api = {
   // GeoIP
   geoipLookup: (ips: string[]): Promise<IpcResponse<Record<string, { country: string; region: string; city: string } | null>>> =>
     ipcRenderer.invoke(IPC.GEOIP_LOOKUP, ips),
+
+  // Magnet links / .torrent files opened through the OS: pull what arrived before the UI was ready, then
+  // listen for new ones with onMenuEvent('launch:target', ...)
+  /** Whether stored passwords are encrypted by the OS secret store (false: cleartext in the 0600 file). */
+  secretStorageEncrypted: (): Promise<IpcResponse<boolean>> =>
+    ipcRenderer.invoke(IPC.CONFIG_SECRET_STORAGE),
+  launchTargetsTake: (): Promise<IpcResponse<LaunchTarget[]>> =>
+    ipcRenderer.invoke(IPC.LAUNCH_TAKE),
 
   // Menu events (renderer listens)
   onMenuEvent: (channel: string, callback: (...args: unknown[]) => void): (() => void) => {

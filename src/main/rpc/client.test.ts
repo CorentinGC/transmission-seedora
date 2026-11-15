@@ -193,4 +193,20 @@ describe('TLS', () => {
     expect(await client.request('x').catch((e: Error) => e.message)).toBe('RPC error: unknown error');
     expect(await client.request('x').catch((e: Error) => e.message)).toBe('RPC error: unknown error');
   });
+
+  it('gives every failure a stable code: AUTH, HTTP_ERROR, INVALID_RESPONSE, RPC_FAILURE, SESSION', async () => {
+    const replies: Array<(res: http.ServerResponse) => void> = [
+      res => res.writeHead(401, 'Unauthorized').end(),
+      res => res.writeHead(403, 'Forbidden').end(),
+      res => res.writeHead(500, 'Oops').end(),
+      res => res.writeHead(200).end('<html>'),
+      res => res.writeHead(200).end(JSON.stringify({ result: 'no such method' })),
+      res => res.writeHead(409).end(),
+    ];
+    const port = await listen(http.createServer((_req, res) => replies.shift()?.(res)));
+    const client = new TransmissionRpcClient({ ...base, port });
+    const codes: unknown[] = [];
+    for (let i = 0; i < 6; i++) codes.push(await client.request('x').catch((e: InstanceType<typeof RpcError>) => e.code));
+    expect(codes).toEqual(['AUTH', 'AUTH', 'HTTP_ERROR', 'INVALID_RESPONSE', 'RPC_FAILURE', 'SESSION']);
+  });
 });

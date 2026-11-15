@@ -20,7 +20,8 @@
     "detailsPanel": "Panel podrobností",
     "searchPlaceholder": "Hledat torrenty...",
     "preferences": "Předvolby",
-    "serverSettings": "Nastavení serveru"
+    "serverSettings": "Nastavení serveru",
+    "clearSearch": "Vymazat hledání"
   },
   "statusBar": {
     "connected": "Připojeno",
@@ -157,7 +158,8 @@
     "flags": "Příznaky",
     "progress": "Průběh",
     "down": "Stahování",
-    "up": "Odesílání"
+    "up": "Odesílání",
+    "country": "Země"
   },
   "trackersTab": {
     "tier": "Úroveň",
@@ -172,7 +174,7 @@
     "cancel": "Zrušit",
     "remove": "Odstranit",
     "ok": "OK",
-    "na": "N/A"
+    "na": "N/D"
   },
   "optionsTab": {
     "bandwidth": "Šířka pásma",
@@ -277,7 +279,15 @@
     "exportAll": "Exportovat vše",
     "importServers": "Importovat...",
     "importSuccess": "Přidáno: {{added}}, přeskočeno: {{skipped}}",
-    "importFailed": "Import se nezdařil."
+    "importFailed": "Import se nezdařil.",
+    "saveFailed": "Server se nepodařilo uložit. Zkontrolujte hodnoty a zkuste to znovu.",
+    "exportPasswords": "Zahrnout hesla do exportu",
+    "exportPasswordsWarning": "Hesla se do souboru zapisují jako prostý text. Soubor uchovejte v soukromí.",
+    "webStorageWarning": "Ve webové verzi se hesla serverů ukládají v tomto prohlížeči nešifrovaně. Zadávejte je jen na důvěryhodném zařízení.",
+    "passwordStored": "Heslo uloženo. Nechte prázdné, chcete-li je zachovat.",
+    "removeStoredPassword": "Odstranit uložené heslo",
+    "removeStoredProxyPassword": "Odstranit uložené heslo proxy",
+    "secretStorageUnencrypted": "Zabezpečené úložiště není v tomto systému dostupné: uložená hesla jsou na disku bez šifrování."
   },
   "settings": {
     "applied": "Nastavení použita",
@@ -331,7 +341,7 @@
     "peerLimits": "Limity peerů",
     "global": "Globálně:",
     "perTorrent": "Na torrent:",
-    "blocklist": "Blocklist",
+    "blocklist": "Blokovací seznam",
     "enableBlocklist": "Zapnout blocklist",
     "blocklistUrl": "URL blocklistu",
     "updateBlocklist": "Aktualizovat blocklist",
@@ -394,7 +404,8 @@
     "importSuccess": "Záloha byla úspěšně obnovena.",
     "saveFailed": "Předvolby se nepodařilo uložit. Zkontrolujte hodnoty a zkuste to znovu.",
     "invalidValues": "Interval obnovení musí být alespoň 250 ms a předvolby rychlosti musí být čísla.",
-    "importFailed": "Import se nezdařil."
+    "importFailed": "Import se nezdařil.",
+    "removePreset": "Odebrat předvolbu rychlosti"
   },
   "columnMenu": {
     "setupColumns": "Nastavit sloupce"
@@ -405,7 +416,17 @@
     "refreshFailed": "Torrenty se nepodařilo obnovit: {{error}}",
     "statsRefreshFailed": "Nepodařilo se obnovit statistiky serveru: {{error}}",
     "unknownError": "Neznámá chyba",
-    "dismiss": "Zavřít"
+    "dismiss": "Zavřít",
+    "columnsSaveFailed": "Rozložení sloupců se nepodařilo uložit.",
+    "serversLoadFailed": "Seznam serverů se nepodařilo načíst.",
+    "serverRemoveFailed": "Server se nepodařilo odebrat.",
+    "exportFailed": "Konfiguraci se nepodařilo exportovat.",
+    "prefsLoadFailed": "Vaše předvolby se nepodařilo načíst.",
+    "pickerFailed": "Výběr souboru nebo složky se nepodařilo otevřít.",
+    "fileReadFailed": "Vybraný soubor se nepodařilo přečíst.",
+    "renameFailed": "Torrent se nepodařilo přejmenovat.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Soubor nebo odkaz, se kterým byl Seedora spuštěn, se nepodařilo otevřít."
   },
   "filesTab": {
     "clickToChangePriority": "Klikněte pro změnu priority",
@@ -417,5 +438,131 @@
     "description": "Aplikace narazila na neočekávanou chybu. Můžete to zkusit znovu nebo okno načíst znovu.",
     "retry": "Zkusit znovu",
     "reload": "Načíst znovu"
+  },
+  "format": {
+    "done": "Hotovo",
+    "justNow": "Právě teď",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} d",
+      "hours": "{{n}} h",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Soubor",
+      "edit": "Úpravy",
+      "view": "Zobrazení",
+      "torrent": "Torrent",
+      "tools": "Nástroje",
+      "help": "Nápověda",
+      "preferences": "Předvolby…",
+      "addTorrent": "Přidat torrent…",
+      "addMagnet": "Přidat magnetický odkaz…",
+      "toggleFilter": "Přepnout panel filtrů",
+      "toggleDetails": "Přepnout panel podrobností",
+      "start": "Spustit",
+      "stop": "Zastavit",
+      "verify": "Ověřit",
+      "reannounce": "Znovu oznámit",
+      "startAll": "Spustit vše",
+      "stopAll": "Zastavit vše",
+      "remove": "Odebrat…",
+      "serverSettings": "Nastavení serveru…",
+      "rpcSpec": "Specifikace RPC Transmission",
+      "reportIssue": "Nahlásit problém",
+      "about": "O aplikaci {{appName}}",
+      "hide": "Skrýt {{appName}}",
+      "hideOthers": "Skrýt ostatní",
+      "unhide": "Zobrazit vše",
+      "quit": "Ukončit {{appName}}",
+      "close": "Zavřít okno",
+      "undo": "Zpět",
+      "redo": "Znovu",
+      "cut": "Vyjmout",
+      "copy": "Kopírovat",
+      "paste": "Vložit",
+      "selectAll": "Vybrat vše",
+      "reload": "Znovu načíst",
+      "forceReload": "Vynutit opětovné načtení",
+      "resetZoom": "Skutečná velikost",
+      "zoomIn": "Přiblížit",
+      "zoomOut": "Oddálit",
+      "toggleFullscreen": "Přepnout celou obrazovku"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} aktivní přenos",
+      "activeTransfers_other": "{{count}} aktivních přenosů",
+      "enableAltSpeed": "Zapnout alternativní rychlost",
+      "disableAltSpeed": "Vypnout alternativní rychlost",
+      "showWindow": "Zobrazit okno",
+      "quit": "Ukončit"
+    },
+    "scriptGuard": {
+      "title": "Změnit nastavení skriptů démona?",
+      "message": "Seedora se chystá změnit nastavení, kvůli kterému démon Transmission spouští program na svém serveru.",
+      "detail": "{{changes}}\n\nPokračujte, jen pokud jste tuto změnu provedli sami.",
+      "allow": "Povolit",
+      "cancel": "Zrušit",
+      "declined": "Změna nastavení skriptů byla zamítnuta."
+    },
+    "exportSecrets": {
+      "title": "Zahrnout hesla do zálohy?",
+      "message": "Soubor zálohy bude obsahovat hesla k vašim serverům a proxy v čitelné podobě. Kdokoli, kdo soubor přečte, je může použít.",
+      "allow": "Zahrnout hesla",
+      "cancel": "Zrušit",
+      "declined": "Export hesel byl zamítnut."
+    },
+    "configError": {
+      "title": "Problém s konfigurací",
+      "corrupt": "Seedora nemohla přečíst svůj konfigurační soubor a spustila se s výchozím nastavením. Nečitelný soubor byl uložen jako:\n{{path}}",
+      "unreadable": "Seedora nemůže přečíst svůj konfigurační soubor. Soubor zůstal beze změny a změny se neuloží, dokud nebude problém vyřešen:\n{{path}}",
+      "passwordsLocked": "Uložené heslo pro tyto servery se nepodařilo dešifrovat (klíčenka systému může být zamčená nebo byla obnovena): {{names}}. Otevřete každý server v aplikaci Seedora a zadejte heslo znovu."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Neplatný požadavek.",
+      "NO_SESSION": "Není aktivní žádný server. Vyberte server a zkuste to znovu.",
+      "SESSION_UNAVAILABLE": "Relaci se nepodařilo obnovit. Zkontrolujte, zda jsou povoleny soubory cookie.",
+      "RATE_LIMITED": "Příliš mnoho požadavků. Zkuste to za chvíli znovu.",
+      "HOST_NOT_ALLOWED": "Tento hostitel není povolen.",
+      "DNS_FAILED": "Název hostitele se nepodařilo přeložit.",
+      "CONNECTION_FAILED": "Nepodařilo se připojit k serveru.",
+      "TIMEOUT": "Server neodpověděl včas.",
+      "TLS_FAILED": "Zabezpečené připojení selhalo.",
+      "UNEXPECTED_REDIRECT": "Server odpověděl přesměrováním.",
+      "RESPONSE_TOO_LARGE": "Odpověď serveru je příliš velká.",
+      "AUTH_FAILED": "Ověření selhalo. Zkontrolujte uživatelské jméno a heslo.",
+      "HTTP_ERROR": "Server odpověděl chybou.",
+      "SESSION_ID_REJECTED": "Server odmítl ID relace.",
+      "RPC_ERROR": "Server nahlásil chybu.",
+      "SERVER_MISCONFIGURED": "Webový server není správně nakonfigurován.",
+      "SERVER_NOT_FOUND": "Server nebyl nalezen.",
+      "IMPORT_INVALID": "Import se nezdařil: soubor není platná záloha aplikace Seedora."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Certifikát serveru není důvěryhodný.",
+      "TLS_EXPIRED": "Platnost certifikátu serveru vypršela.",
+      "TLS_HOSTNAME": "Certifikát serveru neodpovídá názvu hostitele.",
+      "NETWORK": "Server není dostupný.",
+      "TOO_LARGE": "Odpověď serveru je příliš velká.",
+      "AUTH": "Ověření selhalo. Zkontrolujte uživatelské jméno a heslo.",
+      "INVALID_RESPONSE": "Server neodpověděl jako démon Transmission.",
+      "SESSION": "Server odmítl navázání relace.",
+      "RPC_FAILURE": "Server nahlásil chybu.",
+      "NO_CONNECTION": "Není připojen žádný server.",
+      "UNKNOWN": "Došlo k neznámé chybě."
+    }
   }
 }

@@ -96,7 +96,7 @@ export function FilesTab({ torrent }: Props) {
   );
 
   if (!tree || !fileStats) {
-    if (error) return <div role="alert" className="text-destructive">{t('details.loadFailed', { error })}</div>;
+    if (error) return <div role="alert" className="text-destructive-text">{t('details.loadFailed', { error })}</div>;
     return <div className="text-muted-foreground">{t('details.loadingFiles')}</div>;
   }
 

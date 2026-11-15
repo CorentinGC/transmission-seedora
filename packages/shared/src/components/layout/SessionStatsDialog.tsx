@@ -34,7 +34,7 @@ export function SessionStatsDialog({ onClose }: Props) {
   const current = stats.currentStats;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
       <div ref={ref} className="bg-popover border rounded-lg shadow-lg p-4 w-[440px] max-h-[80vh] overflow-y-auto">
         <h2 className="text-sm font-semibold mb-3">{t('sessionStats.title')}</h2>
 

@@ -37,6 +37,25 @@ it('never trusts a file: URL, even when configured as an origin', () => {
   expect(isTrustedUrl('file:///etc/hosts', { devServerUrl: 'file:///' })).toBe(false);
 });
 
+describe('isTrustedUrl with unusual paths (packaged-build checklist, 2df)', () => {
+  it('trusts the app origin whatever the path holds: spaces, non-ASCII, Windows-style segments, query and hash', () => {
+    for (const url of [
+      'app://seedora/dir%20with%20spaces/index.html',
+      'app://seedora/%C3%A9t%C3%A9/%E6%97%A5%E6%9C%AC.html',
+      'app://seedora/C:/Users/me/AppData/index.html',
+      'app://seedora/a%5Cb/index.html?x=%20y#frag',
+    ]) {
+      expect(isTrustedUrl(url, origins), url).toBe(true);
+    }
+  });
+
+  it('still refuses a file: URL with the same odd paths', () => {
+    for (const url of ['file:///C:/Users/me/My%20App/index.html', 'file:///Users/%C3%A9/index.html', 'file:///etc/hosts']) {
+      expect(isTrustedUrl(url, origins), url).toBe(false);
+    }
+  });
+});
+
 describe('createSenderValidator', () => {
   const isTrusted = createSenderValidator(origins);
   it('requires a live top-level frame on a trusted URL', () => {

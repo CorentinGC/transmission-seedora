@@ -37,7 +37,25 @@ export function sanitizeDaemonText(value: unknown, fallback: string): string {
 }
 
 /** Machine-readable failure kind of an RPC transport error. */
-export type RpcErrorCode = 'TIMEOUT' | 'TLS_UNTRUSTED' | 'TLS_EXPIRED' | 'TLS_HOSTNAME' | 'NETWORK' | 'TOO_LARGE';
+export type RpcErrorCode =
+  | 'TIMEOUT'
+  | 'TLS_UNTRUSTED'
+  | 'TLS_EXPIRED'
+  | 'TLS_HOSTNAME'
+  | 'NETWORK'
+  | 'TOO_LARGE'
+  /** HTTP 401/403: wrong or missing credentials. */
+  | 'AUTH'
+  /** Any other non-2xx HTTP status. */
+  | 'HTTP_ERROR'
+  /** The daemon answered with something that is not a Transmission JSON reply. */
+  | 'INVALID_RESPONSE'
+  /** The daemon refused the CSRF session id handshake. */
+  | 'SESSION'
+  /** The daemon replied `result` other than `success`. */
+  | 'RPC_FAILURE'
+  /** No server is active. */
+  | 'NO_CONNECTION';
 
 /** Transport error with a stable `code` and a message that never contains credentials. */
 export class RpcError extends Error {
@@ -130,7 +148,7 @@ export class TransmissionRpcClient {
         this.sessionId = newSessionId;
         return this.retryOnce(body);
       }
-      throw new Error('Failed to obtain session ID from Transmission');
+      throw new RpcError('SESSION', 'Failed to obtain session ID from Transmission');
     }
 
     return this.parseResponse(response);
@@ -140,7 +158,7 @@ export class TransmissionRpcClient {
     const response = await this.send(body);
 
     if (response.status === 409) {
-      throw new Error('CSRF session ID rejected after retry');
+      throw new RpcError('SESSION', 'CSRF session ID rejected after retry');
     }
 
     return this.parseResponse(response);
@@ -202,18 +220,19 @@ export class TransmissionRpcClient {
 
   private parseResponse(response: RawResponse): Record<string, unknown> | undefined {
     if (response.status < 200 || response.status >= 300) {
-      throw new Error(`HTTP ${response.status}: ${sanitizeDaemonText(response.statusText, 'error')}`);
+      const code = response.status === 401 || response.status === 403 ? 'AUTH' : 'HTTP_ERROR';
+      throw new RpcError(code, `HTTP ${response.status}: ${sanitizeDaemonText(response.statusText, 'error')}`);
     }
 
     let json: RpcResponse;
     try {
       json = JSON.parse(response.body) as RpcResponse;
     } catch {
-      throw new Error('Invalid response from Transmission (not JSON)');
+      throw new RpcError('INVALID_RESPONSE', 'Invalid response from Transmission (not JSON)');
     }
 
     if (json.result !== 'success') {
-      throw new Error(`RPC error: ${sanitizeDaemonText(json.result, 'unknown error')}`);
+      throw new RpcError('RPC_FAILURE', `RPC error: ${sanitizeDaemonText(json.result, 'unknown error')}`);
     }
 
     return json.arguments;

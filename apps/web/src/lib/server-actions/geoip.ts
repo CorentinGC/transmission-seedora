@@ -12,7 +12,7 @@ type GeoRecord = { country: string; region: string; city: string };
 /** Looks up at most 512 IP addresses in the bundled GeoIP database. */
 export async function geoipLookup(input: unknown): Promise<ActionResult<Record<string, GeoRecord | null>>> {
   try {
-    if (!(await takeClientToken('geoip'))) return failure('RATE_LIMITED');
+    if (!(await takeClientToken('geoip', { skipWithoutIdentity: true }))) return failure('RATE_LIMITED');
     const ips = geoipInputSchema.safeParse(input);
     if (!ips.success) return failure('INVALID_INPUT');
     const geoip = await import('geoip-lite');

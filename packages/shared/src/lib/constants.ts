@@ -1,6 +1,6 @@
 import { TorrentStatus } from '../types/torrent';
 
-export const STATUS_LABEL_KEYS: Record<number, string> = {
+const STATUS_LABEL_KEYS: Record<number, string> = {
   [TorrentStatus.STOPPED]: 'status.stopped',
   [TorrentStatus.CHECK_WAIT]: 'status.checkWait',
   [TorrentStatus.CHECK]: 'status.check',

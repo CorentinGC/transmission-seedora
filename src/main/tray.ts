@@ -1,8 +1,11 @@
 import { Tray, Menu, nativeImage, BrowserWindow, app } from 'electron';
 import path from 'node:path';
 import { IPC } from '@shared/ipc-channels';
+import { t } from './i18n/main-i18n';
 
 let tray: Tray | null = null;
+let lastWindow: BrowserWindow | null = null;
+let lastState: TrayState = { downloadSpeed: 0, uploadSpeed: 0, activeCount: 0, altSpeedEnabled: false };
 
 interface TrayState {
   downloadSpeed: number;
@@ -24,7 +27,9 @@ function getIconPath(): string {
   return path.join(__dirname, '../../resources/tray-icon.png');
 }
 
+/** Creates the tray icon and its menu. */
 export function createTray(mainWindow: BrowserWindow): Tray {
+  tray?.destroy(); // a re-created window (macOS) must not leave a second tray icon behind
   const icon = nativeImage.createFromPath(getIconPath());
   // Fallback: create a small empty icon if file doesn't exist
   const trayIcon = icon.isEmpty()
@@ -34,12 +39,7 @@ export function createTray(mainWindow: BrowserWindow): Tray {
   tray = new Tray(trayIcon);
   tray.setToolTip('Seedora');
 
-  updateTrayMenu(mainWindow, {
-    downloadSpeed: 0,
-    uploadSpeed: 0,
-    activeCount: 0,
-    altSpeedEnabled: false,
-  });
+  updateTrayMenu(mainWindow, lastState);
 
   tray.on('click', () => {
     if (mainWindow.isVisible()) {
@@ -57,7 +57,10 @@ export function createTray(mainWindow: BrowserWindow): Tray {
   return tray;
 }
 
+/** Rebuilds the tray menu and tooltip from the renderer's latest state. */
 export function updateTrayMenu(mainWindow: BrowserWindow, state: TrayState): void {
+  lastWindow = mainWindow;
+  lastState = state;
   if (!tray) return;
 
   const contextMenu = Menu.buildFromTemplate([
@@ -66,26 +69,26 @@ export function updateTrayMenu(mainWindow: BrowserWindow, state: TrayState): voi
       enabled: false,
     },
     {
-      label: `${state.activeCount} active transfer(s)`,
+      label: t('native.tray.activeTransfers', { count: state.activeCount }),
       enabled: false,
     },
     { type: 'separator' },
     {
-      label: state.altSpeedEnabled ? 'Disable Alt Speed' : 'Enable Alt Speed',
+      label: state.altSpeedEnabled ? t('native.tray.disableAltSpeed') : t('native.tray.enableAltSpeed'),
       click: () => {
         mainWindow.webContents.send(IPC.TRAY_TOGGLE_ALT_SPEED);
       },
     },
     { type: 'separator' },
     {
-      label: 'Show Window',
+      label: t('native.tray.showWindow'),
       click: () => {
         mainWindow.show();
         mainWindow.focus();
       },
     },
     {
-      label: 'Quit',
+      label: t('native.tray.quit'),
       click: () => {
         app.quit();
       },
@@ -96,6 +99,11 @@ export function updateTrayMenu(mainWindow: BrowserWindow, state: TrayState): voi
   tray.setToolTip(
     `Seedora\n↓ ${formatSpeed(state.downloadSpeed)}  ↑ ${formatSpeed(state.uploadSpeed)}`,
   );
+}
+
+/** Rebuilds the tray menu with the last known state, e.g. after a language change. */
+export function refreshTrayLabels(): void {
+  if (lastWindow) updateTrayMenu(lastWindow, lastState);
 }
 
 export function destroyTray(): void {

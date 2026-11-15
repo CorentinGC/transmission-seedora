@@ -116,7 +116,7 @@ export function TrackersTab({ torrent }: Props) {
   return (
     <div className="text-xs">
       {error && (
-        <div role="alert" className="mb-1 text-destructive">{t('details.loadFailed', { error })}</div>
+        <div role="alert" className="mb-1 text-destructive-text">{t('details.loadFailed', { error })}</div>
       )}
       {/* Table */}
       <table className="w-full border-collapse">
@@ -178,7 +178,7 @@ export function TrackersTab({ torrent }: Props) {
               <td className="px-1.5 py-1 text-right">{ts.leecherCount >= 0 ? ts.leecherCount : '-'}</td>
               <td className="px-1.5 py-1 max-w-24 truncate" title={ts.lastAnnounceSucceeded ? 'OK' : (ts.lastAnnounceResult || '')}>
                 {ts.lastAnnounceSucceeded ? (
-                  <span className="text-green-500">{t('trackersTab.ok')}</span>
+                  <span className="text-success">{t('trackersTab.ok')}</span>
                 ) : (
                   <span className="text-muted-foreground">{ts.lastAnnounceResult || t('trackersTab.na')}</span>
                 )}
@@ -201,7 +201,7 @@ export function TrackersTab({ torrent }: Props) {
                       onClick={() => removeTracker(ts.announce)}
                       disabled={loadingAction === `remove-${ts.announce}`}
                       title={t('trackersTab.remove')}
-                      className="p-1 h-5 w-5 text-destructive hover:text-destructive"
+                      className="p-1 h-5 w-5 text-destructive-text hover:text-destructive-text"
                     >
                       <Trash2 size={12} />
                     </Button>

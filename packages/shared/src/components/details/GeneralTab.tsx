@@ -40,11 +40,11 @@ export function GeneralTab({ torrent: tor }: Props) {
       <InfoRow label={t('details.comment')} value={tor.comment} />
       <InfoRow label={t('details.creator')} value={tor.creator} />
       {tor.errorString && (
-        <InfoRow label={t('status.error')} value={tor.errorString} className="text-red-500" />
+        <InfoRow label={t('status.error')} value={tor.errorString} className="text-destructive-text" />
       )}
       <div className="col-span-2 mt-2">
         <button
-          className="text-xs text-blue-500 hover:underline"
+          className="text-xs text-info hover:underline"
           onClick={copyMagnet}
         >
           {t('details.copyMagnet')}

@@ -11,21 +11,21 @@ import { notifyFailure } from './notification-store';
 /** True while the periodic refresh is failing, so the user is told once per outage. */
 let refreshFailing = false;
 
-function reportRefreshFailure(error: string | undefined): void {
+function reportRefreshFailure(error: string | undefined, code?: string): void {
   if (refreshFailing) return;
   refreshFailing = true;
-  notifyFailure('notification.refreshFailed', error);
+  notifyFailure('notification.refreshFailed', error, code);
 }
 
 /**
  * Runs a platform call that reports failure through `{ success: false }` (or by
  * throwing) and surfaces any failure to the user. Resolves true on success.
  */
-async function perform(call: () => Promise<{ success: boolean; error?: string }>): Promise<boolean> {
+async function perform(call: () => Promise<{ success: boolean; error?: string; code?: string }>): Promise<boolean> {
   try {
     const res = await call();
     if (res.success) return true;
-    notifyFailure('notification.actionFailed', res.error);
+    notifyFailure('notification.actionFailed', res.error, res.code);
   } catch (err) {
     notifyFailure('notification.actionFailed', err instanceof Error ? err.message : undefined);
   }
@@ -61,11 +61,11 @@ interface TorrentStore {
   stopTorrents: (ids: number[]) => Promise<void>;
   verifyTorrents: (ids: number[]) => Promise<void>;
   reannounceTorrents: (ids: number[]) => Promise<void>;
-  removeTorrents: (ids: number[], deleteData: boolean) => Promise<void>;
+  removeTorrents: (ids: number[], deleteData: boolean) => Promise<boolean>;
   setTorrentProps: (ids: number[], props: Record<string, unknown>) => Promise<boolean>;
-  moveTorrents: (ids: number[], location: string, move: boolean) => Promise<void>;
+  moveTorrents: (ids: number[], location: string, move: boolean) => Promise<boolean>;
   queueMove: (ids: number[], direction: 'top' | 'up' | 'down' | 'bottom') => Promise<void>;
-  addTorrent: (params: Record<string, unknown>) => Promise<{ success: boolean; error?: string; duplicate?: boolean; torrentName?: string; duplicateId?: number }>;
+  addTorrent: (params: Record<string, unknown>) => Promise<{ success: boolean; code?: string; duplicate?: boolean; torrentName?: string; duplicateId?: number }>;
   startAll: () => Promise<void>;
   stopAll: () => Promise<void>;
 
@@ -101,7 +101,7 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
       if (!isServerEpochCurrent(epoch)) return;
       const data = res.data as { torrents?: Torrent[] } | undefined;
       if (!res.success || !Array.isArray(data?.torrents)) {
-        reportRefreshFailure(res.error);
+        reportRefreshFailure(res.error, res.code);
         return;
       }
       refreshFailing = false;
@@ -209,7 +209,7 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   },
 
   removeTorrents: async (ids, deleteData) => {
-    if (!(await perform(() => getPlatformApi().rpcTorrentRemove(ids, deleteData)))) return;
+    if (!(await perform(() => getPlatformApi().rpcTorrentRemove(ids, deleteData)))) return false;
     set((state) => {
       const newMap = new Map(state.torrents);
       const newSelected = new Set(state.selectedIds);
@@ -219,6 +219,7 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
       }
       return { torrents: newMap, selectedIds: newSelected };
     });
+    return true;
   },
 
   setTorrentProps: async (ids, props) => {
@@ -228,9 +229,9 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   },
 
   moveTorrents: async (ids, location, move) => {
-    if (await perform(() => getPlatformApi().rpcTorrentSetLocation(ids, location, move))) {
-      await get().fetchRecentlyActive();
-    }
+    const ok = await perform(() => getPlatformApi().rpcTorrentSetLocation(ids, location, move));
+    if (ok) await get().fetchRecentlyActive();
+    return ok;
   },
 
   queueMove: async (ids, direction) => {
@@ -248,8 +249,8 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
     let res: Awaited<ReturnType<PlatformApi['rpcTorrentAdd']>>;
     try {
       res = await getPlatformApi().rpcTorrentAdd(params);
-    } catch (err) {
-      return { success: false, error: err instanceof Error ? err.message : undefined };
+    } catch {
+      return { success: false };
     }
     if (res.success) {
       const data = res.data as Record<string, unknown> | undefined;
@@ -259,7 +260,7 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
       }
       await get().fetchTorrents();
     }
-    return { success: res.success, error: res.error };
+    return { success: res.success, code: res.code };
   },
 
   startAll: async () => {

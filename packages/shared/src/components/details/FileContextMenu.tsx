@@ -52,13 +52,13 @@ export function FileContextMenu({
         label={t('priority.high')}
         onClick={() => act(() => onSetPriority(fileIndices, PRIORITY_HIGH))}
         indent
-        className={currentPriority === PRIORITY_HIGH ? 'text-red-500 font-medium' : ''}
+        className={currentPriority === PRIORITY_HIGH ? 'text-destructive-text font-medium' : ''}
       />
       <MenuItem
         label={t('priority.normal')}
         onClick={() => act(() => onSetPriority(fileIndices, PRIORITY_NORMAL))}
         indent
-        className={currentPriority === PRIORITY_NORMAL ? 'text-blue-500 font-medium' : ''}
+        className={currentPriority === PRIORITY_NORMAL ? 'text-info font-medium' : ''}
       />
       <MenuItem
         label={t('priority.low')}

@@ -1,6 +1,11 @@
 import { app, Menu, shell, BrowserWindow } from 'electron';
 import { IPC } from '@shared/ipc-channels';
+import { t } from './i18n/main-i18n';
 
+const APP_NAME = 'Seedora';
+const m = (key: string, vars?: Record<string, string | number>) => t(`native.menu.${key}`, vars);
+
+/** Builds and installs the application menu in the current language; call again after a language change. */
 export function createMenu(mainWindow: BrowserWindow): void {
   const isMac = process.platform === 'darwin';
 
@@ -8,133 +13,133 @@ export function createMenu(mainWindow: BrowserWindow): void {
     ...(isMac
       ? [
           {
-            label: 'Seedora',
+            label: APP_NAME,
             submenu: [
-              { role: 'about' as const },
+              { role: 'about' as const, label: m('about', { appName: APP_NAME }) },
               { type: 'separator' as const },
               {
-                label: 'Preferences…',
+                label: m('preferences'),
                 accelerator: 'CmdOrCtrl+,',
                 click: () => mainWindow.webContents.send(IPC.MENU_PREFERENCES),
               },
               { type: 'separator' as const },
               { role: 'services' as const },
               { type: 'separator' as const },
-              { role: 'hide' as const },
-              { role: 'hideOthers' as const },
-              { role: 'unhide' as const },
+              { role: 'hide' as const, label: m('hide', { appName: APP_NAME }) },
+              { role: 'hideOthers' as const, label: m('hideOthers') },
+              { role: 'unhide' as const, label: m('unhide') },
               { type: 'separator' as const },
-              { role: 'quit' as const },
+              { role: 'quit' as const, label: m('quit', { appName: APP_NAME }) },
             ],
           },
         ]
       : []),
     {
-      label: 'File',
+      label: m('file'),
       submenu: [
         {
-          label: 'Add Torrent…',
+          label: m('addTorrent'),
           accelerator: 'CmdOrCtrl+O',
           click: () => mainWindow.webContents.send(IPC.MENU_ADD_TORRENT),
         },
         {
-          label: 'Add Magnet Link…',
+          label: m('addMagnet'),
           accelerator: 'CmdOrCtrl+Shift+M',
           click: () => mainWindow.webContents.send(IPC.MENU_ADD_MAGNET),
         },
         { type: 'separator' },
-        isMac ? { role: 'close' } : { role: 'quit' },
+        isMac ? { role: 'close', label: m('close') } : { role: 'quit', label: m('quit', { appName: APP_NAME }) },
       ],
     },
     {
-      label: 'Edit',
+      label: m('edit'),
       submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
+        { role: 'undo', label: m('undo') },
+        { role: 'redo', label: m('redo') },
         { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'selectAll' },
+        { role: 'cut', label: m('cut') },
+        { role: 'copy', label: m('copy') },
+        { role: 'paste', label: m('paste') },
+        { role: 'selectAll', label: m('selectAll') },
       ],
     },
     {
-      label: 'View',
+      label: m('view'),
       submenu: [
         {
-          label: 'Toggle Filter Sidebar',
+          label: m('toggleFilter'),
           accelerator: 'CmdOrCtrl+Shift+F',
           click: () => mainWindow.webContents.send(IPC.MENU_TOGGLE_FILTER),
         },
         {
-          label: 'Toggle Details Panel',
+          label: m('toggleDetails'),
           accelerator: 'CmdOrCtrl+Shift+D',
           click: () => mainWindow.webContents.send(IPC.MENU_TOGGLE_DETAILS),
         },
         { type: 'separator' },
-        { role: 'reload' },
-        { role: 'forceReload' },
+        { role: 'reload', label: m('reload') },
+        { role: 'forceReload', label: m('forceReload') },
         ...(app.isPackaged ? [] : [{ role: 'toggleDevTools' as const }]),
         { type: 'separator' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
+        { role: 'resetZoom', label: m('resetZoom') },
+        { role: 'zoomIn', label: m('zoomIn') },
+        { role: 'zoomOut', label: m('zoomOut') },
         { type: 'separator' },
-        { role: 'togglefullscreen' },
+        { role: 'togglefullscreen', label: m('toggleFullscreen') },
       ],
     },
     {
-      label: 'Torrent',
+      label: m('torrent'),
       submenu: [
         {
-          label: 'Start',
+          label: m('start'),
           accelerator: 'CmdOrCtrl+S',
           click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_START),
         },
         {
-          label: 'Stop',
+          label: m('stop'),
           accelerator: 'CmdOrCtrl+P',
           click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_STOP),
         },
         { type: 'separator' },
         {
-          label: 'Verify',
+          label: m('verify'),
           click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_VERIFY),
         },
         {
-          label: 'Reannounce',
+          label: m('reannounce'),
           click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_REANNOUNCE),
         },
         { type: 'separator' },
         {
-          label: 'Start All',
+          label: m('startAll'),
           click: () => mainWindow.webContents.send(IPC.MENU_START_ALL),
         },
         {
-          label: 'Stop All',
+          label: m('stopAll'),
           click: () => mainWindow.webContents.send(IPC.MENU_STOP_ALL),
         },
         { type: 'separator' },
         {
           // No accelerator: a menu accelerator on Delete captures the key in text inputs. The renderer
           // handles the Delete key itself (it can see focus and selection).
-          label: 'Remove…',
+          label: m('remove'),
           click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_REMOVE),
         },
       ],
     },
     {
-      label: 'Tools',
+      label: m('tools'),
       submenu: [
         {
-          label: 'Server Settings…',
+          label: m('serverSettings'),
           click: () => mainWindow.webContents.send(IPC.MENU_SETTINGS),
         },
         ...(!isMac
           ? [
               { type: 'separator' as const },
               {
-                label: 'Preferences…',
+                label: m('preferences'),
                 click: () => mainWindow.webContents.send(IPC.MENU_PREFERENCES),
               },
             ]
@@ -143,16 +148,17 @@ export function createMenu(mainWindow: BrowserWindow): void {
     },
     {
       role: 'help',
+      label: m('help'),
       submenu: [
         {
-          label: 'Transmission RPC Spec',
+          label: m('rpcSpec'),
           click: () =>
             shell.openExternal(
               'https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md',
             ),
         },
         {
-          label: 'Report an Issue',
+          label: m('reportIssue'),
           click: () =>
             shell.openExternal('https://github.com/CorentinGC/transmission-seedora/issues'),
         },

@@ -87,10 +87,25 @@ describe('setActiveServerCookie', () => {
     expect(await setActiveServerCookie(target)).toMatchObject({ success: false, code: 'SERVER_MISCONFIGURED' });
   });
 
-  it('is rate limited', async () => {
+  it('is rate limited per identified client', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.stubEnv('SEEDORA_TRUST_PROXY_HEADERS', 'true');
+    requestHeaders.current = new Headers({ 'x-forwarded-for': '203.0.113.9' });
     const results = [];
     for (let i = 0; i < RATE_LIMITS.setActiveServer.burst + 1; i++) results.push(await setActiveServerCookie(target));
     expect(results.at(-1)).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    // Another client is unaffected: the bucket is per client, not shared.
+    requestHeaders.current = new Headers({ 'x-forwarded-for': '203.0.113.10' });
+    expect(await setActiveServerCookie(target)).toEqual({ success: true });
+    vi.useRealTimers();
+  });
+
+  it('is not limited without a trustworthy client identity: a third party cannot lock the owner out (46b)', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    for (let i = 0; i < RATE_LIMITS.setActiveServer.burst * 3; i++) {
+      expect(await setActiveServerCookie(target)).toEqual({ success: true });
+    }
+    vi.useRealTimers();
   });
 });
 
@@ -288,8 +303,20 @@ describe('geoipLookup', () => {
     expect((await geoipLookup(Array.from({ length: 512 }, () => '8.8.8.8'))).success).toBe(true);
   });
 
-  it('is rate limited', async () => {
+  it('is rate limited per identified client', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.stubEnv('SEEDORA_TRUST_PROXY_HEADERS', 'true');
+    requestHeaders.current = new Headers({ 'x-forwarded-for': '203.0.113.9' });
     for (let i = 0; i < RATE_LIMITS.geoip.burst; i++) await geoipLookup(['8.8.8.8']);
     expect(await geoipLookup(['8.8.8.8'])).toMatchObject({ code: 'RATE_LIMITED' });
+    vi.useRealTimers();
+  });
+
+  it('is not limited without a trustworthy client identity (46b)', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    for (let i = 0; i < RATE_LIMITS.geoip.burst * 3; i++) {
+      expect((await geoipLookup(['8.8.8.8'])).success).toBe(true);
+    }
+    vi.useRealTimers();
   });
 });

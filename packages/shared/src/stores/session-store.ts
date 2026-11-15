@@ -104,7 +104,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     const current = get().settings?.altSpeedEnabled ?? false;
     const res = await getPlatformApi().rpcSessionSet({ 'alt-speed-enabled': !current });
     if (!res.success) {
-      notifyFailure('notification.actionFailed', res.error);
+      notifyFailure('notification.actionFailed', res.error, res.code);
       return;
     }
     await get().fetchSettings();

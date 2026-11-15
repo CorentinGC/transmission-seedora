@@ -20,7 +20,8 @@
     "detailsPanel": "詳細パネルの切替",
     "searchPlaceholder": "トレントを検索...",
     "preferences": "環境設定",
-    "serverSettings": "サーバー設定"
+    "serverSettings": "サーバー設定",
+    "clearSearch": "検索をクリア"
   },
   "statusBar": {
     "connected": "接続済み",
@@ -157,7 +158,8 @@
     "flags": "フラグ",
     "progress": "進捗",
     "down": "受信",
-    "up": "送信"
+    "up": "送信",
+    "country": "国"
   },
   "trackersTab": {
     "tier": "ティア",
@@ -277,7 +279,15 @@
     "exportAll": "すべてエクスポート",
     "importServers": "インポート...",
     "importSuccess": "{{added}} 件追加、{{skipped}} 件スキップ",
-    "importFailed": "インポートに失敗しました。"
+    "importFailed": "インポートに失敗しました。",
+    "saveFailed": "サーバーを保存できませんでした。値を確認してもう一度お試しください。",
+    "exportPasswords": "エクスポートにパスワードを含める",
+    "exportPasswordsWarning": "パスワードはファイルに平文で書き込まれます。ファイルは外部に漏らさないでください。",
+    "webStorageWarning": "Web 版では、サーバーのパスワードはこのブラウザーに暗号化されずに保存されます。信頼できるデバイスでのみ入力してください。",
+    "passwordStored": "パスワードは保存済みです。変更しない場合は空のままにしてください。",
+    "removeStoredPassword": "保存済みのパスワードを削除",
+    "removeStoredProxyPassword": "保存済みのプロキシパスワードを削除",
+    "secretStorageUnencrypted": "このシステムでは安全なストレージを利用できません。保存したパスワードは暗号化されずにディスクに保存されます。"
   },
   "settings": {
     "applied": "設定が適用されました",
@@ -394,7 +404,8 @@
     "importSuccess": "バックアップを復元しました。",
     "saveFailed": "設定を保存できませんでした。値を確認してもう一度お試しください。",
     "invalidValues": "更新間隔は250ミリ秒以上、速度プリセットは数値にしてください。",
-    "importFailed": "インポートに失敗しました。"
+    "importFailed": "インポートに失敗しました。",
+    "removePreset": "速度プリセットを削除"
   },
   "columnMenu": {
     "setupColumns": "列を設定"
@@ -405,7 +416,17 @@
     "refreshFailed": "トレントを更新できませんでした: {{error}}",
     "statsRefreshFailed": "サーバー統計を更新できませんでした: {{error}}",
     "unknownError": "不明なエラー",
-    "dismiss": "閉じる"
+    "dismiss": "閉じる",
+    "columnsSaveFailed": "列のレイアウトを保存できませんでした。",
+    "serversLoadFailed": "サーバーの一覧を読み込めませんでした。",
+    "serverRemoveFailed": "サーバーを削除できませんでした。",
+    "exportFailed": "設定をエクスポートできませんでした。",
+    "prefsLoadFailed": "設定を読み込めませんでした。",
+    "pickerFailed": "ファイルまたはフォルダーの選択ダイアログを開けませんでした。",
+    "fileReadFailed": "選択したファイルを読み取れませんでした。",
+    "renameFailed": "トレントの名前を変更できませんでした。",
+    "withReason": "{{message}}（{{reason}}）",
+    "launchFailed": "Seedora の起動時に指定されたファイルまたはリンクを開けませんでした。"
   },
   "filesTab": {
     "clickToChangePriority": "クリックして優先度を変更",
@@ -417,5 +438,130 @@
     "description": "アプリで予期しないエラーが発生しました。もう一度試すか、ウィンドウを再読み込みしてください。",
     "retry": "再試行",
     "reload": "再読み込み"
+  },
+  "format": {
+    "done": "完了",
+    "justNow": "たった今",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}}日",
+      "hours": "{{n}}時間",
+      "minutes": "{{n}}分",
+      "seconds": "{{n}}秒"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "ファイル",
+      "edit": "編集",
+      "view": "表示",
+      "torrent": "Torrent",
+      "tools": "ツール",
+      "help": "ヘルプ",
+      "preferences": "環境設定…",
+      "addTorrent": "Torrentを追加…",
+      "addMagnet": "マグネットリンクを追加…",
+      "toggleFilter": "フィルタサイドバーを切り替え",
+      "toggleDetails": "詳細パネルを切り替え",
+      "start": "開始",
+      "stop": "停止",
+      "verify": "検証",
+      "reannounce": "再アナウンス",
+      "startAll": "すべて開始",
+      "stopAll": "すべて停止",
+      "remove": "削除…",
+      "serverSettings": "サーバ設定…",
+      "rpcSpec": "Transmission RPC仕様",
+      "reportIssue": "問題を報告",
+      "about": "{{appName}}について",
+      "hide": "{{appName}}を隠す",
+      "hideOthers": "ほかを隠す",
+      "unhide": "すべてを表示",
+      "quit": "{{appName}}を終了",
+      "close": "ウインドウを閉じる",
+      "undo": "取り消す",
+      "redo": "やり直す",
+      "cut": "切り取り",
+      "copy": "コピー",
+      "paste": "ペースト",
+      "selectAll": "すべてを選択",
+      "reload": "再読み込み",
+      "forceReload": "強制再読み込み",
+      "resetZoom": "実際のサイズ",
+      "zoomIn": "拡大",
+      "zoomOut": "縮小",
+      "toggleFullscreen": "フルスクリーンを切り替え"
+    },
+    "tray": {
+      "activeTransfers_other": "アクティブな転送: {{count}}件",
+      "enableAltSpeed": "代替速度を有効にする",
+      "disableAltSpeed": "代替速度を無効にする",
+      "showWindow": "ウインドウを表示",
+      "quit": "終了"
+    },
+    "scriptGuard": {
+      "title": "デーモンのスクリプト設定を変更しますか？",
+      "message": "Seedoraは、Transmissionデーモンがサーバ上でプログラムを実行するようになる設定を変更しようとしています。",
+      "detail": "{{changes}}\n\nこの変更をご自身で行った場合のみ続行してください。",
+      "allow": "許可",
+      "cancel": "キャンセル",
+      "declined": "スクリプト設定の変更は拒否されました。"
+    },
+    "exportSecrets": {
+      "title": "バックアップにパスワードを含めますか？",
+      "message": "バックアップファイルには、サーバとプロキシのパスワードが平文で含まれます。ファイルを読める人は誰でもそれらを使用できます。",
+      "allow": "パスワードを含める",
+      "cancel": "キャンセル",
+      "declined": "パスワードのエクスポートは拒否されました。"
+    },
+    "configError": {
+      "title": "設定の問題",
+      "corrupt": "Seedoraは設定ファイルを読み取れなかったため、デフォルト設定で起動しました。読み取れなかったファイルは次の名前で保存されました:\n{{path}}",
+      "unreadable": "Seedoraは設定ファイルを読み取れません。ファイルは変更されておらず、問題が解決するまで変更は保存されません:\n{{path}}",
+      "passwordsLocked": "これらのサーバーの保存済みパスワードを復号できませんでした（システムのキーチェーンがロックされているか、リセットされた可能性があります）：{{names}}。Seedoraで各サーバーを開き、パスワードをもう一度入力してください。"
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "無効なリクエストです。",
+      "NO_SESSION": "有効なサーバーがありません。サーバーを選択して、もう一度お試しください。",
+      "SESSION_UNAVAILABLE": "セッションを復元できませんでした。Cookie が有効になっているか確認してください。",
+      "RATE_LIMITED": "リクエストが多すぎます。しばらくしてからもう一度お試しください。",
+      "HOST_NOT_ALLOWED": "このホストは許可されていません。",
+      "DNS_FAILED": "ホスト名を解決できませんでした。",
+      "CONNECTION_FAILED": "サーバーに接続できませんでした。",
+      "TIMEOUT": "サーバーが時間内に応答しませんでした。",
+      "TLS_FAILED": "セキュア接続に失敗しました。",
+      "UNEXPECTED_REDIRECT": "サーバーがリダイレクトで応答しました。",
+      "RESPONSE_TOO_LARGE": "サーバーの応答が大きすぎます。",
+      "AUTH_FAILED": "認証に失敗しました。ユーザー名とパスワードを確認してください。",
+      "HTTP_ERROR": "サーバーがエラーで応答しました。",
+      "SESSION_ID_REJECTED": "サーバーがセッション ID を拒否しました。",
+      "RPC_ERROR": "サーバーがエラーを報告しました。",
+      "SERVER_MISCONFIGURED": "Web サーバーが正しく構成されていません。",
+      "SERVER_NOT_FOUND": "サーバーが見つかりません。",
+      "IMPORT_INVALID": "インポートに失敗しました。このファイルは有効な Seedora のバックアップではありません。"
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "サーバー証明書が信頼されていません。",
+      "TLS_EXPIRED": "サーバー証明書の有効期限が切れています。",
+      "TLS_HOSTNAME": "サーバー証明書がホスト名と一致しません。",
+      "NETWORK": "サーバーに到達できませんでした。",
+      "TOO_LARGE": "サーバーの応答が大きすぎます。",
+      "AUTH": "認証に失敗しました。ユーザー名とパスワードを確認してください。",
+      "INVALID_RESPONSE": "サーバーが Transmission デーモンとして応答しませんでした。",
+      "SESSION": "サーバーがセッションのハンドシェイクを拒否しました。",
+      "RPC_FAILURE": "サーバーがエラーを報告しました。",
+      "NO_CONNECTION": "接続中のサーバーがありません。",
+      "UNKNOWN": "不明なエラーが発生しました。"
+    }
   }
 }

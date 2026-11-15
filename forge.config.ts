@@ -45,6 +45,19 @@ const config: ForgeConfig = {
     appBundleId: 'com.seedora.app',
     appCategoryType: 'public.app-category.utilities',
     icon: './resources/icon',
+    // macOS: lets Seedora appear as a handler for magnet: links and .torrent files (it never becomes the
+    // default on its own: 'Alternate' rank, and main only registers itself when no handler exists).
+    protocols: [{ name: 'Magnet link', schemes: ['magnet'] }],
+    extendInfo: {
+      CFBundleDocumentTypes: [
+        {
+          CFBundleTypeName: 'BitTorrent file',
+          CFBundleTypeExtensions: ['torrent'],
+          CFBundleTypeRole: 'Viewer',
+          LSHandlerRank: 'Alternate',
+        },
+      ],
+    },
   },
   rebuildConfig: {},
   makers: [
@@ -72,6 +85,7 @@ const config: ForgeConfig = {
         productName: 'Seedora',
         description: 'Remote GUI for Transmission daemon',
         categories: ['Network', 'P2P'],
+        mimeType: ['application/x-bittorrent', 'x-scheme-handler/magnet'],
       },
     }),
   ],

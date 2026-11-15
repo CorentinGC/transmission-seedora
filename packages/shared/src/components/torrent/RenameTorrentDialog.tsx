@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { Dialog, Button, Input, Field } from '../ui';
 import { useApi } from '../../platform/api-context';
+import { guardedCall } from '../../lib/guarded-call';
 
 interface Props {
   torrentId: number;
@@ -17,8 +18,12 @@ export function RenameTorrentDialog({ torrentId, currentName, onClose }: Props) 
 
   const handleRename = async () => {
     if (name.trim() && name !== currentName) {
-      await api.rpcTorrentRenamePath([torrentId], currentName, name.trim());
-      useTorrentStore.getState().fetchRecentlyActive();
+      const res = await guardedCall(
+        () => api.rpcTorrentRenamePath([torrentId], currentName, name.trim()),
+        'notification.renameFailed',
+      );
+      if (!res) return;
+      void useTorrentStore.getState().fetchRecentlyActive();
       onClose();
     }
   };

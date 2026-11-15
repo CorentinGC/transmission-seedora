@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { describeFailure, isCancelled } from '../lib/error-messages';
 
 export interface AppNotification {
   id: number;
@@ -36,7 +37,11 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
   },
 }));
 
-/** Reports a failed operation with the daemon/platform error text (or a generic fallback). */
-export function notifyFailure(messageKey: string, error: string | undefined): void {
-  useNotificationStore.getState().notify(messageKey, { error: error ?? '' });
+/**
+ * Reports a failed operation. The reason is the translated message for a known failure `code`,
+ * otherwise the daemon/platform error text (or a generic fallback). A cancellation stays silent.
+ */
+export function notifyFailure(messageKey: string, error: string | undefined, code?: string): void {
+  if (isCancelled(code)) return;
+  useNotificationStore.getState().notify(messageKey, { error: describeFailure(error, code) });
 }

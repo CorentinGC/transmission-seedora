@@ -4,24 +4,30 @@ import { X, Loader2, Upload, Link, RefreshCw } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useSessionStore } from '../../stores/session-store';
 import { useApi } from '../../platform/api-context';
+import { guardedCall } from '../../lib/guarded-call';
+import { fetchTorrentFields } from '../../hooks/useTorrentFields';
 import { formatBytes } from '../../lib/format';
+import type { AddDialogInitial } from '../../lib/launch-target';
+import { errorCodeKey, isCancelled } from '../../lib/error-messages';
 import { extractTrackersFromBase64, MAX_TRACKERS } from '../../lib/torrent-parser';
 
 interface Props {
   onClose: () => void;
+  /** Prefill from a magnet link or `.torrent` file the OS asked the app to open. */
+  initial?: AddDialogInitial;
 }
 
-export function AddTorrentDialog({ onClose }: Props) {
+export function AddTorrentDialog({ onClose, initial }: Props) {
   const { t } = useTranslation();
   const addTorrent = useTorrentStore((s) => s.addTorrent);
   const settings = useSessionStore((s) => s.settings);
   const freeSpace = useSessionStore((s) => s.freeSpace);
   const fetchFreeSpace = useSessionStore((s) => s.fetchFreeSpace);
 
-  const [mode, setMode] = useState<'file' | 'url'>('url');
-  const [url, setUrl] = useState('');
-  const [filePath, setFilePath] = useState('');
-  const [fileBase64, setFileBase64] = useState('');
+  const [mode, setMode] = useState<'file' | 'url'>(initial?.mode ?? 'url');
+  const [url, setUrl] = useState(initial?.mode === 'url' ? initial.url : '');
+  const [filePath, setFilePath] = useState(initial?.mode === 'file' ? initial.filePath : '');
+  const [fileBase64, setFileBase64] = useState(initial?.mode === 'file' ? initial.fileBase64 : '');
   const [downloadDir, setDownloadDir] = useState(settings?.downloadDir ?? '');
   const [paused, setPaused] = useState(false);
   const [labels, setLabels] = useState('');
@@ -37,18 +43,20 @@ export function AddTorrentDialog({ onClose }: Props) {
   const handleBrowseFile = async () => {
     // Electron: use native dialog + read file as base64
     if (api.dialogOpenFile) {
-      const res = await api.dialogOpenFile();
-      if (res.success && res.data && res.data.length > 0) {
-        const selectedPath = res.data[0];
-        setFilePath(selectedPath);
-        setMode('file');
+      const openFile = api.dialogOpenFile.bind(api);
+      const res = await guardedCall(() => openFile(), 'notification.pickerFailed');
+      const selectedPath = res?.data?.[0];
+      if (selectedPath) {
         // Read file content as base64 for metainfo
         if (api.readFileBase64) {
-          const contentRes = await api.readFileBase64(selectedPath);
-          if (contentRes.success && contentRes.data) {
-            setFileBase64(contentRes.data);
-          }
+          const readFile = api.readFileBase64.bind(api);
+          const contentRes = await guardedCall(() => readFile(selectedPath), 'notification.fileReadFailed');
+          // Without the content the add would send a local path the daemon cannot read.
+          if (!contentRes?.data) return;
+          setFileBase64(contentRes.data);
         }
+        setFilePath(selectedPath);
+        setMode('file');
       }
       return;
     }
@@ -72,8 +80,9 @@ export function AddTorrentDialog({ onClose }: Props) {
 
   const handleBrowseDir = async () => {
     if (!api.dialogOpenDirectory) return;
-    const res = await api.dialogOpenDirectory();
-    if (res.success && res.data) {
+    const openDirectory = api.dialogOpenDirectory.bind(api);
+    const res = await guardedCall(() => openDirectory(), 'notification.pickerFailed');
+    if (res?.data) {
       setDownloadDir(res.data);
       fetchFreeSpace(res.data);
     }
@@ -111,8 +120,9 @@ export function AddTorrentDialog({ onClose }: Props) {
     } else if (result.duplicate) {
       setDuplicateId(result.duplicateId ?? null);
       setError(t('dialog.errorDuplicate', { name: result.torrentName ?? '' }));
-    } else {
-      setError(result.error ?? t('dialog.errorAddFailed'));
+    } else if (!isCancelled(result.code)) {
+      const reasonKey = errorCodeKey(result.code);
+      setError(reasonKey ? t(reasonKey) : t('dialog.errorAddFailed'));
     }
     setSaving(false);
   };
@@ -128,9 +138,9 @@ export function AddTorrentDialog({ onClose }: Props) {
         return;
       }
       // Get existing torrent's trackerList
-      const getRes = await api.rpcTorrentGet(['trackerList'], [duplicateId]);
-      const torrents = (getRes.data as Record<string, unknown>)?.torrents as Record<string, unknown>[] | undefined;
-      const existing = (torrents?.[0]?.trackerList as string) ?? '';
+      // A failed read must abort: merging into an empty list would overwrite the real trackers.
+      const { trackerList } = await fetchTorrentFields<{ trackerList?: string }>(api, ['trackerList'], duplicateId);
+      const existing = trackerList ?? '';
       const existingUrls = existing.split('\n').map((s) => s.trim()).filter(Boolean);
       // Merge: add new trackers that don't already exist
       const merged = [...existingUrls];
@@ -149,8 +159,7 @@ export function AddTorrentDialog({ onClose }: Props) {
         return;
       }
       // Update the torrent's tracker list
-      await setTorrentProps([duplicateId], { trackerList: merged.join('\n') + '\n' });
-      onClose();
+      if (await setTorrentProps([duplicateId], { trackerList: merged.join('\n') + '\n' })) onClose();
     } catch {
       setError(t('dialog.errorAddFailed'));
     }
@@ -158,7 +167,7 @@ export function AddTorrentDialog({ onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
       <div className="bg-card border rounded-lg shadow-xl w-[500px]">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">{t('dialog.addTorrent')}</h2>
@@ -274,11 +283,11 @@ export function AddTorrentDialog({ onClose }: Props) {
           </label>
 
           {error && (
-            <div className="text-sm text-red-500 bg-red-50 dark:bg-red-950 p-2 rounded">
+            <div className="text-sm text-destructive-text bg-destructive/10 p-2 rounded">
               <p>{error}</p>
               {duplicateId && fileBase64 && (
                 <button
-                  className="mt-2 flex items-center gap-1 h-7 px-3 text-xs rounded border border-red-300 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-900 disabled:opacity-50"
+                  className="mt-2 flex items-center gap-1 h-7 px-3 text-xs rounded border border-destructive/40 hover:bg-destructive/10 disabled:opacity-50"
                   onClick={handleUpdateTrackers}
                   disabled={updatingTrackers}
                 >

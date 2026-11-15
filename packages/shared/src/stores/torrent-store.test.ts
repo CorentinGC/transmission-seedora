@@ -12,6 +12,7 @@ const api = {
   rpcTorrentRemove: vi.fn(),
   rpcTorrentSet: vi.fn(),
   rpcQueueMoveTop: vi.fn(),
+  rpcTorrentSetLocation: vi.fn(),
 };
 
 const torrent = (id: number) => ({ id, name: `t${id}` });
@@ -71,6 +72,19 @@ describe('torrent store failure handling', () => {
     api.rpcTorrentSet.mockResolvedValueOnce({ success: true });
     api.rpcTorrentGet.mockResolvedValue({ success: true, data: { torrents: [] } });
     expect(await useTorrentStore.getState().setTorrentProps([1], {})).toBe(true);
+  });
+
+  it('removeTorrents and moveTorrents report success to their caller', async () => {
+    api.rpcTorrentRemove.mockResolvedValueOnce({ success: false, error: 'x' });
+    expect(await useTorrentStore.getState().removeTorrents([1], false)).toBe(false);
+    api.rpcTorrentSetLocation.mockResolvedValueOnce({ success: false, error: 'x' });
+    expect(await useTorrentStore.getState().moveTorrents([1], '/d', true)).toBe(false);
+
+    api.rpcTorrentRemove.mockResolvedValueOnce({ success: true });
+    expect(await useTorrentStore.getState().removeTorrents([1], false)).toBe(true);
+    api.rpcTorrentSetLocation.mockResolvedValueOnce({ success: true });
+    api.rpcTorrentGet.mockResolvedValue({ success: true, data: { torrents: [] } });
+    expect(await useTorrentStore.getState().moveTorrents([1], '/d', true)).toBe(true);
   });
 
   it('queueMove surfaces a failed move', async () => {

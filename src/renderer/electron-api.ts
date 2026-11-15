@@ -62,5 +62,7 @@ export const electronApi: PlatformApi = {
   notificationShow: (title, body) => window.api.notificationShow(title, body),
   watcherRestart: () => window.api.watcherRestart(),
   geoipLookup: (ips) => window.api.geoipLookup(ips),
+  secretStorageEncrypted: () => window.api.secretStorageEncrypted(),
+  launchTargetsTake: () => window.api.launchTargetsTake(),
   onMenuEvent: (channel, callback) => window.api.onMenuEvent(channel, callback),
 };

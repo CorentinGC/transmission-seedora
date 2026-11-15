@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import { formatBytes, formatSpeed } from './format';
+import i18n from 'i18next';
+import { afterAll, describe, expect, it } from 'vitest';
+import { formatBytes, formatDate, formatEta, formatSpeed } from './format';
 
 describe('formatBytes', () => {
   it('formats zero and small values without decimals', () => {
@@ -22,5 +23,39 @@ describe('formatSpeed', () => {
   it('formats rates and clamps non-positive values', () => {
     expect(formatSpeed(0)).toBe('0 B/s');
     expect(formatSpeed(2048)).toBe('2.0 KB/s');
+  });
+});
+
+describe('localised formatting', () => {
+  afterAll(async () => {
+    await i18n.changeLanguage('en');
+  });
+
+  it('uses the active language for units, durations and relative dates', async () => {
+    await i18n.init({
+      lng: 'fr',
+      fallbackLng: 'en',
+      interpolation: { escapeValue: false },
+      resources: {
+        fr: {
+          translation: {
+            format: {
+              done: 'Terminé',
+              justNow: "À l'instant",
+              perSecond: '{{size}}/s',
+              unit: { b: 'o', kb: 'Ko' },
+              duration: { hours: '{{n}} h', minutes: '{{n}} min' },
+            },
+          },
+        },
+      },
+    });
+    expect(formatBytes(2048)).toBe('2.00 Ko');
+    expect(formatSpeed(0)).toBe('0 o/s');
+    expect(formatEta(0)).toBe('Terminé');
+    expect(formatEta(3720)).toBe('1 h 2 min');
+    const now = Math.floor(Date.now() / 1000);
+    expect(formatDate(now, true)).toBe("À l'instant");
+    expect(formatDate(now - 300, true)).toMatch(/5\s*min/);
   });
 });

@@ -13,7 +13,7 @@ All of Seedora's UI. Consumed by the Electron renderer and the web app through t
 
 ## Rules
 
-1. **No platform imports.** Nothing from `electron`, `node:*` or `next/*`. No `window.api`, no `import.meta.glob` outside `lib/i18n.ts`.
+1. **No platform imports.** Nothing from `electron`, `node:*` or `next/*`. No `window.api`, no `import.meta.glob` (locales are registered statically in `locales/index.ts`, the single registry for every host).
 2. **Everything platform-specific goes through `PlatformApi`.** Optional methods (`dialogOpenFile?`, `trayUpdate?`, …) are absent on web: check before calling and provide a fallback.
 3. **Check `res.success`.** `PlatformApi` returns `IpcResponse`; it does not throw. Surface failures to the user.
 4. **Every string through `t()`**, with the key added and truly translated in all 23 locales — see `docs/i18n.md`, then run `npm run i18n:check`.
@@ -21,4 +21,4 @@ All of Seedora's UI. Consumed by the Electron renderer and the web app through t
 6. **Theme tokens only** — no raw Tailwind palette colours. Check light and dark.
 7. Daemon-supplied text (torrent, file, tracker, peer names) is rendered as text, never as HTML or a link target.
 
-`types.ts` and `key-utils.ts` exist as identical copies in `src/shared/` (main process) and under `packages/shared/src/types` and `lib`: change all copies (see `docs/architecture.md`).
+`types.ts` and `key-utils.ts` live in `packages/shared/src`; identical copies still exist in `src/shared/` (main process) until bead `mi9.7` lands: change both.

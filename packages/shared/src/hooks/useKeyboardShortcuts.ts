@@ -11,7 +11,7 @@ export function isEditableTarget(target: EventTarget | null): boolean {
 }
 
 /** True when the key event target sits inside a modal dialog, which owns the keyboard. */
-export function isInsideDialog(target: EventTarget | null): boolean {
+function isInsideDialog(target: EventTarget | null): boolean {
   const el = target as Partial<HTMLElement> | null;
   return typeof el?.closest === 'function' && el.closest('[role="dialog"]') !== null;
 }
@@ -50,7 +50,7 @@ export function useKeyboardShortcuts(allVisibleIds: number[]) {
       // Cmd/Ctrl+F: focus search
       if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
         e.preventDefault();
-        const searchInput = document.querySelector<HTMLInputElement>('input[placeholder*="Search"]');
+        const searchInput = document.querySelector<HTMLInputElement>('input[data-search-input]');
         searchInput?.focus();
         return;
       }

@@ -33,7 +33,7 @@ Use Seedora directly in your browser, no installation required: **[seedora.app](
 
 Download an installer from [GitHub Releases](https://github.com/CorentinGC/transmission-seedora/releases): DMG or ZIP (macOS), Squirrel installer (Windows), deb or rpm (Linux).
 
-Builds are **unsigned and not notarized**, and there is **no auto-update**: download new versions manually.
+Builds are **unsigned and not notarized**, and there is **no auto-update**: download new versions manually. What changed in each version: [CHANGELOG.md](CHANGELOG.md).
 
 - **macOS, "App is damaged"**: Gatekeeper blocks unsigned apps. Run `xattr -cr /Applications/Seedora.app` (adjust the path to where you put the app), then open it.
 - **Windows, SmartScreen "Unknown publisher"**: click "More info", then "Run anyway".
@@ -41,7 +41,7 @@ Builds are **unsigned and not notarized**, and there is **no auto-update**: down
 
 ## Run from source
 
-Prerequisites: [Node.js](https://nodejs.org/) 20 or later (`.nvmrc` pins the version used in CI), npm 10 or later, and a Transmission daemon with RPC enabled.
+Prerequisites: [Node.js](https://nodejs.org/) 22.12 or later (`.nvmrc` pins the version used in CI and releases), npm 10 or later, and a Transmission daemon with RPC enabled.
 
 ```bash
 git clone https://github.com/CorentinGC/transmission-seedora.git
@@ -104,7 +104,7 @@ Electron 40 and Electron Forge with Vite 6; Next.js 16 (App Router); TypeScript 
 
 The hosted web app proxies RPC through server actions that validate their input, refuse loopback, private and cloud-metadata addresses by default, and keep the active server in a sealed cookie ([docs/security.md](docs/security.md)). This hardening is not released yet and has not had its final security audit. Known gaps remain: the web client keeps server passwords in `localStorage` in plaintext, web rate limits are in memory per server instance, and the desktop app still needs renderer hardening, input validation in IPC handlers and encryption of credentials on disk. The full list is in [docs/security.md](docs/security.md). Until they are fixed, use the web app only with a daemon and credentials you can afford to expose, and prefer the desktop app.
 
-Other gaps: desktop builds are unsigned and there is no auto-update. A Vitest suite and a CI workflow on pull requests exist, but some checks are still red or advisory. Progress is tracked in the beads backlog (`.beads/issues.jsonl`).
+Other gaps: desktop builds are unsigned and there is no auto-update. A Vitest suite and a CI workflow on pull requests exist; the format check is advisory until the repo-wide Prettier commit lands. Progress is tracked in the beads backlog (`.beads/issues.jsonl`).
 
 To report a vulnerability, follow [SECURITY.md](SECURITY.md). Do not open a public issue.
 

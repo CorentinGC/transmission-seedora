@@ -3,8 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Server, Plus, ChevronDown, Pencil, Trash2, Download, Upload } from 'lucide-react';
 import { useServerStore } from '../../stores/server-store';
 import { ServerFormDialog } from './ServerFormDialog';
+import { ExportPasswordsOption } from './ExportPasswordsOption';
 import type { ServerConfig } from '../../types';
 import { useApi } from '../../platform/api-context';
+import { useNotificationStore } from '../../stores/notification-store';
+import { runConfigExport } from '../../lib/config-export';
 
 export function ServerSwitcher() {
   const { t } = useTranslation();
@@ -20,20 +23,9 @@ export function ServerSwitcher() {
   const [editServer, setEditServer] = useState<ServerConfig | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [importMsg, setImportMsg] = useState<string | null>(null);
+  const [includePasswords, setIncludePasswords] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const api = useApi();
-
-  // Web fallback: download JSON as file
-  const downloadJson = (data: unknown, filename: string) => {
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   useEffect(() => {
     fetchServers();
@@ -60,31 +52,21 @@ export function ServerSwitcher() {
     }
   };
 
+  const exportJson = (options: Parameters<typeof api.configExport>[0], filename: string) =>
+    runConfigExport(api, { ...options, includePasswords }, filename);
+
   const handleExportServer = async (server: ServerConfig, e: React.MouseEvent) => {
     e.stopPropagation();
-    const res = await api.configExport({ servers: true, serverIds: [server.id] });
-    if (res.success && res.data) {
-      const filename = `${server.name.replace(/[^a-zA-Z0-9]/g, '-')}.json`;
-      if (api.dialogSaveFile) {
-        await api.dialogSaveFile({ defaultPath: filename }, JSON.stringify(res.data, null, 2));
-      } else {
-        downloadJson(res.data, filename);
-      }
-    }
     setOpen(false);
+    await exportJson({ servers: true, serverIds: [server.id] }, `${server.name.replace(/[^a-zA-Z0-9]/g, '-')}.json`);
   };
 
   const handleExportAll = async () => {
-    const res = await api.configExport({ servers: true });
-    if (res.success && res.data) {
-      if (api.dialogSaveFile) {
-        await api.dialogSaveFile({ defaultPath: 'seedora-servers.json' }, JSON.stringify(res.data, null, 2));
-      } else {
-        downloadJson(res.data, 'seedora-servers.json');
-      }
-    }
     setOpen(false);
+    await exportJson({ servers: true }, 'seedora-servers.json');
   };
+
+  const notifyImportFailed = () => useNotificationStore.getState().notify('server.importFailed');
 
   const handleImport = async () => {
     if (api.dialogOpenFile) {
@@ -102,12 +84,10 @@ export function ServerSwitcher() {
           await fetchServers();
           setTimeout(() => setImportMsg(null), 3000);
         } else {
-          setImportMsg(t('server.importFailed'));
-          setTimeout(() => setImportMsg(null), 3000);
+          notifyImportFailed();
         }
       } catch {
-        setImportMsg(t('server.importFailed'));
-        setTimeout(() => setImportMsg(null), 3000);
+        notifyImportFailed();
       }
       setOpen(false);
     } else {
@@ -131,12 +111,10 @@ export function ServerSwitcher() {
         await fetchServers();
         setTimeout(() => setImportMsg(null), 3000);
       } else {
-        setImportMsg(t('server.importFailed'));
-        setTimeout(() => setImportMsg(null), 3000);
+        notifyImportFailed();
       }
     } catch {
-      setImportMsg(t('server.importFailed'));
-      setTimeout(() => setImportMsg(null), 3000);
+      notifyImportFailed();
     }
     // Reset input so same file can be re-selected
     e.target.value = '';
@@ -164,10 +142,10 @@ export function ServerSwitcher() {
         <span
           className={`w-2 h-2 rounded-full ${
             connectionStatus === 'connected'
-              ? 'bg-green-500'
+              ? 'bg-success'
               : connectionStatus === 'error'
-                ? 'bg-red-500'
-                : 'bg-gray-400'
+                ? 'bg-destructive-text'
+                : 'bg-muted-foreground'
           }`}
         />
         <ChevronDown size={12} />
@@ -212,8 +190,8 @@ export function ServerSwitcher() {
                   <button
                     className={`p-0.5 rounded ${
                       confirmDelete === server.id
-                        ? 'text-red-500 bg-red-500/10'
-                        : 'hover:bg-red-500/10 hover:text-red-500'
+                        ? 'text-destructive-text bg-destructive/10'
+                        : 'hover:bg-destructive/10 hover:text-destructive-text'
                     }`}
                     onClick={(e) => handleDelete(server, e)}
                     title={t('server.deleteServer')}
@@ -251,8 +229,9 @@ export function ServerSwitcher() {
                 {t('server.importServers')}
               </button>
             </div>
+            <ExportPasswordsOption className="px-3 py-2 border-t" checked={includePasswords} onChange={setIncludePasswords} />
             {importMsg && (
-              <div className="px-3 py-1.5 text-xs text-green-600 bg-green-500/10 border-t">
+              <div className="px-3 py-1.5 text-xs text-success bg-success/10 border-t">
                 {importMsg}
               </div>
             )}

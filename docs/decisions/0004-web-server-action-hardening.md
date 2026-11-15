@@ -117,6 +117,8 @@ How should the public deployment be rate limited beyond the best-effort in-proce
 
 If abuse shows up and the plan does not offer firewall rate limiting, move to a shared store: Upstash Redis with `@upstash/ratelimit` through the Vercel Marketplace. That costs a dependency, a secret and an external service, so it should only be added on evidence.
 
+**Resolution (c07.18, 46b, 2026-11-15).** The platform rule cannot live in `vercel.json`; the exact CLI command and the chosen numbers are in `docs/security.md` ("Platform rate limiting"). It is a dashboard or CLI action for the project owner and is not active until performed. Bead 46b: when there is no trustworthy client identity (not on Vercel, no `SEEDORA_TRUST_PROXY_HEADERS`), the `setActiveServer` and `geoip` buckets are skipped like the per-client RPC bucket, because a shared bucket lets any third party lock the owner out of local-only work. `testServerConnection` keeps its shared bucket since it triggers outbound traffic. A client with no identity behind a trusted proxy keeps the separate `shared` key, which never collides with an identified client's key. Draining a public address's destination bucket from several IPs remains possible and is accepted, bounded by the per-client limits and the platform per-IP rule.
+
 ## Alternatives considered
 
 - **Hand-written validators instead of zod**: no dependency, but a dozen ad-hoc type guards across web and, soon, Electron IPC. zod gives one tested vocabulary and inferred types. The issue asked for it, and the dependency is small with no transitive packages.

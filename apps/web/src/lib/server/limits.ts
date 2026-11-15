@@ -34,8 +34,11 @@ async function currentClientKey(): Promise<string | null> {
 }
 
 /**
- * Takes a token from `name` for the calling client. With no trustworthy client identity the
- * per-client RPC bucket is skipped (it would merge every user), the others use a shared key.
+ * Takes a token from `name` for the calling client. With no trustworthy client identity a
+ * `skipWithoutIdentity` bucket is skipped: it would merge every user, so any third party could
+ * exhaust it and lock the owner out (bead 46b). Buckets that guard outbound traffic
+ * (`testConnection`) keep a shared key; the destination bucket and the lookup cap bound them.
+ * Local-only work (`setActiveServer`, `geoip`) is not worth that lockout.
  */
 export async function takeClientToken(name: BucketName, options: { skipWithoutIdentity?: boolean } = {}): Promise<boolean> {
   const key = await currentClientKey();

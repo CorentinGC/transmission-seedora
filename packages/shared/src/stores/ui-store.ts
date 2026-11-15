@@ -1,15 +1,20 @@
 import { create } from 'zustand';
 import { getPlatformApi } from '../platform/api-store';
+import { guardedCall } from '../lib/guarded-call';
 
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
 function debouncedPersistColumns(state: { columnVisibility: Record<string, boolean>; columnSizing: Record<string, number>; columnOrder: string[] }) {
   if (persistTimer) clearTimeout(persistTimer);
   persistTimer = setTimeout(() => {
-    getPlatformApi().prefsSet({
-      columnVisibility: state.columnVisibility,
-      columnSizing: state.columnSizing,
-      columnOrder: state.columnOrder,
-    });
+    void guardedCall(
+      () =>
+        getPlatformApi().prefsSet({
+          columnVisibility: state.columnVisibility,
+          columnSizing: state.columnSizing,
+          columnOrder: state.columnOrder,
+        }),
+      'notification.columnsSaveFailed',
+    );
   }, 500);
 }
 

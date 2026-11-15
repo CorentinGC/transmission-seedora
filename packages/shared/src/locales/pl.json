@@ -20,7 +20,8 @@
     "detailsPanel": "Przełącz panel szczegółów",
     "searchPlaceholder": "Szukaj torrentów...",
     "preferences": "Preferencje",
-    "serverSettings": "Ustawienia serwera"
+    "serverSettings": "Ustawienia serwera",
+    "clearSearch": "Wyczyść wyszukiwanie"
   },
   "statusBar": {
     "connected": "Połączono",
@@ -157,7 +158,8 @@
     "flags": "Flagi",
     "progress": "Postęp",
     "down": "Pobieranie",
-    "up": "Wysyłanie"
+    "up": "Wysyłanie",
+    "country": "Kraj"
   },
   "trackersTab": {
     "tier": "Poziom",
@@ -277,7 +279,15 @@
     "exportAll": "Eksportuj wszystko",
     "importServers": "Importuj...",
     "importSuccess": "Dodano: {{added}}, pominięto: {{skipped}}",
-    "importFailed": "Import nie powiódł się."
+    "importFailed": "Import nie powiódł się.",
+    "saveFailed": "Nie udało się zapisać serwera. Sprawdź wartości i spróbuj ponownie.",
+    "exportPasswords": "Dołącz hasła do eksportu",
+    "exportPasswordsWarning": "Hasła są zapisywane w pliku jako zwykły tekst. Zachowaj plik w prywatności.",
+    "webStorageWarning": "W wersji webowej hasła serwerów są przechowywane w tej przeglądarce bez szyfrowania. Wpisuj je tylko na zaufanym urządzeniu.",
+    "passwordStored": "Hasło zapisane. Pozostaw puste, aby je zachować.",
+    "removeStoredPassword": "Usuń zapisane hasło",
+    "removeStoredProxyPassword": "Usuń zapisane hasło proxy",
+    "secretStorageUnencrypted": "Bezpieczny magazyn nie jest dostępny w tym systemie: zapisane hasła są przechowywane na dysku bez szyfrowania."
   },
   "settings": {
     "applied": "Ustawienia zastosowane",
@@ -394,7 +404,8 @@
     "importSuccess": "Kopia zapasowa została przywrócona.",
     "saveFailed": "Nie udało się zapisać preferencji. Sprawdź wartości i spróbuj ponownie.",
     "invalidValues": "Interwał odświeżania musi wynosić co najmniej 250 ms, a ustawienia prędkości muszą być liczbami.",
-    "importFailed": "Import nie powiódł się."
+    "importFailed": "Import nie powiódł się.",
+    "removePreset": "Usuń ustawienie prędkości"
   },
   "columnMenu": {
     "setupColumns": "Konfiguruj kolumny"
@@ -405,7 +416,17 @@
     "refreshFailed": "Nie udało się odświeżyć torrentów: {{error}}",
     "statsRefreshFailed": "Nie udało się odświeżyć statystyk serwera: {{error}}",
     "unknownError": "Nieznany błąd",
-    "dismiss": "Zamknij"
+    "dismiss": "Zamknij",
+    "columnsSaveFailed": "Nie udało się zapisać układu kolumn.",
+    "serversLoadFailed": "Nie udało się wczytać listy serwerów.",
+    "serverRemoveFailed": "Nie udało się usunąć serwera.",
+    "exportFailed": "Nie udało się wyeksportować konfiguracji.",
+    "prefsLoadFailed": "Nie udało się wczytać preferencji.",
+    "pickerFailed": "Nie udało się otworzyć okna wyboru pliku lub folderu.",
+    "fileReadFailed": "Nie udało się odczytać wybranego pliku.",
+    "renameFailed": "Nie udało się zmienić nazwy torrenta.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Nie udało się otworzyć pliku ani łącza, z którym uruchomiono Seedora."
   },
   "filesTab": {
     "clickToChangePriority": "Kliknij, aby zmienić priorytet",
@@ -417,5 +438,131 @@
     "description": "Aplikacja napotkała nieoczekiwany błąd. Możesz spróbować ponownie lub przeładować okno.",
     "retry": "Spróbuj ponownie",
     "reload": "Przeładuj"
+  },
+  "format": {
+    "done": "Gotowe",
+    "justNow": "Przed chwilą",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} d",
+      "hours": "{{n}} godz.",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Plik",
+      "edit": "Edycja",
+      "view": "Widok",
+      "torrent": "Torrent",
+      "tools": "Narzędzia",
+      "help": "Pomoc",
+      "preferences": "Preferencje…",
+      "addTorrent": "Dodaj torrent…",
+      "addMagnet": "Dodaj link magnet…",
+      "toggleFilter": "Przełącz panel filtrów",
+      "toggleDetails": "Przełącz panel szczegółów",
+      "start": "Start",
+      "stop": "Zatrzymaj",
+      "verify": "Sprawdź",
+      "reannounce": "Ogłoś ponownie",
+      "startAll": "Uruchom wszystkie",
+      "stopAll": "Zatrzymaj wszystkie",
+      "remove": "Usuń…",
+      "serverSettings": "Ustawienia serwera…",
+      "rpcSpec": "Specyfikacja RPC Transmission",
+      "reportIssue": "Zgłoś problem",
+      "about": "O programie {{appName}}",
+      "hide": "Ukryj {{appName}}",
+      "hideOthers": "Ukryj pozostałe",
+      "unhide": "Pokaż wszystko",
+      "quit": "Zakończ {{appName}}",
+      "close": "Zamknij okno",
+      "undo": "Cofnij",
+      "redo": "Ponów",
+      "cut": "Wytnij",
+      "copy": "Kopiuj",
+      "paste": "Wklej",
+      "selectAll": "Zaznacz wszystko",
+      "reload": "Przeładuj",
+      "forceReload": "Wymuś przeładowanie",
+      "resetZoom": "Rzeczywisty rozmiar",
+      "zoomIn": "Powiększ",
+      "zoomOut": "Pomniejsz",
+      "toggleFullscreen": "Przełącz pełny ekran"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} aktywny transfer",
+      "activeTransfers_other": "{{count}} aktywnego transferu",
+      "enableAltSpeed": "Włącz alternatywną prędkość",
+      "disableAltSpeed": "Wyłącz alternatywną prędkość",
+      "showWindow": "Pokaż okno",
+      "quit": "Zakończ"
+    },
+    "scriptGuard": {
+      "title": "Zmienić ustawienia skryptów demona?",
+      "message": "Seedora zamierza zmienić ustawienia, które sprawiają, że demon Transmission uruchamia program na swoim serwerze.",
+      "detail": "{{changes}}\n\nKontynuuj tylko wtedy, gdy ta zmiana została wprowadzona przez Ciebie.",
+      "allow": "Zezwól",
+      "cancel": "Anuluj",
+      "declined": "Zmiana ustawień skryptów została odrzucona."
+    },
+    "exportSecrets": {
+      "title": "Uwzględnić hasła w kopii zapasowej?",
+      "message": "Plik kopii zapasowej będzie zawierać hasła do serwerów i proxy w postaci jawnego tekstu. Każdy, kto może odczytać plik, będzie mógł ich użyć.",
+      "allow": "Uwzględnij hasła",
+      "cancel": "Anuluj",
+      "declined": "Eksport haseł został odrzucony."
+    },
+    "configError": {
+      "title": "Problem z konfiguracją",
+      "corrupt": "Seedora nie mogła odczytać pliku konfiguracji i uruchomiła się z ustawieniami domyślnymi. Nieczytelny plik zapisano jako:\n{{path}}",
+      "unreadable": "Seedora nie może odczytać pliku konfiguracji. Plik pozostawiono bez zmian, a zmiany nie będą zapisywane do czasu rozwiązania problemu:\n{{path}}",
+      "passwordsLocked": "Nie udało się odszyfrować zapisanego hasła dla tych serwerów (pęk kluczy systemu może być zablokowany lub został zresetowany): {{names}}. Otwórz każdy serwer w Seedora i wpisz hasło ponownie."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Nieprawidłowe żądanie.",
+      "NO_SESSION": "Brak aktywnego serwera. Wybierz serwer i spróbuj ponownie.",
+      "SESSION_UNAVAILABLE": "Nie udało się przywrócić sesji. Sprawdź, czy pliki cookie są włączone.",
+      "RATE_LIMITED": "Zbyt wiele żądań. Spróbuj ponownie za chwilę.",
+      "HOST_NOT_ALLOWED": "Ten host jest niedozwolony.",
+      "DNS_FAILED": "Nie udało się rozpoznać nazwy hosta.",
+      "CONNECTION_FAILED": "Nie udało się połączyć z serwerem.",
+      "TIMEOUT": "Serwer nie odpowiedział na czas.",
+      "TLS_FAILED": "Bezpieczne połączenie nie powiodło się.",
+      "UNEXPECTED_REDIRECT": "Serwer odpowiedział przekierowaniem.",
+      "RESPONSE_TOO_LARGE": "Odpowiedź serwera jest zbyt duża.",
+      "AUTH_FAILED": "Uwierzytelnianie nie powiodło się. Sprawdź nazwę użytkownika i hasło.",
+      "HTTP_ERROR": "Serwer odpowiedział błędem.",
+      "SESSION_ID_REJECTED": "Serwer odrzucił identyfikator sesji.",
+      "RPC_ERROR": "Serwer zgłosił błąd.",
+      "SERVER_MISCONFIGURED": "Serwer WWW jest nieprawidłowo skonfigurowany.",
+      "SERVER_NOT_FOUND": "Nie znaleziono serwera.",
+      "IMPORT_INVALID": "Import nie powiódł się: plik nie jest prawidłową kopią zapasową Seedora."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Certyfikat serwera nie jest zaufany.",
+      "TLS_EXPIRED": "Certyfikat serwera wygasł.",
+      "TLS_HOSTNAME": "Certyfikat serwera nie pasuje do nazwy hosta.",
+      "NETWORK": "Nie można połączyć się z serwerem.",
+      "TOO_LARGE": "Odpowiedź serwera jest zbyt duża.",
+      "AUTH": "Uwierzytelnianie nie powiodło się. Sprawdź nazwę użytkownika i hasło.",
+      "INVALID_RESPONSE": "Serwer nie odpowiedział jak demon Transmission.",
+      "SESSION": "Serwer odrzucił uzgadnianie sesji.",
+      "RPC_FAILURE": "Serwer zgłosił błąd.",
+      "NO_CONNECTION": "Brak połączonego serwera.",
+      "UNKNOWN": "Wystąpił nieznany błąd."
+    }
   }
 }

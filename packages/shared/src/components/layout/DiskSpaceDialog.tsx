@@ -38,7 +38,7 @@ export function DiskSpaceDialog({ onClose }: Props) {
   const totalFree = deduped.reduce((sum, d) => sum + d.freeSpace, 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay" onClick={onClose}>
       <div
         className="bg-popover border rounded-lg shadow-xl w-[500px] max-h-[400px] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
@@ -70,7 +70,7 @@ export function DiskSpaceDialog({ onClose }: Props) {
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-blue-500 rounded-full"
+                  className="h-full bg-info rounded-full"
                   style={{ width: '100%', opacity: Math.max(0.15, 1 - detail.freeSpace / (1024 * 1024 * 1024 * 1024)) }}
                 />
               </div>

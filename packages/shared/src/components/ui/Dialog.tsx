@@ -14,7 +14,7 @@ export function Dialog({ title, onClose, width = 'w-[420px]', maxHeight, footer,
   const scrollable = !!maxHeight;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
       <div
         className={`bg-card border rounded-lg shadow-xl ${width} ${maxHeight ?? ''} ${scrollable ? 'flex flex-col' : ''} ${className}`}
         onClick={(e) => e.stopPropagation()}

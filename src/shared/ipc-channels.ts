@@ -59,11 +59,16 @@ export const IPC = {
 
   // Config export/import
   CONFIG_EXPORT: 'config:export',
+  CONFIG_SECRET_STORAGE: 'config:secret-storage',
   CONFIG_IMPORT: 'config:import',
   DIALOG_SAVE_FILE: 'dialog:save-file',
 
   // GeoIP
   GEOIP_LOOKUP: 'geoip:lookup',
+
+  // Magnet links and .torrent files opened through the OS
+  LAUNCH_TAKE: 'launch:take',
+  LAUNCH_TARGET: 'launch:target',
 
   // Main -> renderer events (native menu and tray)
   MENU_PREFERENCES: 'menu:preferences',
@@ -100,4 +105,5 @@ export const RENDERER_EVENT_CHANNELS: readonly string[] = [
   IPC.MENU_TORRENT_REMOVE,
   IPC.MENU_SETTINGS,
   IPC.TRAY_TOGGLE_ALT_SPEED,
+  IPC.LAUNCH_TARGET,
 ];

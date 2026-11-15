@@ -20,7 +20,8 @@
     "detailsPanel": "Vis/skjul detaljepanel",
     "searchPlaceholder": "Søg torrents...",
     "preferences": "Præferencer",
-    "serverSettings": "Serverindstillinger"
+    "serverSettings": "Serverindstillinger",
+    "clearSearch": "Ryd søgning"
   },
   "statusBar": {
     "connected": "Forbundet",
@@ -157,7 +158,8 @@
     "flags": "Flag",
     "progress": "Fremgang",
     "down": "Ned",
-    "up": "Op"
+    "up": "Op",
+    "country": "Land"
   },
   "trackersTab": {
     "tier": "Niveau",
@@ -179,7 +181,7 @@
     "downloadLimit": "Downloadgrænse (KB/s):",
     "uploadLimit": "Uploadgrænse (KB/s):",
     "honorSessionLimits": "Overhold sessionsgrænser",
-    "seeding": "Seeding",
+    "seeding": "Seeder",
     "ratioMode": "Ratiotilstand:",
     "idleMode": "Inaktivitetstilstand:",
     "global": "Global",
@@ -277,7 +279,15 @@
     "exportAll": "Eksportér alle",
     "importServers": "Importér...",
     "importSuccess": "{{added}} tilføjet, {{skipped}} sprunget over",
-    "importFailed": "Importen mislykkedes."
+    "importFailed": "Importen mislykkedes.",
+    "saveFailed": "Serveren kunne ikke gemmes. Kontrollér værdierne, og prøv igen.",
+    "exportPasswords": "Medtag adgangskoder i eksporten",
+    "exportPasswordsWarning": "Adgangskoder skrives i klartekst i filen. Hold filen privat.",
+    "webStorageWarning": "I webversionen gemmes serveradgangskoder ukrypteret i denne browser. Indtast dem kun på en enhed, du har tillid til.",
+    "passwordStored": "Adgangskode gemt. Lad feltet stå tomt for at beholde den.",
+    "removeStoredPassword": "Fjern gemt adgangskode",
+    "removeStoredProxyPassword": "Fjern gemt proxy-adgangskode",
+    "secretStorageUnencrypted": "Sikker lagring er ikke tilgængelig på dette system: gemte adgangskoder ligger ukrypteret på disken."
   },
   "settings": {
     "applied": "Indstillinger anvendt",
@@ -330,7 +340,7 @@
     "enableLpd": "Aktiver LPD",
     "peerLimits": "Peer-grænser",
     "global": "Globalt:",
-    "perTorrent": "Per torrent:",
+    "perTorrent": "Pr. torrent:",
     "blocklist": "Blokeringsliste",
     "enableBlocklist": "Aktiver blokeringsliste",
     "blocklistUrl": "Blokeringslistens URL",
@@ -394,7 +404,8 @@
     "importSuccess": "Sikkerhedskopien blev gendannet.",
     "saveFailed": "Indstillingerne kunne ikke gemmes. Kontroller værdierne, og prøv igen.",
     "invalidValues": "Opdateringsintervallet skal være mindst 250 ms, og hastighedsforudindstillingerne skal være tal.",
-    "importFailed": "Importen mislykkedes."
+    "importFailed": "Importen mislykkedes.",
+    "removePreset": "Fjern hastighedsforvalg"
   },
   "columnMenu": {
     "setupColumns": "Opsæt kolonner"
@@ -405,7 +416,17 @@
     "refreshFailed": "Torrents kunne ikke opdateres: {{error}}",
     "statsRefreshFailed": "Kunne ikke opdatere serverstatistik: {{error}}",
     "unknownError": "Ukendt fejl",
-    "dismiss": "Luk"
+    "dismiss": "Luk",
+    "columnsSaveFailed": "Kolonnelayoutet kunne ikke gemmes.",
+    "serversLoadFailed": "Serverlisten kunne ikke indlæses.",
+    "serverRemoveFailed": "Serveren kunne ikke fjernes.",
+    "exportFailed": "Konfigurationen kunne ikke eksporteres.",
+    "prefsLoadFailed": "Dine indstillinger kunne ikke indlæses.",
+    "pickerFailed": "Fil- eller mappevælgeren kunne ikke åbnes.",
+    "fileReadFailed": "Den valgte fil kunne ikke læses.",
+    "renameFailed": "Torrenten kunne ikke omdøbes.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Kunne ikke åbne den fil eller det link, Seedora blev startet med."
   },
   "filesTab": {
     "clickToChangePriority": "Klik for at ændre prioritet",
@@ -417,5 +438,131 @@
     "description": "Appen stødte på en uventet fejl. Du kan prøve igen eller genindlæse vinduet.",
     "retry": "Prøv igen",
     "reload": "Genindlæs"
+  },
+  "format": {
+    "done": "Færdig",
+    "justNow": "Lige nu",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} d",
+      "hours": "{{n}} t",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Filer",
+      "edit": "Rediger",
+      "view": "Vis",
+      "torrent": "Torrent",
+      "tools": "Værktøjer",
+      "help": "Hjælp",
+      "preferences": "Indstillinger…",
+      "addTorrent": "Tilføj torrent…",
+      "addMagnet": "Tilføj magnetlink…",
+      "toggleFilter": "Skift filtersidebjælke",
+      "toggleDetails": "Skift detaljepanel",
+      "start": "Start",
+      "stop": "Stop",
+      "verify": "Verificér",
+      "reannounce": "Genannoncér",
+      "startAll": "Start alle",
+      "stopAll": "Stop alle",
+      "remove": "Fjern…",
+      "serverSettings": "Serverindstillinger…",
+      "rpcSpec": "Transmission RPC-specifikation",
+      "reportIssue": "Rapportér et problem",
+      "about": "Om {{appName}}",
+      "hide": "Skjul {{appName}}",
+      "hideOthers": "Skjul andre",
+      "unhide": "Vis alle",
+      "quit": "Afslut {{appName}}",
+      "close": "Luk vindue",
+      "undo": "Fortryd",
+      "redo": "Gentag",
+      "cut": "Klip",
+      "copy": "Kopiér",
+      "paste": "Sæt ind",
+      "selectAll": "Markér alt",
+      "reload": "Genindlæs",
+      "forceReload": "Gennemtving genindlæsning",
+      "resetZoom": "Faktisk størrelse",
+      "zoomIn": "Zoom ind",
+      "zoomOut": "Zoom ud",
+      "toggleFullscreen": "Skift fuld skærm"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} aktiv overførsel",
+      "activeTransfers_other": "{{count}} aktive overførsler",
+      "enableAltSpeed": "Aktivér alternativ hastighed",
+      "disableAltSpeed": "Deaktivér alternativ hastighed",
+      "showWindow": "Vis vindue",
+      "quit": "Afslut"
+    },
+    "scriptGuard": {
+      "title": "Ændre dæmonens scriptindstillinger?",
+      "message": "Seedora er ved at ændre indstillinger, der får Transmission-dæmonen til at køre et program på sin server.",
+      "detail": "{{changes}}\n\nFortsæt kun, hvis du selv har foretaget denne ændring.",
+      "allow": "Tillad",
+      "cancel": "Annuller",
+      "declined": "Ændringen af scriptindstillingerne blev afvist."
+    },
+    "exportSecrets": {
+      "title": "Medtag adgangskoder i sikkerhedskopien?",
+      "message": "Sikkerhedskopien kommer til at indeholde dine server- og proxyadgangskoder i klartekst. Alle, der kan læse filen, kan bruge dem.",
+      "allow": "Medtag adgangskoder",
+      "cancel": "Annuller",
+      "declined": "Eksport af adgangskoderne blev afvist."
+    },
+    "configError": {
+      "title": "Konfigurationsproblem",
+      "corrupt": "Seedora kunne ikke læse sin konfigurationsfil og startede med standardindstillinger. Den ulæselige fil blev gemt som:\n{{path}}",
+      "unreadable": "Seedora kan ikke læse sin konfigurationsfil. Filen blev ikke ændret, og ændringer gemmes ikke, før problemet er løst:\n{{path}}",
+      "passwordsLocked": "Den gemte adgangskode til disse servere kunne ikke dekrypteres (systemets nøglering er måske låst eller blevet nulstillet): {{names}}. Åbn hver server i Seedora, og indtast adgangskoden igen."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Ugyldig anmodning.",
+      "NO_SESSION": "Ingen server er aktiv. Vælg en server, og prøv igen.",
+      "SESSION_UNAVAILABLE": "Sessionen kunne ikke gendannes. Kontrollér, at cookies er aktiveret.",
+      "RATE_LIMITED": "For mange anmodninger. Prøv igen om lidt.",
+      "HOST_NOT_ALLOWED": "Denne vært er ikke tilladt.",
+      "DNS_FAILED": "Værtsnavnet kunne ikke slås op.",
+      "CONNECTION_FAILED": "Kunne ikke oprette forbindelse til serveren.",
+      "TIMEOUT": "Serveren svarede ikke i tide.",
+      "TLS_FAILED": "Den sikre forbindelse mislykkedes.",
+      "UNEXPECTED_REDIRECT": "Serveren svarede med en omdirigering.",
+      "RESPONSE_TOO_LARGE": "Serverens svar er for stort.",
+      "AUTH_FAILED": "Godkendelsen mislykkedes. Kontrollér brugernavn og adgangskode.",
+      "HTTP_ERROR": "Serveren svarede med en fejl.",
+      "SESSION_ID_REJECTED": "Serveren afviste sessions-id'et.",
+      "RPC_ERROR": "Serveren rapporterede en fejl.",
+      "SERVER_MISCONFIGURED": "Webserveren er ikke konfigureret korrekt.",
+      "SERVER_NOT_FOUND": "Serveren blev ikke fundet.",
+      "IMPORT_INVALID": "Importen mislykkedes: filen er ikke en gyldig Seedora-sikkerhedskopi."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Serverens certifikat er ikke betroet.",
+      "TLS_EXPIRED": "Serverens certifikat er udløbet.",
+      "TLS_HOSTNAME": "Serverens certifikat matcher ikke værtsnavnet.",
+      "NETWORK": "Kunne ikke nå serveren.",
+      "TOO_LARGE": "Serverens svar er for stort.",
+      "AUTH": "Godkendelsen mislykkedes. Kontrollér brugernavn og adgangskode.",
+      "INVALID_RESPONSE": "Serveren svarede ikke som en Transmission-dæmon.",
+      "SESSION": "Serveren afviste sessionshåndtrykket.",
+      "RPC_FAILURE": "Serveren rapporterede en fejl.",
+      "NO_CONNECTION": "Ingen server er forbundet.",
+      "UNKNOWN": "Der opstod en ukendt fejl."
+    }
   }
 }

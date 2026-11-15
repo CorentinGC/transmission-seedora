@@ -6,7 +6,12 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 type Handler = (event: unknown, ...args: unknown[]) => Promise<{ success: boolean; error?: string; data?: unknown }>;
 const handlers = new Map<string, Handler>();
 
-vi.mock('electron', () => ({ ipcMain: { handle: (channel: string, fn: Handler) => handlers.set(channel, fn), on: vi.fn() } }));
+const dialogMock = vi.hoisted(() => ({ showMessageBox: vi.fn(), showSaveDialog: vi.fn() }));
+vi.mock('electron', () => ({
+  ipcMain: { handle: (channel: string, fn: Handler) => handlers.set(channel, fn), on: vi.fn() },
+  dialog: dialogMock,
+  BrowserWindow: { fromWebContents: () => null },
+}));
 
 const store = vi.hoisted(() => ({
   getServers: vi.fn(),
@@ -14,6 +19,7 @@ const store = vi.hoisted(() => ({
   updateServer: vi.fn(),
   removeServer: vi.fn(),
   setActiveServerId: vi.fn(),
+  isSecretStorageEncrypted: vi.fn(),
   getPreferences: vi.fn(),
   updatePreferences: vi.fn(),
 }));
@@ -22,6 +28,7 @@ const manager = vi.hoisted(() => ({ refreshClient: vi.fn(), removeClient: vi.fn(
 vi.mock('../rpc/connection-manager', () => ({ connectionManager: manager }));
 
 const { IPC } = await import('@shared/ipc-channels');
+const { RpcError } = await import('../rpc/client');
 const { approvedPaths } = await import('../security/approved-paths');
 const { applyImport, isWatchFolderAllowed, registerConfigHandlers } = await import('./config-handlers');
 
@@ -209,5 +216,113 @@ describe('SERVER_TEST', () => {
   it('leaves allowSelfSigned unset (strict TLS) when the flag is not submitted', async () => {
     await call(IPC.SERVER_TEST, { ...server, useSSL: true });
     expect(manager.createTemporaryClient.mock.calls[0]?.[0].allowSelfSigned).toBeUndefined();
+  });
+});
+
+const secretServer = { id: 's1', ...server, username: 'u', password: 'pw', proxyType: 'http' as const, proxyHost: 'p', proxyPort: 3128, proxyPassword: 'ppw' };
+
+describe('passwords never reach the renderer', () => {
+  it('SERVER_LIST returns servers without passwords, with has-flags', async () => {
+    store.getServers.mockReturnValue([{ ...secretServer, hasPassword: true, hasProxyPassword: true }]);
+    const res = await call(IPC.SERVER_LIST);
+    expect(JSON.stringify(res)).not.toContain('"pw"');
+    expect(JSON.stringify(res)).not.toContain('ppw');
+    expect(res.data).toEqual([expect.objectContaining({ id: 's1', username: 'u', hasPassword: true, hasProxyPassword: true })]);
+  });
+
+  it('SERVER_ADD stores the password but does not return it', async () => {
+    const res = await call(IPC.SERVER_ADD, { ...server, password: 'pw' });
+    expect(store.addServer).toHaveBeenCalledWith(expect.objectContaining({ password: 'pw' }));
+    expect(JSON.stringify(res)).not.toContain('pw');
+    expect(res.data).toMatchObject({ hasPassword: true });
+  });
+
+  it('accepts a listed server echoed back with its has-flags, without storing them', async () => {
+    store.getServers.mockReturnValue([secretServer]);
+    expect((await call(IPC.SERVER_UPDATE, 's1', { name: 'x', hasPassword: true, hasProxyPassword: false })).success).toBe(true);
+    expect(store.updateServer).toHaveBeenCalledWith('s1', { name: 'x' });
+    expect((await call(IPC.SERVER_ADD, { ...server, hasPassword: true })).success).toBe(true);
+    expect(store.addServer.mock.calls[0]?.[0]).not.toHaveProperty('hasPassword');
+  });
+});
+
+describe('SERVER_TEST credentials and errors', () => {
+  const request = vi.fn();
+  beforeEach(() => {
+    request.mockReset().mockResolvedValue({});
+    manager.createTemporaryClient.mockReturnValue({ request });
+    store.getServers.mockReturnValue([secretServer]);
+  });
+
+  it('uses the stored password when editing a server whose endpoint is unchanged', async () => {
+    await call(IPC.SERVER_TEST, { ...server, id: 's1', username: 'u', proxyType: 'http', proxyHost: 'p', proxyPort: 3128 });
+    expect(manager.createTemporaryClient).toHaveBeenCalledWith(expect.objectContaining({ password: 'pw', proxyPassword: 'ppw' }));
+  });
+
+  it('does not send the stored password to a different host', async () => {
+    await call(IPC.SERVER_TEST, { ...server, id: 's1', host: 'evil.example' });
+    expect(manager.createTemporaryClient.mock.calls[0]?.[0].password).toBeUndefined();
+  });
+
+  it('returns the code and credential-free message of an RpcError', async () => {
+    request.mockRejectedValue(new RpcError('AUTH', 'HTTP 401: Unauthorized'));
+    expect(await call(IPC.SERVER_TEST, server)).toEqual({ success: false, error: 'HTTP 401: Unauthorized', code: 'AUTH' });
+  });
+
+  it('never returns the text of an unexpected error', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    request.mockRejectedValue(new Error('failed for user:s3cret@proxy'));
+    const res = await call(IPC.SERVER_TEST, { ...server, password: 's3cret' });
+    expect(res).toEqual({ success: false, error: 'Request failed', code: 'UNKNOWN' });
+    expect(JSON.stringify(res)).not.toContain('s3cret');
+  });
+});
+
+describe('CONFIG_EXPORT', () => {
+  beforeEach(() => {
+    store.getServers.mockReturnValue([{ ...secretServer, hasPassword: true, hasProxyPassword: true }]);
+    dialogMock.showMessageBox.mockReset();
+  });
+
+  it('omits passwords and flags by default and does not ask', async () => {
+    const res = await call(IPC.CONFIG_EXPORT, { servers: true });
+    const [exported] = (res.data as { servers: Array<Record<string, unknown>> }).servers;
+    expect(exported).toMatchObject({ username: 'u' });
+    expect(exported).not.toHaveProperty('password');
+    expect(exported).not.toHaveProperty('proxyPassword');
+    expect(exported).not.toHaveProperty('hasPassword');
+    expect(dialogMock.showMessageBox).not.toHaveBeenCalled();
+  });
+
+  it('writes passwords to a main-chosen file after confirmation and returns no data', async () => {
+    const target = path.join(dir, 'backup.json');
+    dialogMock.showMessageBox.mockResolvedValue({ response: 1 });
+    dialogMock.showSaveDialog.mockResolvedValue({ canceled: false, filePath: target });
+    const res = await call(IPC.CONFIG_EXPORT, { servers: true, includePasswords: true });
+    expect(res).toEqual({ success: true });
+    expect((JSON.parse(fs.readFileSync(target, 'utf-8')) as { servers: Array<Record<string, unknown>> }).servers[0]).toMatchObject({ password: 'pw', proxyPassword: 'ppw' });
+    if (process.platform !== 'win32') expect(fs.statSync(target).mode & 0o777).toBe(0o600);
+  });
+
+  it('returns CANCELLED and writes nothing when the save dialog is dismissed', async () => {
+    dialogMock.showMessageBox.mockResolvedValue({ response: 1 });
+    dialogMock.showSaveDialog.mockResolvedValue({ canceled: true });
+    const res = await call(IPC.CONFIG_EXPORT, { servers: true, includePasswords: true });
+    expect(res).toMatchObject({ success: false, code: 'CANCELLED' });
+    expect(res).not.toHaveProperty('data');
+  });
+
+  it('refuses when the user declines, exporting nothing', async () => {
+    dialogMock.showMessageBox.mockResolvedValue({ response: 0 });
+    const res = await call(IPC.CONFIG_EXPORT, { servers: true, includePasswords: true });
+    expect(res).toMatchObject({ success: false, code: 'CANCELLED' });
+    expect(JSON.stringify(res)).not.toContain('pw');
+  });
+});
+
+describe('secret storage status', () => {
+  it('reports whether passwords are encrypted', async () => {
+    store.isSecretStorageEncrypted.mockReturnValue(false);
+    expect(await call(IPC.CONFIG_SECRET_STORAGE)).toEqual({ success: true, data: false });
   });
 });

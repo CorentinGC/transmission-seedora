@@ -25,8 +25,26 @@ export function OptionsTab({ torrent: tor }: Props) {
   const [sequentialDownload, setSequentialDownload] = useState(tor.sequentialDownload);
   const [labelsText, setLabelsText] = useState(tor.labels?.join(', ') ?? '');
 
-  const apply = () => {
-    setTorrentProps([tor.id], {
+  /** Puts every field back to the values the daemon last reported for this torrent. */
+  const revert = () => {
+    setDownloadLimit(tor.downloadLimit);
+    setDownloadLimited(tor.downloadLimited);
+    setUploadLimit(tor.uploadLimit);
+    setUploadLimited(tor.uploadLimited);
+    setSeedRatioLimit(tor.seedRatioLimit);
+    setSeedRatioMode(tor.seedRatioMode);
+    setSeedIdleLimit(tor.seedIdleLimit);
+    setSeedIdleMode(tor.seedIdleMode);
+    setPeerLimit(tor.peerLimit);
+    setBandwidthPriority(tor.bandwidthPriority);
+    setHonorsSessionLimits(tor.honorsSessionLimits);
+    setSequentialDownload(tor.sequentialDownload);
+    setLabelsText(tor.labels?.join(', ') ?? '');
+  };
+
+  const apply = async () => {
+    // The store notifies the user of a failure; the form must not keep showing values the daemon refused.
+    const ok = await setTorrentProps([tor.id], {
       downloadLimit,
       downloadLimited,
       uploadLimit,
@@ -41,6 +59,7 @@ export function OptionsTab({ torrent: tor }: Props) {
       sequentialDownload,
       labels: labelsText.split(',').map((l) => l.trim()).filter(Boolean),
     });
+    if (!ok) revert();
   };
 
   return (

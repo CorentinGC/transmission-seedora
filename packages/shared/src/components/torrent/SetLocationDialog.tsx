@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useApi } from '../../platform/api-context';
+import { guardedCall } from '../../lib/guarded-call';
 
 interface Props {
   ids: number[];
@@ -19,19 +20,19 @@ export function SetLocationDialog({ ids, currentLocation, onClose }: Props) {
 
   const handleBrowse = async () => {
     if (!api.dialogOpenDirectory) return;
-    const res = await api.dialogOpenDirectory();
-    if (res.success && res.data) setLocation(res.data);
+    const openDirectory = api.dialogOpenDirectory.bind(api);
+    const res = await guardedCall(() => openDirectory(), 'notification.pickerFailed');
+    if (res?.data) setLocation(res.data);
   };
 
   const handleApply = async () => {
     if (location.trim()) {
-      await moveTorrents(ids, location.trim(), move);
-      onClose();
+      if (await moveTorrents(ids, location.trim(), move)) onClose();
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
       <div className="bg-card border rounded-lg shadow-xl w-[420px]">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">{t('dialog.setLocation')}</h2>

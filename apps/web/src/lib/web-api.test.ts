@@ -149,7 +149,7 @@ describe('webApi.serverSetActive', () => {
 
 describe('webApi.serverUpdate', () => {
   it('re-seals the cookie with the new target when the active server is edited', async () => {
-    expect(await webApi.serverUpdate('a', { host: ' new.example.com ', port: 1234, path: 'rpc', username: 'u', password: 'p', allowSelfSigned: true } as never)).toEqual({ success: true });
+    expect(await webApi.serverUpdate('a', { host: ' new.example.com ', port: 1234, path: 'rpc', username: 'u', password: 'p', allowSelfSigned: true } as never)).toMatchObject({ success: true });
     expect(storage.servers[0]).toMatchObject({ host: ' new.example.com ', port: 1234 });
     expect(actions.setActiveServerCookie).toHaveBeenCalledTimes(1);
     expect(actions.setActiveServerCookie).toHaveBeenCalledWith({
@@ -159,7 +159,7 @@ describe('webApi.serverUpdate', () => {
 
   it('does not touch the cookie when another server is edited', async () => {
     storage.servers = [server, { ...server, id: 'b' }];
-    expect(await webApi.serverUpdate('b', { host: 'x.example.com' })).toEqual({ success: true });
+    expect(await webApi.serverUpdate('b', { host: 'x.example.com' })).toMatchObject({ success: true });
     expect(actions.setActiveServerCookie).not.toHaveBeenCalled();
   });
 
@@ -208,7 +208,7 @@ describe('webApi fail-closed re-seal', () => {
 });
 
 describe('webApi.configImport', () => {
-  const INVALID = { success: false, error: 'Import failed: invalid file' };
+  const INVALID = { success: false, error: 'Import failed: invalid file', code: 'IMPORT_INVALID' };
   const fresh = { name: 'B', host: 'b.example.com', port: 9091, path: '/transmission/rpc', useSSL: false };
 
   it('adds new servers with a fresh id, strips allowSelfSigned and reports counts', async () => {
@@ -295,5 +295,141 @@ describe('webApi.geoipLookup', () => {
   it('returns the first failure', async () => {
     actions.geoipLookup.mockResolvedValue({ success: false, error: 'Too many requests', code: 'RATE_LIMITED' });
     expect(await webApi.geoipLookup!(['8.8.8.8'])).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+  });
+});
+
+describe('webApi configExport (c07.8)', () => {
+  const withSecrets = { ...server, username: 'alice', password: 'hunter2', proxyType: 'http', proxyPassword: 'proxy-secret' };
+
+  it('omits server and proxy passwords by default, keeping usernames', async () => {
+    storage.servers = [withSecrets];
+    const res = await webApi.configExport({ servers: true });
+    const [exported] = (res.data as { servers: Record<string, unknown>[] }).servers;
+    expect(exported).toMatchObject({ host: 'nas.example.com', username: 'alice' });
+    expect(exported).not.toHaveProperty('password');
+    expect(exported).not.toHaveProperty('proxyPassword');
+    expect(JSON.stringify(res)).not.toContain('hunter2');
+    expect(JSON.stringify(res)).not.toContain('proxy-secret');
+  });
+
+  it('includes passwords only with the exact opt-in', async () => {
+    storage.servers = [withSecrets];
+    for (const includePasswords of [undefined, false, 'true', 1]) {
+      const res = await webApi.configExport({ servers: true, includePasswords } as never);
+      expect(JSON.stringify(res)).not.toContain('hunter2');
+    }
+    const res = await webApi.configExport({ servers: true, includePasswords: true } as never);
+    const [exported] = (res.data as { servers: Record<string, unknown>[] }).servers;
+    expect(exported).toMatchObject({ password: 'hunter2', proxyPassword: 'proxy-secret' });
+  });
+
+  it('does not mutate the stored servers and still honours serverIds', async () => {
+    storage.servers = [withSecrets, { ...withSecrets, id: 'b' }];
+    const res = await webApi.configExport({ servers: true, serverIds: ['b'] });
+    expect((res.data as { servers: { id: string }[] }).servers.map((s) => s.id)).toEqual(['b']);
+    expect(storage.servers[0]).toHaveProperty('password', 'hunter2');
+  });
+});
+
+describe('webApi failures carry a code the UI can translate (q45)', () => {
+  it('flags an unknown server id with SERVER_NOT_FOUND on update and activation', async () => {
+    const expected = { success: false, error: 'Server not found', code: 'SERVER_NOT_FOUND' };
+    expect(await webApi.serverUpdate('missing', { name: 'x' })).toEqual(expected);
+    expect(await webApi.serverSetActive('missing')).toEqual(expected);
+  });
+
+  it('flags unserialisable RPC arguments with INVALID_INPUT', async () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    expect(await webApi.rpcTorrentSet([1], circular)).toMatchObject({ success: false, code: 'INVALID_INPUT' });
+    expect(actions.rpcRequest).not.toHaveBeenCalled();
+  });
+
+  it('passes the code of a server action failure through unchanged', async () => {
+    actions.rpcRequest.mockResolvedValue({ success: false, error: 'Too many requests, try again shortly', code: 'RATE_LIMITED' });
+    expect(await webApi.rpcSessionGet()).toEqual({ success: false, error: 'Too many requests, try again shortly', code: 'RATE_LIMITED' });
+  });
+});
+
+describe('webApi.serverUpdate credentials', () => {
+  const secret = { ...server, username: 'alice', password: 'hunter2', proxyType: 'http', proxyPassword: 'proxy-pw' };
+  const sealedPassword = () => actions.setActiveServerCookie.mock.calls.at(-1)?.[0].password;
+
+  it('keeps the stored password when the patch has none, an empty one or undefined; twice in a row', async () => {
+    storage.servers = [secret];
+    await webApi.serverUpdate('a', { name: 'B', password: '' });
+    await webApi.serverUpdate('a', { name: 'C', password: undefined, proxyPassword: '' });
+    expect(storage.servers[0]).toMatchObject({ name: 'C', password: 'hunter2', proxyPassword: 'proxy-pw' });
+    expect(sealedPassword()).toBe('hunter2');
+  });
+
+  it('does not let an undefined field erase another one', async () => {
+    storage.servers = [secret];
+    await webApi.serverUpdate('a', { username: undefined, host: 'x.example.com' });
+    expect(storage.servers[0]).toMatchObject({ username: 'alice', host: 'x.example.com' });
+  });
+
+  it('replaces the password when a non-empty one is given', async () => {
+    storage.servers = [secret];
+    await webApi.serverUpdate('a', { password: 'new' });
+    expect(storage.servers[0]).toMatchObject({ password: 'new', proxyPassword: 'proxy-pw' });
+    expect(sealedPassword()).toBe('new');
+  });
+
+  it('clears the password only with an explicit clearPassword, and the proxy one with clearProxyPassword', async () => {
+    storage.servers = [secret];
+    await webApi.serverUpdate('a', { clearPassword: true } as never);
+    expect(storage.servers[0]).not.toHaveProperty('password');
+    expect(storage.servers[0]).toHaveProperty('proxyPassword', 'proxy-pw');
+    expect(sealedPassword()).toBeUndefined();
+    await webApi.serverUpdate('a', { clearProxyPassword: true } as never);
+    expect(storage.servers[0]).not.toHaveProperty('proxyPassword');
+  });
+
+  it('never stores the clear flags, and clear wins over a password in the same patch', async () => {
+    storage.servers = [secret];
+    await webApi.serverUpdate('a', { clearPassword: true, password: 'x' } as never);
+    expect(storage.servers[0]).not.toHaveProperty('clearPassword');
+    expect(storage.servers[0]).not.toHaveProperty('password');
+    await webApi.serverUpdate('a', { clearPassword: 'yes' } as never);
+    expect(storage.servers[0]).not.toHaveProperty('clearPassword');
+  });
+
+  it('rolls back to the previous entry, password included, when the re-seal is refused', async () => {
+    storage.servers = [secret];
+    actions.setActiveServerCookie.mockResolvedValue({ success: false, error: 'x', code: 'INVALID_INPUT' });
+    await webApi.serverUpdate('a', { clearPassword: true, host: 'x.example.com' } as never);
+    expect(storage.servers[0]).toMatchObject({ password: 'hunter2', host: 'nas.example.com' });
+  });
+});
+
+describe('webApi password flags', () => {
+  const secret = { ...server, password: 'hunter2', proxyPassword: 'proxy-pw' };
+
+  it('serverList derives hasPassword and hasProxyPassword, keeping the passwords for the form', async () => {
+    storage.servers = [secret, { ...server, id: 'b', password: '' }];
+    const res = await webApi.serverList();
+    expect(res.data).toMatchObject([
+      { id: 'a', password: 'hunter2', hasPassword: true, hasProxyPassword: true },
+      { id: 'b', hasPassword: false, hasProxyPassword: false },
+    ]);
+  });
+
+  it('serverAdd returns the flags but never stores them or the clear flags', async () => {
+    const res = await webApi.serverAdd({ ...server, password: 'pw', hasPassword: false, clearPassword: true } as never);
+    expect(res.data).toMatchObject({ password: 'pw', hasPassword: true, hasProxyPassword: false });
+    const stored = storage.servers.at(-1)!;
+    expect(stored).toHaveProperty('password', 'pw');
+    expect(stored).not.toHaveProperty('hasPassword');
+    expect(stored).not.toHaveProperty('clearPassword');
+  });
+
+  it('serverUpdate returns the updated server with consistent flags and stores none of them', async () => {
+    storage.servers = [secret];
+    const cleared = await webApi.serverUpdate('a', { clearPassword: true, hasPassword: true } as never);
+    expect(cleared.data).toMatchObject({ hasPassword: false, hasProxyPassword: true });
+    expect(storage.servers[0]).not.toHaveProperty('hasPassword');
+    const set = await webApi.serverUpdate('a', { password: 'again' });
+    expect(set.data).toMatchObject({ hasPassword: true, password: 'again' });
   });
 });

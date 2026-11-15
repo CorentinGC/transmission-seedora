@@ -20,6 +20,12 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-success: hsl(var(--success));
+  --color-destructive-text: hsl(var(--destructive-text));
+  --color-warning: hsl(var(--warning));
+  --color-info: hsl(var(--info));
+  --color-info-alt: hsl(var(--info-alt));
+  --color-overlay: hsl(0 0% 0% / 0.5);
 }
 
 :root {
@@ -42,6 +48,11 @@
   --border: 240 5.9% 90%;
   --input: 240 5.9% 90%;
   --ring: 240 5.9% 10%;
+  --success: 142 72% 29%;
+  --destructive-text: 0 72% 45%;
+  --warning: 32 95% 34%;
+  --info: 217 91% 40%;
+  --info-alt: 192 91% 30%;
   --radius: 0.5rem;
 }
 
@@ -65,6 +76,11 @@
   --border: 240 3.7% 15.9%;
   --input: 240 3.7% 15.9%;
   --ring: 240 4.9% 83.9%;
+  --success: 142 69% 58%;
+  --destructive-text: 0 91% 71%;
+  --warning: 43 96% 56%;
+  --info: 213 94% 68%;
+  --info-alt: 188 86% 60%;
 }
 
 * {

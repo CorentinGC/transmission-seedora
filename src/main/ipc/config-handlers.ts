@@ -1,9 +1,14 @@
 import { randomUUID } from 'node:crypto';
+import { BrowserWindow, dialog } from 'electron';
 import { z } from 'zod';
 import { IPC } from '@shared/ipc-channels';
 import type { IpcResponse, ServerConfig, AppPreferences } from '@shared/types';
+import { writeFileAtomic } from '../store/atomic-write';
 import { configStore } from '../store/config-store';
+import { t, setLanguage } from '../i18n/main-i18n';
 import { connectionManager } from '../rpc/connection-manager';
+import { toIpcError } from '../rpc/to-ipc-error';
+import { resolveTestServer, toPublicServer, withoutSecrets, withSecrets } from '../security/server-credentials';
 import { approvedPaths, ApprovedPathError } from '../security/approved-paths';
 import { handleGuarded, type SenderValidator } from '../security/ipc-guard';
 import {
@@ -67,10 +72,26 @@ export function applyImport(data: ImportData): IpcResponse {
     // A backup must not be able to point the watcher at an arbitrary folder.
     const { watchFolder: _ignored, ...safePrefs } = data.preferences;
     configStore.updatePreferences(safePrefs);
+    if (safePrefs.language !== undefined) setLanguage(safePrefs.language);
     prefsImported = true;
   }
 
   return { success: true, data: { serversAdded, serversSkipped, prefsImported } };
+}
+
+/** Native confirmation before a backup with clear-text passwords is handed to the renderer (default: cancel). */
+async function confirmPasswordExport(window: BrowserWindow | null): Promise<boolean> {
+  const options: Electron.MessageBoxOptions = {
+    type: 'warning',
+    buttons: [t('native.exportSecrets.cancel'), t('native.exportSecrets.allow')],
+    defaultId: 0,
+    cancelId: 0,
+    noLink: true,
+    title: t('native.exportSecrets.title'),
+    message: t('native.exportSecrets.message'),
+  };
+  const result = window ? await dialog.showMessageBox(window, options) : await dialog.showMessageBox(options);
+  return result.response === 1;
 }
 
 /** Registers server, preference and backup import/export channels. */
@@ -78,13 +99,15 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
   const none = z.tuple([]);
 
   handleGuarded(isTrusted, IPC.SERVER_LIST, none, (): IpcResponse<ServerConfig[]> => {
-    return { success: true, data: configStore.getServers() };
+    return { success: true, data: configStore.getServers().map(toPublicServer) };
   });
+
+  handleGuarded(isTrusted, IPC.CONFIG_SECRET_STORAGE, none, (): IpcResponse<boolean> => ({ success: true, data: configStore.isSecretStorageEncrypted() }));
 
   handleGuarded(isTrusted, IPC.SERVER_ADD, z.tuple([newServerSchema]), (_e, [config]): IpcResponse<ServerConfig> => {
     const server: ServerConfig = { ...config, id: randomUUID() };
     configStore.addServer(server);
-    return { success: true, data: server };
+    return { success: true, data: toPublicServer(server) };
   });
 
   handleGuarded(isTrusted, IPC.SERVER_UPDATE, z.tuple([serverIdSchema, serverUpdateSchema]), (_e, [id, updates]): IpcResponse => {
@@ -113,12 +136,12 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
 
   handleGuarded(isTrusted, IPC.SERVER_TEST, z.tuple([testServerSchema]), async (_e, [config]): Promise<IpcResponse> => {
     try {
-      const testConfig: ServerConfig = { ...config, id: config.id ?? 'test' };
-      const client = connectionManager.createTemporaryClient(testConfig);
+      const stored = config.id ? configStore.getServers().find(s => s.id === config.id) : undefined;
+      const client = connectionManager.createTemporaryClient(resolveTestServer(config, stored));
       await client.request('session-get');
       return { success: true };
     } catch (err) {
-      return { success: false, error: (err as Error).message };
+      return toIpcError(err);
     }
   });
 
@@ -131,20 +154,40 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
       return { success: false, error: 'Watch folder must be chosen with the folder dialog' };
     }
     configStore.updatePreferences(prefs);
+    if (prefs.language !== undefined) setLanguage(prefs.language);
     return { success: true };
   });
 
-  handleGuarded(isTrusted, IPC.CONFIG_EXPORT, z.tuple([exportOptionsSchema]), (_e, [options]): IpcResponse => {
+  handleGuarded(isTrusted, IPC.CONFIG_EXPORT, z.tuple([exportOptionsSchema]), async (event, [options]): Promise<IpcResponse> => {
+    // Passwords leave main only after the user approves it in a native dialog the renderer cannot answer.
+    const includePasswords = options.includePasswords === true;
+    if (includePasswords && !(await confirmPasswordExport(BrowserWindow.fromWebContents(event.sender)))) {
+      return { success: false, error: t('native.exportSecrets.declined'), code: 'CANCELLED' };
+    }
     const result: Record<string, unknown> = { version: 1, exportedAt: new Date().toISOString() };
     if (options.servers !== false) {
       const allServers = configStore.getServers();
       const wanted = options.serverIds;
-      result.servers = wanted ? allServers.filter(s => wanted.includes(s.id)) : allServers;
+      const selected = wanted ? allServers.filter(s => wanted.includes(s.id)) : allServers;
+      result.servers = selected.map(includePasswords ? withSecrets : withoutSecrets);
     }
     if (options.preferences) {
       result.preferences = configStore.getPreferences();
     }
-    return { success: true, data: result };
+    if (!includePasswords) return { success: true, data: result };
+
+    // Secrets never cross IPC: main picks the destination itself and writes the file.
+    const window = BrowserWindow.fromWebContents(event.sender);
+    const saveOptions: Electron.SaveDialogOptions = { defaultPath: 'seedora-config.json', filters: [{ name: 'JSON', extensions: ['json'] }] };
+    const picked = window ? await dialog.showSaveDialog(window, saveOptions) : await dialog.showSaveDialog(saveOptions);
+    if (picked.canceled || !picked.filePath) return { success: false, error: t('native.exportSecrets.declined'), code: 'CANCELLED' };
+    try {
+      writeFileAtomic(picked.filePath, JSON.stringify(result, null, 2));
+    } catch (err) {
+      console.error('[Export] Write failed:', err instanceof Error ? err.name : 'unknown error');
+      return { success: false, error: 'Export failed' };
+    }
+    return { success: true };
   });
 
   // Data is either the parsed JSON itself or { filePath } of a dialog-approved file.

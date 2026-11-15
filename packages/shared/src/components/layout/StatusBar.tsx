@@ -30,7 +30,7 @@ export function StatusBar() {
       <div className="flex items-center gap-1" title={connectionStatus === 'error' ? connectionError ?? undefined : undefined}>
         <span
           className={`w-2 h-2 rounded-full ${
-            isConnected ? 'bg-green-500' : connectionStatus === 'error' ? 'bg-red-500' : 'bg-gray-400'
+            isConnected ? 'bg-success' : connectionStatus === 'error' ? 'bg-destructive-text' : 'bg-muted-foreground'
           }`}
         />
         <span>{isConnected ? t('statusBar.connected') : connectionStatus === 'connecting' ? t('statusBar.connecting') : connectionStatus === 'error' ? t('statusBar.connectionError') : t('statusBar.disconnected')}</span>
@@ -42,14 +42,14 @@ export function StatusBar() {
             className="flex items-center gap-1 cursor-pointer hover:bg-accent px-1 rounded"
             onContextMenu={(e) => { e.preventDefault(); setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'down' }); }}
           >
-            <ArrowDown size={12} className="text-blue-500" />
+            <ArrowDown size={12} className="text-info" />
             <span>{formatSpeed(stats.downloadSpeed)}</span>
           </div>
           <div
             className="flex items-center gap-1 cursor-pointer hover:bg-accent px-1 rounded"
             onContextMenu={(e) => { e.preventDefault(); setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'up' }); }}
           >
-            <ArrowUp size={12} className="text-green-500" />
+            <ArrowUp size={12} className="text-success" />
             <span>{formatSpeed(stats.uploadSpeed)}</span>
           </div>
           <div className="text-muted-foreground">
@@ -57,7 +57,7 @@ export function StatusBar() {
           </div>
 
           <button
-            className={`flex items-center gap-1 px-1 rounded hover:bg-accent ${altSpeedEnabled ? 'text-blue-500' : ''}`}
+            className={`flex items-center gap-1 px-1 rounded hover:bg-accent ${altSpeedEnabled ? 'text-info' : ''}`}
             onClick={toggleAltSpeed}
             title={altSpeedEnabled ? t('statusBar.disableAltSpeed') : t('statusBar.enableAltSpeed')}
           >

@@ -20,6 +20,9 @@ export const ERROR_CODES = [
   'SESSION_ID_REJECTED',
   'RPC_ERROR',
   'SERVER_MISCONFIGURED',
+  // Raised by the client-side web API, never by a server action.
+  'SERVER_NOT_FOUND',
+  'IMPORT_INVALID',
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -42,6 +45,8 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   SESSION_ID_REJECTED: 'The server rejected the session id',
   RPC_ERROR: 'The server reported an error',
   SERVER_MISCONFIGURED: 'The web server is not configured correctly',
+  SERVER_NOT_FOUND: 'Server not found',
+  IMPORT_INVALID: 'Import failed: invalid file',
 };
 
 /** Error carrying only a code; its message is the fixed text for that code. */
