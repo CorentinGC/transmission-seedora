@@ -25,6 +25,7 @@
     "connected": "Підключено",
     "connecting": "Підключення...",
     "disconnected": "Відключено",
+    "connectionError": "Помилка підключення",
     "activeTotal": "{{active}} активних / {{total}} всього",
     "disableAltSpeed": "Вимкнути альт. швидкість",
     "enableAltSpeed": "Увімкнути альт. швидкість",

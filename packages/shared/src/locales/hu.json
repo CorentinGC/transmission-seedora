@@ -25,6 +25,7 @@
     "connected": "Csatlakozva",
     "connecting": "Csatlakozás...",
     "disconnected": "Leválasztva",
+    "connectionError": "Kapcsolódási hiba",
     "activeTotal": "{{active}} aktív / {{total}} összesen",
     "disableAltSpeed": "Alt. sebesség kikapcsolása",
     "enableAltSpeed": "Alt. sebesség bekapcsolása",

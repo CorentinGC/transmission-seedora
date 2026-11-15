@@ -26,6 +26,7 @@
     "connected": "Connected",
     "connecting": "Connecting...",
     "disconnected": "Disconnected",
+    "connectionError": "Connection error",
     "activeTotal": "{{active}} active / {{total}} total",
     "disableAltSpeed": "Disable alt speed",
     "enableAltSpeed": "Enable alt speed",

@@ -25,6 +25,7 @@
     "connected": "Forbundet",
     "connecting": "Forbinder...",
     "disconnected": "Afbrudt",
+    "connectionError": "Forbindelsesfejl",
     "activeTotal": "{{active}} aktive / {{total}} i alt",
     "disableAltSpeed": "Deaktiver alternativ hastighed",
     "enableAltSpeed": "Aktiver alternativ hastighed",

@@ -25,6 +25,7 @@
     "connected": "已连接",
     "connecting": "连接中...",
     "disconnected": "已断开",
+    "connectionError": "连接错误",
     "activeTotal": "{{active}} 活动 / {{total}} 总计",
     "disableAltSpeed": "关闭备用速度",
     "enableAltSpeed": "开启备用速度",

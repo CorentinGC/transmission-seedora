@@ -25,6 +25,7 @@
     "connected": "Ansluten",
     "connecting": "Ansluter...",
     "disconnected": "Frånkopplad",
+    "connectionError": "Anslutningsfel",
     "activeTotal": "{{active}} aktiva / {{total}} totalt",
     "disableAltSpeed": "Inaktivera alternativ hastighet",
     "enableAltSpeed": "Aktivera alternativ hastighet",

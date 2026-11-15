@@ -25,6 +25,7 @@
     "connected": "Connesso",
     "connecting": "Connessione...",
     "disconnected": "Disconnesso",
+    "connectionError": "Errore di connessione",
     "activeTotal": "{{active}} attivi / {{total}} totali",
     "disableAltSpeed": "Disattiva velocità alternativa",
     "enableAltSpeed": "Attiva velocità alternativa",

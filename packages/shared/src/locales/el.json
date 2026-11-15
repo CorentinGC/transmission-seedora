@@ -25,6 +25,7 @@
     "connected": "Συνδεδεμένο",
     "connecting": "Σύνδεση...",
     "disconnected": "Αποσυνδεδεμένο",
+    "connectionError": "Σφάλμα σύνδεσης",
     "activeTotal": "{{active}} ενεργά / {{total}} σύνολο",
     "disableAltSpeed": "Απενεργοποίηση εναλ. ταχύτητας",
     "enableAltSpeed": "Ενεργοποίηση εναλ. ταχύτητας",

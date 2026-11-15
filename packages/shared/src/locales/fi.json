@@ -25,6 +25,7 @@
     "connected": "Yhdistetty",
     "connecting": "Yhdistetään...",
     "disconnected": "Yhteys katkaistu",
+    "connectionError": "Yhteysvirhe",
     "activeTotal": "{{active}} aktiivista / {{total}} yhteensä",
     "disableAltSpeed": "Poista vaihtoehtoinen nopeus käytöstä",
     "enableAltSpeed": "Ota vaihtoehtoinen nopeus käyttöön",

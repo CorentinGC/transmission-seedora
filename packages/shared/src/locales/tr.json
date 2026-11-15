@@ -25,6 +25,7 @@
     "connected": "Bağlı",
     "connecting": "Bağlanıyor...",
     "disconnected": "Bağlantı kesildi",
+    "connectionError": "Bağlantı hatası",
     "activeTotal": "{{active}} aktif / {{total}} toplam",
     "disableAltSpeed": "Alternatif hızı devre dışı bırak",
     "enableAltSpeed": "Alternatif hızı etkinleştir",

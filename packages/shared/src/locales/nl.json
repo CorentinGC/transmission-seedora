@@ -25,6 +25,7 @@
     "connected": "Verbonden",
     "connecting": "Verbinden...",
     "disconnected": "Niet verbonden",
+    "connectionError": "Verbindingsfout",
     "activeTotal": "{{active}} actief / {{total}} totaal",
     "disableAltSpeed": "Alternatieve snelheid uitschakelen",
     "enableAltSpeed": "Alternatieve snelheid inschakelen",

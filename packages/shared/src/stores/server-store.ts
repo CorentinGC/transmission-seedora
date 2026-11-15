@@ -68,21 +68,21 @@ export const useServerStore = create<ServerStore>((set) => ({
       useSessionStore.getState().reset();
     }
     const res = await getPlatformApi().serverSetActive(id);
-    if (res.success) {
-      set({ activeServerId: id });
-      if (id) {
-        // Test connection
-        try {
-          const sessionRes = await getPlatformApi().rpcSessionGet();
-          if (sessionRes.success) {
-            set({ connectionStatus: 'connected' });
-          } else {
-            set({ connectionStatus: 'error', connectionError: sessionRes.error ?? 'Connection failed' });
-          }
-        } catch (err) {
-          set({ connectionStatus: 'error', connectionError: (err as Error).message });
-        }
+    if (!res.success) {
+      set({ connectionStatus: 'error', connectionError: res.error ?? 'Connection failed' });
+      return;
+    }
+    set({ activeServerId: id });
+    if (!id) return;
+    try {
+      const sessionRes = await getPlatformApi().rpcSessionGet();
+      if (sessionRes.success) {
+        set({ connectionStatus: 'connected' });
+      } else {
+        set({ connectionStatus: 'error', connectionError: sessionRes.error ?? 'Connection failed' });
       }
+    } catch (err) {
+      set({ connectionStatus: 'error', connectionError: (err as Error).message });
     }
   },
 

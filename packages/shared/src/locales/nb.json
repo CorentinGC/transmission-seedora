@@ -25,6 +25,7 @@
     "connected": "Tilkoblet",
     "connecting": "Kobler til...",
     "disconnected": "Frakoblet",
+    "connectionError": "Tilkoblingsfeil",
     "activeTotal": "{{active}} aktive / {{total}} totalt",
     "disableAltSpeed": "Deaktiver alternativ hastighet",
     "enableAltSpeed": "Aktiver alternativ hastighet",

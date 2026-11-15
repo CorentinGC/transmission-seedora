@@ -25,6 +25,7 @@
     "connected": "Conectat",
     "connecting": "Se conectează...",
     "disconnected": "Deconectat",
+    "connectionError": "Eroare de conexare",
     "activeTotal": "{{active}} active / {{total}} total",
     "disableAltSpeed": "Dezactivează viteza alt.",
     "enableAltSpeed": "Activează viteza alt.",

@@ -25,6 +25,7 @@
     "connected": "接続済み",
     "connecting": "接続中...",
     "disconnected": "切断",
+    "connectionError": "接続エラー",
     "activeTotal": "{{active}} アクティブ / {{total}} 合計",
     "disableAltSpeed": "代替速度を無効にする",
     "enableAltSpeed": "代替速度を有効にする",

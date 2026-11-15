@@ -25,6 +25,7 @@
     "connected": "Připojeno",
     "connecting": "Připojování...",
     "disconnected": "Odpojeno",
+    "connectionError": "Chyba připojení",
     "activeTotal": "{{active}} aktivních / {{total}} celkem",
     "disableAltSpeed": "Vypnout alt. rychlost",
     "enableAltSpeed": "Zapnout alt. rychlost",

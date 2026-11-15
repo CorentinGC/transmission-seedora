@@ -16,6 +16,7 @@ export function StatusBar() {
   const totalSpace = useSessionStore((s) => s.totalSpace);
   const toggleAltSpeed = useSessionStore((s) => s.toggleAltSpeed);
   const connectionStatus = useServerStore((s) => s.connectionStatus);
+  const connectionError = useServerStore((s) => s.connectionError);
 
   const [showDiskSpace, setShowDiskSpace] = useState(false);
   const [showSessionStats, setShowSessionStats] = useState(false);
@@ -26,13 +27,13 @@ export function StatusBar() {
 
   return (
     <div className="flex items-center gap-4 px-3 py-1 border-t bg-card text-xs text-muted-foreground select-none">
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1" title={connectionStatus === 'error' ? connectionError ?? undefined : undefined}>
         <span
           className={`w-2 h-2 rounded-full ${
             isConnected ? 'bg-green-500' : connectionStatus === 'error' ? 'bg-red-500' : 'bg-gray-400'
           }`}
         />
-        <span>{isConnected ? t('statusBar.connected') : connectionStatus === 'connecting' ? t('statusBar.connecting') : t('statusBar.disconnected')}</span>
+        <span>{isConnected ? t('statusBar.connected') : connectionStatus === 'connecting' ? t('statusBar.connecting') : connectionStatus === 'error' ? t('statusBar.connectionError') : t('statusBar.disconnected')}</span>
       </div>
 
       {isConnected && stats && (

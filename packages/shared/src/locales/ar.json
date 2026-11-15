@@ -25,6 +25,7 @@
     "connected": "متصل",
     "connecting": "جارٍ الاتصال...",
     "disconnected": "غير متصل",
+    "connectionError": "خطأ في الاتصال",
     "activeTotal": "{{active}} نشط / {{total}} إجمالي",
     "disableAltSpeed": "تعطيل السرعة البديلة",
     "enableAltSpeed": "تفعيل السرعة البديلة",
