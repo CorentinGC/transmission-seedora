@@ -24,7 +24,7 @@ Facts checked in the repo:
    - `COOKIE_SECRET` (required in production, at least 32 characters, e.g. `openssl rand -base64 32`).
    - `COOKIE_SECRET_PREVIOUS` (optional): the secret being rotated out, accepted for reading only.
    - Each secret's iron-session id is derived from the secret itself (a positive 31-bit integer from the first bytes of its SHA-256), so ids never need to be managed by hand. Because sealing passes a single-entry map, "highest id wins" never applies. This was checked against iron-session 8.0.4: a seal made with `{ idA: a }` unseals with `{ idA: a, idB: b }`, and returns `{}` with `{ idB: b }` only or when tampered.
-   - Rotation procedure: set `COOKIE_SECRET_PREVIOUS` to the old value and `COOKIE_SECRET` to a new one, deploy, remove `COOKIE_SECRET_PREVIOUS` after one TTL (7 days). Even an abrupt rotation only costs a silent re-seal (point 6).
+   - Rotation procedure: set `COOKIE_SECRET_PREVIOUS` to the old value and `COOKIE_SECRET` to a new one, deploy, remove `COOKIE_SECRET_PREVIOUS` after one TTL (4 hours). Even an abrupt rotation only costs a silent re-seal (point 6).
 
 3. **No fallback secret, fail closed.** A single module, `apps/web/src/lib/server/env.ts`, reads the secrets **lazily** (never at module top level).
    - Production (`NODE_ENV=production`): a missing or short secret throws, and the action returns a generic server-configuration error. No literal secret exists anywhere in the code.
@@ -41,9 +41,9 @@ Facts checked in the repo:
    | `SameSite` | `Strict` | `Strict` |
    | `Path` | `/` | `/` |
    | `Domain` | none (host-only, required by `__Host-`) | none |
-   | `Max-Age` | 7 days minus 60 s | same |
+   | `Max-Age` | 4 hours minus 60 s | same |
 
-   The seal TTL is 7 days and is enforced cryptographically, independently of `Max-Age`. The `__Host-` prefix means a sibling site, such as the future landing page on `seedora.app`, cannot set or overwrite the cookie of `app.seedora.app`.
+   The seal TTL is 4 hours (shortened from 7 days, bead 2pf: a stolen cookie stops working within hours, and recovery below re-seals transparently from `localStorage`) and is enforced cryptographically, independently of `Max-Age`. The `__Host-` prefix means a sibling site, such as the future landing page on `seedora.app`, cannot set or overwrite the cookie of `app.seedora.app`.
 
 5. **What is stored — and nothing else.**
 
@@ -56,7 +56,7 @@ Facts checked in the repo:
 6. **Migration of the legacy base64 cookie, and recovery.**
    - The new cookie has a new name, so a legacy `seedora_server` value is never parsed. Each write or clear of the session also deletes `seedora_server`. A server action is a context where cookies can be modified, so this is allowed.
    - Server actions return a stable error code `NO_SESSION` when the cookie is missing, unreadable or expired (ADR 0004).
-   - `apps/web/src/lib/web-api.ts` handles `NO_SESSION` from any RPC call by re-sealing from `localStorage` (`serverSetActive(getActiveServerId())`) and retrying the call **once**. This covers the first load after deployment, rotation, expiry and a cleared cookie. Users never have to re-enter anything, and the server never accepts the unprotected format.
+   - `apps/web/src/lib/web-api.ts` handles `NO_SESSION` from any RPC call by re-sealing from `localStorage` (`serverSetActive(getActiveServerId())`) and retrying the call **once**. Concurrent calls share one re-seal. A failed re-seal returns its own error (not `NO_SESSION`). If the re-seal succeeds but the retry still reports `NO_SESSION` (cookies blocked), the client returns `SESSION_UNAVAILABLE` and stops re-sealing for 30 s instead of re-sealing on every poll. Switching servers stores the new active id before writing the cookie, and a recovery that raced with a switch re-seals the new server, so the cookie never ends on the old one. This covers the first load after deployment, rotation, expiry and a cleared cookie. Users never have to re-enter anything, and the server never accepts the unprotected format.
 
 7. **Only actions are exported from `'use server'` files.** The cookie reader becomes a plain module (`apps/web/src/lib/server/session-cookie.ts`). `server-actions/session.ts` exports only `setActiveServerCookie(input)` and `clearServerCookie()`. The same rule applies to every helper in ADRs 0003 and 0004.
 

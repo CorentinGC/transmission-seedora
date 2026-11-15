@@ -4,6 +4,7 @@ import https from 'node:https';
 import { isIP, type LookupFunction } from 'node:net';
 import { isAddressAllowed, isPortAllowed, isValidPort } from './address-policy';
 import { OutboundError } from './errors';
+import { getAllowedHosts, isListedHost, type AllowedHost } from './env';
 import {
   MAX_CONCURRENT_LOOKUPS,
   MAX_CONCURRENT_PER_DESTINATION,
@@ -12,24 +13,18 @@ import {
   createByteBudget,
   createConcurrencyGate,
   createLookupLimiter,
+  destinationKeys,
   type ByteBudget,
   type ConcurrencyGate,
-  type LookupLimiter,
 } from './outbound-limits';
+import { createSystemResolver, type ResolvedAddress, type Resolver } from './resolver';
+
+export type { ResolvedAddress, Resolver } from './resolver';
 
 /**
  * The only module allowed to contact a caller-influenced destination (ADR 0003).
  * Resolve once, validate every address, then connect to what was validated.
  */
-
-/** One resolved address. */
-export interface ResolvedAddress {
-  address: string;
-  family: 4 | 6;
-}
-
-/** Resolves a host name to all its addresses. Injectable for tests; the default uses the system resolver. */
-export type Resolver = (host: string, signal?: AbortSignal) => Promise<ResolvedAddress[]>;
 
 /** Where to POST. */
 export interface OutboundTarget {
@@ -43,21 +38,30 @@ export interface OutboundTarget {
 export interface OutboundOptions {
   /** Opt-in for loopback/private/link-local/CGNAT/ULA. Metadata and unspecified stay denied. */
   allowPrivate: boolean;
+  /**
+   * Operator allowlist (`SEEDORA_ALLOWED_HOSTS`). When set, `allowPrivate` only applies to the
+   * listed hosts: any other host resolving to a private address is HOST_NOT_ALLOWED. Public
+   * addresses are never affected. Defaults to the environment.
+   */
+  allowedHosts?: readonly AllowedHost[] | null;
+  /** Identity of the caller, for the per-client DNS lookup cap. */
+  clientKey?: string;
   /** One deadline covering DNS, connect and body read. Defaults to 15 s. */
   signal?: AbortSignal;
   authorization?: string;
   sessionId?: string;
   resolver?: Resolver;
-  /** Can only lower the 8 MiB cap. */
+  /** Can only lower the 8 MiB cap (the daemon's answer to most methods is a few KB). */
   maxResponseBytes?: number;
   /**
-   * Called with the validated addresses after policy passes and before any connection. It may
+   * Called with the validated addresses after policy passes and before any connection (used for
+   * the per-address rate limit, so alias names and extra addresses gain nothing). It may
    * throw an `OutboundError` (e.g. RATE_LIMITED) to refuse the call; that error propagates as is.
    */
   onResolved?: (addresses: readonly ResolvedAddress[]) => void;
-  /** Process-wide buffered-bytes budget. Injectable for tests. */
+  /** Process-wide buffered-bytes budget, with a share per destination address. Injectable for tests. */
   byteBudget?: ByteBudget;
-  /** Per-destination concurrency cap. Injectable for tests. */
+  /** Per-address concurrency cap. Injectable for tests. */
   destinationGate?: ConcurrencyGate;
 }
 
@@ -76,20 +80,6 @@ const HOST_PATTERN = /^[A-Za-z0-9.:-]+$/;
 const PATH_PATTERN = /^\/[A-Za-z0-9._~!$&'()*+,;=:@/-]*$/;
 const HEADER_VALUE_PATTERN = /^[\x20-\x7e]*$/;
 const TLS_CODES = /^(ERR_TLS_|ERR_SSL_|CERT_|DEPTH_ZERO|SELF_SIGNED|UNABLE_TO_|HOSTNAME_MISMATCH|ERR_CERT)/;
-
-type DnsLookup = (host: string, options: { all: true; verbatim: true }) => Promise<Array<{ address: string; family: number }>>;
-
-/**
- * Builds a resolver on `getaddrinfo`. It cannot be cancelled and runs on libuv's small thread
- * pool, so lookups are capped (a slow answer holds its slot until it really returns) and the
- * wait for a slot honours the request deadline. c-ares was rejected: it ignores /etc/hosts.
- */
-export function createSystemResolver(lookup: DnsLookup, limiter: LookupLimiter): Resolver {
-  return async (host, signal = new AbortController().signal) => {
-    const results = await limiter.run(() => lookup(host, { all: true, verbatim: true }), signal);
-    return results.map(({ address, family }) => ({ address, family: family === 6 ? 6 : 4 }));
-  };
-}
 
 const systemResolver = createSystemResolver(dnsLookup, createLookupLimiter(MAX_CONCURRENT_LOOKUPS, MAX_QUEUED_LOOKUPS));
 
@@ -135,6 +125,7 @@ export async function resolveAndValidate(
   allowPrivate: boolean,
   resolver: Resolver,
   signal: AbortSignal,
+  clientKey?: string,
 ): Promise<ResolvedAddress[]> {
   const family = isIP(host);
   let addresses: ResolvedAddress[];
@@ -142,7 +133,7 @@ export async function resolveAndValidate(
     addresses = [{ address: host, family: family === 6 ? 6 : 4 }];
   } else {
     try {
-      addresses = await abortable(resolver(host, signal), signal);
+      addresses = await abortable(resolver(host, signal, clientKey), signal);
     } catch (error) {
       if (error instanceof OutboundError) throw error;
       throw new OutboundError('DNS_FAILED');
@@ -219,10 +210,15 @@ export async function postJson(
   const signal = options.signal ?? AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
   if (signal.aborted) throw new OutboundError('TIMEOUT');
 
-  const addresses = await resolveAndValidate(host, options.allowPrivate, options.resolver ?? systemResolver, signal);
+  // The private opt-in holds for this host only if the operator allowlist (when set) lists it.
+  const allowedHosts = options.allowedHosts === undefined ? getAllowedHosts() : options.allowedHosts;
+  const allowPrivate = options.allowPrivate && (allowedHosts === null || isListedHost(allowedHosts, host, target.port));
+  const addresses = await resolveAndValidate(host, allowPrivate, options.resolver ?? systemResolver, signal, options.clientKey);
   options.onResolved?.(addresses);
-  const destination = `${addresses.map((a) => a.address).sort().join(',')}|${target.port}`;
-  const releaseDestination = (options.destinationGate ?? processDestinationGate).tryAcquire(destination);
+  // One slot and one share of the byte budget per resolved address: a name that lists a victim's
+  // address next to its own, or any number of alias names, counts against that address each time.
+  const keys = destinationKeys(addresses);
+  const releaseDestination = (options.destinationGate ?? processDestinationGate).tryAcquireAll(keys);
   if (!releaseDestination) throw new OutboundError('RATE_LIMITED');
   const budget = options.byteBudget ?? processByteBudget;
   let held = 0;
@@ -241,7 +237,7 @@ export async function postJson(
       if (settled) return;
       settled = true;
       signal.removeEventListener('abort', onAbort);
-      budget.release(held);
+      budget.release(held, keys);
       held = 0;
       releaseDestination();
       if (error) {
@@ -292,7 +288,7 @@ export async function postJson(
           finish(new OutboundError('RESPONSE_TOO_LARGE'));
           return;
         }
-        if (!budget.reserve(chunk.length)) {
+        if (!budget.reserve(chunk.length, keys)) {
           finish(new OutboundError('RATE_LIMITED'));
           return;
         }

@@ -40,8 +40,6 @@ export interface TokenBucketOptions extends BucketLimit {
 export interface TokenBucket {
   /** Consumes one token for `key`; false when the key is over its limit. */
   take(key: string): boolean;
-  /** Drops buckets that have fully refilled (they carry no information). */
-  sweep(): void;
   /** Number of tracked keys. */
   size(): number;
 }
@@ -82,12 +80,6 @@ export function createTokenBucket(options: TokenBucketOptions): TokenBucket {
         states.delete(oldest.value);
       }
       return allowed;
-    },
-    sweep() {
-      const at = now();
-      for (const [key, state] of states) {
-        if (refilled(state, at) >= burst) states.delete(key);
-      }
     },
     size: () => states.size,
   };

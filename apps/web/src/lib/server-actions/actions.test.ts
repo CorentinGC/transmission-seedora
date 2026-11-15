@@ -168,14 +168,45 @@ describe('rpcRequest', () => {
     expect(post.fn).toHaveBeenCalledTimes(2);
   });
 
-  it('is rate limited per destination and when the client is identified', async () => {
+  it('rate limits per resolved address, so another host name for the same address shares the bucket (9s8)', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    post.fn.mockImplementation(async (_target, _body, options: { onResolved?: (a: { address: string; family: 4 }[]) => void }) => {
+      options.onResolved?.([{ address: '93.184.216.34', family: 4 }]);
+      return success;
+    });
+    await activate();
+    for (let i = 0; i < RATE_LIMITS.rpcDestination.burst; i++) expect(await rpcRequest('session-get')).toMatchObject({ success: true });
+    expect(await rpcRequest('session-get')).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    expect(await setActiveServerCookie({ ...target, host: 'alias.example.com' })).toEqual({ success: true });
+    expect(await rpcRequest('session-get')).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    // The test-connection action draws on the same address bucket.
+    expect(await testServerConnection({ ...target, host: 'wildcard-1.example.com' })).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    // A different address has its own bucket.
+    post.fn.mockImplementation(async (_target, _body, options: { onResolved?: (a: { address: string; family: 4 }[]) => void }) => {
+      options.onResolved?.([{ address: '93.184.216.35', family: 4 }]);
+      return success;
+    });
+    expect(await rpcRequest('session-get')).toMatchObject({ success: true });
+    vi.useRealTimers();
+  });
+
+  it('passes the trusted client key (none without one) and the address limiter to the outbound call', async () => {
+    await activate();
+    await rpcRequest('session-get');
+    const options = post.fn.mock.calls[0][2] as { clientKey?: string; onResolved?: unknown };
+    expect(options.clientKey).toBeUndefined();
+    expect(typeof options.onResolved).toBe('function');
+    vi.stubEnv('SEEDORA_TRUST_PROXY_HEADERS', 'true');
+    requestHeaders.current = new Headers({ 'x-forwarded-for': '203.0.113.9' });
+    await rpcRequest('session-get');
+    expect((post.fn.mock.calls[1][2] as { clientKey?: string }).clientKey).toBe('203.0.113.9');
+  });
+
+  it('is rate limited when the client is identified', async () => {
     // Freeze the clock so the buckets do not refill while the loops run.
     vi.useFakeTimers({ toFake: ['Date'] });
     await activate();
-    for (let i = 0; i < RATE_LIMITS.rpcDestination.burst; i++) await rpcRequest('session-get');
-    expect(await rpcRequest('session-get')).toMatchObject({ success: false, code: 'RATE_LIMITED' });
 
-    resetRateLimits();
     vi.stubEnv('SEEDORA_TRUST_PROXY_HEADERS', 'true');
     requestHeaders.current = new Headers({ 'x-forwarded-for': '203.0.113.9' });
     post.fn.mockClear();

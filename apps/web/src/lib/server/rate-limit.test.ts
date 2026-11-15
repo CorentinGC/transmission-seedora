@@ -82,16 +82,6 @@ describe('createTokenBucket', () => {
     expect(bucket.size()).toBe(100);
   });
 
-  it('drops idle full buckets on expiry sweep', () => {
-    const clock = fakeClock();
-    const bucket = createTokenBucket({ perMinute: 60, burst: 2, maxKeys: 100, now: clock.now });
-    bucket.take('a');
-    bucket.take('b');
-    clock.advance(10_000);
-    bucket.sweep();
-    expect(bucket.size()).toBe(0);
-  });
-
   it('rejects invalid configuration', () => {
     expect(() => createTokenBucket({ perMinute: 0, burst: 1 })).toThrow();
     expect(() => createTokenBucket({ perMinute: 1, burst: 0 })).toThrow();

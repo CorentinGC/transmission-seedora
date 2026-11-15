@@ -1,5 +1,6 @@
 'use server';
 
+import { logActionFailure } from '../server/action-error';
 import { failure } from '../server/errors';
 import { takeClientToken } from '../server/limits';
 import { geoipInputSchema } from '../server/schemas';
@@ -21,8 +22,9 @@ export async function geoipLookup(input: unknown): Promise<ActionResult<Record<s
       data[ip] = geo ? { country: geo.country, region: geo.region, city: geo.city } : null;
     }
     return { success: true, data };
-  } catch {
+  } catch (error) {
     // The database failed to load: a server problem, nothing the caller sent.
+    logActionFailure(error, 'SERVER_MISCONFIGURED');
     return failure('SERVER_MISCONFIGURED');
   }
 }

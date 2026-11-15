@@ -3,7 +3,8 @@ import type { ServerConfig, NewServerConfig, IpcResponse, AppPreferences } from 
 import { rpcRequest as rpcAction, testServerConnection } from './server-actions/rpc';
 import { setActiveServerCookie, clearServerCookie } from './server-actions/session';
 import { geoipLookup as serverGeoipLookup } from './server-actions/geoip';
-import { GEOIP_CHUNK_SIZE, chunk, toServerTarget, withSessionRecovery } from './session-recovery';
+import { withSessionRecovery } from './session-recovery';
+import { GEOIP_CHUNK_SIZE, chunk, toServerTarget } from './server-target';
 import {
   getServers,
   setServers,
@@ -53,7 +54,8 @@ export const webApi: PlatformApi = {
     setServers(servers);
     if (getActiveServerId() === id) {
       setActiveServerId(null);
-      await clearServerCookie();
+      const cleared = await clearServerCookie();
+      if (!cleared.success) return cleared;
     }
     return { success: true };
   },
@@ -61,14 +63,20 @@ export const webApi: PlatformApi = {
   async serverSetActive(id: string | null): Promise<IpcResponse> {
     if (!id) {
       setActiveServerId(null);
-      await clearServerCookie();
-      return { success: true };
+      return clearServerCookie();
     }
     const server = getServers().find((s) => s.id === id);
     if (!server) return { success: false, error: 'Server not found' };
-    const result = await setActiveServerCookie(toServerTarget(server));
-    if (!result.success) return result;
+    // The new id is stored before the cookie is written: a session recovery running meanwhile
+    // reads the id from storage and must seal this server, not the previous one.
+    const previousId = getActiveServerId();
     setActiveServerId(id);
+    const result = await setActiveServerCookie(toServerTarget(server));
+    if (!result.success) {
+      // Roll back only our own write: a later switch to another server must not be undone.
+      if (getActiveServerId() === id) setActiveServerId(previousId);
+      return result;
+    }
     return { success: true };
   },
 

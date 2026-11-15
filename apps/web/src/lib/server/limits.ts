@@ -1,5 +1,8 @@
 import { headers } from 'next/headers';
 import { getTrustProxyHeaders } from './env';
+import { destinationKeys } from './outbound-limits';
+import { OutboundError } from './errors';
+import type { ResolvedAddress } from './resolver';
 import { RATE_LIMITS, SHARED_CLIENT_KEY, clientKey, createTokenBucket, type TokenBucket } from './rate-limit';
 
 /**
@@ -40,7 +43,25 @@ export async function takeClientToken(name: BucketName, options: { skipWithoutId
   return bucket(name).take(key ?? SHARED_CLIENT_KEY);
 }
 
-/** Takes a token from the destination bucket for a validated host. */
-export function takeDestinationToken(host: string): boolean {
-  return bucket('rpcDestination').take(host.toLowerCase());
+/**
+ * Caller identity for the per-client lookup slot, or undefined when none can be trusted: a slot
+ * keyed on a merged identity would let one hung name lock every user out (the global lookup cap
+ * and the negative cache still apply).
+ */
+export async function currentLookupKey(): Promise<string | undefined> {
+  return (await currentClientKey()) ?? undefined;
+}
+
+/**
+ * Takes one token per resolved address from the destination bucket and refuses the call when any
+ * address is out of tokens. Keyed by address (IPv6 per /64), not by host name, so wildcard DNS,
+ * trailing dots, numeric spellings and extra addresses next to a victim's all count against the
+ * address they reach. Pass it as `onResolved`; it throws `OutboundError('RATE_LIMITED')`.
+ */
+export function takeDestinationTokens(addresses: readonly ResolvedAddress[]): void {
+  const destination = bucket('rpcDestination');
+  // Every key is charged even after one is refused: probing a victim address through a fresh
+  // address must not refill anything for the others.
+  const allowed = destinationKeys(addresses).map((key) => destination.take(key));
+  if (allowed.includes(false)) throw new OutboundError('RATE_LIMITED');
 }

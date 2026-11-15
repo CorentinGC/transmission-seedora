@@ -2,7 +2,6 @@
 
 import { failureFromError } from '../server/action-error';
 import { clearActiveServer, writeActiveServer } from '../server/active-session';
-import { ConfigError } from '../server/env';
 import { failure } from '../server/errors';
 import { takeClientToken } from '../server/limits';
 import { serverTargetSchema } from '../server/schemas';
@@ -20,9 +19,7 @@ export async function setActiveServerCookie(input: unknown): Promise<ActionResul
     await writeActiveServer(parsed.data);
     return { success: true };
   } catch (error) {
-    if (error instanceof ConfigError) return failureFromError(error);
-    // `sealSession` throws a plain Error for a session too large for a cookie: only the input can be at fault.
-    return failure('INVALID_INPUT');
+    return failureFromError(error);
   }
 }
 

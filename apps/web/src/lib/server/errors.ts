@@ -6,6 +6,7 @@
 export const ERROR_CODES = [
   'INVALID_INPUT',
   'NO_SESSION',
+  'SESSION_UNAVAILABLE',
   'RATE_LIMITED',
   'HOST_NOT_ALLOWED',
   'DNS_FAILED',
@@ -27,6 +28,7 @@ export type ErrorCode = (typeof ERROR_CODES)[number];
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   INVALID_INPUT: 'Invalid request',
   NO_SESSION: 'No active server configured',
+  SESSION_UNAVAILABLE: 'The session could not be restored, check that cookies are enabled',
   RATE_LIMITED: 'Too many requests, try again shortly',
   HOST_NOT_ALLOWED: 'This host is not allowed',
   DNS_FAILED: 'Could not resolve the host name',

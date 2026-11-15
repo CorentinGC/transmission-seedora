@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
-import { getAllowPrivateHosts } from './env';
-import { ERROR_MESSAGES, OutboundError, failure, type ErrorCode } from './errors';
+import { getAllowPrivateHosts, getAllowedHosts } from './env';
+import { failureFromError } from './action-error';
+import { ERROR_MESSAGES, failure, type ErrorCode } from './errors';
 import { postJson, type OutboundOptions, type OutboundResponse, type OutboundTarget } from './outbound';
 import type { RpcMethod, ServerTarget } from './schemas';
 
@@ -16,6 +17,17 @@ export const TEST_TIMEOUT_MS = 8_000;
 export const LONG_TIMEOUT_MS = 30_000;
 /** Deadline of every other method. */
 export const DEFAULT_TIMEOUT_MS = 15_000;
+
+/**
+ * Response cap of every method except `torrent-get` (whose answer grows with the torrent list).
+ * Their answers are a few KB, so a hostile daemon cannot make them hold much memory.
+ */
+export const SMALL_RESPONSE_MAX_BYTES = 1024 * 1024;
+
+/** Response cap for an RPC method: the outbound default for `torrent-get`, a small one for the rest. */
+export function maxResponseBytesForMethod(method: RpcMethod): number | undefined {
+  return method === 'torrent-get' ? undefined : SMALL_RESPONSE_MAX_BYTES;
+}
 
 const LONG_METHODS: ReadonlySet<RpcMethod> = new Set(['blocklist-update', 'port-test', 'torrent-add']);
 
@@ -40,7 +52,13 @@ export interface TransmissionOptions {
   allowPrivate?: boolean;
   /** Defaults to the outbound layer. */
   post?: (target: OutboundTarget, body: unknown, options: OutboundOptions) => Promise<OutboundResponse>;
+  /** Defaults to `SEEDORA_ALLOWED_HOSTS`. */
+  allowedHosts?: OutboundOptions['allowedHosts'];
   resolver?: OutboundOptions['resolver'];
+  /** Identity of the caller, for the per-client DNS lookup cap. */
+  clientKey?: string;
+  /** Called with the validated addresses before each connection; may throw `OutboundError('RATE_LIMITED')`. */
+  onResolved?: OutboundOptions['onResolved'];
   /** Extra abort signal, combined with the deadline. */
   signal?: AbortSignal;
 }
@@ -115,6 +133,10 @@ export async function callTransmission(
   const send = (sessionId: string | undefined) =>
     post(outboundTarget, body, {
       allowPrivate: options.allowPrivate ?? getAllowPrivateHosts(),
+      allowedHosts: options.allowedHosts === undefined ? getAllowedHosts() : options.allowedHosts,
+      clientKey: options.clientKey,
+      onResolved: options.onResolved,
+      maxResponseBytes: maxResponseBytesForMethod(call.method),
       signal,
       authorization: basicAuth(target),
       sessionId,
@@ -135,6 +157,6 @@ export async function callTransmission(
     }
     return interpret(response);
   } catch (error) {
-    return failure(error instanceof OutboundError ? error.code : 'CONNECTION_FAILED');
+    return failureFromError(error);
   }
 }

@@ -1,60 +1,68 @@
-import type { IpcResponse, ServerConfig } from '@shared/types';
+import type { IpcResponse } from '@shared/types';
+import { ERROR_MESSAGES } from './server/errors';
 import { setActiveServerCookie } from './server-actions/session';
+import { toServerTarget } from './server-target';
 import { getActiveServerId, getServers } from './web-storage';
-
-/** Largest IP batch the server accepts (`MAX_GEOIP_IPS` in `server/schemas.ts`, which the client cannot import). */
-export const GEOIP_CHUNK_SIZE = 512;
-
-/** Splits `items` into batches of at most `size`. */
-export function chunk<T>(items: readonly T[], size: number): T[][] {
-  const batches: T[][] = [];
-  for (let i = 0; i < items.length; i += size) batches.push(items.slice(i, i + size));
-  return batches;
-}
-
-/** Default Transmission RPC path (`DEFAULT_RPC_PATH` in `server/schemas.ts`). */
-const DEFAULT_PATH = '/transmission/rpc';
-
-/**
- * The fields the server accepts, with the path normalised the way the old proxy and Electron did
- * (empty means the default, a missing leading slash is added). Proxy fields never go to the server.
- */
-export function toServerTarget(config: Pick<ServerConfig, 'host' | 'port' | 'path' | 'useSSL' | 'username' | 'password'>) {
-  const path = config.path?.trim() ? config.path.trim() : DEFAULT_PATH;
-  return {
-    host: config.host,
-    port: config.port,
-    path: path.startsWith('/') ? path : `/${path}`,
-    useSSL: config.useSSL,
-    username: config.username || undefined,
-    password: config.password || undefined,
-  };
-}
 
 type CodedResponse = IpcResponse & { code?: string };
 
-// Concurrent calls (the poll fires several at once) share one re-seal.
-let reseal: Promise<boolean> | null = null;
+/** How long re-sealing stays off after it did not bring the session back (cookies blocked, clock skew). */
+export const RESEAL_COOLDOWN_MS = 30_000;
 
-/** Re-seals the session cookie from the active server kept in `localStorage`. False when that is impossible. */
-async function resealFromStorage(): Promise<boolean> {
-  const id = getActiveServerId();
-  const server = id ? getServers().find((s) => s.id === id) : undefined;
-  if (!server) return false;
-  const result = await setActiveServerCookie(toServerTarget(server));
-  return result.success;
+const sessionUnavailable: CodedResponse = {
+  success: false,
+  error: ERROR_MESSAGES.SESSION_UNAVAILABLE,
+  code: 'SESSION_UNAVAILABLE',
+};
+
+// Concurrent calls (the poll fires several at once) share one re-seal.
+let reseal: Promise<CodedResponse | null> | null = null;
+let resealBlockedUntil = 0;
+
+/** Forgets the shared re-seal and the cool-down. Test helper. */
+export function resetSessionRecovery(): void {
+  reseal = null;
+  resealBlockedUntil = 0;
+}
+
+/**
+ * Re-seals the session cookie from the active server kept in `localStorage`. Returns null when
+ * there is none, else the action result. If the active server changed while the cookie was being
+ * written (a switch raced with this re-seal), the new one is sealed too so the cookie never ends
+ * up on the old server.
+ */
+async function resealFromStorage(): Promise<CodedResponse | null> {
+  let result: CodedResponse | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const id = getActiveServerId();
+    const server = id ? getServers().find((s) => s.id === id) : undefined;
+    if (!server) return result;
+    result = await setActiveServerCookie(toServerTarget(server));
+    if (!result.success || getActiveServerId() === id) return result;
+  }
+  return result;
 }
 
 /**
  * Runs a server-action call. On `NO_SESSION` (first load after a deploy, secret rotation, expiry,
  * cleared cookie) it re-seals the cookie from `localStorage` and retries the call once (ADR 0002 section 6).
+ * A re-seal that fails returns its own failure. A re-seal that succeeds but does not bring the
+ * session back stops further re-sealing for `RESEAL_COOLDOWN_MS` and returns `SESSION_UNAVAILABLE`.
  */
 export async function withSessionRecovery<T extends CodedResponse>(call: () => Promise<T>): Promise<T> {
   const first = await call();
   if (first.success || first.code !== 'NO_SESSION') return first;
+  if (Date.now() < resealBlockedUntil) return sessionUnavailable as T;
   reseal ??= resealFromStorage().finally(() => {
     reseal = null;
   });
-  if (!(await reseal)) return first;
-  return call();
+  const resealed = await reseal;
+  if (!resealed) return first;
+  if (!resealed.success) return resealed as T;
+  const retry = await call();
+  if (!retry.success && retry.code === 'NO_SESSION') {
+    resealBlockedUntil = Date.now() + RESEAL_COOLDOWN_MS;
+    return sessionUnavailable as T;
+  }
+  return retry;
 }

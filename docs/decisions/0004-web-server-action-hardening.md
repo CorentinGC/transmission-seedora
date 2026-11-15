@@ -28,11 +28,11 @@ Constraints:
 
 ### 1. Layout: actions are thin, logic lives in plain modules
 
-`'use server'` files export **only** actions. Every action follows the same order: **client rate limit → validate → (destination rate limit, which needs the validated host) → act → map errors**. The logic lives in non-action modules under `apps/web/src/lib/server/`:
+`'use server'` files export **only** actions. Every action follows the same order: **client rate limit → validate → act → map errors**, where the per-destination rate limit runs inside the act step, once the addresses are resolved (`onResolved`, see section 6). The logic lives in non-action modules under `apps/web/src/lib/server/`:
 
 | Module | Responsibility |
 |---|---|
-| `env.ts` | Lazy, validated reads of `COOKIE_SECRET`, `COOKIE_SECRET_PREVIOUS`, `SEEDORA_ALLOW_PRIVATE_HOSTS`, `SEEDORA_TRUST_PROXY_HEADERS`; throws a plain `ConfigError`, which the actions map to `SERVER_MISCONFIGURED` |
+| `env.ts` | Lazy, validated reads of `COOKIE_SECRET`, `COOKIE_SECRET_PREVIOUS`, `SEEDORA_ALLOW_PRIVATE_HOSTS`, `SEEDORA_ALLOWED_HOSTS` (comma list of `host` or `host:port`, validated at boot, ADR 0003), `SEEDORA_TRUST_PROXY_HEADERS`; throws a plain `ConfigError`, which the actions map to `SERVER_MISCONFIGURED` |
 | `session-cookie.ts` | Seal, unseal, set and clear (ADR 0002) |
 | `schemas.ts` | zod schemas and the RPC method allowlist |
 | `address-policy.ts` | IP classification and port policy (ADR 0003) |
@@ -52,7 +52,7 @@ Add `zod` (`^4`, current 4.6.x) to `apps/web` dependencies. It is the de-facto T
   - `useSSL`: a boolean.
   - `username` and `password`: optional strings of at most 256 characters each.
   - Unknown keys are **stripped**, so the client can keep sending a full `ServerConfig`.
-- **RPC call** (`rpcRequest`): `method` must be in the allowlist. `args` must be absent or a plain JSON object (`z.record(z.string(), z.json())`) of at most 1 MiB once serialised. We do not model each Transmission argument: the daemon validates its own semantics, and the caller holds the daemon credentials. Our boundary protects **our server and third parties**, not the user's own daemon from the user.
+- **RPC call** (`rpcRequest`): `method` must be in the allowlist. `args` must be absent or a plain object. It is normalised with a JSON round trip first (`undefined` values are dropped and `NaN` becomes `null`, exactly what the old proxy put on the wire), then checked as a JSON object (`z.record(z.string(), z.json())`) of at most 1 MiB serialised. Well-known keys get a shape; `filename` (a magnet link or URL) may be 64 KiB, other text keys 4 KiB. We do not model each Transmission argument: the daemon validates its own semantics, and the caller holds the daemon credentials. Our boundary protects **our server and third parties**, not the user's own daemon from the user.
 - **GeoIP** (`geoipLookup`): an array of at most **512** strings, each a valid IP (`net.isIP`), deduplicated. Larger input is rejected (`INVALID_INPUT`). `web-api.ts` splits larger peer lists into chunks of 512 and merges the results, so large swarms keep working.
 - Validation failures return `INVALID_INPUT` before any DNS lookup or socket.
 - The 1 MiB `args` cap matches Next's default server-action body limit (1 MB, not re-checked for 16.1.6). A `torrent-add` with a large base64 `.torrent` already fails today at that limit. Raising both together is a separate decision.
@@ -81,9 +81,9 @@ These are constants in `transmission.ts`, not caller-supplied. The function's ma
 
 Actions return `{ success: false, error: <fixed message>, code: <code> }`. `IpcResponse` already allows extra fields at runtime, and `web-api.ts` reads `code`. No change to the shared type is needed for this epic.
 
-The codes are `INVALID_INPUT`, `NO_SESSION`, `RATE_LIMITED`, `HOST_NOT_ALLOWED`, `DNS_FAILED`, `CONNECTION_FAILED`, `TIMEOUT`, `TLS_FAILED`, `UNEXPECTED_REDIRECT`, `RESPONSE_TOO_LARGE`, `AUTH_FAILED` (401), `HTTP_ERROR` (any other non-2xx, without the status text), `SESSION_ID_REJECTED`, `RPC_ERROR` (the daemon's `result` string is passed through: it is daemon data the user is entitled to see), `SERVER_MISCONFIGURED` (missing secret).
+The codes are `INVALID_INPUT`, `NO_SESSION`, `RATE_LIMITED`, `HOST_NOT_ALLOWED`, `DNS_FAILED`, `CONNECTION_FAILED`, `TIMEOUT`, `TLS_FAILED`, `UNEXPECTED_REDIRECT`, `RESPONSE_TOO_LARGE`, `AUTH_FAILED` (401), `HTTP_ERROR` (any other non-2xx, without the status text), `SESSION_ID_REJECTED`, `RPC_ERROR` (the daemon's `result` string is passed through: it is daemon data the user is entitled to see), `SERVER_MISCONFIGURED` (missing secret), `SESSION_UNAVAILABLE` (client side only: a re-seal succeeded but the cookie still did not come back, for example because cookies are blocked; the client stops re-sealing for 30 s).
 
-Nothing derived from `err.message`, resolved addresses or credentials is returned or logged.
+Nothing derived from `err.message`, resolved addresses or credentials is returned or logged. An unexpected error (configuration problem, unknown class) is logged once as its class name and the returned code, nothing else (`logActionFailure` in `action-error.ts`); expected failures (`OutboundError`, a session too large for a cookie, which `session-cookie.ts` throws as a typed `SessionTooLargeError`) are not logged. Every action maps errors through `failureFromError`.
 
 ### 6. Rate limiting
 
@@ -96,10 +96,12 @@ Decision, in two layers:
    | Bucket | Key | Sustained | Burst |
    |---|---|---|---|
    | `rpcRequest` | client | 900/min | 150 |
-   | `rpcRequest` | destination host | 1800/min | 300 |
+   | `rpcRequest` and `testServerConnection` | resolved destination address (IPv6 per /64, IPv4-mapped as IPv4) | 1800/min | 300 |
    | `testServerConnection` | client | 10/min | 5 |
    | `setActiveServerCookie` | client | 30/min | 10 |
    | `geoipLookup` | client | 60/min | 20 |
+
+   **Destination key.** The destination bucket is keyed by each **resolved address**, not by the host name the caller typed (bead 9s8): wildcard DNS, a trailing dot or numeric spellings would otherwise each get a fresh 300-token burst. The limiter is the `onResolved` callback of `postJson` (`takeDestinationTokens` in `limits.ts`): it takes one token per address of the answer, in the same canonical form as client keys, and refuses the call when any address is empty, so listing a victim's address next to a fresh one gains nothing. `testServerConnection` draws on the same buckets. A call that never resolves (DNS failure) draws no destination token; the client limit and the lookup cap in ADR 0003 bound it.
 
    The `rpcRequest` client limit leaves room for three tabs at the 1 s minimum polling interval, so a legitimate user never sees a false `RATE_LIMITED`, which would break polling. Over the limit, an action returns `RATE_LIMITED` without any outbound request. The values are constants and can be tuned once real traffic is known.
 

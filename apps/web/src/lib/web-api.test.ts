@@ -21,15 +21,18 @@ vi.mock('./server-actions/rpc', () => ({ rpcRequest: actions.rpcRequest, testSer
 vi.mock('./server-actions/session', () => ({ setActiveServerCookie: actions.setActiveServerCookie, clearServerCookie: actions.clearServerCookie }));
 vi.mock('./server-actions/geoip', () => ({ geoipLookup: actions.geoipLookup }));
 
+import { resetSessionRecovery } from './session-recovery';
 import { webApi } from './web-api';
 
 const server = { id: 'a', name: 'A', host: 'nas.example.com', port: 9091, path: '/transmission/rpc', useSSL: true };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  resetSessionRecovery();
   storage.activeId = 'a';
   storage.servers = [server];
   actions.setActiveServerCookie.mockResolvedValue({ success: true });
+  actions.clearServerCookie.mockResolvedValue({ success: true });
 });
 
 describe('webApi RPC recovery', () => {
@@ -45,7 +48,43 @@ describe('webApi RPC recovery', () => {
 });
 
 describe('webApi.serverSetActive', () => {
-  it('persists the id only after the cookie was set', async () => {
+  it('stores the new id before the cookie is written, so a racing recovery seals the new server', async () => {
+    storage.servers = [server, { ...server, id: 'b', host: 'other.example.com' }];
+    let idWhenWriting: string | null = null;
+    actions.setActiveServerCookie.mockImplementation(async () => {
+      idWhenWriting = storage.activeId;
+      return { success: true };
+    });
+    expect(await webApi.serverSetActive('b')).toEqual({ success: true });
+    expect(idWhenWriting).toBe('b');
+    expect(storage.activeId).toBe('b');
+  });
+
+  it('ends on the new server when a recovery re-seal started before the switch', async () => {
+    storage.servers = [server, { ...server, id: 'b', host: 'other.example.com' }];
+    const sealed: string[] = [];
+    let releaseFirst!: () => void;
+    actions.setActiveServerCookie.mockImplementationOnce(async (target: { host: string }) => {
+      sealed.push(target.host);
+      await new Promise<void>((resolve) => { releaseFirst = resolve; });
+      return { success: true };
+    });
+    actions.setActiveServerCookie.mockImplementation(async (target: { host: string }) => {
+      sealed.push(target.host);
+      return { success: true };
+    });
+    actions.rpcRequest
+      .mockResolvedValueOnce({ success: false, error: 'x', code: 'NO_SESSION' })
+      .mockResolvedValue({ success: true });
+    const recovering = webApi.rpcSessionStats();
+    await vi.waitFor(() => expect(sealed).toEqual(['nas.example.com']));
+    await webApi.serverSetActive('b');
+    releaseFirst();
+    await recovering;
+    expect(sealed.at(-1)).toBe('other.example.com');
+  });
+
+  it('persists the id when the cookie was set', async () => {
     storage.activeId = null;
     expect(await webApi.serverSetActive('a')).toEqual({ success: true });
     expect(storage.activeId).toBe('a');
@@ -59,10 +98,28 @@ describe('webApi.serverSetActive', () => {
     expect(await webApi.serverSetActive('missing')).toMatchObject({ success: false });
   });
 
+  it('does not undo a later switch when its own cookie write fails', async () => {
+    storage.servers = [server, { ...server, id: 'b' }, { ...server, id: 'c' }];
+    actions.setActiveServerCookie.mockImplementationOnce(async () => {
+      storage.activeId = 'c';
+      return { success: false, error: 'x', code: 'INVALID_INPUT' };
+    });
+    await webApi.serverSetActive('b');
+    expect(storage.activeId).toBe('c');
+  });
+
   it('clears the cookie and the id for null', async () => {
     expect(await webApi.serverSetActive(null)).toEqual({ success: true });
     expect(actions.clearServerCookie).toHaveBeenCalled();
     expect(storage.activeId).toBeNull();
+  });
+
+  it('returns the failure when the cookie cannot be cleared', async () => {
+    const failed = { success: false, error: 'x', code: 'SERVER_MISCONFIGURED' };
+    actions.clearServerCookie.mockResolvedValue(failed);
+    expect(await webApi.serverSetActive(null)).toEqual(failed);
+    storage.activeId = 'a';
+    expect(await webApi.serverRemove('a')).toEqual(failed);
   });
 });
 

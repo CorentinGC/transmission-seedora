@@ -8,14 +8,25 @@ import { serverTargetSchema, sessionPayloadSchema, type SessionPayload } from '.
  * cookie jar happens in the actions. Nothing here logs, and no error carries a secret or payload.
  */
 
-/** Seal lifetime, enforced cryptographically regardless of `Max-Age`. */
-export const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
+/**
+ * Seal lifetime, enforced cryptographically regardless of `Max-Age`. Short on purpose: a stolen cookie
+ * stops working within hours, and the client re-seals transparently from `localStorage` (ADR 0002 section 6).
+ */
+export const SESSION_TTL_SECONDS = 4 * 60 * 60;
 
 /** Cookie `Max-Age`: the seal lifetime minus a minute, so the cookie never outlives its seal. */
 export const SESSION_COOKIE_MAX_AGE = SESSION_TTL_SECONDS - 60;
 
 /** Name of the pre-ADR-0002 base64 cookie. It is never parsed, only deleted. */
 export const LEGACY_COOKIE_NAME = 'seedora_server';
+
+/** The target does not fit in one cookie. Carries no message detail: nothing from the payload may leak. */
+export class SessionTooLargeError extends Error {
+  constructor() {
+    super('Session is too large');
+    this.name = 'SessionTooLargeError';
+  }
+}
 
 /** Browsers reject cookies above this many bytes. */
 const MAX_COOKIE_BYTES = 4096;
@@ -51,6 +62,7 @@ function secretId(secret: string): number {
 /**
  * Seals a server target as the cookie value, always with the current secret.
  * @throws ConfigError when the secret is missing (production) or too short.
+ * @throws SessionTooLargeError when the sealed value would not fit in a cookie.
  * @throws Error with a fixed message when `target` is not a valid server target.
  */
 export async function sealSession(target: unknown, env: EnvSource = process.env): Promise<string> {
@@ -59,7 +71,7 @@ export async function sealSession(target: unknown, env: EnvSource = process.env)
   const { current } = getCookieSecrets(env);
   const payload: SessionPayload = { v: 1, ...parsed.data };
   const sealed = await sealData(payload, { password: { [secretId(current)]: current }, ttl: SESSION_TTL_SECONDS });
-  if (Buffer.byteLength(sealed, 'utf8') > MAX_COOKIE_BYTES) throw new Error('Session is too large');
+  if (Buffer.byteLength(sealed, 'utf8') > MAX_COOKIE_BYTES) throw new SessionTooLargeError();
   return sealed;
 }
 

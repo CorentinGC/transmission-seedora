@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OutboundError } from './errors';
 import type { OutboundResponse } from './outbound';
-import type { ServerTarget } from './schemas';
+import { RPC_METHODS, type ServerTarget } from './schemas';
 import {
   DEFAULT_TIMEOUT_MS,
   LONG_TIMEOUT_MS,
   MAX_CACHED_SESSION_IDS,
+  SMALL_RESPONSE_MAX_BYTES,
   callTransmission,
   clearSessionIdCache,
+  maxResponseBytesForMethod,
   sessionIdCacheSize,
   timeoutForMethod,
 } from './transmission';
@@ -37,6 +39,39 @@ describe('timeoutForMethod', () => {
     expect(timeoutForMethod('torrent-get')).toBe(DEFAULT_TIMEOUT_MS);
     expect(LONG_TIMEOUT_MS).toBe(30_000);
     expect(DEFAULT_TIMEOUT_MS).toBe(15_000);
+  });
+});
+
+describe('response size per method', () => {
+  it('leaves torrent-get on the outbound default and caps every other allowlisted method at 1 MiB', () => {
+    expect(maxResponseBytesForMethod('torrent-get')).toBeUndefined();
+    expect(SMALL_RESPONSE_MAX_BYTES).toBe(1024 * 1024);
+    for (const method of RPC_METHODS.filter((m) => m !== 'torrent-get')) {
+      expect(maxResponseBytesForMethod(method)).toBe(SMALL_RESPONSE_MAX_BYTES);
+    }
+  });
+
+  it('passes the cap, the client key, the allowlist and onResolved to the outbound call', async () => {
+    const post = vi.fn().mockResolvedValue(ok());
+    const onResolved = vi.fn();
+    const allowedHosts = [{ host: 'nas.example.com' }];
+    await callTransmission(target, { method: 'session-get' }, 1000, { post, allowPrivate: true, allowedHosts, clientKey: 'k', onResolved });
+    expect(post.mock.calls[0][2]).toMatchObject({ maxResponseBytes: SMALL_RESPONSE_MAX_BYTES, allowedHosts, clientKey: 'k', onResolved });
+    await callTransmission(target, { method: 'torrent-get', args: { fields: ['id'] } }, 1000, { post, allowPrivate: true });
+    expect(post.mock.calls[1][2].maxResponseBytes).toBeUndefined();
+  });
+
+  it('maps a malformed SEEDORA_ALLOWED_HOSTS to SERVER_MISCONFIGURED without a request', async () => {
+    vi.stubEnv('SEEDORA_ALLOWED_HOSTS', 'http://bad');
+    const post = vi.fn().mockResolvedValue(ok());
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    expect(await callTransmission(target, { method: 'session-get' }, 1000, { post, allowPrivate: true })).toMatchObject({
+      success: false,
+      code: 'SERVER_MISCONFIGURED',
+    });
+    expect(post).not.toHaveBeenCalled();
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
   });
 });
 

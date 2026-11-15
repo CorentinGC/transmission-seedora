@@ -9,12 +9,13 @@ vi.mock('./web-storage', () => ({
 }));
 vi.mock('./server-actions/session', () => ({ setActiveServerCookie: setCookie.fn }));
 
-import { MAX_GEOIP_IPS } from './server/schemas';
-import { GEOIP_CHUNK_SIZE, chunk, toServerTarget, withSessionRecovery } from './session-recovery';
+import { RESEAL_COOLDOWN_MS, resetSessionRecovery, withSessionRecovery } from './session-recovery';
 
 const noSession = { success: false, error: 'No active server configured', code: 'NO_SESSION' };
 
 beforeEach(() => {
+  resetSessionRecovery();
+  vi.useRealTimers();
   storage.activeId = 'a';
   storage.servers = [{ id: 'a', host: 'nas.example.com', port: 9091, path: '', useSSL: false }];
   setCookie.fn.mockReset().mockResolvedValue({ success: true });
@@ -28,10 +29,24 @@ describe('withSessionRecovery', () => {
     expect(call).toHaveBeenCalledTimes(2);
   });
 
-  it('retries only once when the session is still missing', async () => {
+  it('retries only once and reports SESSION_UNAVAILABLE when the session is still missing after a re-seal', async () => {
     const call = vi.fn().mockResolvedValue(noSession);
-    expect(await withSessionRecovery(call)).toEqual(noSession);
+    expect(await withSessionRecovery(call)).toMatchObject({ success: false, code: 'SESSION_UNAVAILABLE' });
     expect(call).toHaveBeenCalledTimes(2);
+  });
+
+  it('stops re-sealing for the cool-down after such a failure, then resumes', async () => {
+    vi.useFakeTimers();
+    const call = vi.fn().mockResolvedValue(noSession);
+    await withSessionRecovery(call);
+    expect(setCookie.fn).toHaveBeenCalledTimes(1);
+    call.mockClear();
+    expect(await withSessionRecovery(call)).toMatchObject({ code: 'SESSION_UNAVAILABLE' });
+    expect(setCookie.fn).toHaveBeenCalledTimes(1);
+    expect(call).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(RESEAL_COOLDOWN_MS + 1);
+    await withSessionRecovery(call);
+    expect(setCookie.fn).toHaveBeenCalledTimes(2);
   });
 
   it('does not retry other errors or successes', async () => {
@@ -41,42 +56,38 @@ describe('withSessionRecovery', () => {
     expect(setCookie.fn).not.toHaveBeenCalled();
   });
 
-  it('returns the original error when there is no stored active server or the re-seal fails', async () => {
+  it('returns the original error when there is no stored active server', async () => {
     storage.activeId = null;
     const call = vi.fn().mockResolvedValue(noSession);
     expect(await withSessionRecovery(call)).toEqual(noSession);
     expect(call).toHaveBeenCalledTimes(1);
+  });
 
-    storage.activeId = 'a';
-    setCookie.fn.mockResolvedValue({ success: false, code: 'RATE_LIMITED' });
-    expect(await withSessionRecovery(call)).toEqual(noSession);
-    expect(call).toHaveBeenCalledTimes(2);
+  it('returns the re-seal failure itself, not NO_SESSION, and does not retry the call', async () => {
+    const failed = { success: false, error: 'Too many requests, try again shortly', code: 'RATE_LIMITED' };
+    setCookie.fn.mockResolvedValue(failed);
+    const call = vi.fn().mockResolvedValue(noSession);
+    expect(await withSessionRecovery(call)).toEqual(failed);
+    expect(call).toHaveBeenCalledTimes(1);
+  });
+
+  it('seals the new active server when the active id changed while the cookie was being written', async () => {
+    storage.servers = [
+      { id: 'a', host: 'old.example.com', port: 1, path: '', useSSL: false },
+      { id: 'b', host: 'new.example.com', port: 2, path: '', useSSL: false },
+    ];
+    setCookie.fn.mockImplementationOnce(async () => {
+      storage.activeId = 'b';
+      return { success: true };
+    });
+    const call = vi.fn().mockResolvedValueOnce(noSession).mockResolvedValueOnce({ success: true });
+    await withSessionRecovery(call);
+    expect(setCookie.fn.mock.calls.map(([t]) => (t as { host: string }).host)).toEqual(['old.example.com', 'new.example.com']);
   });
 
   it('shares one re-seal between concurrent calls', async () => {
     const make = () => vi.fn().mockResolvedValueOnce(noSession).mockResolvedValueOnce({ success: true });
     await Promise.all([withSessionRecovery(make()), withSessionRecovery(make()), withSessionRecovery(make())]);
     expect(setCookie.fn).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('chunk', () => {
-  it('splits into batches of at most the size, matching the server limit', () => {
-    expect(GEOIP_CHUNK_SIZE).toBe(MAX_GEOIP_IPS);
-    expect(chunk([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
-    expect(chunk([], 2)).toEqual([]);
-  });
-});
-
-describe('toServerTarget', () => {
-  const base = { host: 'h', port: 1, useSSL: true };
-  it('normalises the path and drops empty credentials and extra fields', () => {
-    expect(toServerTarget({ ...base, path: '' }).path).toBe('/transmission/rpc');
-    expect(toServerTarget({ ...base, path: 'rpc' }).path).toBe('/rpc');
-    expect(toServerTarget({ ...base, path: '/x', username: '', password: '' })).toEqual({
-      host: 'h', port: 1, path: '/x', useSSL: true, username: undefined, password: undefined,
-    });
-    const withProxy = { ...base, path: '/x', proxyPassword: 'secret', id: 'i' };
-    expect(JSON.stringify(toServerTarget(withProxy))).not.toContain('secret');
   });
 });

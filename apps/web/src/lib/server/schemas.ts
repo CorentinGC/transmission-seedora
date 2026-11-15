@@ -1,5 +1,6 @@
 import { isIP } from 'node:net';
 import { z } from 'zod';
+import { DEFAULT_RPC_PATH } from '../server-target';
 
 /**
  * Runtime validation for everything a caller can send to the web server (ADR 0004).
@@ -13,8 +14,7 @@ export const MAX_ARGS_BYTES = 1024 * 1024;
 /** Largest GeoIP lookup batch; the client splits larger peer lists into chunks. */
 export const MAX_GEOIP_IPS = 512;
 
-/** Default Transmission RPC path. */
-export const DEFAULT_RPC_PATH = '/transmission/rpc';
+export { DEFAULT_RPC_PATH };
 
 /** The Transmission RPC methods `web-api.ts` uses, and no others (ADR 0004 section 3). */
 export const RPC_METHODS = [
@@ -54,6 +54,8 @@ const MAX_FIELDS = 128;
 const MAX_FIELD_LENGTH = 64;
 const MAX_ID_STRING_LENGTH = 64;
 const MAX_TEXT_LENGTH = 4096;
+/** A `filename` can be a magnet link or a long URL; the 1 MiB args cap still bounds the total. */
+const MAX_FILENAME_LENGTH = 64 * 1024;
 
 const LABEL_PATTERN = /^[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/;
 /** A final label WHATWG URL parsing would read as a number (`2130706433`, `0x7f`), which resolves to an IPv4 address. */
@@ -78,7 +80,8 @@ function isValidHost(value: string): boolean {
   return isIP(value) !== 0 || isHostname(value);
 }
 
-const hostSchema = z.string().refine(isValidHost, { message: 'Invalid host' });
+/** A hostname, IPv4 literal or IPv6 literal (bare or bracketed). */
+export const hostSchema = z.string().refine(isValidHost, { message: 'Invalid host' });
 
 const portSchema = z.number().int().min(1).max(65535);
 
@@ -122,7 +125,7 @@ const knownArgumentShapes: Record<string, z.ZodType> = {
   location: textSchema,
   path: textSchema,
   name: textSchema,
-  filename: textSchema,
+  filename: z.string().max(MAX_FILENAME_LENGTH),
   'download-dir': textSchema,
   group: z.union([textSchema, z.array(textSchema)]),
   'delete-local-data': z.boolean(),
@@ -132,25 +135,39 @@ const knownArgumentShapes: Record<string, z.ZodType> = {
 
 const jsonObjectSchema = z.record(z.string(), z.json());
 
-/** UTF-8 size of the JSON form of `value`; `Infinity` when it cannot be serialised (e.g. too deep). */
-function serialisedBytes(value: unknown): number {
+/**
+ * The JSON round trip of `value` (what the old proxy sent on the wire): `undefined` values are
+ * dropped and `NaN` becomes `null`. Null when `value` cannot be serialised (cycle, BigInt, too deep)
+ * or is larger than `MAX_ARGS_BYTES`.
+ */
+function normaliseJson(value: unknown): unknown {
   try {
-    return Buffer.byteLength(JSON.stringify(value), 'utf8');
+    const text = JSON.stringify(value);
+    if (text === undefined || Buffer.byteLength(text, 'utf8') > MAX_ARGS_BYTES) return INVALID;
+    return JSON.parse(text);
   } catch {
-    return Infinity;
+    return INVALID;
   }
 }
 
+const INVALID = Symbol('invalid');
+
 /**
- * Plain JSON object of at most 1 MiB. The daemon validates its own semantics (ADR 0004 section 2),
- * so only the well-known keys get a shape.
+ * Plain JSON object of at most 1 MiB. The value is normalised with a JSON round trip before any
+ * check, so everything below sees exactly what would be forwarded. The daemon validates its own
+ * semantics (ADR 0004 section 2), so only the well-known keys get a shape.
  */
-const rpcArgsSchema = z.unknown().transform((value, ctx): Record<string, z.core.util.JSONType> => {
+const rpcArgsSchema = z.unknown().transform((raw, ctx): Record<string, z.core.util.JSONType> => {
   const fail = (): never => {
     ctx.addIssue({ code: 'custom', message: 'Invalid arguments' });
     return z.NEVER;
   };
-  if (serialisedBytes(value) > MAX_ARGS_BYTES) return fail();
+  // Classes, Maps and Dates pass `JSON.stringify` (as `{}` or a string): only plain objects are accepted.
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return fail();
+  const proto: unknown = Object.getPrototypeOf(raw);
+  if (proto !== Object.prototype && proto !== null) return fail();
+  const value = normaliseJson(raw);
+  if (value === INVALID) return fail();
   if (typeof value === 'object' && value !== null && Object.hasOwn(value, '__proto__')) return fail();
   const parsed = jsonObjectSchema.safeParse(value);
   if (!parsed.success) return fail();

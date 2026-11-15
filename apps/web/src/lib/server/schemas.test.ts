@@ -186,13 +186,29 @@ describe('RPC arguments', () => {
     ['Date', new Date()],
     ['Map', new Map()],
     ['class instance', new (class Foo { a = 1; })()],
-    ['function value', { f: () => 1 }],
-    ['undefined value', { a: undefined }],
-    ['NaN value', { a: NaN }],
     ['bigint value', { a: BigInt(1) }],
-    ['symbol value', { a: Symbol('x') }],
   ])('rejects non-JSON or non-plain args: %s', (_label, args) => {
     expect(call(args).success).toBe(false);
+  });
+
+  it('normalises like JSON.stringify: undefined values are dropped, NaN and Infinity become null', () => {
+    const parsed = rpcCallSchema.parse({
+      method: 'torrent-set',
+      args: { ids: [1], sequentialDownload: undefined, 'speed-limit-down': NaN, ratio: Infinity, nested: { gone: undefined, kept: 1 }, fn: () => 1, sym: Symbol('x') },
+    });
+    expect(parsed.args).toEqual({ ids: [1], 'speed-limit-down': null, ratio: null, nested: { kept: 1 } });
+    expect(parsed.args).not.toHaveProperty('sequentialDownload');
+  });
+
+  it('validates well-known keys after normalisation', () => {
+    expect(call({ ids: [1], paused: undefined }, 'torrent-add').success).toBe(true);
+    expect(call({ ids: [Number.NaN] }).success).toBe(false);
+  });
+
+  it('allows a filename of 64 KiB (a magnet link) but not more', () => {
+    expect(call({ filename: 'm'.repeat(64 * 1024) }, 'torrent-add').success).toBe(true);
+    expect(call({ filename: 'm'.repeat(64 * 1024 + 1) }, 'torrent-add').success).toBe(false);
+    expect(call({ location: 'x'.repeat(4097) }, 'torrent-set-location').success).toBe(false);
   });
 
   it('rejects a prototype-pollution key', () => {

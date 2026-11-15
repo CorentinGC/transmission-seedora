@@ -4,6 +4,8 @@ import {
   DEV_SECRET_SLOT,
   assertServerConfig,
   getAllowPrivateHosts,
+  getAllowedHosts,
+  isListedHost,
   getCookieSecrets,
   getTrustProxyHeaders,
   isProduction,
@@ -144,5 +146,78 @@ describe('assertServerConfig', () => {
   it('does not warn by default', () => {
     assertServerConfig({ NODE_ENV: 'production', COOKIE_SECRET: SECRET_A });
     expect(console.warn).not.toHaveBeenCalled();
+  });
+});
+
+describe('getAllowedHosts (f3u)', () => {
+  it('is null when unset or blank', () => {
+    expect(getAllowedHosts({})).toBeNull();
+    expect(getAllowedHosts({ SEEDORA_ALLOWED_HOSTS: '' })).toBeNull();
+    expect(getAllowedHosts({ SEEDORA_ALLOWED_HOSTS: '  ' })).toBeNull();
+  });
+
+  it('parses host, host:port, IPv4 and IPv6 entries, trimmed and lowercased', () => {
+    expect(
+      getAllowedHosts({ SEEDORA_ALLOWED_HOSTS: ' NAS.lan , nas2.lan:9091,192.168.1.5,192.168.1.6:8080,[fd00::1],[fd00::2]:9091,fd00::3' }),
+    ).toEqual([
+      { host: 'nas.lan' },
+      { host: 'nas2.lan', port: 9091 },
+      { host: '192.168.1.5' },
+      { host: '192.168.1.6', port: 8080 },
+      { host: 'fd00::1' },
+      { host: 'fd00::2', port: 9091 },
+      { host: 'fd00::3' },
+    ]);
+  });
+
+  it.each([
+    ['empty entry', 'nas.lan,,x.lan'],
+    ['scheme', 'http://nas.lan'],
+    ['path', 'nas.lan/rpc'],
+    ['userinfo', 'a@nas.lan'],
+    ['port 0', 'nas.lan:0'],
+    ['port too large', 'nas.lan:65536'],
+    ['non numeric port', 'nas.lan:http'],
+    ['wildcard', '*.lan'],
+    ['unclosed bracket', '[fd00::1'],
+    ['garbage after bracket', '[fd00::1]x'],
+    ['zone id', '[fe80::1%eth0]'],
+    ['numeric host', '2130706433'],
+  ])('rejects a malformed entry without echoing it: %s', (_label, value) => {
+    let message = '';
+    try {
+      getAllowedHosts({ SEEDORA_ALLOWED_HOSTS: value });
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigError);
+      message = (error as Error).message;
+    }
+    expect(message).not.toBe('');
+    expect(message).not.toContain(value);
+  });
+});
+
+describe('isListedHost', () => {
+  const list = [{ host: 'nas.lan' }, { host: 'other.lan', port: 9091 }];
+  it('matches case-insensitively, and on the port only when the entry has one', () => {
+    expect(isListedHost(list, 'NAS.lan', 1234)).toBe(true);
+    expect(isListedHost(list, 'other.lan', 9091)).toBe(true);
+    expect(isListedHost(list, 'other.lan', 80)).toBe(false);
+    expect(isListedHost(list, 'nas.lan.evil.test', 80)).toBe(false);
+    expect(isListedHost([], 'nas.lan', 80)).toBe(false);
+  });
+});
+
+describe('assertServerConfig and SEEDORA_ALLOWED_HOSTS', () => {
+  const base = { NODE_ENV: 'production', COOKIE_SECRET: SECRET_A };
+  it('fails the boot on a malformed list', () => {
+    expect(() => assertServerConfig({ ...base, SEEDORA_ALLOWED_HOSTS: 'http://x' })).toThrow(ConfigError);
+  });
+
+  it('says whether the list limits private hosts or has no effect', () => {
+    assertServerConfig({ ...base, SEEDORA_ALLOW_PRIVATE_HOSTS: 'true', SEEDORA_ALLOWED_HOSTS: 'nas.lan' });
+    expect(String(vi.mocked(console.warn).mock.calls[0][0])).toContain('SEEDORA_ALLOWED_HOSTS only');
+    vi.mocked(console.warn).mockClear();
+    assertServerConfig({ ...base, SEEDORA_ALLOWED_HOSTS: 'nas.lan' });
+    expect(String(vi.mocked(console.warn).mock.calls[0][0])).toContain('no effect');
   });
 });

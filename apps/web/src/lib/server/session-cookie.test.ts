@@ -5,6 +5,7 @@ import {
   LEGACY_COOKIE_NAME,
   SESSION_COOKIE_MAX_AGE,
   SESSION_TTL_SECONDS,
+  SessionTooLargeError,
   getSessionCookieName,
   getSessionCookieOptions,
   sealSession,
@@ -72,7 +73,7 @@ describe('roundtrip', () => {
   });
 
   it('keeps the worst-case payload under the 4096-byte cookie limit', async () => {
-    const worst = { host: ('a'.repeat(60) + '.').repeat(3) + 'com', port: 65535, path: '/' + 'a'.repeat(255), useSSL: true, username: '€'.repeat(256), password: '€'.repeat(256) };
+    const worst = { host: ('a'.repeat(60) + '.').repeat(3) + 'com', port: 65535, path: '/' + 'a'.repeat(255), useSSL: true, username: '😀'.repeat(128), password: '😀'.repeat(128) };
     const sealed = await sealSession(worst, PROD);
     expect(Buffer.byteLength(sealed)).toBeLessThanOrEqual(4096);
     expect(await unsealSession(sealed, PROD)).toMatchObject({ host: worst.host });
@@ -181,14 +182,31 @@ describe('tampering and forgery', () => {
   });
 });
 
+describe('size', () => {
+  it('throws a typed SessionTooLargeError that carries no payload detail', async () => {
+    // A validated target always fits (about 2 KB at most), so the limit is forced through the byte count.
+    const real = Buffer.byteLength.bind(Buffer);
+    const spy = vi.spyOn(Buffer, 'byteLength').mockImplementation(((value: string, encoding?: BufferEncoding) =>
+      typeof value === 'string' && value.startsWith('Fe26.') ? 5000 : real(value, encoding)) as typeof Buffer.byteLength);
+    try {
+      const error = await sealSession(target, PROD).catch((e: unknown) => e);
+      expect(error).toBeInstanceOf(SessionTooLargeError);
+      expect((error as Error).name).toBe('SessionTooLargeError');
+      expect((error as Error).message).not.toContain(target.password);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+});
+
 describe('expiry', () => {
-  it('reads as no session after the 7-day TTL', async () => {
+  it('reads as no session after the 4-hour TTL', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-01T00:00:00Z'));
     const sealed = await sealSession(target, PROD);
-    vi.setSystemTime(new Date('2026-01-07T23:00:00Z'));
+    vi.setSystemTime(new Date('2026-01-01T03:55:00Z'));
     expect(await unsealSession(sealed, PROD)).not.toBeNull();
-    vi.setSystemTime(new Date('2026-01-08T00:05:00Z'));
+    vi.setSystemTime(new Date('2026-01-01T04:05:00Z'));
     expect(await unsealSession(sealed, PROD)).toBeNull();
   });
 });
@@ -288,7 +306,8 @@ describe('cookie attributes', () => {
     expect(options.maxAge).toBe(SESSION_COOKIE_MAX_AGE);
   });
 
-  it('has a 7-day TTL', () => {
-    expect(SESSION_TTL_SECONDS).toBe(604800);
+  it('has a TTL of a few hours, and the cookie never outlives its seal', () => {
+    expect(SESSION_TTL_SECONDS).toBe(4 * 60 * 60);
+    expect(SESSION_COOKIE_MAX_AGE).toBeLessThan(SESSION_TTL_SECONDS);
   });
 });
