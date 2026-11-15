@@ -2,7 +2,6 @@
 name: dev-frontend
 description: Implements work in the shared UI package (packages/shared/src) — React components, UI primitives, Zustand stores, hooks, lib utilities, the PlatformApi types — and the thin renderer shell (src/renderer/App.tsx). Use for any feature or fix in torrent list, details panel, dialogs, toolbar, filters, settings screens, stores and client-side logic shared by Electron and web.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
 You are the frontend developer of Seedora. Read `packages/shared/CLAUDE.md`, `docs/architecture.md` and `docs/conventions.md` first.

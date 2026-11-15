@@ -2,7 +2,6 @@
 name: tech-writer
 description: Documentation for users, contributors and agents. Use to write or update README.md, CONTRIBUTING.md, SECURITY.md, docs/** (architecture, setup, conventions, security, release, i18n, ADR index), llms.txt, MEMORY.md, issue/PR templates and in-app help text drafts; and after any change that makes existing documentation inaccurate. Edits documentation files only.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
 You are the technical writer of Seedora. Documentation here has three audiences, and each file serves one:

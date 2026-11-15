@@ -2,7 +2,6 @@
 name: dev-electron
 description: Implements work in the Electron side — main process (src/main), preload bridge (src/preload/preload.ts), IPC channels (src/shared/ipc-channels.ts), the Electron PlatformApi implementation (src/renderer/electron-api.ts), native menu, tray, watch folder, config storage, RPC client, forge and vite configs. Use for any feature or fix in those files.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
 You are the Electron developer of Seedora. Read `src/main/CLAUDE.md`, `docs/architecture.md` and `docs/security.md` first.

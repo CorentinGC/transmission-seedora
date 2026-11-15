@@ -5,13 +5,15 @@
 ## Current state (2026-11-15)
 
 - Project resumed after an 8-month pause (last release 1.2.1, 2026-03-05). Overhaul in three phases: (1) agentic setup, (2) repo cleanup and community readiness, (3) full review with fixes.
-- **Phase 1 done on branch `chore/agentic-setup`** (not pushed): `CLAUDE.md`, `AGENTS.md`, nested `CLAUDE.md`, `docs/`, `llms.txt`, 12 agents in `.claude/agents/`, 3 skills in `.claude/skills/`, tracked `.claude/settings.json` + post-edit hook, `scripts/i18n-check.mjs`, beads backlog (94 issues, 8 epics).
+- **Phase 1 done on branch `chore/agentic-setup`** (not pushed): `CLAUDE.md`, `AGENTS.md`, nested `CLAUDE.md`, `docs/`, `llms.txt`, 12 agents in `.claude/agents/`, 3 skills in `.claude/skills/`, tracked `.claude/settings.json` + post-edit hook, `scripts/i18n-check.mjs`, beads backlog (100 issues, 9 epics; exported to `.beads/issues.jsonl`).
 - Phases 2 and 3 not started. Their work is entirely in beads.
 
 ## Next steps
 
 - [ ] Phase 2 — repo cleanup: epic `seedora-transmission-mi9` and tests/CI epic `seedora-transmission-we5` (Vitest foundation `we5.1` unblocks several fixes — do it first).
 - [ ] Phase 3 — P0 security first: web epic `seedora-transmission-c07`, Electron epic `seedora-transmission-23u`; then bugs `0cl`, i18n `k5r`, a11y/design `vpz`.
+- [ ] Phase 4 (after 2–3) — epic `seedora-transmission-52c`: landing page on `seedora.app`, web app moved to `app.seedora.app`, landing SEO, Google Search Console registration (via the browser, with the user's confirmation). Hosting and DNS are not defined in the repo — ask the user first.
+- [ ] Do not push `chore/agentic-setup` before the P0 web fixes are ready to ship: `docs/security.md` describes gaps that are live on seedora.app.
 - [ ] Visual review pass (`vpz.10`) needs the user to start Electron (`npm run start:debug`) and web (`npm run dev:web`).
 
 ## Baseline measured on 2026-11-15 (origin/staging, before any fix)

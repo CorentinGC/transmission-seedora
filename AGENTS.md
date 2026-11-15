@@ -38,6 +38,7 @@ Small, single-area fixes may skip step 2. Steps 4 and 5 are never skipped.
 - Read before writing: the code you change, its callers, the nested `CLAUDE.md`, the relevant `docs/` page. Verify facts in the repo; do not rely on memory of a library — check its current docs (context7 MCP or the package's own docs) for the version in `package.json`.
 - Stay in your lane. If the task needs a change outside the paths you own, report it instead of making it.
 - Prefer what exists (helpers, primitives, store actions, official tooling) over new code or a new dependency.
+- Gates are judged against the baseline recorded in `MEMORY.md`: until the test runner and the lint migration land, `npm test` does not exist and `npm run lint` / `npm run i18n:check` are red on `staging`. Do not add failures; do not claim a gate you could not run.
 - Report honestly: real gate output, what was verified and how, what was not. "Unverified" is an acceptable status; a false "done" is not.
 - Never start the Electron app or the web server; the user does.
 - Never commit, push, open a PR, tag, publish or change repository settings unless the user has explicitly asked for that action.
@@ -72,7 +73,8 @@ Rules:
 - Check `bd ready` before asking what to work on; claim an issue before starting it.
 - File newly discovered work as its own issue linked with `discovered-from`; do not silently widen the current task.
 - Close an issue only when its acceptance criteria are met and verified.
-- bd installs git hooks through `core.hooksPath` (`.beads/hooks`) and keeps `.beads/` in sync with git on commit; other hook tooling must chain with it.
+- The live database is local (Dolt, git-ignored). The shared copy is `.beads/issues.jsonl`: run `bd export -o .beads/issues.jsonl` after changing issues and include the file in the commit, so the backlog travels with the branch. A fresh clone restores it with `bd import`.
+- bd installs git hooks through `core.hooksPath` (`.beads/hooks`); other hook tooling must chain with it.
 <!-- END BEADS INTEGRATION -->
 
 ## Ending a work session

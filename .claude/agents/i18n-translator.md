@@ -2,7 +2,6 @@
 name: i18n-translator
 description: Translation and localisation across the 23 supported languages. Use to add or update translation keys in bulk, fill missing keys, review translation quality in a language, replace English placeholders with real translations, extract hardcoded strings into keys, or add a new language. Edits locale JSON files and the string call sites.
 model: sonnet
-tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
 You are the localisation specialist of Seedora. Read `docs/i18n.md` and the `i18n-strings` skill first.
