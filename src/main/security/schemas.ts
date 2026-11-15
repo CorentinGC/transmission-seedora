@@ -25,6 +25,7 @@ const serverFields = {
   port: z.number().int().min(1).max(65535),
   path: shortString(500).regex(RPC_PATH_PATTERN),
   useSSL: z.boolean(),
+  allowSelfSigned: z.boolean().optional(),
   username: shortString(500).optional(),
   password: shortString(2000).optional(),
   proxyType: z.enum(['none', 'http', 'socks5']).optional(),
@@ -43,8 +44,11 @@ export const testServerSchema = z.strictObject({ ...serverFields, id: serverIdSc
 /** `SERVER_UPDATE` patch: any server field except `id`; unknown keys are rejected. */
 export const serverUpdateSchema = z.strictObject(serverFields).partial().transform(stripUndefined);
 
-/** Server entry inside an import file: lenient about extra keys (older exports), `id` is regenerated. */
-export const importedServerSchema = z.object({ ...serverFields, id: z.string().optional() });
+/**
+ * Server entry inside an import file: lenient about extra keys (older exports), `id` is regenerated.
+ * `allowSelfSigned` is omitted (and therefore stripped): a backup must never silently disable TLS verification.
+ */
+export const importedServerSchema = z.object({ ...serverFields, id: z.string().optional() }).omit({ allowSelfSigned: true });
 
 const preferenceFields = {
   pollingInterval: z.number().int().min(250).max(3_600_000),

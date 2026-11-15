@@ -146,7 +146,10 @@
     "copied": "Copied!",
     "loadingFiles": "Loading files...",
     "noPeers": "No peers connected",
-    "doubleClickEdit": "Double-click to edit"
+    "doubleClickEdit": "Double-click to edit",
+    "loadFailed": "Could not load details: {{error}}",
+    "requestFailed": "Request failed",
+    "torrentNotFound": "Torrent not found"
   },
   "peersTab": {
     "address": "Address",
@@ -252,6 +255,8 @@
     "port": "Port",
     "path": "RPC Path",
     "useSSL": "Use SSL/TLS",
+    "allowSelfSigned": "Accept self-signed certificate",
+    "allowSelfSignedHint": "Disables certificate verification for this server. Only enable it for a server you trust.",
     "authentication": "Authentication",
     "username": "Username",
     "password": "Password",
@@ -401,7 +406,12 @@
     "setupColumns": "Setup Columns"
   },
   "notification": {
-    "downloadComplete": "Download Complete"
+    "downloadComplete": "Download Complete",
+    "actionFailed": "Action failed: {{error}}",
+    "refreshFailed": "Could not refresh torrents: {{error}}",
+    "statsRefreshFailed": "Could not refresh server statistics: {{error}}",
+    "unknownError": "Unknown error",
+    "dismiss": "Dismiss"
   },
   "filesTab": {
     "clickToChangePriority": "Click to change priority",

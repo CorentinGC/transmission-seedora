@@ -8,3 +8,4 @@ export { Field } from './Field';
 export { SectionHeading } from './SectionHeading';
 export { InfoRow, StatRow } from './LabelValueRow';
 export { ContextMenuItem, ContextMenuSeparator } from './ContextMenuItem';
+export { Toaster } from './Toaster';

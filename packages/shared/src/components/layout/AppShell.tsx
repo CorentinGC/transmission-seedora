@@ -11,6 +11,7 @@ import { useSessionStats } from '../../hooks/useSessionStats';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { matchesStatusFilter } from '../../lib/constants';
+import { Toaster } from '../ui';
 
 function useResizable(
   direction: 'horizontal' | 'vertical',
@@ -182,6 +183,7 @@ export function AppShell() {
         </div>
       </div>
       <StatusBar />
+      <Toaster />
     </div>
   );
 }

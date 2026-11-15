@@ -17,6 +17,8 @@ export interface ServerTargetPayload {
   useSSL: boolean;
   username: string | undefined;
   password: string | undefined;
+  /** Only ever `true` or absent: the opt-in to accept an untrusted TLS certificate. */
+  allowSelfSigned: true | undefined;
 }
 
 /** Splits `items` into batches of at most `size`. */
@@ -38,6 +40,7 @@ export function toServerTarget(config: {
   useSSL: boolean;
   username?: string;
   password?: string;
+  allowSelfSigned?: boolean;
 }): ServerTargetPayload {
   const path = config.path?.trim() ? config.path.trim() : DEFAULT_RPC_PATH;
   return {
@@ -47,5 +50,6 @@ export function toServerTarget(config: {
     useSSL: config.useSSL,
     username: config.username || undefined,
     password: config.password || undefined,
+    allowSelfSigned: config.useSSL && config.allowSelfSigned === true ? true : undefined,
   };
 }

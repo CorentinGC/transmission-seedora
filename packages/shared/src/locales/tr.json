@@ -111,7 +111,10 @@
     "copied": "Kopyalandı!",
     "loadingFiles": "Dosyalar yükleniyor...",
     "noPeers": "Bağlı eş yok",
-    "doubleClickEdit": "Düzenlemek için çift tıklayın"
+    "doubleClickEdit": "Düzenlemek için çift tıklayın",
+    "loadFailed": "Ayrıntılar yüklenemedi: {{error}}",
+    "requestFailed": "İstek başarısız oldu",
+    "torrentNotFound": "Torrent bulunamadı"
   },
   "peersTab": {
     "address": "Adres",
@@ -217,6 +220,8 @@
     "port": "Port",
     "path": "RPC Yolu",
     "useSSL": "SSL/TLS Kullan",
+    "allowSelfSigned": "Kendinden imzalı sertifikayı kabul et",
+    "allowSelfSignedHint": "Bu sunucu için sertifika doğrulamasını devre dışı bırakır. Yalnızca güvendiğiniz bir sunucu için etkinleştirin.",
     "authentication": "Kimlik Doğrulama",
     "username": "Kullanıcı Adı",
     "password": "Şifre",
@@ -348,7 +353,12 @@
     "importFailed": "İçe aktarma başarısız oldu."
   },
   "notification": {
-    "downloadComplete": "İndirme Tamamlandı"
+    "downloadComplete": "İndirme Tamamlandı",
+    "actionFailed": "İşlem başarısız oldu: {{error}}",
+    "refreshFailed": "Torrent'ler yenilenemedi: {{error}}",
+    "statsRefreshFailed": "Sunucu istatistikleri yenilenemedi: {{error}}",
+    "unknownError": "Bilinmeyen hata",
+    "dismiss": "Kapat"
   },
   "filesTab": {
     "clickToChangePriority": "Önceliği değiştirmek için tıklayın",

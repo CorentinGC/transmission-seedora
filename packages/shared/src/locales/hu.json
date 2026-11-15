@@ -111,7 +111,10 @@
     "copied": "Másolva!",
     "loadingFiles": "Fájlok betöltése...",
     "noPeers": "Nincs csatlakozott peer",
-    "doubleClickEdit": "Dupla kattintás a szerkesztéshez"
+    "doubleClickEdit": "Dupla kattintás a szerkesztéshez",
+    "loadFailed": "A részletek betöltése sikertelen: {{error}}",
+    "requestFailed": "A kérés sikertelen",
+    "torrentNotFound": "A torrent nem található"
   },
   "peersTab": {
     "address": "Cím",
@@ -217,6 +220,8 @@
     "port": "Port",
     "path": "RPC útvonal",
     "useSSL": "SSL/TLS használata",
+    "allowSelfSigned": "Önaláírt tanúsítvány elfogadása",
+    "allowSelfSignedHint": "Kikapcsolja a tanúsítvány ellenőrzését ennél a kiszolgálónál. Csak megbízható kiszolgálónál kapcsold be.",
     "authentication": "Hitelesítés",
     "username": "Felhasználónév",
     "password": "Jelszó",
@@ -348,7 +353,12 @@
     "importFailed": "Az importálás sikertelen."
   },
   "notification": {
-    "downloadComplete": "Letöltés befejezve"
+    "downloadComplete": "Letöltés befejezve",
+    "actionFailed": "A művelet sikertelen: {{error}}",
+    "refreshFailed": "A torrentek frissítése sikertelen: {{error}}",
+    "statsRefreshFailed": "Nem sikerült frissíteni a kiszolgáló statisztikáit: {{error}}",
+    "unknownError": "Ismeretlen hiba",
+    "dismiss": "Bezárás"
   },
   "filesTab": {
     "clickToChangePriority": "Kattintson a prioritás módosításához",

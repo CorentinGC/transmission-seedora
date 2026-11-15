@@ -7,6 +7,8 @@ export interface ServerConfig {
   port: number;
   path: string;
   useSSL: boolean;
+  /** Skip TLS certificate verification (self-signed certificates). Only meaningful when useSSL is true. */
+  allowSelfSigned?: boolean;
   username?: string;
   password?: string;
   proxyType?: 'none' | 'http' | 'socks5';

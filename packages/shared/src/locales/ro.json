@@ -111,7 +111,10 @@
     "copied": "Copiat!",
     "loadingFiles": "Se încarcă fișierele...",
     "noPeers": "Niciun peer conectat",
-    "doubleClickEdit": "Dublu-clic pentru a edita"
+    "doubleClickEdit": "Dublu-clic pentru a edita",
+    "loadFailed": "Detaliile nu au putut fi încărcate: {{error}}",
+    "requestFailed": "Solicitarea a eșuat",
+    "torrentNotFound": "Torrentul nu a fost găsit"
   },
   "peersTab": {
     "address": "Adresă",
@@ -217,6 +220,8 @@
     "port": "Port",
     "path": "Cale RPC",
     "useSSL": "Folosește SSL/TLS",
+    "allowSelfSigned": "Acceptă certificat autosemnat",
+    "allowSelfSignedHint": "Dezactivează verificarea certificatului pentru acest server. Activează doar pentru un server de încredere.",
     "authentication": "Autentificare",
     "username": "Utilizator",
     "password": "Parolă",
@@ -348,7 +353,12 @@
     "importFailed": "Importul a eșuat."
   },
   "notification": {
-    "downloadComplete": "Descărcare finalizată"
+    "downloadComplete": "Descărcare finalizată",
+    "actionFailed": "Acțiunea a eșuat: {{error}}",
+    "refreshFailed": "Torrentele nu au putut fi reîmprospătate: {{error}}",
+    "statsRefreshFailed": "Nu s-au putut actualiza statisticile serverului: {{error}}",
+    "unknownError": "Eroare necunoscută",
+    "dismiss": "Închide"
   },
   "filesTab": {
     "clickToChangePriority": "Clic pentru a schimba prioritatea",

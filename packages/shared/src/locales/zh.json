@@ -111,7 +111,10 @@
     "copied": "已复制！",
     "loadingFiles": "正在加载文件...",
     "noPeers": "没有已连接的节点",
-    "doubleClickEdit": "双击编辑"
+    "doubleClickEdit": "双击编辑",
+    "loadFailed": "无法加载详细信息：{{error}}",
+    "requestFailed": "请求失败",
+    "torrentNotFound": "未找到种子"
   },
   "peersTab": {
     "address": "地址",
@@ -217,6 +220,8 @@
     "port": "端口",
     "path": "RPC 路径",
     "useSSL": "使用 SSL/TLS",
+    "allowSelfSigned": "接受自签名证书",
+    "allowSelfSignedHint": "停用此服务器的证书验证。仅对您信任的服务器启用。",
     "authentication": "认证",
     "username": "用户名",
     "password": "密码",
@@ -348,7 +353,12 @@
     "importFailed": "导入失败。"
   },
   "notification": {
-    "downloadComplete": "下载完成"
+    "downloadComplete": "下载完成",
+    "actionFailed": "操作失败：{{error}}",
+    "refreshFailed": "无法刷新种子：{{error}}",
+    "statsRefreshFailed": "无法刷新服务器统计信息：{{error}}",
+    "unknownError": "未知错误",
+    "dismiss": "关闭"
   },
   "filesTab": {
     "clickToChangePriority": "点击更改优先级",

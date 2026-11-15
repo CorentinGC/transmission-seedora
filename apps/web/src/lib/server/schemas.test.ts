@@ -330,3 +330,14 @@ describe('geoipInputSchema', () => {
     expect(geoipInputSchema.safeParse(undefined).success).toBe(false);
   });
 });
+
+describe('allowSelfSigned', () => {
+  const base = { host: 'nas.example.com', port: 9091, useSSL: true };
+  it('is optional, accepted as a boolean and refused otherwise', () => {
+    expect(serverTargetSchema.parse(base).allowSelfSigned).toBeUndefined();
+    expect(serverTargetSchema.parse({ ...base, allowSelfSigned: true }).allowSelfSigned).toBe(true);
+    for (const bad of ['true', 1, null, {}]) {
+      expect(serverTargetSchema.safeParse({ ...base, allowSelfSigned: bad }).success).toBe(false);
+    }
+  });
+});

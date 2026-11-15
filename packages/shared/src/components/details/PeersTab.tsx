@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { Torrent, TorrentPeer } from '../../types/torrent';
 import { formatSpeed, formatPercent } from '../../lib/format';
 import { useApi } from '../../platform/api-context';
+import { useTorrentFields } from '../../hooks/useTorrentFields';
 
 interface Props {
   torrent: Torrent;
@@ -19,35 +20,33 @@ function countryToFlag(countryCode: string): string {
 
 type GeoInfo = { country: string; region: string; city: string } | null;
 
+const PEER_FIELDS = ['peers'] as const;
+
 export function PeersTab({ torrent }: Props) {
   const { t } = useTranslation();
-  const [peers, setPeers] = useState<TorrentPeer[]>([]);
+  const { data, error } = useTorrentFields<{ peers: TorrentPeer[] }>(torrent.id, PEER_FIELDS);
   const [geoData, setGeoData] = useState<Record<string, GeoInfo>>({});
   const api = useApi();
+  const peers = data?.peers ?? [];
+  const addressKey = peers.map((p) => p.address).join(',');
 
   useEffect(() => {
+    if (!addressKey || !api.geoipLookup) return;
     let cancelled = false;
     api
-      .rpcTorrentGet(['peers'], [torrent.id])
-      .then((res) => {
-        if (!cancelled && res.success && res.data) {
-          const d = res.data as { torrents: { peers: TorrentPeer[] }[] };
-          const peerList = d.torrents?.[0]?.peers ?? [];
-          setPeers(peerList);
-
-          // GeoIP lookup
-          const ips = peerList.map((p) => p.address);
-          if (ips.length > 0 && api.geoipLookup) {
-            api.geoipLookup(ips).then((geoRes) => {
-              if (!cancelled && geoRes.success && geoRes.data) {
-                setGeoData(geoRes.data);
-              }
-            });
-          }
-        }
+      .geoipLookup(addressKey.split(','))
+      .then((geoRes) => {
+        if (!cancelled && geoRes.success && geoRes.data) setGeoData(geoRes.data);
+      })
+      .catch(() => {
+        // GeoIP is a cosmetic enrichment: peers stay listed without flags.
       });
     return () => { cancelled = true; };
-  }, [torrent.id, api]);
+  }, [addressKey, api]);
+
+  if (error && !data) {
+    return <div role="alert" className="text-destructive text-xs">{t('details.loadFailed', { error })}</div>;
+  }
 
   if (peers.length === 0) {
     return <div className="text-muted-foreground text-xs">{t('details.noPeers')}</div>;

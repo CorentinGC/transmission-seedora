@@ -34,3 +34,13 @@ describe('toServerTarget', () => {
     expect(toServerTarget({ ...base, host: '  nas.example.com \n' }).host).toBe('nas.example.com');
   });
 });
+
+describe('toServerTarget allowSelfSigned', () => {
+  const base = { host: 'h', port: 1, useSSL: true };
+  it('is sent only when explicitly true on an HTTPS server', () => {
+    expect(toServerTarget({ ...base, allowSelfSigned: true }).allowSelfSigned).toBe(true);
+    expect(toServerTarget({ ...base, allowSelfSigned: false }).allowSelfSigned).toBeUndefined();
+    expect(toServerTarget(base).allowSelfSigned).toBeUndefined();
+    expect(toServerTarget({ ...base, useSSL: false, allowSelfSigned: true }).allowSelfSigned).toBeUndefined();
+  });
+});

@@ -22,6 +22,7 @@ export function ServerFormDialog({ server, onClose }: Props) {
   const [port, setPort] = useState(server?.port ?? 9091);
   const [path, setPath] = useState(server?.path ?? '/transmission/rpc');
   const [useSSL, setUseSSL] = useState(server?.useSSL ?? false);
+  const [allowSelfSigned, setAllowSelfSigned] = useState(server?.allowSelfSigned ?? false);
   const [username, setUsername] = useState(server?.username ?? '');
   const [password, setPassword] = useState(server?.password ?? '');
   const [proxyType, setProxyType] = useState<'none' | 'http' | 'socks5'>(server?.proxyType ?? 'none');
@@ -37,6 +38,7 @@ export function ServerFormDialog({ server, onClose }: Props) {
   const getConfig = (): NewServerConfig => ({
     name: name || `${host}:${port}`,
     host, port, path, useSSL,
+    allowSelfSigned: useSSL ? allowSelfSigned : undefined,
     username: username || undefined,
     password: password || undefined,
     proxyType,
@@ -112,6 +114,18 @@ export function ServerFormDialog({ server, onClose }: Props) {
         </Field>
 
         <Checkbox label={t('server.useSSL')} checked={useSSL} onChange={(e) => setUseSSL((e.target as HTMLInputElement).checked)} className="text-sm" />
+        {useSSL && (
+          <div className="space-y-1">
+            <Checkbox
+              label={t('server.allowSelfSigned')}
+              checked={allowSelfSigned}
+              onChange={(e) => setAllowSelfSigned((e.target as HTMLInputElement).checked)}
+              aria-describedby="allow-self-signed-hint"
+              className="text-sm"
+            />
+            <p id="allow-self-signed-hint" className="text-xs text-muted-foreground">{t('server.allowSelfSignedHint')}</p>
+          </div>
+        )}
 
         <div className="border-t pt-3">
           <SectionHeading>{t('server.authentication')}</SectionHeading>

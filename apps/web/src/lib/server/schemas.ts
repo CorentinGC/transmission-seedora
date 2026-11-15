@@ -104,6 +104,8 @@ export const serverTargetSchema = z.object({
   useSSL: z.boolean(),
   username: credentialSchema.optional(),
   password: credentialSchema.optional(),
+  /** Opt-in to an untrusted (self-signed) TLS certificate; absent means verify (ADR 0003). */
+  allowSelfSigned: z.boolean().optional(),
 });
 
 export type ServerTarget = z.infer<typeof serverTargetSchema>;

@@ -111,7 +111,10 @@
     "copied": "Скопійовано!",
     "loadingFiles": "Завантаження файлів...",
     "noPeers": "Немає підключених пірів",
-    "doubleClickEdit": "Двічі клацніть для редагування"
+    "doubleClickEdit": "Двічі клацніть для редагування",
+    "loadFailed": "Не вдалося завантажити відомості: {{error}}",
+    "requestFailed": "Запит не вдався",
+    "torrentNotFound": "Торрент не знайдено"
   },
   "peersTab": {
     "address": "Адреса",
@@ -217,6 +220,8 @@
     "port": "Порт",
     "path": "Шлях RPC",
     "useSSL": "Використовувати SSL/TLS",
+    "allowSelfSigned": "Приймати самопідписаний сертифікат",
+    "allowSelfSignedHint": "Вимикає перевірку сертифіката для цього сервера. Вмикайте лише для довіреного сервера.",
     "authentication": "Автентифікація",
     "username": "Ім'я користувача",
     "password": "Пароль",
@@ -348,7 +353,12 @@
     "importFailed": "Не вдалося виконати імпорт."
   },
   "notification": {
-    "downloadComplete": "Завантаження завершено"
+    "downloadComplete": "Завантаження завершено",
+    "actionFailed": "Не вдалося виконати дію: {{error}}",
+    "refreshFailed": "Не вдалося оновити торенти: {{error}}",
+    "statsRefreshFailed": "Не вдалося оновити статистику сервера: {{error}}",
+    "unknownError": "Невідома помилка",
+    "dismiss": "Закрити"
   },
   "filesTab": {
     "clickToChangePriority": "Натисніть, щоб змінити пріоритет",

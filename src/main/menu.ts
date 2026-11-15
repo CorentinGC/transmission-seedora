@@ -39,7 +39,7 @@ export function createMenu(mainWindow: BrowserWindow): void {
         },
         {
           label: 'Add Magnet Link…',
-          accelerator: 'CmdOrCtrl+M',
+          accelerator: 'CmdOrCtrl+Shift+M',
           click: () => mainWindow.webContents.send(IPC.MENU_ADD_MAGNET),
         },
         { type: 'separator' },
@@ -116,8 +116,9 @@ export function createMenu(mainWindow: BrowserWindow): void {
         },
         { type: 'separator' },
         {
+          // No accelerator: a menu accelerator on Delete captures the key in text inputs. The renderer
+          // handles the Delete key itself (it can see focus and selection).
           label: 'Remove…',
-          accelerator: 'Delete',
           click: () => mainWindow.webContents.send(IPC.MENU_TORRENT_REMOVE),
         },
       ],

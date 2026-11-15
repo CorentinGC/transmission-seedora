@@ -142,6 +142,89 @@ describe('webApi.serverSetActive', () => {
   });
 });
 
+describe('webApi.serverUpdate', () => {
+  it('re-seals the cookie with the new target when the active server is edited', async () => {
+    expect(await webApi.serverUpdate('a', { host: ' new.example.com ', port: 1234, path: 'rpc', username: 'u', password: 'p', allowSelfSigned: true } as never)).toEqual({ success: true });
+    expect(storage.servers[0]).toMatchObject({ host: ' new.example.com ', port: 1234 });
+    expect(actions.setActiveServerCookie).toHaveBeenCalledTimes(1);
+    expect(actions.setActiveServerCookie).toHaveBeenCalledWith({
+      host: 'new.example.com', port: 1234, path: '/rpc', useSSL: true, username: 'u', password: 'p', allowSelfSigned: true,
+    });
+  });
+
+  it('does not touch the cookie when another server is edited', async () => {
+    storage.servers = [server, { ...server, id: 'b' }];
+    expect(await webApi.serverUpdate('b', { host: 'x.example.com' })).toEqual({ success: true });
+    expect(actions.setActiveServerCookie).not.toHaveBeenCalled();
+  });
+
+  it('does not touch the cookie when there is no active server', async () => {
+    storage.activeId = null;
+    await webApi.serverUpdate('a', { host: 'x.example.com' });
+    expect(actions.setActiveServerCookie).not.toHaveBeenCalled();
+  });
+
+  it('reports a failed re-seal and reports an unknown server', async () => {
+    actions.setActiveServerCookie.mockResolvedValue({ success: false, error: 'x', code: 'INVALID_INPUT' });
+    expect(await webApi.serverUpdate('a', { host: 'x.example.com' })).toMatchObject({ success: false, code: 'INVALID_INPUT' });
+    expect(await webApi.serverUpdate('missing', {})).toMatchObject({ success: false });
+  });
+
+  it('keeps session recovery sealing the edited target afterwards', async () => {
+    await webApi.serverUpdate('a', { host: 'edited.example.com' });
+    actions.setActiveServerCookie.mockClear();
+    actions.rpcRequest
+      .mockResolvedValueOnce({ success: false, error: 'x', code: 'NO_SESSION' })
+      .mockResolvedValueOnce({ success: true });
+    await webApi.rpcSessionStats();
+    expect(actions.setActiveServerCookie).toHaveBeenCalledWith(expect.objectContaining({ host: 'edited.example.com' }));
+  });
+});
+
+describe('webApi fail-closed re-seal', () => {
+  it('clears the old cookie when the re-seal of an edited active server fails', async () => {
+    actions.setActiveServerCookie.mockResolvedValueOnce({ success: false, error: 'x', code: 'RATE_LIMITED' });
+    expect(await webApi.serverUpdate('a', { host: 'new.example.com', allowSelfSigned: false } as never)).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    expect(actions.clearServerCookie).toHaveBeenCalledTimes(1);
+    actions.setActiveServerCookie.mockClear();
+    actions.rpcRequest
+      .mockResolvedValueOnce({ success: false, error: 'x', code: 'NO_SESSION' })
+      .mockResolvedValueOnce({ success: true });
+    await webApi.rpcSessionStats();
+    expect(storage.servers[0]).toMatchObject({ host: 'nas.example.com' });
+    expect(actions.setActiveServerCookie).toHaveBeenCalledWith(expect.objectContaining({ host: 'nas.example.com' }));
+  });
+
+  it('still returns the re-seal failure when the clear fails too', async () => {
+    actions.setActiveServerCookie.mockResolvedValue({ success: false, error: 'x', code: 'RATE_LIMITED' });
+    actions.clearServerCookie.mockResolvedValue({ success: false, error: 'y', code: 'SERVER_MISCONFIGURED' });
+    expect(await webApi.serverUpdate('a', { host: 'new.example.com' })).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+  });
+
+  it('re-seals on import when the active server target changed', async () => {
+    expect(await webApi.configImport({ servers: [{ ...server, host: 'imported.example.com' }] })).toEqual({ success: true });
+    expect(actions.setActiveServerCookie).toHaveBeenCalledWith(expect.objectContaining({ host: 'imported.example.com' }));
+  });
+
+  it('does not touch the cookie on import when the active target is unchanged', async () => {
+    await webApi.configImport({ servers: [{ ...server, name: 'Renamed' }] });
+    expect(actions.setActiveServerCookie).not.toHaveBeenCalled();
+    expect(actions.clearServerCookie).not.toHaveBeenCalled();
+  });
+
+  it('clears the cookie when the import fails to re-seal the changed active server', async () => {
+    actions.setActiveServerCookie.mockResolvedValue({ success: false, error: 'x', code: 'RATE_LIMITED' });
+    expect(await webApi.configImport({ servers: [{ ...server, host: 'imported.example.com' }] })).toMatchObject({ success: false, code: 'RATE_LIMITED' });
+    expect(actions.clearServerCookie).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears the cookie and the active id when the import drops the active server', async () => {
+    expect(await webApi.configImport({ servers: [{ ...server, id: 'z' }] })).toEqual({ success: true });
+    expect(actions.clearServerCookie).toHaveBeenCalledTimes(1);
+    expect(storage.activeId).toBeNull();
+  });
+});
+
 describe('webApi.geoipLookup', () => {
   it('splits large lists into chunks of at most 512 and merges the results', async () => {
     const ips = Array.from({ length: 1100 }, (_, i) => `10.${Math.floor(i / 250)}.${i % 250}.1`);

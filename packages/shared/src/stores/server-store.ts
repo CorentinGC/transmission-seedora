@@ -3,6 +3,7 @@ import type { ServerConfig, NewServerConfig } from '../types/server';
 import { getPlatformApi } from '../platform/api-store';
 import { useTorrentStore } from './torrent-store';
 import { useSessionStore } from './session-store';
+import { bumpServerEpoch, isServerEpochCurrent } from '../lib/server-epoch';
 
 interface ServerStore {
   servers: ServerConfig[];
@@ -53,6 +54,7 @@ export const useServerStore = create<ServerStore>((set) => ({
   removeServer: async (id) => {
     const res = await getPlatformApi().serverRemove(id);
     if (res.success) {
+      if (useServerStore.getState().activeServerId === id) bumpServerEpoch();
       set((state) => ({
         servers: state.servers.filter((s) => s.id !== id),
         activeServerId: state.activeServerId === id ? null : state.activeServerId,
@@ -62,27 +64,32 @@ export const useServerStore = create<ServerStore>((set) => ({
   },
 
   setActiveServer: async (id) => {
+    // A newer call (or a server removal) makes every response of this one stale.
+    const epoch = bumpServerEpoch();
     set({ connectionStatus: id ? 'connecting' : 'disconnected', connectionError: null });
     if (!id) {
       useTorrentStore.getState().reset();
       useSessionStore.getState().reset();
     }
-    const res = await getPlatformApi().serverSetActive(id);
-    if (!res.success) {
-      set({ connectionStatus: 'error', connectionError: res.error ?? 'Connection failed' });
-      return;
-    }
-    set({ activeServerId: id });
-    if (!id) return;
     try {
+      const res = await getPlatformApi().serverSetActive(id);
+      if (!isServerEpochCurrent(epoch)) return;
+      if (!res.success) {
+        set({ connectionStatus: 'error', connectionError: res.error ?? 'Connection failed' });
+        return;
+      }
+      set({ activeServerId: id });
+      if (!id) return;
       const sessionRes = await getPlatformApi().rpcSessionGet();
+      if (!isServerEpochCurrent(epoch)) return;
       if (sessionRes.success) {
         set({ connectionStatus: 'connected' });
       } else {
         set({ connectionStatus: 'error', connectionError: sessionRes.error ?? 'Connection failed' });
       }
     } catch (err) {
-      set({ connectionStatus: 'error', connectionError: (err as Error).message });
+      if (!isServerEpochCurrent(epoch)) return;
+      set({ connectionStatus: 'error', connectionError: err instanceof Error ? err.message : 'Connection failed' });
     }
   },
 

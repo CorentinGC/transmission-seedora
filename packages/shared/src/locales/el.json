@@ -111,7 +111,10 @@
     "copied": "Αντιγράφηκε!",
     "loadingFiles": "Φόρτωση αρχείων...",
     "noPeers": "Κανένα συνδεδεμένο peer",
-    "doubleClickEdit": "Διπλό κλικ για επεξεργασία"
+    "doubleClickEdit": "Διπλό κλικ για επεξεργασία",
+    "loadFailed": "Δεν ήταν δυνατή η φόρτωση των λεπτομερειών: {{error}}",
+    "requestFailed": "Το αίτημα απέτυχε",
+    "torrentNotFound": "Το torrent δεν βρέθηκε"
   },
   "peersTab": {
     "address": "Διεύθυνση",
@@ -217,6 +220,8 @@
     "port": "Θύρα",
     "path": "Διαδρομή RPC",
     "useSSL": "Χρήση SSL/TLS",
+    "allowSelfSigned": "Αποδοχή αυτο-υπογεγραμμένου πιστοποιητικού",
+    "allowSelfSignedHint": "Απενεργοποιεί τον έλεγχο του πιστοποιητικού για αυτόν τον διακομιστή. Ενεργοποιήστε το μόνο για διακομιστή που εμπιστεύεστε.",
     "authentication": "Ταυτοποίηση",
     "username": "Όνομα χρήστη",
     "password": "Κωδικός",
@@ -348,7 +353,12 @@
     "importFailed": "Η εισαγωγή απέτυχε."
   },
   "notification": {
-    "downloadComplete": "Η λήψη ολοκληρώθηκε"
+    "downloadComplete": "Η λήψη ολοκληρώθηκε",
+    "actionFailed": "Η ενέργεια απέτυχε: {{error}}",
+    "refreshFailed": "Δεν ήταν δυνατή η ανανέωση των torrents: {{error}}",
+    "statsRefreshFailed": "Αδυναμία ανανέωσης των στατιστικών του διακομιστή: {{error}}",
+    "unknownError": "Άγνωστο σφάλμα",
+    "dismiss": "Κλείσιμο"
   },
   "filesTab": {
     "clickToChangePriority": "Κλικ για αλλαγή προτεραιότητας",

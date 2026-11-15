@@ -7,6 +7,8 @@ export interface ServerConfig {
   port: number;
   path: string;
   useSSL: boolean;
+  /** Accept a self-signed or otherwise untrusted TLS certificate for this server (default false). */
+  allowSelfSigned?: boolean;
   username?: string;
   password?: string;
   proxyType?: 'none' | 'http' | 'socks5';

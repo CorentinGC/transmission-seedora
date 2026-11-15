@@ -5,7 +5,7 @@ import { useTorrentStore } from '../../stores/torrent-store';
 import { useSessionStore } from '../../stores/session-store';
 import { useApi } from '../../platform/api-context';
 import { formatBytes } from '../../lib/format';
-import { extractTrackersFromBase64 } from '../../lib/torrent-parser';
+import { extractTrackersFromBase64, MAX_TRACKERS } from '../../lib/torrent-parser';
 
 interface Props {
   onClose: () => void;
@@ -134,12 +134,14 @@ export function AddTorrentDialog({ onClose }: Props) {
       const existingUrls = existing.split('\n').map((s) => s.trim()).filter(Boolean);
       // Merge: add new trackers that don't already exist
       const merged = [...existingUrls];
+      const seen = new Set(existingUrls);
       let added = 0;
       for (const url of newTrackers) {
-        if (!merged.includes(url)) {
-          merged.push(url);
-          added++;
-        }
+        if (merged.length >= MAX_TRACKERS) break;
+        if (seen.has(url)) continue;
+        seen.add(url);
+        merged.push(url);
+        added++;
       }
       if (added === 0) {
         setError(t('dialog.errorTrackersAlreadyPresent'));

@@ -111,7 +111,10 @@
     "copied": "Copiado!",
     "loadingFiles": "Carregando arquivos...",
     "noPeers": "Nenhum peer conectado",
-    "doubleClickEdit": "Clique duplo para editar"
+    "doubleClickEdit": "Clique duplo para editar",
+    "loadFailed": "Não foi possível carregar os detalhes: {{error}}",
+    "requestFailed": "Falha no pedido",
+    "torrentNotFound": "Torrent não encontrado"
   },
   "peersTab": {
     "address": "Endereço",
@@ -217,6 +220,8 @@
     "port": "Porta",
     "path": "Caminho RPC",
     "useSSL": "Usar SSL/TLS",
+    "allowSelfSigned": "Aceitar certificado autoassinado",
+    "allowSelfSignedHint": "Desativa a verificação do certificado deste servidor. Ative apenas para um servidor de confiança.",
     "authentication": "Autenticação",
     "username": "Nome de utilizador",
     "password": "Palavra-passe",
@@ -348,7 +353,12 @@
     "importFailed": "Falha na importação."
   },
   "notification": {
-    "downloadComplete": "Download concluído"
+    "downloadComplete": "Download concluído",
+    "actionFailed": "A ação falhou: {{error}}",
+    "refreshFailed": "Não foi possível atualizar os torrents: {{error}}",
+    "statsRefreshFailed": "Não foi possível atualizar as estatísticas do servidor: {{error}}",
+    "unknownError": "Erro desconhecido",
+    "dismiss": "Dispensar"
   },
   "filesTab": {
     "clickToChangePriority": "Clique para alterar a prioridade",

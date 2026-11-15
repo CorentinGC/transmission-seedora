@@ -1,18 +1,29 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pencil, Trash2, Plus, Check, X } from 'lucide-react';
 import type { Torrent, TorrentTrackerStats } from '../../types/torrent';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { Button } from '../ui';
 import { useApi } from '../../platform/api-context';
+import { fetchTorrentFields, useTorrentFields } from '../../hooks/useTorrentFields';
+import { notifyFailure } from '../../stores/notification-store';
+import { currentServerEpoch, isServerEpochCurrent } from '../../lib/server-epoch';
 
 interface Props {
   torrent: Torrent;
 }
 
+const TRACKER_FIELDS = ['trackerStats', 'trackerList'] as const;
+
+interface TrackerData {
+  trackerStats: TorrentTrackerStats[];
+  trackerList: string;
+}
+
 export function TrackersTab({ torrent }: Props) {
   const { t } = useTranslation();
-  const [trackerStats, setTrackerStats] = useState<TorrentTrackerStats[]>([]);
+  const { data, error, refresh } = useTorrentFields<TrackerData>(torrent.id, TRACKER_FIELDS);
+  const trackerStats = data?.trackerStats ?? [];
   const [newTracker, setNewTracker] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -20,48 +31,37 @@ export function TrackersTab({ torrent }: Props) {
   const setTorrentProps = useTorrentStore((s) => s.setTorrentProps);
   const api = useApi();
 
-  const fetchTrackers = useCallback(() => {
-    api
-      .rpcTorrentGet(['trackerStats', 'trackerList'], [torrent.id])
-      .then((res) => {
-        if (res.success && res.data) {
-          const d = res.data as { torrents: { trackerStats: TorrentTrackerStats[]; trackerList: string }[] };
-          if (d.torrents?.[0]?.trackerStats) setTrackerStats(d.torrents[0].trackerStats);
-        }
-      });
-  }, [torrent.id]);
-
-  useEffect(() => {
-    let cancelled = false;
-    api
-      .rpcTorrentGet(['trackerStats', 'trackerList'], [torrent.id])
-      .then((res) => {
-        if (!cancelled && res.success && res.data) {
-          const d = res.data as { torrents: { trackerStats: TorrentTrackerStats[]; trackerList: string }[] };
-          if (d.torrents?.[0]?.trackerStats) setTrackerStats(d.torrents[0].trackerStats);
-        }
-      });
-    return () => { cancelled = true; };
-  }, [torrent.id]);
-
-  const getTrackerList = async (): Promise<string> => {
-    const res = await api.rpcTorrentGet(['trackerList'], [torrent.id]);
-    if (res.success && res.data) {
-      const d = res.data as { torrents: { trackerList: string }[] };
-      return d.torrents?.[0]?.trackerList ?? '';
+  /** Reads the current tracker list; null (after notifying) when the daemon cannot be reached. */
+  const getTrackerList = async (): Promise<string | null> => {
+    try {
+      return (await fetchTorrentFields<{ trackerList: string }>(api, ['trackerList'], torrent.id)).trackerList ?? '';
+    } catch (err) {
+      notifyFailure('notification.actionFailed', err instanceof Error ? err.message : undefined);
+      return null;
     }
-    return '';
+  };
+
+  /** Rewrites the tracker list from its current value; true once the change is applied. */
+  const updateTrackerList = async (update: (current: string) => string): Promise<boolean> => {
+    const epoch = currentServerEpoch();
+    const current = await getTrackerList();
+    if (current === null) return false;
+    // The list was read from a server that is no longer the active one: writing it back
+    // to the new server would overwrite that torrent's trackers.
+    if (!isServerEpochCurrent(epoch)) return false;
+    const ok = await setTorrentProps([torrent.id], { trackerList: update(current) });
+    if (ok) await refresh();
+    return ok;
   };
 
   const addTracker = async () => {
     if (!newTracker.trim()) return;
     setLoadingAction('add');
     try {
-      const current = await getTrackerList();
-      const updated = current ? `${current}\n\n${newTracker.trim()}` : newTracker.trim();
-      await setTorrentProps([torrent.id], { trackerList: updated });
-      setNewTracker('');
-      fetchTrackers();
+      const added = await updateTrackerList((current) =>
+        current ? `${current}\n\n${newTracker.trim()}` : newTracker.trim(),
+      );
+      if (added) setNewTracker('');
     } finally {
       setLoadingAction(null);
     }
@@ -70,13 +70,13 @@ export function TrackersTab({ torrent }: Props) {
   const removeTracker = async (announce: string) => {
     setLoadingAction(`remove-${announce}`);
     try {
-      const current = await getTrackerList();
-      const tiers = current.split('\n\n');
-      const updated = tiers
-        .map((tier) => tier.split('\n').filter((l) => l.trim() !== announce).join('\n'))
-        .filter((tier) => tier.trim() !== '');
-      await setTorrentProps([torrent.id], { trackerList: updated.join('\n\n') });
-      fetchTrackers();
+      await updateTrackerList((current) =>
+        current
+          .split('\n\n')
+          .map((tier) => tier.split('\n').filter((l) => l.trim() !== announce).join('\n'))
+          .filter((tier) => tier.trim() !== '')
+          .join('\n\n'),
+      );
     } finally {
       setLoadingAction(null);
     }
@@ -94,14 +94,15 @@ export function TrackersTab({ torrent }: Props) {
     }
     setLoadingAction(`save-${oldAnnounce}`);
     try {
-      const current = await getTrackerList();
-      const tiers = current.split('\n\n');
-      const updated = tiers.map((tier) =>
-        tier.split('\n').map((l) => (l.trim() === oldAnnounce ? editValue.trim() : l)).join('\n')
+      const saved = await updateTrackerList((current) =>
+        current
+          .split('\n\n')
+          .map((tier) =>
+            tier.split('\n').map((l) => (l.trim() === oldAnnounce ? editValue.trim() : l)).join('\n'),
+          )
+          .join('\n\n'),
       );
-      await setTorrentProps([torrent.id], { trackerList: updated.join('\n\n') });
-      setEditingId(null);
-      fetchTrackers();
+      if (saved) setEditingId(null);
     } finally {
       setLoadingAction(null);
     }
@@ -114,6 +115,9 @@ export function TrackersTab({ torrent }: Props) {
 
   return (
     <div className="text-xs">
+      {error && (
+        <div role="alert" className="mb-1 text-destructive">{t('details.loadFailed', { error })}</div>
+      )}
       {/* Table */}
       <table className="w-full border-collapse">
         <thead>

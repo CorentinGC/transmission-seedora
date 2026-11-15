@@ -32,6 +32,11 @@ export interface OutboundTarget {
   port: number;
   path: string;
   useSSL: boolean;
+  /**
+   * Per-server opt-in (never a default): skip certificate verification for this one HTTPS target.
+   * Only affects TLS; the address policy and pinning still apply in full. Ignored for plain HTTP.
+   */
+  allowSelfSigned?: boolean;
 }
 
 /** Server-built request headers; callers cannot name arbitrary headers. */
@@ -319,6 +324,7 @@ async function sendTo(address: ResolvedAddress, exchange: Exchange, progress: Pr
         headers,
         lookup: createPinnedLookup(pinned),
         agent: false,
+        ...(target.useSSL && target.allowSelfSigned === true ? { rejectUnauthorized: false } : {}),
       });
     } catch {
       finish(new OutboundError('INVALID_INPUT'));

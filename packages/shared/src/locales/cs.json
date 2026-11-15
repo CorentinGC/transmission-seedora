@@ -111,7 +111,10 @@
     "copied": "Zkopírováno!",
     "loadingFiles": "Načítání souborů...",
     "noPeers": "Žádné připojené peery",
-    "doubleClickEdit": "Dvojklikem upravíte"
+    "doubleClickEdit": "Dvojklikem upravíte",
+    "loadFailed": "Podrobnosti se nepodařilo načíst: {{error}}",
+    "requestFailed": "Požadavek selhal",
+    "torrentNotFound": "Torrent nebyl nalezen"
   },
   "peersTab": {
     "address": "Adresa",
@@ -217,6 +220,8 @@
     "port": "Port",
     "path": "RPC cesta",
     "useSSL": "Použít SSL/TLS",
+    "allowSelfSigned": "Přijmout certifikát podepsaný sám sebou",
+    "allowSelfSignedHint": "Vypne ověřování certifikátu pro tento server. Povolte jen pro server, kterému důvěřujete.",
     "authentication": "Ověření",
     "username": "Uživatelské jméno",
     "password": "Heslo",
@@ -348,7 +353,12 @@
     "importFailed": "Import se nezdařil."
   },
   "notification": {
-    "downloadComplete": "Stahování dokončeno"
+    "downloadComplete": "Stahování dokončeno",
+    "actionFailed": "Akce selhala: {{error}}",
+    "refreshFailed": "Torrenty se nepodařilo obnovit: {{error}}",
+    "statsRefreshFailed": "Nepodařilo se obnovit statistiky serveru: {{error}}",
+    "unknownError": "Neznámá chyba",
+    "dismiss": "Zavřít"
   },
   "filesTab": {
     "clickToChangePriority": "Klikněte pro změnu priority",

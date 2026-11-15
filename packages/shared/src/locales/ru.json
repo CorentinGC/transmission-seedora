@@ -111,7 +111,10 @@
     "copied": "Скопировано!",
     "loadingFiles": "Загрузка файлов...",
     "noPeers": "Нет подключённых пиров",
-    "doubleClickEdit": "Дважды щёлкните для редактирования"
+    "doubleClickEdit": "Дважды щёлкните для редактирования",
+    "loadFailed": "Не удалось загрузить сведения: {{error}}",
+    "requestFailed": "Запрос не выполнен",
+    "torrentNotFound": "Торрент не найден"
   },
   "peersTab": {
     "address": "Адрес",
@@ -217,6 +220,8 @@
     "port": "Порт",
     "path": "Путь RPC",
     "useSSL": "Использовать SSL/TLS",
+    "allowSelfSigned": "Принимать самоподписанный сертификат",
+    "allowSelfSignedHint": "Отключает проверку сертификата для этого сервера. Включайте только для доверенного сервера.",
     "authentication": "Аутентификация",
     "username": "Имя пользователя",
     "password": "Пароль",
@@ -348,7 +353,12 @@
     "importFailed": "Не удалось выполнить импорт."
   },
   "notification": {
-    "downloadComplete": "Загрузка завершена"
+    "downloadComplete": "Загрузка завершена",
+    "actionFailed": "Не удалось выполнить действие: {{error}}",
+    "refreshFailed": "Не удалось обновить торренты: {{error}}",
+    "statsRefreshFailed": "Не удалось обновить статистику сервера: {{error}}",
+    "unknownError": "Неизвестная ошибка",
+    "dismiss": "Закрыть"
   },
   "filesTab": {
     "clickToChangePriority": "Нажмите, чтобы изменить приоритет",

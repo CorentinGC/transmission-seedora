@@ -89,6 +89,8 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
 
   handleGuarded(isTrusted, IPC.SERVER_UPDATE, z.tuple([serverIdSchema, serverUpdateSchema]), (_e, [id, updates]): IpcResponse => {
     configStore.updateServer(id, updates);
+    const updated = configStore.getServers().find(s => s.id === id);
+    if (updated) connectionManager.refreshClient(updated);
     return { success: true };
   });
 

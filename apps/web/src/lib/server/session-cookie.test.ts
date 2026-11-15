@@ -54,6 +54,13 @@ describe('roundtrip', () => {
     expect(await unsealSession(sealed, PROD)).toEqual({ v: 1, ...target });
   });
 
+  it('carries the self-signed opt-in through the sealed cookie, and omits it by default', async () => {
+    const optedIn = await unsealSession(await sealSession({ ...target, allowSelfSigned: true }, PROD), PROD);
+    expect(optedIn?.allowSelfSigned).toBe(true);
+    const plain = await unsealSession(await sealSession(target, PROD), PROD);
+    expect(plain?.allowSelfSigned).toBeUndefined();
+  });
+
   it('works without credentials and defaults the path', async () => {
     const sealed = await sealSession({ host: '10.0.0.2', port: 80, useSSL: false }, PROD);
     expect(await unsealSession(sealed, PROD)).toEqual({

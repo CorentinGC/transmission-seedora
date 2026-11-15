@@ -18,7 +18,8 @@ const store = vi.hoisted(() => ({
   updatePreferences: vi.fn(),
 }));
 vi.mock('../store/config-store', () => ({ configStore: store }));
-vi.mock('../rpc/connection-manager', () => ({ connectionManager: {} }));
+const manager = vi.hoisted(() => ({ refreshClient: vi.fn(), removeClient: vi.fn(), setActiveServer: vi.fn(), createTemporaryClient: vi.fn() }));
+vi.mock('../rpc/connection-manager', () => ({ connectionManager: manager }));
 
 const { IPC } = await import('@shared/ipc-channels');
 const { approvedPaths } = await import('../security/approved-paths');
@@ -117,9 +118,53 @@ describe('CONFIG_IMPORT', () => {
     expect(res).toEqual({ success: false, error: 'Import failed: invalid file' });
   });
 
+  it('drops allowSelfSigned from imported servers (inline data and file)', async () => {
+    const risky = { ...server, useSSL: true, allowSelfSigned: true };
+    expect((await call(IPC.CONFIG_IMPORT, { servers: [risky] })).success).toBe(true);
+    expect(store.addServer.mock.calls[0]?.[0]).not.toHaveProperty('allowSelfSigned');
+
+    const file = path.join(dir, 'selfsigned.json');
+    fs.writeFileSync(file, JSON.stringify({ servers: [{ ...risky, host: 'other' }] }));
+    approvedPaths.approve([file], 'json');
+    expect((await call(IPC.CONFIG_IMPORT, { filePath: file })).success).toBe(true);
+    expect(store.addServer.mock.calls[1]?.[0]).not.toHaveProperty('allowSelfSigned');
+  });
+
   it('imports inline data', async () => {
     const res = await call(IPC.CONFIG_IMPORT, { servers: [server] });
     expect(res.success).toBe(true);
     expect(store.addServer).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('SERVER_UPDATE', () => {
+  it('refreshes the RPC client with the stored, merged server', async () => {
+    const merged = { id: 's1', ...server, host: 'new-host' };
+    store.getServers.mockReturnValue([merged]);
+    const res = await call(IPC.SERVER_UPDATE, 's1', { host: 'new-host' });
+    expect(res.success).toBe(true);
+    expect(store.updateServer).toHaveBeenCalledWith('s1', { host: 'new-host' });
+    expect(manager.refreshClient).toHaveBeenCalledWith(merged);
+  });
+
+  it('accepts allowSelfSigned and rejects non-boolean values', async () => {
+    store.getServers.mockReturnValue([{ id: 's1', ...server }]);
+    expect((await call(IPC.SERVER_UPDATE, 's1', { allowSelfSigned: true })).success).toBe(true);
+    expect((await call(IPC.SERVER_UPDATE, 's1', { allowSelfSigned: 'yes' })).success).toBe(false);
+  });
+});
+
+describe('SERVER_TEST', () => {
+  const request = vi.fn().mockResolvedValue({});
+  beforeEach(() => manager.createTemporaryClient.mockReturnValue({ request }));
+
+  it('builds the temporary client with the submitted allowSelfSigned flag', async () => {
+    expect((await call(IPC.SERVER_TEST, { ...server, useSSL: true, allowSelfSigned: true })).success).toBe(true);
+    expect(manager.createTemporaryClient).toHaveBeenCalledWith(expect.objectContaining({ allowSelfSigned: true }));
+  });
+
+  it('leaves allowSelfSigned unset (strict TLS) when the flag is not submitted', async () => {
+    await call(IPC.SERVER_TEST, { ...server, useSSL: true });
+    expect(manager.createTemporaryClient.mock.calls[0]?.[0].allowSelfSigned).toBeUndefined();
   });
 });

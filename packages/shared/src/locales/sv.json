@@ -111,7 +111,10 @@
     "copied": "Kopierad!",
     "loadingFiles": "Laddar filer...",
     "noPeers": "Inga peers anslutna",
-    "doubleClickEdit": "Dubbelklicka för att redigera"
+    "doubleClickEdit": "Dubbelklicka för att redigera",
+    "loadFailed": "Det gick inte att läsa in detaljer: {{error}}",
+    "requestFailed": "Begäran misslyckades",
+    "torrentNotFound": "Torrenten hittades inte"
   },
   "peersTab": {
     "address": "Adress",
@@ -217,6 +220,8 @@
     "port": "Port",
     "path": "RPC-sökväg",
     "useSSL": "Använd SSL/TLS",
+    "allowSelfSigned": "Acceptera självsignerat certifikat",
+    "allowSelfSignedHint": "Inaktiverar certifikatverifiering för den här servern. Aktivera endast för en server du litar på.",
     "authentication": "Autentisering",
     "username": "Användarnamn",
     "password": "Lösenord",
@@ -348,7 +353,12 @@
     "importFailed": "Importen misslyckades."
   },
   "notification": {
-    "downloadComplete": "Nedladdning slutförd"
+    "downloadComplete": "Nedladdning slutförd",
+    "actionFailed": "Åtgärden misslyckades: {{error}}",
+    "refreshFailed": "Det gick inte att uppdatera torrents: {{error}}",
+    "statsRefreshFailed": "Det gick inte att uppdatera serverstatistiken: {{error}}",
+    "unknownError": "Okänt fel",
+    "dismiss": "Stäng"
   },
   "filesTab": {
     "clickToChangePriority": "Klicka för att ändra prioritet",

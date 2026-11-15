@@ -32,7 +32,11 @@ interface UiStore {
   confirmOnAdd: boolean;
   speedPresets: number[] | null;
 
+  // Dialogs
+  removeDialogOpen: boolean;
+
   // Actions
+  setRemoveDialogOpen: (open: boolean) => void;
   setSpeedPresets: (presets: number[] | null) => void;
   toggleDetailsPanel: () => void;
   setDetailsPanelSize: (size: number) => void;
@@ -62,7 +66,9 @@ export const useUiStore = create<UiStore>((set) => ({
   relativeDates: false,
   confirmOnAdd: true,
   speedPresets: null,
+  removeDialogOpen: false,
 
+  setRemoveDialogOpen: (open) => set({ removeDialogOpen: open }),
   toggleDetailsPanel: () =>
     set((state) => ({ detailsPanelVisible: !state.detailsPanelVisible })),
   setDetailsPanelSize: (size) => set({ detailsPanelSize: size }),

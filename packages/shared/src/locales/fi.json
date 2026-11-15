@@ -111,7 +111,10 @@
     "copied": "Kopioitu!",
     "loadingFiles": "Ladataan tiedostoja...",
     "noPeers": "Ei yhdistettyjä peerejä",
-    "doubleClickEdit": "Kaksoisnapsauta muokataksesi"
+    "doubleClickEdit": "Kaksoisnapsauta muokataksesi",
+    "loadFailed": "Tietoja ei voitu ladata: {{error}}",
+    "requestFailed": "Pyyntö epäonnistui",
+    "torrentNotFound": "Torrentia ei löytynyt"
   },
   "peersTab": {
     "address": "Osoite",
@@ -217,6 +220,8 @@
     "port": "Portti",
     "path": "RPC-polku",
     "useSSL": "Käytä SSL/TLS",
+    "allowSelfSigned": "Hyväksy itse allekirjoitettu varmenne",
+    "allowSelfSignedHint": "Poistaa varmenteen tarkistuksen tältä palvelimelta. Ota käyttöön vain luotettavalle palvelimelle.",
     "authentication": "Tunnistautuminen",
     "username": "Käyttäjänimi",
     "password": "Salasana",
@@ -348,7 +353,12 @@
     "importFailed": "Tuonti epäonnistui."
   },
   "notification": {
-    "downloadComplete": "Lataus valmis"
+    "downloadComplete": "Lataus valmis",
+    "actionFailed": "Toiminto epäonnistui: {{error}}",
+    "refreshFailed": "Torrentteja ei voitu päivittää: {{error}}",
+    "statsRefreshFailed": "Palvelimen tilastojen päivitys epäonnistui: {{error}}",
+    "unknownError": "Tuntematon virhe",
+    "dismiss": "Sulje"
   },
   "filesTab": {
     "clickToChangePriority": "Napsauta muuttaaksesi prioriteettia",

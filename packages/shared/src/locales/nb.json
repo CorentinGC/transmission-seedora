@@ -111,7 +111,10 @@
     "copied": "Kopiert!",
     "loadingFiles": "Laster filer...",
     "noPeers": "Ingen peers tilkoblet",
-    "doubleClickEdit": "Dobbeltklikk for å redigere"
+    "doubleClickEdit": "Dobbeltklikk for å redigere",
+    "loadFailed": "Kunne ikke laste inn detaljer: {{error}}",
+    "requestFailed": "Forespørselen mislyktes",
+    "torrentNotFound": "Torrent ble ikke funnet"
   },
   "peersTab": {
     "address": "Adresse",
@@ -217,6 +220,8 @@
     "port": "Port",
     "path": "RPC-sti",
     "useSSL": "Bruk SSL/TLS",
+    "allowSelfSigned": "Godta selvsignert sertifikat",
+    "allowSelfSignedHint": "Slår av sertifikatverifisering for denne serveren. Slå på kun for en server du stoler på.",
     "authentication": "Autentisering",
     "username": "Brukernavn",
     "password": "Passord",
@@ -348,7 +353,12 @@
     "importFailed": "Importen mislyktes."
   },
   "notification": {
-    "downloadComplete": "Nedlasting fullført"
+    "downloadComplete": "Nedlasting fullført",
+    "actionFailed": "Handlingen mislyktes: {{error}}",
+    "refreshFailed": "Kunne ikke oppdatere torrents: {{error}}",
+    "statsRefreshFailed": "Kunne ikke oppdatere serverstatistikk: {{error}}",
+    "unknownError": "Ukjent feil",
+    "dismiss": "Lukk"
   },
   "filesTab": {
     "clickToChangePriority": "Klikk for å endre prioritet",

@@ -38,9 +38,10 @@ export function Toolbar() {
   const connectionStatus = useServerStore((s) => s.connectionStatus);
   const toggleFilterPanel = useUiStore((s) => s.toggleFilterPanel);
   const toggleDetailsPanel = useUiStore((s) => s.toggleDetailsPanel);
+  const showRemoveDialog = useUiStore((s) => s.removeDialogOpen);
+  const setShowRemoveDialog = useUiStore((s) => s.setRemoveDialogOpen);
 
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
 
@@ -50,7 +51,9 @@ export function Toolbar() {
     onAddMagnet: () => setShowAddDialog(true),
     onOpenSettings: () => setShowSettings(true),
     onOpenPreferences: () => setShowPrefs(true),
-    onRemoveTorrent: () => setShowRemoveDialog(true),
+    onRemoveTorrent: () => {
+      if (useTorrentStore.getState().selectedIds.size > 0) setShowRemoveDialog(true);
+    },
   });
 
   const ids = Array.from(selectedIds);

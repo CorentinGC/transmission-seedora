@@ -111,7 +111,10 @@
     "copied": "Gekopieerd!",
     "loadingFiles": "Bestanden laden...",
     "noPeers": "Geen peers verbonden",
-    "doubleClickEdit": "Dubbelklik om te bewerken"
+    "doubleClickEdit": "Dubbelklik om te bewerken",
+    "loadFailed": "Details konden niet worden geladen: {{error}}",
+    "requestFailed": "Verzoek mislukt",
+    "torrentNotFound": "Torrent niet gevonden"
   },
   "peersTab": {
     "address": "Adres",
@@ -217,6 +220,8 @@
     "port": "Poort",
     "path": "RPC-pad",
     "useSSL": "SSL/TLS gebruiken",
+    "allowSelfSigned": "Zelfondertekend certificaat accepteren",
+    "allowSelfSignedHint": "Schakelt de certificaatcontrole voor deze server uit. Schakel dit alleen in voor een server die je vertrouwt.",
     "authentication": "Authenticatie",
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
@@ -348,7 +353,12 @@
     "importFailed": "Importeren mislukt."
   },
   "notification": {
-    "downloadComplete": "Download voltooid"
+    "downloadComplete": "Download voltooid",
+    "actionFailed": "Actie mislukt: {{error}}",
+    "refreshFailed": "Torrents konden niet worden vernieuwd: {{error}}",
+    "statsRefreshFailed": "Serverstatistieken konden niet worden vernieuwd: {{error}}",
+    "unknownError": "Onbekende fout",
+    "dismiss": "Sluiten"
   },
   "filesTab": {
     "clickToChangePriority": "Klik om prioriteit te wijzigen",

@@ -1,5 +1,38 @@
 import { useEffect, useCallback } from 'react';
 import { useTorrentStore } from '../stores/torrent-store';
+import { useUiStore } from '../stores/ui-store';
+import { useServerStore } from '../stores/server-store';
+
+/** True when the key event target is a text-entry control that owns the keyboard. */
+export function isEditableTarget(target: EventTarget | null): boolean {
+  const el = target as Partial<HTMLElement> | null;
+  if (!el) return false;
+  return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable === true;
+}
+
+/** True when the key event target sits inside a modal dialog, which owns the keyboard. */
+export function isInsideDialog(target: EventTarget | null): boolean {
+  const el = target as Partial<HTMLElement> | null;
+  return typeof el?.closest === 'function' && el.closest('[role="dialog"]') !== null;
+}
+
+/**
+ * Delete key: opens the remove dialog when connected, focus is neither in an editable
+ * control nor inside a dialog, and at least one torrent is selected.
+ * Returns true when the event was handled.
+ */
+export function handleDeleteKey(
+  e: Pick<KeyboardEvent, 'key' | 'target' | 'preventDefault'>,
+  selectionSize: number,
+  openRemoveDialog: () => void,
+  connected: boolean,
+): boolean {
+  if (e.key !== 'Delete' || !connected || selectionSize === 0) return false;
+  if (isEditableTarget(e.target) || isInsideDialog(e.target)) return false;
+  e.preventDefault();
+  openRemoveDialog();
+  return true;
+}
 
 export function useKeyboardShortcuts(allVisibleIds: number[]) {
   const selectedIds = useTorrentStore((s) => s.selectedIds);
@@ -12,8 +45,7 @@ export function useKeyboardShortcuts(allVisibleIds: number[]) {
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT';
+      const isInput = isEditableTarget(e.target);
 
       // Cmd/Ctrl+F: focus search
       if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
@@ -32,6 +64,9 @@ export function useKeyboardShortcuts(allVisibleIds: number[]) {
 
       // Don't handle other shortcuts when in input fields
       if (isInput) return;
+
+      const connected = useServerStore.getState().connectionStatus === 'connected';
+      if (handleDeleteKey(e, selectedIds.size, () => useUiStore.getState().setRemoveDialogOpen(true), connected)) return;
 
       const ids = Array.from(selectedIds);
 

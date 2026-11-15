@@ -4,6 +4,33 @@ import type { Torrent } from '../types/torrent';
 import { TORRENT_LIST_FIELDS } from '../types/torrent';
 import type { StatusFilter } from '../lib/constants';
 import { getPlatformApi } from '../platform/api-store';
+import type { PlatformApi } from '../platform/api-types';
+import { currentServerEpoch, isServerEpochCurrent } from '../lib/server-epoch';
+import { notifyFailure } from './notification-store';
+
+/** True while the periodic refresh is failing, so the user is told once per outage. */
+let refreshFailing = false;
+
+function reportRefreshFailure(error: string | undefined): void {
+  if (refreshFailing) return;
+  refreshFailing = true;
+  notifyFailure('notification.refreshFailed', error);
+}
+
+/**
+ * Runs a platform call that reports failure through `{ success: false }` (or by
+ * throwing) and surfaces any failure to the user. Resolves true on success.
+ */
+async function perform(call: () => Promise<{ success: boolean; error?: string }>): Promise<boolean> {
+  try {
+    const res = await call();
+    if (res.success) return true;
+    notifyFailure('notification.actionFailed', res.error);
+  } catch (err) {
+    notifyFailure('notification.actionFailed', err instanceof Error ? err.message : undefined);
+  }
+  return false;
+}
 
 interface TorrentStore {
   torrents: Map<number, Torrent>;
@@ -35,7 +62,7 @@ interface TorrentStore {
   verifyTorrents: (ids: number[]) => Promise<void>;
   reannounceTorrents: (ids: number[]) => Promise<void>;
   removeTorrents: (ids: number[], deleteData: boolean) => Promise<void>;
-  setTorrentProps: (ids: number[], props: Record<string, unknown>) => Promise<void>;
+  setTorrentProps: (ids: number[], props: Record<string, unknown>) => Promise<boolean>;
   moveTorrents: (ids: number[], location: string, move: boolean) => Promise<void>;
   queueMove: (ids: number[], direction: 'top' | 'up' | 'down' | 'bottom') => Promise<void>;
   addTorrent: (params: Record<string, unknown>) => Promise<{ success: boolean; error?: string; duplicate?: boolean; torrentName?: string; duplicateId?: number }>;
@@ -67,46 +94,57 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   isLoading: false,
 
   fetchTorrents: async () => {
+    const epoch = currentServerEpoch();
     set({ isLoading: true });
     try {
       const res = await getPlatformApi().rpcTorrentGet(TORRENT_LIST_FIELDS as unknown as string[]);
-      if (res.success && res.data) {
-        const data = res.data as { torrents: Torrent[] };
-        const map = new Map<number, Torrent>();
-        for (const t of data.torrents) {
-          map.set(t.id, t);
-        }
-        set({ torrents: map });
+      if (!isServerEpochCurrent(epoch)) return;
+      const data = res.data as { torrents?: Torrent[] } | undefined;
+      if (!res.success || !Array.isArray(data?.torrents)) {
+        reportRefreshFailure(res.error);
+        return;
       }
+      refreshFailing = false;
+      const map = new Map<number, Torrent>();
+      for (const t of data.torrents) {
+        map.set(t.id, t);
+      }
+      set({ torrents: map });
+    } catch (err) {
+      if (isServerEpochCurrent(epoch)) reportRefreshFailure(err instanceof Error ? err.message : undefined);
     } finally {
-      set({ isLoading: false });
+      if (isServerEpochCurrent(epoch)) set({ isLoading: false });
     }
   },
 
   fetchRecentlyActive: async () => {
+    const epoch = currentServerEpoch();
     try {
       const res = await getPlatformApi().rpcTorrentGet(
         TORRENT_LIST_FIELDS as unknown as string[],
         'recently-active',
       );
-      if (res.success && res.data) {
-        const data = res.data as { torrents: Torrent[]; removed?: number[] };
-        set((state) => {
-          const newMap = new Map(state.torrents);
-          for (const t of data.torrents) {
-            newMap.set(t.id, t);
-          }
-          if (data.removed) {
-            for (const id of data.removed) {
-              newMap.delete(id);
-            }
-          }
-          return { torrents: newMap };
-        });
+      if (!isServerEpochCurrent(epoch)) return;
+      const data = res.data as { torrents?: Torrent[]; removed?: number[] } | undefined;
+      if (!res.success || !Array.isArray(data?.torrents)) {
+        await get().fetchTorrents();
+        return;
       }
+      refreshFailing = false;
+      const changed = data.torrents;
+      set((state) => {
+        const newMap = new Map(state.torrents);
+        for (const t of changed) {
+          newMap.set(t.id, t);
+        }
+        for (const id of data.removed ?? []) {
+          newMap.delete(id);
+        }
+        return { torrents: newMap };
+      });
     } catch {
       // Fallback to full fetch on error
-      await get().fetchTorrents();
+      if (isServerEpochCurrent(epoch)) await get().fetchTorrents();
     }
   },
 
@@ -151,31 +189,27 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   },
 
   startTorrents: async (ids) => {
-    await getPlatformApi().rpcTorrentStart(ids);
-    await get().fetchRecentlyActive();
+    if (await perform(() => getPlatformApi().rpcTorrentStart(ids))) await get().fetchRecentlyActive();
   },
 
   startNowTorrents: async (ids) => {
-    await getPlatformApi().rpcTorrentStartNow(ids);
-    await get().fetchRecentlyActive();
+    if (await perform(() => getPlatformApi().rpcTorrentStartNow(ids))) await get().fetchRecentlyActive();
   },
 
   stopTorrents: async (ids) => {
-    await getPlatformApi().rpcTorrentStop(ids);
-    await get().fetchRecentlyActive();
+    if (await perform(() => getPlatformApi().rpcTorrentStop(ids))) await get().fetchRecentlyActive();
   },
 
   verifyTorrents: async (ids) => {
-    await getPlatformApi().rpcTorrentVerify(ids);
-    await get().fetchRecentlyActive();
+    if (await perform(() => getPlatformApi().rpcTorrentVerify(ids))) await get().fetchRecentlyActive();
   },
 
   reannounceTorrents: async (ids) => {
-    await getPlatformApi().rpcTorrentReannounce(ids);
+    await perform(() => getPlatformApi().rpcTorrentReannounce(ids));
   },
 
   removeTorrents: async (ids, deleteData) => {
-    await getPlatformApi().rpcTorrentRemove(ids, deleteData);
+    if (!(await perform(() => getPlatformApi().rpcTorrentRemove(ids, deleteData)))) return;
     set((state) => {
       const newMap = new Map(state.torrents);
       const newSelected = new Set(state.selectedIds);
@@ -188,29 +222,35 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   },
 
   setTorrentProps: async (ids, props) => {
-    await getPlatformApi().rpcTorrentSet(ids, props);
-    await get().fetchRecentlyActive();
+    const ok = await perform(() => getPlatformApi().rpcTorrentSet(ids, props));
+    if (ok) await get().fetchRecentlyActive();
+    return ok;
   },
 
   moveTorrents: async (ids, location, move) => {
-    await getPlatformApi().rpcTorrentSetLocation(ids, location, move);
-    await get().fetchRecentlyActive();
+    if (await perform(() => getPlatformApi().rpcTorrentSetLocation(ids, location, move))) {
+      await get().fetchRecentlyActive();
+    }
   },
 
   queueMove: async (ids, direction) => {
     const api = getPlatformApi();
-    const methods: Record<string, (ids: number[]) => Promise<unknown>> = {
-      top: (ids) => api.rpcQueueMoveTop(ids),
-      up: (ids) => api.rpcQueueMoveUp(ids),
-      down: (ids) => api.rpcQueueMoveDown(ids),
-      bottom: (ids) => api.rpcQueueMoveBottom(ids),
+    const methods = {
+      top: () => api.rpcQueueMoveTop(ids),
+      up: () => api.rpcQueueMoveUp(ids),
+      down: () => api.rpcQueueMoveDown(ids),
+      bottom: () => api.rpcQueueMoveBottom(ids),
     };
-    await methods[direction](ids);
-    await get().fetchRecentlyActive();
+    if (await perform(methods[direction])) await get().fetchRecentlyActive();
   },
 
   addTorrent: async (params) => {
-    const res = await getPlatformApi().rpcTorrentAdd(params);
+    let res: Awaited<ReturnType<PlatformApi['rpcTorrentAdd']>>;
+    try {
+      res = await getPlatformApi().rpcTorrentAdd(params);
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : undefined };
+    }
     if (res.success) {
       const data = res.data as Record<string, unknown> | undefined;
       const duplicate = data?.['torrent-duplicate'] as Record<string, unknown> | undefined;
@@ -224,16 +264,14 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
 
   startAll: async () => {
     const ids = Array.from(get().torrents.keys());
-    if (ids.length > 0) {
-      await getPlatformApi().rpcTorrentStart(ids);
+    if (ids.length > 0 && (await perform(() => getPlatformApi().rpcTorrentStart(ids)))) {
       await get().fetchRecentlyActive();
     }
   },
 
   stopAll: async () => {
     const ids = Array.from(get().torrents.keys());
-    if (ids.length > 0) {
-      await getPlatformApi().rpcTorrentStop(ids);
+    if (ids.length > 0 && (await perform(() => getPlatformApi().rpcTorrentStop(ids)))) {
       await get().fetchRecentlyActive();
     }
   },
@@ -248,6 +286,7 @@ export const useTorrentStore = create<TorrentStore>((set, get) => ({
   })),
 
   reset: () => {
+    refreshFailing = false;
     set({
       torrents: new Map(),
       selectedIds: new Set(),

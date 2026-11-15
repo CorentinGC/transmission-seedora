@@ -111,7 +111,10 @@
     "copied": "تم النسخ!",
     "loadingFiles": "جارٍ تحميل الملفات...",
     "noPeers": "لا يوجد أقران متصلون",
-    "doubleClickEdit": "انقر نقرًا مزدوجًا للتعديل"
+    "doubleClickEdit": "انقر نقرًا مزدوجًا للتعديل",
+    "loadFailed": "تعذّر تحميل التفاصيل: {{error}}",
+    "requestFailed": "فشل الطلب",
+    "torrentNotFound": "لم يتم العثور على التورنت"
   },
   "peersTab": {
     "address": "العنوان",
@@ -217,6 +220,8 @@
     "port": "المنفذ",
     "path": "مسار RPC",
     "useSSL": "استخدام SSL/TLS",
+    "allowSelfSigned": "قبول الشهادة الموقّعة ذاتيًا",
+    "allowSelfSignedHint": "يعطّل التحقق من الشهادة لهذا الخادم. فعّله فقط لخادم تثق به.",
     "authentication": "المصادقة",
     "username": "اسم المستخدم",
     "password": "كلمة المرور",
@@ -348,7 +353,12 @@
     "importFailed": "فشل الاستيراد."
   },
   "notification": {
-    "downloadComplete": "اكتمل التنزيل"
+    "downloadComplete": "اكتمل التنزيل",
+    "actionFailed": "فشل الإجراء: {{error}}",
+    "refreshFailed": "تعذّر تحديث التورنتات: {{error}}",
+    "statsRefreshFailed": "تعذّر تحديث إحصاءات الخادم: {{error}}",
+    "unknownError": "خطأ غير معروف",
+    "dismiss": "إغلاق"
   },
   "filesTab": {
     "clickToChangePriority": "انقر لتغيير الأولوية",

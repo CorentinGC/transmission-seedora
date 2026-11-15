@@ -37,6 +37,31 @@ function generateId(): string {
   return crypto.randomUUID();
 }
 
+function sameTarget(a: ServerConfig, b: ServerConfig): boolean {
+  try {
+    return JSON.stringify(toServerTarget(a)) === JSON.stringify(toServerTarget(b));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Seals the cookie for `server`. On failure the previous sealed cookie (valid for hours) would keep
+ * pointing at the old target while the UI shows the new one, so it is cleared: the next call gets
+ * NO_SESSION and recovery re-seals from storage. The seal failure is what is reported.
+ */
+async function resealOrClear(server: ServerConfig): Promise<IpcResponse> {
+  let sealed: IpcResponse;
+  try {
+    sealed = await setActiveServerCookie(toServerTarget(server));
+  } catch {
+    sealed = { success: false, error: ERROR_MESSAGES.INVALID_INPUT };
+  }
+  if (sealed.success) return sealed;
+  await clearServerCookie();
+  return sealed;
+}
+
 export const webApi: PlatformApi = {
   // ── Server management (localStorage) ──
 
@@ -56,9 +81,17 @@ export const webApi: PlatformApi = {
     const servers = getServers();
     const idx = servers.findIndex((s) => s.id === id);
     if (idx === -1) return { success: false, error: 'Server not found' };
-    servers[idx] = { ...servers[idx], ...updates };
+    const previous = servers[idx];
+    servers[idx] = { ...previous, ...updates };
     setServers(servers);
-    return { success: true };
+    // The sealed cookie holds a copy of the active target: re-seal it so the edit applies now.
+    if (getActiveServerId() !== id) return { success: true };
+    const sealed = await resealOrClear(servers[idx]);
+    if (!sealed.success) {
+      // Rejected edit: put the previous entry back so storage matches what the cookie will be re-sealed from.
+      setServers(getServers().map((s) => (s.id === id ? previous : s)));
+    }
+    return sealed;
   },
 
   async serverRemove(id: string): Promise<IpcResponse> {
@@ -221,13 +254,25 @@ export const webApi: PlatformApi = {
   },
 
   async configImport(data: Record<string, unknown>): Promise<IpcResponse> {
+    let sessionResult: IpcResponse = { success: true };
     if (data.servers && Array.isArray(data.servers)) {
-      setServers(data.servers as ServerConfig[]);
+      const activeId = getActiveServerId();
+      const before = getServers().find((s) => s.id === activeId);
+      const imported = data.servers as ServerConfig[];
+      setServers(imported);
+      const after = imported.find((s) => s?.id === activeId);
+      if (activeId && before && !after) {
+        // The sealed cookie still targets a server that no longer exists: drop it with the id.
+        setActiveServerId(null);
+        sessionResult = await clearServerCookie();
+      } else if (before && after && !sameTarget(before, after)) {
+        sessionResult = await resealOrClear(after);
+      }
     }
     if (data.preferences && typeof data.preferences === 'object') {
       setPreferences(data.preferences as Partial<AppPreferences>);
     }
-    return { success: true };
+    return sessionResult;
   },
 
   // ── Preferences (localStorage) ──
