@@ -1,0 +1,26 @@
+# Seedora
+
+> Seedora is a cross-platform remote GUI for the Transmission BitTorrent daemon: one shared React 19 UI shipped as an Electron desktop app and a Next.js 16 web app (PWA), in an npm-workspaces TypeScript monorepo.
+
+The Electron app is the root package (`src/`); the UI lives in `packages/shared/src/`; the web app in `apps/web/`. Both apps reach the daemon's RPC endpoint through a trusted process (Electron main, Next.js server), never from the page.
+
+## Documentation
+
+- [Architecture](docs/architecture.md): monorepo layout, entry points, the PlatformApi abstraction, RPC data flow on Electron and web, stores, build outputs
+- [Setup](docs/setup.md): prerequisites, install, running and packaging both apps, environment variables, MCP servers
+- [Conventions](docs/conventions.md): TypeScript, file layout and naming, IPC rules, UI primitives and theme tokens, commits and branches
+- [Security](docs/security.md): trust boundaries, what is enforced today, known gaps and their intended fixes, rules for new code
+- [Internationalisation](docs/i18n.md): 23 locales, key rules, the two i18n configs, the `i18n:check` gate
+- [Release](docs/release.md): staging → main flow, release-please, the release workflow, what a release contains
+- [Decisions](docs/decisions/0001-record-architecture-decisions.md): architecture decision records and their template
+
+## Agent reference
+
+- [CLAUDE.md](CLAUDE.md): project instructions for coding agents
+- [AGENTS.md](AGENTS.md): agent workflow, team roles and issue tracking
+- [MEMORY.md](MEMORY.md): working memory — current state, next steps, gotchas
+
+## Optional
+
+- [README](README.md): user-facing overview and installation notes
+- [Changelog](CHANGELOG.md): release history

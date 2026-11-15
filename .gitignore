@@ -92,8 +92,9 @@ typings/
 out/
 dist/
 
-# Claude Code
-.claude/settings.json
+# Claude Code (shared config is tracked; personal overrides are not)
+.claude/settings.local.json
+.claude/worktrees/
 
 # Dolt database files (added by bd init)
 .dolt/
