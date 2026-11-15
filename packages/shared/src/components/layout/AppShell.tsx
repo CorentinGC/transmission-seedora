@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useRef, useEffect } from 'react';
+import { useMemo, useCallback, useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Toolbar } from './Toolbar';
 import { StatusBar } from './StatusBar';
@@ -11,7 +11,10 @@ import { useSessionStats } from '../../hooks/useSessionStats';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { matchesStatusFilter } from '../../lib/constants';
-import { Toaster } from '../ui';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { Toaster, Sheet } from '../ui';
+
+const KEYBOARD_STEP = 16;
 
 function useResizable(
   direction: 'horizontal' | 'vertical',
@@ -63,7 +66,22 @@ function useResizable(
     [direction, minSize, maxSize, onSizeChange],
   );
 
-  return { containerRef, onMouseDown };
+  /** Arrow keys resize the pane by 16px: Left/Right for a sidebar, Up/Down for a bottom pane. */
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const grow = direction === 'horizontal' ? 'ArrowRight' : 'ArrowUp';
+      const shrink = direction === 'horizontal' ? 'ArrowLeft' : 'ArrowDown';
+      if (e.key !== grow && e.key !== shrink) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const next = Math.max(minSize, Math.min(maxSize, sizeRef.current + (e.key === grow ? KEYBOARD_STEP : -KEYBOARD_STEP)));
+      sizeRef.current = next;
+      onSizeChange?.(next);
+    },
+    [direction, minSize, maxSize, onSizeChange],
+  );
+
+  return { containerRef, onMouseDown, onKeyDown };
 }
 
 export function AppShell() {
@@ -134,11 +152,36 @@ export function AppShell() {
   const sidebar = useResizable('horizontal', filterPanelSize, setFilterPanelSize, 80, 400);
   const details = useResizable('vertical', detailsPanelSize, setDetailsPanelSize, 100, 500);
 
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const [mobilePanel, setMobilePanel] = useState<'filters' | 'details' | null>(null);
+  const toggleFilterPanel = useUiStore((s) => s.toggleFilterPanel);
+  const toggleDetailsPanel = useUiStore((s) => s.toggleDetailsPanel);
+
+  // Leaving the small layout must not leave a sheet open behind the desktop panes.
+  useEffect(() => {
+    if (isDesktop) setMobilePanel(null);
+  }, [isDesktop]);
+
+  const toggleMobile = (panel: 'filters' | 'details') => setMobilePanel((current) => (current === panel ? null : panel));
+
+  const detailsContent = selectedTorrent ? (
+    <DetailsPanel torrent={selectedTorrent} />
+  ) : (
+    <div className="flex h-full items-center justify-center bg-card p-4 text-center text-muted-foreground text-sm">
+      {t('app.selectTorrent')}
+    </div>
+  );
+
   return (
-    <div className="flex flex-col h-screen">
-      <Toolbar />
+    <div className="flex flex-col h-dvh">
+      <Toolbar
+        filterPanelOpen={isDesktop ? filterPanelVisible : mobilePanel === 'filters'}
+        detailsPanelOpen={isDesktop ? detailsPanelVisible : mobilePanel === 'details'}
+        onToggleFilterPanel={isDesktop ? toggleFilterPanel : () => toggleMobile('filters')}
+        onToggleDetailsPanel={isDesktop ? toggleDetailsPanel : () => toggleMobile('details')}
+      />
       <div className="flex flex-1 overflow-hidden">
-        {filterPanelVisible && (
+        {isDesktop && filterPanelVisible && (
           <>
             <div
               ref={sidebar.containerRef}
@@ -148,42 +191,59 @@ export function AppShell() {
               <FilterSidebar torrents={Array.from(torrents.values())} />
             </div>
             <div
-              className="w-1 cursor-col-resize bg-border hover:bg-primary/30 flex-shrink-0"
+              role="separator"
+              aria-orientation="vertical"
+              aria-label={t('app.resizePanel')}
+              aria-valuenow={filterPanelSize}
+              aria-valuemin={80}
+              aria-valuemax={400}
+              tabIndex={0}
+              className="w-1 cursor-col-resize bg-border hover:bg-primary/30 focus-visible:bg-primary/30 flex-shrink-0"
               onMouseDown={sidebar.onMouseDown}
+              onKeyDown={sidebar.onKeyDown}
             />
           </>
         )}
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
           <TorrentTable torrents={filteredTorrents} />
-          {detailsPanelVisible && (
+          {isDesktop && detailsPanelVisible && (
             <>
               <div
-                className="h-1 cursor-row-resize bg-border hover:bg-primary/30 flex-shrink-0"
+                role="separator"
+                aria-orientation="horizontal"
+                aria-label={t('app.resizePanel')}
+                aria-valuenow={detailsPanelSize}
+                aria-valuemin={100}
+                aria-valuemax={500}
+                tabIndex={0}
+                className="h-1 cursor-row-resize bg-border hover:bg-primary/30 focus-visible:bg-primary/30 flex-shrink-0"
                 onMouseDown={details.onMouseDown}
+                onKeyDown={details.onKeyDown}
               />
-              {selectedTorrent ? (
-                <div
-                  ref={details.containerRef}
-                  style={{ height: detailsPanelSize }}
-                  className="flex-shrink-0 overflow-hidden"
-                >
-                  <DetailsPanel torrent={selectedTorrent} />
-                </div>
-              ) : (
-                <div
-                  ref={details.containerRef}
-                  style={{ height: detailsPanelSize }}
-                  className="flex items-center justify-center flex-shrink-0 bg-card text-muted-foreground text-sm"
-                >
-                  {t('app.selectTorrent')}
-                </div>
-              )}
+              <div
+                ref={details.containerRef}
+                style={{ height: detailsPanelSize }}
+                className="flex-shrink-0 overflow-hidden"
+              >
+                {detailsContent}
+              </div>
             </>
           )}
         </div>
       </div>
       <StatusBar />
       <Toaster />
+
+      {!isDesktop && mobilePanel === 'filters' && (
+        <Sheet side="left" label={t('toolbar.filterPanel')} onClose={() => setMobilePanel(null)}>
+          <FilterSidebar torrents={Array.from(torrents.values())} onSelect={() => setMobilePanel(null)} />
+        </Sheet>
+      )}
+      {!isDesktop && mobilePanel === 'details' && (
+        <Sheet side="full" label={t('toolbar.detailsPanel')} onClose={() => setMobilePanel(null)}>
+          {detailsContent}
+        </Sheet>
+      )}
     </div>
   );
 }

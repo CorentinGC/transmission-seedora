@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { handleDeleteKey, isEditableTarget } from './useKeyboardShortcuts';
+import { handleDeleteKey, handleSpaceKey, isEditableTarget } from './useKeyboardShortcuts';
 
 const el = (props: Record<string, unknown>) => props as unknown as EventTarget;
 const press = (key: string, target: EventTarget | null) => ({ key, target, preventDefault: vi.fn() });
@@ -55,5 +55,33 @@ describe('handleDeleteKey', () => {
     expect(open).not.toHaveBeenCalled();
     const outside = el({ tagName: 'BUTTON', closest: () => null });
     expect(handleDeleteKey(press('Delete', outside), 1, open, true)).toBe(true);
+  });
+});
+
+describe('handleSpaceKey', () => {
+  const key = (target: object, k = ' ') => ({ key: k, target: target as unknown as EventTarget, preventDefault: vi.fn() });
+  const within = (selectors: string[]) => ({ closest: (sel: string) => (selectors.some((s) => sel.includes(s)) ? {} : null) });
+
+  it('toggles on body or a plain grid container', () => {
+    const toggle = vi.fn();
+    const e = key(within([]));
+    expect(handleSpaceKey(e, [1], toggle)).toBe(true);
+    expect(toggle).toHaveBeenCalledWith([1]);
+    expect(e.preventDefault).toHaveBeenCalled();
+  });
+
+  it('ignores Space on interactive controls, dialogs and menus', () => {
+    for (const s of ['button', 'role="tab"', 'role="menuitem"', 'role="checkbox"', 'role="gridcell"', 'role="row"', 'role="dialog"', 'role="menu"']) {
+      const toggle = vi.fn();
+      const e = key(within([s]));
+      expect(handleSpaceKey(e, [1], toggle)).toBe(false);
+      expect(toggle).not.toHaveBeenCalled();
+      expect(e.preventDefault).not.toHaveBeenCalled();
+    }
+  });
+
+  it('ignores other keys and an empty selection', () => {
+    expect(handleSpaceKey(key(within([]), 'a'), [1], vi.fn())).toBe(false);
+    expect(handleSpaceKey(key(within([])), [], vi.fn())).toBe(false);
   });
 });

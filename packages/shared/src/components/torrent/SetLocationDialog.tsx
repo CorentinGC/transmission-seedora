@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useApi } from '../../platform/api-context';
+import { Dialog, Button, Input, Field, Checkbox } from '../ui';
 import { guardedCall } from '../../lib/guarded-call';
 
 interface Props {
@@ -32,37 +32,25 @@ export function SetLocationDialog({ ids, currentLocation, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
-      <div className="bg-card border rounded-lg shadow-xl w-[420px]">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">{t('dialog.setLocation')}</h2>
-          <button onClick={onClose} className="hover:bg-accent rounded p-1"><X size={16} /></button>
+    <Dialog
+      title={t('dialog.setLocation')}
+      onClose={onClose}
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <Button onClick={onClose}>{t('dialog.cancel')}</Button>
+          <Button variant="primary" onClick={handleApply} disabled={!location.trim()}>{t('dialog.apply')}</Button>
         </div>
-        <div className="p-4 space-y-3">
-          <div>
-            <label className="text-xs text-muted-foreground">{t('dialog.newLocation')}</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                className="flex-1 h-8 px-2 text-sm rounded border bg-background"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-              <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={handleBrowse}>{t('dialog.browse')}</button>
-            </div>
+      }
+    >
+      <div className="space-y-3">
+        <Field label={t('dialog.newLocation')}>
+          <div className="flex gap-2">
+            <Input className="min-w-0 flex-1" type="text" data-autofocus value={location} onChange={(e) => setLocation(e.target.value)} />
+            <Button onClick={handleBrowse}>{t('dialog.browse')}</Button>
           </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={move} onChange={(e) => setMove(e.target.checked)} />
-            {t('dialog.moveData')}
-          </label>
-        </div>
-        <div className="flex items-center justify-end gap-2 p-4 border-t">
-          <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={onClose}>{t('dialog.cancel')}</button>
-          <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={handleApply} disabled={!location.trim()}>
-            {t('dialog.apply')}
-          </button>
-        </div>
+        </Field>
+        <Checkbox label={t('dialog.moveData')} checked={move} onChange={(e) => setMove(e.target.checked)} className="text-sm" />
       </div>
-    </div>
+    </Dialog>
   );
 }

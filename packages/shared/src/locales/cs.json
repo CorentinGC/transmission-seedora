@@ -6,7 +6,9 @@
     "noTorrents": "Žádné torrenty",
     "yes": "Ano",
     "no": "Ne",
-    "close": "Zavřít"
+    "close": "Zavřít",
+    "torrentList": "Torrenty",
+    "resizePanel": "Změnit velikost panelu"
   },
   "toolbar": {
     "addTorrent": "Přidat torrent",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Hledat torrenty...",
     "preferences": "Předvolby",
     "serverSettings": "Nastavení serveru",
-    "clearSearch": "Vymazat hledání"
+    "clearSearch": "Vymazat hledání",
+    "moreActions": "Další akce"
   },
   "statusBar": {
     "connected": "Připojeno",
@@ -40,7 +43,9 @@
     "limitSpeed": "Omezit rychlost",
     "unlimited": "Neomezeno",
     "kbs": "KB/s",
-    "setLimit": "Nastavit limit"
+    "setLimit": "Nastavit limit",
+    "downloadLimit": "Limit rychlosti stahování",
+    "uploadLimit": "Limit rychlosti odesílání"
   },
   "sessionStats": {
     "title": "Statistiky relace",
@@ -209,7 +214,8 @@
     "moveUp": "Přesunout nahoru",
     "moveDown": "Přesunout dolů",
     "moveToBottom": "Přesunout na konec",
-    "remove": "Odstranit..."
+    "remove": "Odstranit...",
+    "title": "Akce torrentu"
   },
   "dialog": {
     "addTorrent": "Přidat torrent",

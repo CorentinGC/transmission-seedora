@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
 import { useUiStore } from '../../stores/ui-store';
+import { Popover } from '../ui';
 
 interface Props {
   x: number;
@@ -14,7 +15,6 @@ const DEFAULT_PRESETS = [100, 500, 1000, 2000, 5000];
 
 export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
   const { t } = useTranslation();
-  const ref = useRef<HTMLDivElement>(null);
   const settings = useSessionStore((s) => s.settings);
   const updateSettings = useSessionStore((s) => s.updateSettings);
   const speedPresets = useUiStore((s) => s.speedPresets);
@@ -29,21 +29,6 @@ export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
   const [customValue, setCustomValue] = useState('');
 
   const presets = speedPresets ?? DEFAULT_PRESETS;
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
-    };
-    const keyHandler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('mousedown', handler);
-    document.addEventListener('keydown', keyHandler);
-    return () => {
-      document.removeEventListener('mousedown', handler);
-      document.removeEventListener('keydown', keyHandler);
-    };
-  }, [onClose]);
 
   const applyPreset = async (value: number) => {
     await updateSettings({ [enabledKey]: true, [limitKey]: value });
@@ -65,17 +50,14 @@ export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
     onClose();
   };
 
-  // Position above the click point
-  const popoverWidth = 200;
-  const popoverHeight = 240;
-  const left = Math.min(x - popoverWidth / 2, window.innerWidth - popoverWidth - 8);
-  const top = Math.max(8, y - popoverHeight - 8);
-
   return (
-    <div
-      ref={ref}
-      className="fixed z-50 rounded-md border bg-popover shadow-lg p-2 text-sm"
-      style={{ left: Math.max(8, left), top, width: popoverWidth }}
+    <Popover
+      x={x}
+      y={y}
+      placement="above-center"
+      label={`${t('statusBar.speedLimit')} (${isDown ? '↓' : '↑'})`}
+      onClose={onClose}
+      className="w-[200px] p-2"
     >
       <div className="text-xs font-medium text-muted-foreground mb-1.5 px-1">
         {t('statusBar.speedLimit')} ({isDown ? '↓' : '↑'})
@@ -83,7 +65,8 @@ export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
 
       {/* Unlimited button */}
       <button
-        className={`w-full text-left px-2 py-1 text-xs rounded hover:bg-accent ${
+        aria-pressed={!currentEnabled}
+        className={`w-full text-left px-2 py-1 pointer-coarse:py-3 text-xs rounded hover:bg-accent ${
           !currentEnabled ? 'bg-primary/10 text-primary font-medium' : ''
         }`}
         onClick={setUnlimited}
@@ -95,7 +78,8 @@ export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
       {presets.filter(v => v > 0).sort((a, b) => a - b).map((value) => (
         <button
           key={value}
-          className={`w-full text-left px-2 py-1 text-xs rounded hover:bg-accent ${
+          aria-pressed={currentEnabled && currentLimit === value}
+          className={`w-full text-left px-2 py-1 pointer-coarse:py-3 text-xs rounded hover:bg-accent ${
             currentEnabled && currentLimit === value ? 'bg-primary/10 text-primary font-medium' : ''
           }`}
           onClick={() => applyPreset(value)}
@@ -109,22 +93,23 @@ export function SpeedLimitPopover({ x, y, direction, onClose }: Props) {
         <div className="flex items-center gap-1">
           <input
             type="number"
+            aria-label={t('statusBar.speedLimit')}
             value={customValue}
             onChange={(e) => setCustomValue(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') applyCustom(); }}
-            className="flex-1 px-2 py-1 text-xs border rounded bg-background"
+            className="min-w-0 flex-1 px-2 py-1 pointer-coarse:py-3 text-xs border rounded bg-background"
             placeholder={String(currentLimit || '')}
             min={0}
           />
           <span className="text-xs text-muted-foreground">{t('statusBar.kbs')}</span>
         </div>
         <button
-          className="w-full mt-1 px-2 py-1 text-xs rounded bg-primary text-primary-foreground hover:bg-primary/90"
+          className="w-full mt-1 px-2 py-1 pointer-coarse:py-3 text-xs rounded bg-primary text-primary-foreground hover:bg-primary/90"
           onClick={applyCustom}
         >
           {t('statusBar.setLimit')}
         </button>
       </div>
-    </div>
+    </Popover>
   );
 }

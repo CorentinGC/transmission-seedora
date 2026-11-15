@@ -8,10 +8,10 @@ npm workspaces (`packages/*`, `apps/*`). The Electron app is the **root package*
 
 | Path | Package | Role |
 |---|---|---|
-| `src/main/` | `seedora` (root) | Electron main process: window, native menu, tray, watch folder, config store, RPC client, IPC handlers, `security/` (IPC guard, schemas, approved paths, window guards, CSP, `app://` scheme) |
+| `src/main/` | `seedora` (root) | Electron main process: window, native menu, tray, watch folder, config store, RPC client, IPC handlers, `security/` (IPC guard, schemas, approved paths, window guards, CSP, `app://` scheme, script guard, server credentials), `launch/` (magnet and `.torrent` targets from the OS), `i18n/` (native menu, tray and dialog strings) |
 | `src/preload/preload.ts` | root | `contextBridge` bridge exposing `window.api` (typed in `src/preload/api.d.ts`) |
 | `src/renderer/` | root | Thin Electron shell: `main.tsx`, `App.tsx`, `electron-api.ts`, `hooks/` |
-| `src/shared/` | root | Code shared by main and preload: `ipc-channels.ts`, `types.ts`, `key-utils.ts` |
+| `src/shared/` | root | Code shared by main and preload: `ipc-channels.ts` (alias `@ipc`) |
 | `packages/shared/src/` | `@seedora/shared` | The whole UI, used by both apps |
 | `apps/web/` | `@seedora/web` | Next.js 16 App Router shell + server actions |
 | `resources/` | — | App icons and logo sources |
@@ -60,7 +60,7 @@ Two access paths to the same instance, both initialised at startup by each shell
 
 | Implementation | File | Storage | RPC transport |
 |---|---|---|---|
-| Electron | `src/renderer/electron-api.ts` | `config.json` in Electron `userData` (`src/main/store/config-store.ts`) | IPC to main |
+| Electron | `src/renderer/electron-api.ts` | `config.json` in Electron `userData` (`src/main/store/config-store.ts`; passwords encrypted with `safeStorage`, never sent to the renderer) | IPC to main |
 | Web | `apps/web/src/lib/web-api.ts` | `localStorage` (`apps/web/src/lib/web-storage.ts`) + sealed active-server cookie | Server actions |
 
 Every method returns `IpcResponse` (`{ success, data?, error? }`) — failures are returned, not thrown.
@@ -123,21 +123,16 @@ Polling is driven by `usePolling` / `useTorrents` / `useSessionStats`.
 
 ## Electron-only features
 
-Native menu (`src/main/menu.ts`, sends `menu:*` events to the renderer; the preload only lets the renderer subscribe to channels listed in `RENDERER_EVENT_CHANNELS`), tray (`tray.ts`), watch folder (`watcher.ts`, chokidar), GeoIP lookup (`ipc/handlers.ts`, `geoip-lite`), desktop notifications (`index.ts`).
+Native menu (`src/main/menu.ts`, sends `menu:*` events to the renderer; the preload only lets the renderer subscribe to channels listed in `RENDERER_EVENT_CHANNELS`), tray (`tray.ts`), watch folder (`watcher.ts`, chokidar), GeoIP lookup (`ipc/handlers.ts`, `geoip-lite`), desktop notifications (`index.ts`), launch handling (`launch/`: `open-url`, `open-file`, argv and `second-instance` feed a queue the renderer pulls with `LAUNCH_TAKE`).
 
-## `@shared` alias — to be unified, see backlog
+## Aliases
 
-`@shared` does not resolve to the same directory everywhere:
+`@shared` resolves to `packages/shared/src` in every build (main, preload, renderer, web, type-check, Vitest). `types.ts` and `key-utils.ts` live only there; main and preload import just those two dependency-free files, so no React or UI code enters the main bundle. `@ipc` resolves to `src/shared` (IPC channel names, main and preload only).
 
-| Build | Config | `@shared` → |
+| Alias | Config | Target |
 |---|---|---|
-| Main | `vite.main.config.ts` | `src/shared` |
-| Preload | `vite.preload.config.ts` | `src/shared` |
-| Renderer | `vite.renderer.config.ts` | `packages/shared/src` |
-| Web | `apps/web/tsconfig.json` | `../../packages/shared/src` |
-| Type-check | root `tsconfig.json` | both, `packages/shared/src` first |
-
-Consequences today: `types.ts` and `key-utils.ts` exist in three identical copies (`src/shared/`, `packages/shared/src/`, and `packages/shared/src/types/shared-types.ts` + `packages/shared/src/lib/key-utils.ts`) that must be kept identical by hand; `ipc-channels.ts` exists only in `src/shared/`. Until this is unified, a change to shared types has to be applied in both places.
+| `@shared` | `vite.main.config.ts`, `vite.preload.config.ts`, `vite.renderer.config.ts`, `vitest.config.ts`, root `tsconfig.json`, `apps/web/tsconfig.json` | `packages/shared/src` |
+| `@ipc` | `vite.main.config.ts`, `vite.preload.config.ts`, `vitest.config.ts`, root `tsconfig.json` | `src/shared` |
 
 ## Build outputs
 

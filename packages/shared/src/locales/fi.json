@@ -6,7 +6,9 @@
     "noTorrents": "Ei torrentteja",
     "yes": "Kyllä",
     "no": "Ei",
-    "close": "Sulje"
+    "close": "Sulje",
+    "torrentList": "Torrentit",
+    "resizePanel": "Muuta paneelin kokoa"
   },
   "toolbar": {
     "addTorrent": "Lisää torrent",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Hae torrentteja...",
     "preferences": "Asetukset",
     "serverSettings": "Palvelinasetukset",
-    "clearSearch": "Tyhjennä haku"
+    "clearSearch": "Tyhjennä haku",
+    "moreActions": "Lisää toimintoja"
   },
   "statusBar": {
     "connected": "Yhdistetty",
@@ -40,7 +43,9 @@
     "limitSpeed": "Rajoita nopeutta",
     "unlimited": "Rajoittamaton",
     "kbs": "KB/s",
-    "setLimit": "Aseta raja"
+    "setLimit": "Aseta raja",
+    "downloadLimit": "Latausnopeuden raja",
+    "uploadLimit": "Lähetysnopeuden raja"
   },
   "sessionStats": {
     "title": "Istunnon tilastot",
@@ -209,7 +214,8 @@
     "moveUp": "Siirrä ylös",
     "moveDown": "Siirrä alas",
     "moveToBottom": "Siirrä alimmaksi",
-    "remove": "Poista..."
+    "remove": "Poista...",
+    "title": "Torrentin toiminnot"
   },
   "dialog": {
     "addTorrent": "Lisää torrent",

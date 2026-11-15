@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron';
 import { z } from 'zod';
-import { IPC } from '@shared/ipc-channels';
+import { IPC } from '@ipc/ipc-channels';
 import type { IpcResponse } from '@shared/types';
 import { t } from '../i18n/main-i18n';
 import { RpcError } from '../rpc/client';

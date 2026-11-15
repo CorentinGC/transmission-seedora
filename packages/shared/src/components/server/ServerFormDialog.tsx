@@ -194,7 +194,7 @@ export function ServerFormDialog({ server, onClose }: Props) {
 
         <div className="border-t pt-3">
           <SectionHeading>{t('server.proxy')}</SectionHeading>
-          <Select className="w-full" value={proxyType} onChange={(e) => setProxyType(e.target.value as 'none' | 'http' | 'socks5')}>
+          <Select className="w-full" aria-label={t('server.proxy')} value={proxyType} onChange={(e) => setProxyType(e.target.value as 'none' | 'http' | 'socks5')}>
             <option value="none">{t('server.proxyNone')}</option>
             <option value="http">{t('server.proxyHTTP')}</option>
             <option value="socks5">{t('server.proxySOCKS5')}</option>

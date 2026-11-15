@@ -4,15 +4,19 @@ import path from 'node:path';
 const root = __dirname;
 
 /**
- * Vitest workspace. One project per build target because `@shared` resolves
- * differently: `src/shared` for main/preload, `packages/shared/src` for the
- * renderer, the shared UI package and the web app (mirrors the vite.*.config.ts files).
+ * Vitest workspace. One project per build target (mirrors the vite.*.config.ts files).
+ * `@shared` is `packages/shared/src` everywhere; `@ipc` is `src/shared` (IPC channel names, main/preload only).
  */
 export default defineConfig({
   test: {
     projects: [
       {
-        resolve: { alias: { '@shared': path.resolve(root, 'src/shared') } },
+        resolve: {
+          alias: {
+            '@shared': path.resolve(root, 'packages/shared/src'),
+            '@ipc': path.resolve(root, 'src/shared'),
+          },
+        },
         test: {
           name: 'main',
           environment: 'node',

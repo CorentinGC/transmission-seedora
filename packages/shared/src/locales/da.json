@@ -6,7 +6,9 @@
     "noTorrents": "Ingen torrents",
     "yes": "Ja",
     "no": "Nej",
-    "close": "Luk"
+    "close": "Luk",
+    "torrentList": "Torrents",
+    "resizePanel": "Tilpas panelstørrelse"
   },
   "toolbar": {
     "addTorrent": "Tilføj torrent",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Søg torrents...",
     "preferences": "Præferencer",
     "serverSettings": "Serverindstillinger",
-    "clearSearch": "Ryd søgning"
+    "clearSearch": "Ryd søgning",
+    "moreActions": "Flere handlinger"
   },
   "statusBar": {
     "connected": "Forbundet",
@@ -40,7 +43,9 @@
     "limitSpeed": "Begræns hastighed",
     "unlimited": "Ubegrænset",
     "kbs": "KB/s",
-    "setLimit": "Angiv grænse"
+    "setLimit": "Angiv grænse",
+    "downloadLimit": "Grænse for downloadhastighed",
+    "uploadLimit": "Grænse for uploadhastighed"
   },
   "sessionStats": {
     "title": "Sessionsstatistik",
@@ -209,7 +214,8 @@
     "moveUp": "Flyt op",
     "moveDown": "Flyt ned",
     "moveToBottom": "Flyt til bunden",
-    "remove": "Fjern..."
+    "remove": "Fjern...",
+    "title": "Torrent-handlinger"
   },
   "dialog": {
     "addTorrent": "Tilføj torrent",

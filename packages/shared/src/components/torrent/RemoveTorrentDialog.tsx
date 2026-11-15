@@ -28,9 +28,9 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
         </span>
       }
       onClose={onClose}
-      width="w-fit min-w-[420px]"
+      width="w-fit min-w-[min(420px,100%)]"
       footer={
-        <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <Button onClick={onClose}>{t('dialog.cancel')}</Button>
           <Button onClick={() => handleRemove(false)}>{t('dialog.removeTorrentBtn')}</Button>
           <Button variant="destructive" onClick={() => handleRemove(true)}>{t('dialog.removeWithData')}</Button>

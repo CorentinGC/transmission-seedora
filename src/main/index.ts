@@ -7,7 +7,7 @@ import { createMenu } from './menu';
 import { startWatcher, stopWatcher, restartWatcher } from './watcher';
 import { configStore } from './store/config-store';
 import { z } from 'zod';
-import { IPC } from '@shared/ipc-channels';
+import { IPC } from '@ipc/ipc-channels';
 import { buildTrustedOrigins, createSenderValidator } from './security/sender';
 import { listenGuarded } from './security/ipc-guard';
 import { denyAllPermissions, guardWebContents } from './security/window-guards';

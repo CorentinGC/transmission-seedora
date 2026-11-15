@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { BrowserWindow, dialog } from 'electron';
 import { z } from 'zod';
-import { IPC } from '@shared/ipc-channels';
+import { IPC } from '@ipc/ipc-channels';
 import type { IpcResponse, ServerConfig, AppPreferences } from '@shared/types';
 import { writeFileAtomic } from '../store/atomic-write';
 import { configStore } from '../store/config-store';

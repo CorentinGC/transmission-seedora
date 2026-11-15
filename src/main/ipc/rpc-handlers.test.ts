@@ -15,7 +15,7 @@ vi.mock('../store/config-store', () => ({ configStore: store }));
 const manager = vi.hoisted(() => ({ getActiveClient: vi.fn() }));
 vi.mock('../rpc/connection-manager', () => ({ connectionManager: manager }));
 
-const { IPC } = await import('@shared/ipc-channels');
+const { IPC } = await import('@ipc/ipc-channels');
 const { registerRpcHandlers } = await import('./rpc-handlers');
 
 const sessionSet = (params: Record<string, unknown>) => {

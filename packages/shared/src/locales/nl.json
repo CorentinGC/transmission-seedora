@@ -6,7 +6,9 @@
     "noTorrents": "Geen torrents",
     "yes": "Ja",
     "no": "Nee",
-    "close": "Sluiten"
+    "close": "Sluiten",
+    "torrentList": "Torrents",
+    "resizePanel": "Paneel vergroten of verkleinen"
   },
   "toolbar": {
     "addTorrent": "Torrent toevoegen",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Torrents zoeken...",
     "preferences": "Voorkeuren",
     "serverSettings": "Serverinstellingen",
-    "clearSearch": "Zoekopdracht wissen"
+    "clearSearch": "Zoekopdracht wissen",
+    "moreActions": "Meer acties"
   },
   "statusBar": {
     "connected": "Verbonden",
@@ -40,7 +43,9 @@
     "limitSpeed": "Snelheid beperken",
     "unlimited": "Onbeperkt",
     "kbs": "KB/s",
-    "setLimit": "Limiet instellen"
+    "setLimit": "Limiet instellen",
+    "downloadLimit": "Downloadsnelheidslimiet",
+    "uploadLimit": "Uploadsnelheidslimiet"
   },
   "sessionStats": {
     "title": "Sessiestatistieken",
@@ -209,7 +214,8 @@
     "moveUp": "Omhoog verplaatsen",
     "moveDown": "Omlaag verplaatsen",
     "moveToBottom": "Naar beneden verplaatsen",
-    "remove": "Verwijderen..."
+    "remove": "Verwijderen...",
+    "title": "Torrentacties"
   },
   "dialog": {
     "addTorrent": "Torrent toevoegen",

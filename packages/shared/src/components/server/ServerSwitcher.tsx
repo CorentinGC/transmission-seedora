@@ -25,6 +25,11 @@ export function ServerSwitcher() {
   const [importMsg, setImportMsg] = useState<string | null>(null);
   const [includePasswords, setIncludePasswords] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeMenu = () => {
+    setOpen(false);
+    setConfirmDelete(null);
+  };
   const api = useApi();
 
   useEffect(() => {
@@ -132,10 +137,14 @@ export function ServerSwitcher() {
         onChange={handleFileInputChange}
       />
       <button
-        className="flex items-center gap-1.5 h-7 px-2 rounded hover:bg-accent text-sm"
-        onClick={() => setOpen(!open)}
+        ref={triggerRef}
+        type="button"
+        aria-haspopup="true"
+        aria-expanded={open}
+        className="flex items-center gap-1.5 h-7 pointer-coarse:h-11 px-2 rounded hover:bg-accent text-sm"
+        onClick={() => (open ? closeMenu() : setOpen(true))}
       >
-        <Server size={14} />
+        <Server size={14} aria-hidden="true" />
         <span className="max-w-32 truncate">
           {activeServer?.name ?? t('server.noServer')}
         </span>
@@ -147,63 +156,95 @@ export function ServerSwitcher() {
                 ? 'bg-destructive-text'
                 : 'bg-muted-foreground'
           }`}
+          aria-hidden="true"
         />
-        <ChevronDown size={12} />
+        <span className="sr-only">
+          {connectionStatus === 'connected'
+            ? t('statusBar.connected')
+            : connectionStatus === 'connecting'
+              ? t('statusBar.connecting')
+              : connectionStatus === 'error'
+                ? t('statusBar.connectionError')
+                : t('statusBar.disconnected')}
+        </span>
+        <ChevronDown size={12} aria-hidden="true" />
       </button>
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => { setOpen(false); setConfirmDelete(null); }} />
-          <div className="absolute top-full left-0 mt-1 w-72 rounded-md border bg-popover shadow-lg z-50">
+          <div role="presentation" className="fixed inset-0 z-40" onClick={closeMenu} />
+          <div
+            role="group"
+            aria-label={t('server.noServer')}
+            className="absolute top-full left-0 mt-1 w-72 max-w-[calc(100vw-1rem)] rounded-md border bg-popover shadow-lg z-50"
+            onKeyDown={(e) => {
+              if (e.key !== 'Escape') return;
+              e.stopPropagation();
+              closeMenu();
+              triggerRef.current?.focus();
+            }}
+          >
             {servers.map((server) => (
               <div
                 key={server.id}
-                className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent cursor-pointer ${
+                className={`flex items-center gap-2 px-3 text-sm hover:bg-accent ${
                   server.id === activeServerId ? 'bg-accent' : ''
                 }`}
-                onClick={() => {
-                  setActiveServer(server.id);
-                  setOpen(false);
-                  setConfirmDelete(null);
-                }}
               >
-                <Server size={14} className="shrink-0" />
-                <span className="flex-1 truncate">{server.name}</span>
-                <span className="text-xs text-muted-foreground shrink-0">
-                  {server.host}:{server.port}
-                </span>
+                <button
+                  type="button"
+                  aria-current={server.id === activeServerId ? 'true' : undefined}
+                  className="flex min-w-0 flex-1 items-center gap-2 py-2 pointer-coarse:py-3 text-left"
+                  onClick={() => {
+                    setActiveServer(server.id);
+                    closeMenu();
+                  }}
+                >
+                  <Server size={14} className="shrink-0" aria-hidden="true" />
+                  <span className="flex-1 truncate" title={server.name}>{server.name}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {server.host}:{server.port}
+                  </span>
+                </button>
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
-                    className="p-0.5 rounded hover:bg-primary/10"
+                    type="button"
+                    className="p-0.5 pointer-coarse:p-3 rounded hover:bg-primary/10"
                     onClick={(e) => handleExportServer(server, e)}
                     title={t('server.exportServer')}
+                    aria-label={`${t('server.exportServer')}: ${server.name}`}
                   >
-                    <Download size={12} />
+                    <Download size={12} aria-hidden="true" />
                   </button>
                   <button
-                    className="p-0.5 rounded hover:bg-primary/10"
+                    type="button"
+                    className="p-0.5 pointer-coarse:p-3 rounded hover:bg-primary/10"
                     onClick={(e) => handleEdit(server, e)}
                     title={t('server.editServer')}
+                    aria-label={`${t('server.editServer')}: ${server.name}`}
                   >
-                    <Pencil size={12} />
+                    <Pencil size={12} aria-hidden="true" />
                   </button>
                   <button
-                    className={`p-0.5 rounded ${
+                    type="button"
+                    className={`p-0.5 pointer-coarse:p-3 rounded ${
                       confirmDelete === server.id
                         ? 'text-destructive-text bg-destructive/10'
                         : 'hover:bg-destructive/10 hover:text-destructive-text'
                     }`}
                     onClick={(e) => handleDelete(server, e)}
                     title={t('server.deleteServer')}
+                    aria-label={confirmDelete === server.id ? t('server.deleteConfirm', { name: server.name }) : `${t('server.deleteServer')}: ${server.name}`}
                   >
-                    <Trash2 size={12} />
+                    <Trash2 size={12} aria-hidden="true" />
                   </button>
                 </div>
               </div>
             ))}
             <div className="border-t" />
             <button
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent"
+              type="button"
+              className="w-full flex items-center gap-2 px-3 py-2 pointer-coarse:py-3 text-sm hover:bg-accent"
               onClick={() => {
                 setOpen(false);
                 setShowForm(true);
@@ -214,7 +255,8 @@ export function ServerSwitcher() {
             </button>
             <div className="flex items-center border-t">
               <button
-                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs hover:bg-accent text-muted-foreground"
+                type="button"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 pointer-coarse:py-3 text-xs hover:bg-accent text-muted-foreground"
                 onClick={handleExportAll}
               >
                 <Download size={12} />
@@ -222,7 +264,8 @@ export function ServerSwitcher() {
               </button>
               <div className="w-px h-5 bg-border" />
               <button
-                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs hover:bg-accent text-muted-foreground"
+                type="button"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 pointer-coarse:py-3 text-xs hover:bg-accent text-muted-foreground"
                 onClick={handleImport}
               >
                 <Upload size={12} />
@@ -246,6 +289,7 @@ export function ServerSwitcher() {
             setShowForm(false);
             setEditServer(null);
             fetchServers();
+            triggerRef.current?.focus();
           }}
         />
       )}

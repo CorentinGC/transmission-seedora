@@ -12,7 +12,7 @@ Every user-visible string goes through i18next. No hardcoded strings in componen
 - Locale files: `packages/shared/src/locales/<code>.json` — 23 files:
   `en fr de es it pt nl pl cs ru uk tr ar ja ko zh da nb sv fi hu ro el`
 - `en.json` is the source of truth.
-- Two i18n bootstraps load the same files: `packages/shared/src/lib/i18n.ts` (Electron renderer, `import.meta.glob`) and `apps/web/src/lib/i18n.ts` (web, static imports). Adding a **key** touches only the JSON files. Adding a **language** touches three places: the new locale file, the static imports in `apps/web/src/lib/i18n.ts`, and `LANGUAGE_NAMES` in `packages/shared/src/lib/i18n-utils.ts`.
+- One registry, `packages/shared/src/locales/index.ts` (static imports), feeds `packages/shared/src/lib/i18n.ts` for both apps; `apps/web/src/lib/i18n.ts` re-exports it. Adding a **key** touches only the JSON files. Adding a **language** touches the new locale file, `locales/index.ts` and `LANGUAGE_NAMES` in `packages/shared/src/lib/i18n-utils.ts`. Main-process strings (menu, tray, dialogs) live in the `native` section of each locale file.
 - Details: `docs/i18n.md`.
 
 ## Rules

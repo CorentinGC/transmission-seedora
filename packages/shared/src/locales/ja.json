@@ -6,7 +6,9 @@
     "noTorrents": "トレントがありません",
     "yes": "はい",
     "no": "いいえ",
-    "close": "閉じる"
+    "close": "閉じる",
+    "torrentList": "トレント",
+    "resizePanel": "パネルのサイズを変更"
   },
   "toolbar": {
     "addTorrent": "トレントを追加",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "トレントを検索...",
     "preferences": "環境設定",
     "serverSettings": "サーバー設定",
-    "clearSearch": "検索をクリア"
+    "clearSearch": "検索をクリア",
+    "moreActions": "その他の操作"
   },
   "statusBar": {
     "connected": "接続済み",
@@ -40,7 +43,9 @@
     "limitSpeed": "速度を制限",
     "unlimited": "無制限",
     "kbs": "KB/s",
-    "setLimit": "制限を設定"
+    "setLimit": "制限を設定",
+    "downloadLimit": "ダウンロード速度の制限",
+    "uploadLimit": "アップロード速度の制限"
   },
   "sessionStats": {
     "title": "セッション統計",
@@ -209,7 +214,8 @@
     "moveUp": "上に移動",
     "moveDown": "下に移動",
     "moveToBottom": "末尾に移動",
-    "remove": "削除..."
+    "remove": "削除...",
+    "title": "トレントの操作"
   },
   "dialog": {
     "addTorrent": "トレントを追加",

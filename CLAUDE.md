@@ -28,7 +28,7 @@ Before any task, read `MEMORY.md` (current state) and `llms.txt` (index of `docs
 
 The UI never talks to a platform directly: it goes through `PlatformApi` (`packages/shared/src/platform/api-types.ts`), implemented by `src/renderer/electron-api.ts` (IPC) and `apps/web/src/lib/web-api.ts` (localStorage + server actions).
 
-The `@shared` alias currently resolves to `src/shared` in main/preload and to `packages/shared/src` in the renderer and web builds. Check which build you are in before importing through it.
+`@shared` resolves to `packages/shared/src` in every build; `@ipc` resolves to `src/shared` (IPC channel names, main and preload only).
 
 ## Commands
 

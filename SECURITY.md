@@ -32,9 +32,9 @@ Out of scope:
 
 ## Known gaps
 
-Some weaknesses are already known, confirmed and scheduled for fixing, so a report that only restates one of them adds little. They are listed in [docs/security.md](docs/security.md) under "Known gaps", with the intended fix for each. Progress is tracked in the beads backlog (`.beads/issues.jsonl`). Other known limitations: desktop builds are unsigned and not notarized, and there is no auto-update.
+Some weaknesses are already known, confirmed and scheduled for fixing, so a report that only restates one of them adds little. They are listed in [docs/security.md](docs/security.md) under "Known gaps", with the intended fix for each. Progress is tracked in the beads backlog (`.beads/issues.jsonl`). Other known limitations: desktop builds are unsigned and not notarized, there is no auto-update, and on a system without an OS secret store (for example Linux without a keyring) the desktop app keeps saved passwords in cleartext in a user-only (`0600`) file and warns about it.
 
-Some of these gaps affect the hosted web app: its server-side hardening is new and not yet fully audited, and the browser stores server passwords in `localStorage`. Avoid entering credentials of a daemon exposed to the internet that you cannot afford to have compromised.
+Some of these gaps affect the hosted web app: its server-side hardening is new and not yet fully audited, and the browser stores server passwords in `localStorage` (the sealed session cookie does not change that). Avoid entering credentials of a daemon exposed to the internet that you cannot afford to have compromised.
 
 ## Security model
 

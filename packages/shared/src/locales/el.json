@@ -6,7 +6,9 @@
     "noTorrents": "Κανένα torrent",
     "yes": "Ναι",
     "no": "Όχι",
-    "close": "Κλείσιμο"
+    "close": "Κλείσιμο",
+    "torrentList": "Torrents",
+    "resizePanel": "Αλλαγή μεγέθους πίνακα"
   },
   "toolbar": {
     "addTorrent": "Προσθήκη torrent",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Αναζήτηση torrent...",
     "preferences": "Προτιμήσεις",
     "serverSettings": "Ρυθμίσεις διακομιστή",
-    "clearSearch": "Εκκαθάριση αναζήτησης"
+    "clearSearch": "Εκκαθάριση αναζήτησης",
+    "moreActions": "Περισσότερες ενέργειες"
   },
   "statusBar": {
     "connected": "Συνδεδεμένο",
@@ -40,7 +43,9 @@
     "limitSpeed": "Περιορισμός ταχύτητας",
     "unlimited": "Απεριόριστο",
     "kbs": "KB/s",
-    "setLimit": "Ορισμός ορίου"
+    "setLimit": "Ορισμός ορίου",
+    "downloadLimit": "Όριο ταχύτητας λήψης",
+    "uploadLimit": "Όριο ταχύτητας αποστολής"
   },
   "sessionStats": {
     "title": "Στατιστικά συνεδρίας",
@@ -209,7 +214,8 @@
     "moveUp": "Μετακίνηση πάνω",
     "moveDown": "Μετακίνηση κάτω",
     "moveToBottom": "Μετακίνηση στο τέλος",
-    "remove": "Αφαίρεση..."
+    "remove": "Αφαίρεση...",
+    "title": "Ενέργειες torrent"
   },
   "dialog": {
     "addTorrent": "Προσθήκη torrent",

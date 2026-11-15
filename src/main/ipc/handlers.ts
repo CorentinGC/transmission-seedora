@@ -1,6 +1,6 @@
 import { isIP } from 'node:net';
 import { z } from 'zod';
-import { IPC } from '@shared/ipc-channels';
+import { IPC } from '@ipc/ipc-channels';
 import { registerConfigHandlers } from './config-handlers';
 import { registerDialogHandlers } from './dialog-handlers';
 import { registerRpcHandlers } from './rpc-handlers';

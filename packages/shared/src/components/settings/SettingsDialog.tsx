@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { useState, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
+import { Dialog, Tabs } from '../ui';
 import { SpeedTab } from './SpeedTab';
 import { NetworkTab } from './NetworkTab';
 import { DownloadTab } from './DownloadTab';
@@ -29,49 +29,33 @@ export function SettingsDialog({ onClose }: Props) {
     fetchSettings();
   }, [fetchSettings]);
 
+  const idBase = useId();
+
   if (!settings) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
-        <div className="bg-card border rounded-lg shadow-xl p-8">
-          {t('settings.loading')}
-        </div>
-      </div>
+      <Dialog title={t('settings.title')} onClose={onClose}>
+        <p className="text-sm text-muted-foreground">{t('settings.loading')}</p>
+      </Dialog>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
-      <div className="bg-card border rounded-lg shadow-xl w-[600px] max-h-[80vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">{t('settings.title')}</h2>
-          <button onClick={onClose} className="hover:bg-accent rounded p-1">
-            <X size={16} />
-          </button>
-        </div>
-
-        <div className="flex border-b">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              className={`px-4 py-2 text-sm font-medium ${
-                activeTab === tab.id
-                  ? 'border-b-2 border-primary text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {t(tab.labelKey)}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex-1 overflow-auto p-4">
-          {activeTab === 'Speed' && <SpeedTab settings={settings} />}
-          {activeTab === 'Network' && <NetworkTab settings={settings} />}
-          {activeTab === 'Download' && <DownloadTab settings={settings} />}
-          {activeTab === 'Queue' && <QueueTab settings={settings} />}
-        </div>
+    <Dialog title={t('settings.title')} onClose={onClose} width="w-[600px]" maxHeight="max-h-[80vh]">
+      <div className="-mx-4 -mt-4 mb-4">
+        <Tabs
+          id={idBase}
+          label={t('settings.title')}
+          tabs={TABS.map((tab) => ({ id: tab.id, label: t(tab.labelKey) }))}
+          activeTab={activeTab}
+          onTabChange={(id) => setActiveTab(id as Tab)}
+        />
       </div>
-    </div>
+      <div role="tabpanel" id={`${idBase}-panel`} aria-labelledby={`${idBase}-tab-${activeTab}`}>
+        {activeTab === 'Speed' && <SpeedTab settings={settings} />}
+        {activeTab === 'Network' && <NetworkTab settings={settings} />}
+        {activeTab === 'Download' && <DownloadTab settings={settings} />}
+        {activeTab === 'Queue' && <QueueTab settings={settings} />}
+      </div>
+    </Dialog>
   );
 }

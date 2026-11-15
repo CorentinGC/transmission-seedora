@@ -6,7 +6,9 @@
     "noTorrents": "Нет торрентов",
     "yes": "Да",
     "no": "Нет",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "torrentList": "Торренты",
+    "resizePanel": "Изменить размер панели"
   },
   "toolbar": {
     "addTorrent": "Добавить торрент",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Поиск торрентов...",
     "preferences": "Настройки",
     "serverSettings": "Настройки сервера",
-    "clearSearch": "Очистить поиск"
+    "clearSearch": "Очистить поиск",
+    "moreActions": "Другие действия"
   },
   "statusBar": {
     "connected": "Подключено",
@@ -40,7 +43,9 @@
     "limitSpeed": "Ограничить скорость",
     "unlimited": "Без ограничений",
     "kbs": "KB/s",
-    "setLimit": "Задать лимит"
+    "setLimit": "Задать лимит",
+    "downloadLimit": "Ограничение скорости загрузки",
+    "uploadLimit": "Ограничение скорости отдачи"
   },
   "sessionStats": {
     "title": "Статистика сессии",
@@ -209,7 +214,8 @@
     "moveUp": "Вверх",
     "moveDown": "Вниз",
     "moveToBottom": "В конец",
-    "remove": "Удалить..."
+    "remove": "Удалить...",
+    "title": "Действия с торрентом"
   },
   "dialog": {
     "addTorrent": "Добавить торрент",

@@ -27,7 +27,7 @@ vi.mock('../store/config-store', () => ({ configStore: store }));
 const manager = vi.hoisted(() => ({ refreshClient: vi.fn(), removeClient: vi.fn(), setActiveServer: vi.fn(), createTemporaryClient: vi.fn() }));
 vi.mock('../rpc/connection-manager', () => ({ connectionManager: manager }));
 
-const { IPC } = await import('@shared/ipc-channels');
+const { IPC } = await import('@ipc/ipc-channels');
 const { RpcError } = await import('../rpc/client');
 const { approvedPaths } = await import('../security/approved-paths');
 const { applyImport, isWatchFolderAllowed, registerConfigHandlers } = await import('./config-handlers');

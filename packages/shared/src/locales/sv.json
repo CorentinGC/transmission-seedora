@@ -6,7 +6,9 @@
     "noTorrents": "Inga torrents",
     "yes": "Ja",
     "no": "Nej",
-    "close": "Stäng"
+    "close": "Stäng",
+    "torrentList": "Torrents",
+    "resizePanel": "Ändra panelstorlek"
   },
   "toolbar": {
     "addTorrent": "Lägg till torrent",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Sök torrents...",
     "preferences": "Inställningar",
     "serverSettings": "Serverinställningar",
-    "clearSearch": "Rensa sökning"
+    "clearSearch": "Rensa sökning",
+    "moreActions": "Fler åtgärder"
   },
   "statusBar": {
     "connected": "Ansluten",
@@ -40,7 +43,9 @@
     "limitSpeed": "Begränsa hastighet",
     "unlimited": "Obegränsad",
     "kbs": "KB/s",
-    "setLimit": "Ange gräns"
+    "setLimit": "Ange gräns",
+    "downloadLimit": "Gräns för nedladdningshastighet",
+    "uploadLimit": "Gräns för uppladdningshastighet"
   },
   "sessionStats": {
     "title": "Sessionsstatistik",
@@ -209,7 +214,8 @@
     "moveUp": "Flytta upp",
     "moveDown": "Flytta ner",
     "moveToBottom": "Flytta längst ner",
-    "remove": "Ta bort..."
+    "remove": "Ta bort...",
+    "title": "Torrentåtgärder"
   },
   "dialog": {
     "addTorrent": "Lägg till torrent",

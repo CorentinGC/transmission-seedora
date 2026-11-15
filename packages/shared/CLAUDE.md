@@ -21,4 +21,4 @@ All of Seedora's UI. Consumed by the Electron renderer and the web app through t
 6. **Theme tokens only** — no raw Tailwind palette colours. Check light and dark.
 7. Daemon-supplied text (torrent, file, tracker, peer names) is rendered as text, never as HTML or a link target.
 
-`types.ts` and `key-utils.ts` live in `packages/shared/src`; identical copies still exist in `src/shared/` (main process) until bead `mi9.7` lands: change both.
+`types.ts` and `key-utils.ts` live only in `packages/shared/src` and are also imported by the main process through `@shared`: keep them free of imports and of React, DOM or Node APIs.

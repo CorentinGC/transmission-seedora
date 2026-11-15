@@ -6,7 +6,9 @@
     "noTorrents": "Niciun torrent",
     "yes": "Da",
     "no": "Nu",
-    "close": "Închide"
+    "close": "Închide",
+    "torrentList": "Torrente",
+    "resizePanel": "Redimensionează panoul"
   },
   "toolbar": {
     "addTorrent": "Adaugă torrent",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Caută torrente...",
     "preferences": "Preferințe",
     "serverSettings": "Setări server",
-    "clearSearch": "Șterge căutarea"
+    "clearSearch": "Șterge căutarea",
+    "moreActions": "Mai multe acțiuni"
   },
   "statusBar": {
     "connected": "Conectat",
@@ -40,7 +43,9 @@
     "limitSpeed": "Limitează viteza",
     "unlimited": "Nelimitat",
     "kbs": "KB/s",
-    "setLimit": "Setează limita"
+    "setLimit": "Setează limita",
+    "downloadLimit": "Limită viteză de descărcare",
+    "uploadLimit": "Limită viteză de încărcare"
   },
   "sessionStats": {
     "title": "Statistici sesiune",
@@ -209,7 +214,8 @@
     "moveUp": "Mută sus",
     "moveDown": "Mută jos",
     "moveToBottom": "Mută la sfârșit",
-    "remove": "Elimină..."
+    "remove": "Elimină...",
+    "title": "Acțiuni torrent"
   },
   "dialog": {
     "addTorrent": "Adaugă torrent",

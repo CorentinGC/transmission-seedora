@@ -1,6 +1,6 @@
 import { Tray, Menu, nativeImage, BrowserWindow, app } from 'electron';
 import path from 'node:path';
-import { IPC } from '@shared/ipc-channels';
+import { IPC } from '@ipc/ipc-channels';
 import { t } from './i18n/main-i18n';
 
 let tray: Tray | null = null;

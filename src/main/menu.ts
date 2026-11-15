@@ -1,5 +1,5 @@
 import { app, Menu, shell, BrowserWindow } from 'electron';
-import { IPC } from '@shared/ipc-channels';
+import { IPC } from '@ipc/ipc-channels';
 import { t } from './i18n/main-i18n';
 
 const APP_NAME = 'Seedora';

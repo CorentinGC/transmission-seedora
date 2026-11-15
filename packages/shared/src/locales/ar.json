@@ -6,7 +6,9 @@
     "noTorrents": "لا توجد تورنتات",
     "yes": "نعم",
     "no": "لا",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "torrentList": "التورنتات",
+    "resizePanel": "تغيير حجم اللوحة"
   },
   "toolbar": {
     "addTorrent": "إضافة تورنت",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "بحث في التورنتات...",
     "preferences": "التفضيلات",
     "serverSettings": "إعدادات الخادم",
-    "clearSearch": "مسح البحث"
+    "clearSearch": "مسح البحث",
+    "moreActions": "المزيد من الإجراءات"
   },
   "statusBar": {
     "connected": "متصل",
@@ -40,7 +43,9 @@
     "limitSpeed": "تحديد السرعة",
     "unlimited": "غير محدود",
     "kbs": "KB/s",
-    "setLimit": "تعيين الحد"
+    "setLimit": "تعيين الحد",
+    "downloadLimit": "حد سرعة التنزيل",
+    "uploadLimit": "حد سرعة الرفع"
   },
   "sessionStats": {
     "title": "إحصائيات الجلسة",
@@ -209,7 +214,8 @@
     "moveUp": "نقل لأعلى",
     "moveDown": "نقل لأسفل",
     "moveToBottom": "نقل إلى الأسفل",
-    "remove": "إزالة..."
+    "remove": "إزالة...",
+    "title": "إجراءات التورنت"
   },
   "dialog": {
     "addTorrent": "إضافة تورنت",

@@ -6,7 +6,9 @@
     "noTorrents": "Nincsenek torrentek",
     "yes": "Igen",
     "no": "Nem",
-    "close": "Bezárás"
+    "close": "Bezárás",
+    "torrentList": "Torrentek",
+    "resizePanel": "Panel átméretezése"
   },
   "toolbar": {
     "addTorrent": "Torrent hozzáadása",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Torrentek keresése...",
     "preferences": "Beállítások",
     "serverSettings": "Szerver beállítások",
-    "clearSearch": "Keresés törlése"
+    "clearSearch": "Keresés törlése",
+    "moreActions": "További műveletek"
   },
   "statusBar": {
     "connected": "Csatlakozva",
@@ -40,7 +43,9 @@
     "limitSpeed": "Sebesség korlátozása",
     "unlimited": "Korlátlan",
     "kbs": "KB/s",
-    "setLimit": "Korlát beállítása"
+    "setLimit": "Korlát beállítása",
+    "downloadLimit": "Letöltési sebességkorlát",
+    "uploadLimit": "Feltöltési sebességkorlát"
   },
   "sessionStats": {
     "title": "Munkamenet statisztikái",
@@ -209,7 +214,8 @@
     "moveUp": "Feljebb",
     "moveDown": "Lejjebb",
     "moveToBottom": "Végére",
-    "remove": "Eltávolítás..."
+    "remove": "Eltávolítás...",
+    "title": "Torrent műveletek"
   },
   "dialog": {
     "addTorrent": "Torrent hozzáadása",

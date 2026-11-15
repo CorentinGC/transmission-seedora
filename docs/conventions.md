@@ -37,7 +37,7 @@ ESM-only packages (e.g. `chokidar`) are loaded with dynamic `import()` in the ma
 
 ## Tests
 
-- Vitest, configured in `vitest.config.ts` with three projects because `@shared` resolves differently: `main` (`src/main`, `src/preload`, `src/shared`; `@shared` is `src/shared`), `shared` (`packages/shared/src`, `src/renderer`) and `web` (`apps/web/src`); the last two map `@shared` to `packages/shared/src`.
+- Vitest, configured in `vitest.config.ts` with three projects, one per build target: `main` (`src/main`, `src/preload`, `src/shared`), `shared` (`packages/shared/src`, `src/renderer`) and `web` (`apps/web/src`); all map `@shared` to `packages/shared/src`, and `main` also maps `@ipc` to `src/shared`.
 - `npm test` runs everything once; `npm run test:watch` watches. Tests live next to the code as `*.test.ts(x)`.
 - No real network, daemon or timers. A bug fix starts with a failing test.
 

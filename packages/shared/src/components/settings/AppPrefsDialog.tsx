@@ -135,9 +135,9 @@ export function AppPrefsDialog({ onClose }: Props) {
 
   if (loading || !prefs) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
-        <div className="bg-card rounded-lg shadow-lg p-6">{t('app.loading')}</div>
-      </div>
+      <Dialog title={t('prefs.title')} onClose={onClose}>
+        <p className="text-sm text-muted-foreground">{t('app.loading')}</p>
+      </Dialog>
     );
   }
 

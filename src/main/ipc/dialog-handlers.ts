@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { dialog, BrowserWindow, type FileFilter, type IpcMainInvokeEvent, type OpenDialogOptions } from 'electron';
 import { z } from 'zod';
-import { IPC } from '@shared/ipc-channels';
+import { IPC } from '@ipc/ipc-channels';
 import type { IpcResponse } from '@shared/types';
 import { approvedPaths, ApprovedPathError, type ApprovalKind } from '../security/approved-paths';
 import { handleGuarded, type SenderValidator } from '../security/ipc-guard';

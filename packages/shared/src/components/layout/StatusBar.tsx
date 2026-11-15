@@ -8,6 +8,8 @@ import { DiskSpaceDialog } from './DiskSpaceDialog';
 import { SpeedLimitPopover } from './SpeedLimitPopover';
 import { SessionStatsDialog } from './SessionStatsDialog';
 
+const SPEED_BUTTON = 'flex items-center gap-1 px-1 rounded hover:bg-accent pointer-coarse:min-h-11';
+
 export function StatusBar() {
   const { t } = useTranslation();
   const stats = useSessionStore((s) => s.stats);
@@ -22,11 +24,17 @@ export function StatusBar() {
   const [showSessionStats, setShowSessionStats] = useState(false);
   const [speedPopover, setSpeedPopover] = useState<{ x: number; y: number; direction: 'down' | 'up' } | null>(null);
 
+  /** Click or keyboard activation: anchor the popover on the button itself. */
+  const openSpeedPopover = (e: React.MouseEvent<HTMLElement>, direction: 'down' | 'up') => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setSpeedPopover({ x: rect.left + rect.width / 2, y: rect.top, direction });
+  };
+
   const isConnected = connectionStatus === 'connected';
   const altSpeedEnabled = settings?.altSpeedEnabled ?? false;
 
   return (
-    <div className="flex items-center gap-4 px-3 py-1 border-t bg-card text-xs text-muted-foreground select-none">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-3 py-1 border-t bg-card text-xs text-muted-foreground select-none">
       <div className="flex items-center gap-1" title={connectionStatus === 'error' ? connectionError ?? undefined : undefined}>
         <span
           className={`w-2 h-2 rounded-full ${
@@ -38,40 +46,51 @@ export function StatusBar() {
 
       {isConnected && stats && (
         <>
-          <div
-            className="flex items-center gap-1 cursor-pointer hover:bg-accent px-1 rounded"
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            aria-label={`${t('statusBar.downloadLimit')}: ${formatSpeed(stats.downloadSpeed)}`}
+            className={SPEED_BUTTON}
+            onClick={(e) => openSpeedPopover(e, 'down')}
             onContextMenu={(e) => { e.preventDefault(); setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'down' }); }}
           >
-            <ArrowDown size={12} className="text-info" />
+            <ArrowDown size={12} className="text-info" aria-hidden="true" />
             <span>{formatSpeed(stats.downloadSpeed)}</span>
-          </div>
-          <div
-            className="flex items-center gap-1 cursor-pointer hover:bg-accent px-1 rounded"
+          </button>
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            aria-label={`${t('statusBar.uploadLimit')}: ${formatSpeed(stats.uploadSpeed)}`}
+            className={SPEED_BUTTON}
+            onClick={(e) => openSpeedPopover(e, 'up')}
             onContextMenu={(e) => { e.preventDefault(); setSpeedPopover({ x: e.clientX, y: e.clientY, direction: 'up' }); }}
           >
-            <ArrowUp size={12} className="text-success" />
+            <ArrowUp size={12} className="text-success" aria-hidden="true" />
             <span>{formatSpeed(stats.uploadSpeed)}</span>
-          </div>
+          </button>
           <div className="text-muted-foreground">
             {t('statusBar.activeTotal', { active: stats.activeTorrentCount, total: stats.torrentCount })}
           </div>
 
           <button
-            className={`flex items-center gap-1 px-1 rounded hover:bg-accent ${altSpeedEnabled ? 'text-info' : ''}`}
+            type="button"
+            aria-pressed={altSpeedEnabled}
+            className={`flex items-center gap-1 px-1 rounded hover:bg-accent pointer-coarse:min-h-11 ${altSpeedEnabled ? 'text-info' : ''}`}
             onClick={toggleAltSpeed}
             title={altSpeedEnabled ? t('statusBar.disableAltSpeed') : t('statusBar.enableAltSpeed')}
           >
-            <Turtle size={12} />
+            <Turtle size={12} aria-hidden="true" />
             <span>{altSpeedEnabled ? t('statusBar.alt') : ''}</span>
           </button>
 
           <div className="flex-1" />
 
           <button
-            className="flex items-center gap-1 hover:bg-accent px-1 rounded cursor-pointer"
+            type="button"
+            className="flex items-center gap-1 hover:bg-accent px-1 rounded cursor-pointer pointer-coarse:min-h-11"
             onClick={() => setShowSessionStats(true)}
           >
-            <BarChart3 size={12} />
+            <BarChart3 size={12} aria-hidden="true" />
             <span>
               ↓ {formatBytes(stats.cumulativeStats.downloadedBytes)} ↑ {formatBytes(stats.cumulativeStats.uploadedBytes)}
             </span>
@@ -79,10 +98,11 @@ export function StatusBar() {
 
           {freeSpace !== null && (
             <button
-              className="flex items-center gap-1 hover:bg-accent px-1 rounded cursor-pointer"
+              type="button"
+            className="flex items-center gap-1 hover:bg-accent px-1 rounded cursor-pointer pointer-coarse:min-h-11"
               onClick={() => setShowDiskSpace(true)}
             >
-              <HardDrive size={12} />
+              <HardDrive size={12} aria-hidden="true" />
               <span>
                 {totalSpace
                   ? t('statusBar.freeOfTotal', { free: formatBytes(freeSpace), total: formatBytes(totalSpace) })

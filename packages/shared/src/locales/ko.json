@@ -6,7 +6,9 @@
     "noTorrents": "토렌트 없음",
     "yes": "예",
     "no": "아니오",
-    "close": "닫기"
+    "close": "닫기",
+    "torrentList": "토렌트",
+    "resizePanel": "패널 크기 조정"
   },
   "toolbar": {
     "addTorrent": "토렌트 추가",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "토렌트 검색...",
     "preferences": "환경 설정",
     "serverSettings": "서버 설정",
-    "clearSearch": "검색 지우기"
+    "clearSearch": "검색 지우기",
+    "moreActions": "더 많은 작업"
   },
   "statusBar": {
     "connected": "연결됨",
@@ -40,7 +43,9 @@
     "limitSpeed": "속도 제한하기",
     "unlimited": "무제한",
     "kbs": "KB/s",
-    "setLimit": "제한 설정"
+    "setLimit": "제한 설정",
+    "downloadLimit": "다운로드 속도 제한",
+    "uploadLimit": "업로드 속도 제한"
   },
   "sessionStats": {
     "title": "세션 통계",
@@ -209,7 +214,8 @@
     "moveUp": "위로 이동",
     "moveDown": "아래로 이동",
     "moveToBottom": "맨 아래로 이동",
-    "remove": "제거..."
+    "remove": "제거...",
+    "title": "토렌트 작업"
   },
   "dialog": {
     "addTorrent": "토렌트 추가",

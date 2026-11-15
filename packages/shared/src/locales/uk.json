@@ -6,7 +6,9 @@
     "noTorrents": "Немає торентів",
     "yes": "Так",
     "no": "Ні",
-    "close": "Закрити"
+    "close": "Закрити",
+    "torrentList": "Торенти",
+    "resizePanel": "Змінити розмір панелі"
   },
   "toolbar": {
     "addTorrent": "Додати торент",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Пошук торентів...",
     "preferences": "Налаштування",
     "serverSettings": "Налаштування сервера",
-    "clearSearch": "Очистити пошук"
+    "clearSearch": "Очистити пошук",
+    "moreActions": "Інші дії"
   },
   "statusBar": {
     "connected": "Підключено",
@@ -40,7 +43,9 @@
     "limitSpeed": "Обмежити швидкість",
     "unlimited": "Без обмежень",
     "kbs": "KB/s",
-    "setLimit": "Задати ліміт"
+    "setLimit": "Задати ліміт",
+    "downloadLimit": "Обмеження швидкості завантаження",
+    "uploadLimit": "Обмеження швидкості віддачі"
   },
   "sessionStats": {
     "title": "Статистика сесії",
@@ -209,7 +214,8 @@
     "moveUp": "Вгору",
     "moveDown": "Вниз",
     "moveToBottom": "В кінець",
-    "remove": "Видалити..."
+    "remove": "Видалити...",
+    "title": "Дії з торентом"
   },
   "dialog": {
     "addTorrent": "Додати торент",

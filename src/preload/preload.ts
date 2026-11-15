@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { IPC, RENDERER_EVENT_CHANNELS } from '@shared/ipc-channels';
+import { IPC, RENDERER_EVENT_CHANNELS } from '@ipc/ipc-channels';
 import type { IpcResponse, ServerConfig, ServerConfigPatch, NewServerConfig, AppPreferences, LaunchTarget } from '@shared/types';
 
 const api = {

@@ -15,11 +15,13 @@ import {
 /** Clickable priority pill (low / normal / high) of a file or folder. */
 interface PriorityBadgeProps {
   priority: number;
+  /** Name of the file or folder, so each badge is distinguishable to a screen reader. */
+  name: string;
   onClick: (e: React.MouseEvent) => void;
   t: (key: string) => string;
 }
 
-function PriorityBadge({ priority, onClick, t }: PriorityBadgeProps) {
+function PriorityBadge({ priority, name, onClick, t }: PriorityBadgeProps) {
   const colorClass =
     priority === PRIORITY_HIGH
       ? 'bg-destructive-text/15 text-destructive-text border-destructive-text/30'
@@ -36,7 +38,9 @@ function PriorityBadge({ priority, onClick, t }: PriorityBadgeProps) {
 
   return (
     <button
-      className={`w-14 h-5 text-[10px] font-medium rounded border cursor-pointer select-none transition-colors hover:opacity-80 ${colorClass}`}
+      type="button"
+      aria-label={`${name}: ${label}`}
+      className={`w-14 h-5 pointer-coarse:h-11 text-[10px] font-medium rounded border cursor-pointer select-none transition-colors hover:opacity-80 ${colorClass}`}
       onClick={onClick}
       title={t('filesTab.clickToChangePriority')}
     >
@@ -92,10 +96,13 @@ export function FileTreeRow({
           onClick={() => toggleExpanded(node.path)}
           onContextMenu={handleContextMenu}
         >
-          <PriorityBadge priority={folderPriority} onClick={handlePriorityClick} t={t} />
-          {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-          <Folder size={14} className="text-muted-foreground" />
-          <span className="flex-1 truncate">{node.name}</span>
+          <PriorityBadge priority={folderPriority} name={node.name} onClick={handlePriorityClick} t={t} />
+          {/* Click handling lives on the row; this button makes the toggle focusable and announced. */}
+          <button type="button" aria-expanded={isExpanded} title={node.name} className="flex min-w-0 flex-1 items-center gap-1 text-left">
+            {isExpanded ? <ChevronDown size={12} aria-hidden="true" /> : <ChevronRight size={12} aria-hidden="true" />}
+            <Folder size={14} className="shrink-0 text-muted-foreground" aria-hidden="true" />
+            <span className="flex-1 truncate">{node.name}</span>
+          </button>
           <span className="w-20 text-right text-muted-foreground">{formatBytes(node.totalSize)}</span>
           <span className="w-16 text-right">{formatPercent(progress)}</span>
         </div>
@@ -142,16 +149,17 @@ export function FileTreeRow({
       style={{ paddingLeft: `${depth * 16 + 4}px` }}
       onContextMenu={handleContextMenu}
     >
-      <PriorityBadge priority={priority} onClick={handlePriorityClick} t={t} />
+      <PriorityBadge priority={priority} name={node.name} onClick={handlePriorityClick} t={t} />
       <span className="w-3" />
       <input
         type="checkbox"
         checked={wanted}
+        aria-label={node.name}
         onChange={(e) => node.fileIndex !== undefined && toggleWanted([node.fileIndex], e.target.checked)}
         className="w-3.5"
       />
       <File size={14} className="text-muted-foreground" />
-      <span className="flex-1 truncate">{node.name}</span>
+      <span className="flex-1 truncate" title={node.name}>{node.name}</span>
       <span className="w-20 text-right text-muted-foreground">{formatBytes(node.totalSize)}</span>
       <span className="w-16 text-right">{formatPercent(progress)}</span>
     </div>

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Loader2, Upload, Link, RefreshCw } from 'lucide-react';
+import { Loader2, Upload, Link, RefreshCw } from 'lucide-react';
+import { Dialog, Button } from '../ui';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useSessionStore } from '../../stores/session-store';
 import { useApi } from '../../platform/api-context';
@@ -167,151 +168,144 @@ export function AddTorrentDialog({ onClose, initial }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay">
-      <div className="bg-card border rounded-lg shadow-xl w-[500px]">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">{t('dialog.addTorrent')}</h2>
-          <button onClick={onClose} className="hover:bg-accent rounded p-1">
-            <X size={16} />
-          </button>
+    <Dialog
+      title={t('dialog.addTorrent')}
+      onClose={onClose}
+      width="w-[500px]"
+      footer={
+        <div className="flex items-center justify-end gap-2">
+          <Button onClick={onClose}>{t('dialog.cancel')}</Button>
+          <Button variant="primary" onClick={handleAdd} disabled={saving}>
+            {saving ? <Loader2 size={14} className="animate-spin" aria-label={t('app.loading')} /> : t('dialog.add')}
+          </Button>
         </div>
+      }
+    >
+    <div className="space-y-4">
+      {/* Source tabs */}
+      <div className="flex gap-2">
+        <button
+          className={`flex items-center gap-1 h-8 px-3 text-sm rounded border ${mode === 'url' ? 'bg-primary text-primary-foreground' : ''}`}
+          aria-pressed={mode === 'url'}
+          onClick={() => setMode('url')}
+        >
+          <Link size={14} />
+          {t('dialog.urlMagnet')}
+        </button>
+        <button
+          className={`flex items-center gap-1 h-8 px-3 text-sm rounded border ${mode === 'file' ? 'bg-primary text-primary-foreground' : ''}`}
+          aria-pressed={mode === 'file'}
+          onClick={() => setMode('file')}
+        >
+          <Upload size={14} />
+          {t('dialog.file')}
+        </button>
+      </div>
 
-        <div className="p-4 space-y-4">
-          {/* Source tabs */}
+      {mode === 'url' ? (
+        <div>
+          <label htmlFor="add-field-1" className="text-xs text-muted-foreground">{t('dialog.urlOrMagnet')}</label>
+          <input id="add-field-1"
+            type="text"
+            className="w-full h-8 px-2 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder={t('dialog.urlPlaceholder')}
+            data-autofocus
+          />
+        </div>
+      ) : (
+        <div>
+          <label htmlFor="add-field-2" className="text-xs text-muted-foreground">{t('dialog.torrentFile')}</label>
           <div className="flex gap-2">
-            <button
-              className={`flex items-center gap-1 h-8 px-3 text-sm rounded border ${mode === 'url' ? 'bg-primary text-primary-foreground' : ''}`}
-              onClick={() => setMode('url')}
-            >
-              <Link size={14} />
-              {t('dialog.urlMagnet')}
+            <input id="add-field-2"
+              type="text"
+              className="flex-1 h-8 px-2 text-sm rounded border bg-background"
+              value={filePath}
+              readOnly
+              placeholder={t('dialog.selectTorrentFile')}
+            />
+            <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={handleBrowseFile}>
+              {t('dialog.browse')}
             </button>
-            <button
-              className={`flex items-center gap-1 h-8 px-3 text-sm rounded border ${mode === 'file' ? 'bg-primary text-primary-foreground' : ''}`}
-              onClick={() => setMode('file')}
-            >
-              <Upload size={14} />
-              {t('dialog.file')}
-            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".torrent"
+              className="hidden"
+              onChange={handleFileInputChange}
+            />
           </div>
-
-          {mode === 'url' ? (
-            <div>
-              <label className="text-xs text-muted-foreground">{t('dialog.urlOrMagnet')}</label>
-              <input
-                type="text"
-                className="w-full h-8 px-2 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder={t('dialog.urlPlaceholder')}
-                autoFocus
-              />
-            </div>
-          ) : (
-            <div>
-              <label className="text-xs text-muted-foreground">{t('dialog.torrentFile')}</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  className="flex-1 h-8 px-2 text-sm rounded border bg-background"
-                  value={filePath}
-                  readOnly
-                  placeholder={t('dialog.selectTorrentFile')}
-                />
-                <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={handleBrowseFile}>
-                  {t('dialog.browse')}
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".torrent"
-                  className="hidden"
-                  onChange={handleFileInputChange}
-                />
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label className="text-xs text-muted-foreground">{t('dialog.downloadDirectory')}</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                className="flex-1 h-8 px-2 text-sm rounded border bg-background"
-                value={downloadDir}
-                onChange={(e) => setDownloadDir(e.target.value)}
-              />
-              <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={handleBrowseDir}>
-                {t('dialog.browse')}
-              </button>
-            </div>
-            {freeSpace !== null && (
-              <div className="text-xs text-muted-foreground mt-1">
-                {t('dialog.freeSpace', { space: formatBytes(freeSpace) })}
-              </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-muted-foreground">{t('torrent.labels')}</label>
-              <input
-                type="text"
-                className="w-full h-8 px-2 text-sm rounded border bg-background"
-                value={labels}
-                onChange={(e) => setLabels(e.target.value)}
-                placeholder={t('optionsTab.labelsPlaceholder')}
-              />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">{t('torrent.priority')}</label>
-              <select
-                className="w-full h-8 px-2 text-sm rounded border bg-background"
-                value={priority}
-                onChange={(e) => setPriority(Number(e.target.value))}
-              >
-                <option value={-1}>{t('priority.low')}</option>
-                <option value={0}>{t('priority.normal')}</option>
-                <option value={1}>{t('priority.high')}</option>
-              </select>
-            </div>
-          </div>
-
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={paused} onChange={(e) => setPaused(e.target.checked)} />
-            {t('dialog.startPaused')}
-          </label>
-
-          {error && (
-            <div className="text-sm text-destructive-text bg-destructive/10 p-2 rounded">
-              <p>{error}</p>
-              {duplicateId && fileBase64 && (
-                <button
-                  className="mt-2 flex items-center gap-1 h-7 px-3 text-xs rounded border border-destructive/40 hover:bg-destructive/10 disabled:opacity-50"
-                  onClick={handleUpdateTrackers}
-                  disabled={updatingTrackers}
-                >
-                  {updatingTrackers ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
-                  {t('dialog.updateTrackers')}
-                </button>
-              )}
-            </div>
-          )}
         </div>
+      )}
 
-        <div className="flex items-center justify-end gap-2 p-4 border-t">
-          <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={onClose}>
-            {t('dialog.cancel')}
+      <div>
+        <label htmlFor="add-field-3" className="text-xs text-muted-foreground">{t('dialog.downloadDirectory')}</label>
+        <div className="flex gap-2">
+          <input id="add-field-3"
+            type="text"
+            className="flex-1 h-8 px-2 text-sm rounded border bg-background"
+            value={downloadDir}
+            onChange={(e) => setDownloadDir(e.target.value)}
+          />
+          <button className="h-8 px-3 text-sm rounded border hover:bg-accent" onClick={handleBrowseDir}>
+            {t('dialog.browse')}
           </button>
-          <button
-            className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
-            onClick={handleAdd}
-            disabled={saving}
+        </div>
+        {freeSpace !== null && (
+          <div className="text-xs text-muted-foreground mt-1">
+            {t('dialog.freeSpace', { space: formatBytes(freeSpace) })}
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label htmlFor="add-field-4" className="text-xs text-muted-foreground">{t('torrent.labels')}</label>
+          <input id="add-field-4"
+            type="text"
+            className="w-full h-8 px-2 text-sm rounded border bg-background"
+            value={labels}
+            onChange={(e) => setLabels(e.target.value)}
+            placeholder={t('optionsTab.labelsPlaceholder')}
+          />
+        </div>
+        <div>
+          <label htmlFor="add-field-5" className="text-xs text-muted-foreground">{t('torrent.priority')}</label>
+          <select
+            id="add-field-5"
+            className="w-full h-8 px-2 text-sm rounded border bg-background"
+            value={priority}
+            onChange={(e) => setPriority(Number(e.target.value))}
           >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : t('dialog.add')}
-          </button>
+            <option value={-1}>{t('priority.low')}</option>
+            <option value={0}>{t('priority.normal')}</option>
+            <option value={1}>{t('priority.high')}</option>
+          </select>
         </div>
       </div>
+
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={paused} onChange={(e) => setPaused(e.target.checked)} />
+        {t('dialog.startPaused')}
+      </label>
+
+      {error && (
+        <div className="text-sm text-destructive-text bg-destructive/10 p-2 rounded">
+          <p>{error}</p>
+          {duplicateId && fileBase64 && (
+            <button
+              className="mt-2 flex items-center gap-1 h-7 px-3 text-xs rounded border border-destructive/40 hover:bg-destructive/10 disabled:opacity-50"
+              onClick={handleUpdateTrackers}
+              disabled={updatingTrackers}
+            >
+              {updatingTrackers ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+              {t('dialog.updateTrackers')}
+            </button>
+          )}
+        </div>
+      )}
     </div>
+    </Dialog>
   );
 }

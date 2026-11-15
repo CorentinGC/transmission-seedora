@@ -6,7 +6,9 @@
     "noTorrents": "没有种子",
     "yes": "是",
     "no": "否",
-    "close": "关闭"
+    "close": "关闭",
+    "torrentList": "种子",
+    "resizePanel": "调整面板大小"
   },
   "toolbar": {
     "addTorrent": "添加种子",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "搜索种子...",
     "preferences": "偏好设置",
     "serverSettings": "服务器设置",
-    "clearSearch": "清除搜索"
+    "clearSearch": "清除搜索",
+    "moreActions": "更多操作"
   },
   "statusBar": {
     "connected": "已连接",
@@ -40,7 +43,9 @@
     "limitSpeed": "限制速度",
     "unlimited": "不限制",
     "kbs": "KB/s",
-    "setLimit": "设置限制"
+    "setLimit": "设置限制",
+    "downloadLimit": "下载速度限制",
+    "uploadLimit": "上传速度限制"
   },
   "sessionStats": {
     "title": "会话统计",
@@ -209,7 +214,8 @@
     "moveUp": "上移",
     "moveDown": "下移",
     "moveToBottom": "移到底部",
-    "remove": "删除..."
+    "remove": "删除...",
+    "title": "种子操作"
   },
   "dialog": {
     "addTorrent": "添加种子",

@@ -53,7 +53,7 @@ Run `npm run` for the current full list. `npm run typecheck`, `npm test` (Vitest
 
 ## Environment variables
 
-Web app only, read lazily by `apps/web/src/lib/server/env.ts` (decisions: [ADR 0002](decisions/0002-web-session-cookie.md), [0003](decisions/0003-web-outbound-request-policy.md), [0004](decisions/0004-web-server-action-hardening.md)). There is no `.env.example` file; set them in the host's environment.
+Web app only, read lazily by `apps/web/src/lib/server/env.ts` (decisions: [ADR 0002](decisions/0002-web-session-cookie.md), [0003](decisions/0003-web-outbound-request-policy.md), [0004](decisions/0004-web-server-action-hardening.md)). [`apps/web/.env.example`](../apps/web/.env.example) lists them with comments: copy it to `apps/web/.env.local` for local overrides, or set them in the host's environment.
 
 | Variable | Required | Purpose |
 |---|---|---|
@@ -66,7 +66,7 @@ Web app only, read lazily by `apps/web/src/lib/server/env.ts` (decisions: [ADR 0
 
 A host refused by the guard shows a "host not allowed" error in the UI. If your daemon is on a private address and you see it, set `SEEDORA_ALLOW_PRIVATE_HOSTS=true` on a self-hosted instance. The production session cookie is `Secure`, so a self-hosted production build must be served over HTTPS (for example behind a TLS reverse proxy); plain `http://` never receives the cookie.
 
-No `.env` file is required for local development.
+No `.env` file is required for local development: in development `COOKIE_SECRET` falls back to a random per-process secret.
 
 ## MCP servers (`.mcp.json`)
 

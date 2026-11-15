@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { keysToCarmel, keysToKebab } from '@shared/key-utils';
+import { keysToCarmel, keysToKebab } from './key-utils';
 
 describe('key-utils (main/preload copy)', () => {
   it('converts kebab-case keys to camelCase recursively', () => {

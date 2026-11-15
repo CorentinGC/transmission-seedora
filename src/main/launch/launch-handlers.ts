@@ -1,6 +1,6 @@
 import { app, type BrowserWindow } from 'electron';
 import { z } from 'zod';
-import { IPC } from '@shared/ipc-channels';
+import { IPC } from '@ipc/ipc-channels';
 import type { IpcResponse, LaunchTarget as LaunchTargetPayload } from '@shared/types';
 import { approvedPaths } from '../security/approved-paths';
 import { handleGuarded, type SenderValidator } from '../security/ipc-guard';

@@ -6,7 +6,9 @@
     "noTorrents": "Torrent yok",
     "yes": "Evet",
     "no": "Hayır",
-    "close": "Kapat"
+    "close": "Kapat",
+    "torrentList": "Torrent’ler",
+    "resizePanel": "Paneli yeniden boyutlandır"
   },
   "toolbar": {
     "addTorrent": "Torrent Ekle",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Torrent ara...",
     "preferences": "Tercihler",
     "serverSettings": "Sunucu Ayarları",
-    "clearSearch": "Aramayı temizle"
+    "clearSearch": "Aramayı temizle",
+    "moreActions": "Diğer eylemler"
   },
   "statusBar": {
     "connected": "Bağlı",
@@ -40,7 +43,9 @@
     "limitSpeed": "Hızı sınırla",
     "unlimited": "Sınırsız",
     "kbs": "KB/s",
-    "setLimit": "Sınır belirle"
+    "setLimit": "Sınır belirle",
+    "downloadLimit": "İndirme hızı sınırı",
+    "uploadLimit": "Yükleme hızı sınırı"
   },
   "sessionStats": {
     "title": "Oturum istatistikleri",
@@ -209,7 +214,8 @@
     "moveUp": "Yukarı Taşı",
     "moveDown": "Aşağı Taşı",
     "moveToBottom": "En Alta Taşı",
-    "remove": "Kaldır..."
+    "remove": "Kaldır...",
+    "title": "Torrent eylemleri"
   },
   "dialog": {
     "addTorrent": "Torrent Ekle",

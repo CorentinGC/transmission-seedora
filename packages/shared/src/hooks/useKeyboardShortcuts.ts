@@ -16,6 +16,34 @@ function isInsideDialog(target: EventTarget | null): boolean {
   return typeof el?.closest === 'function' && el.closest('[role="dialog"]') !== null;
 }
 
+const INTERACTIVE_SELECTOR =
+  'button, a[href], input, textarea, select, summary, [contenteditable=""], [contenteditable="true"], ' +
+  '[role="button"], [role="tab"], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], ' +
+  '[role="checkbox"], [role="option"], [role="gridcell"], [role="row"], [role="switch"], [role="radio"]';
+
+/** True when the target is an interactive control or sits in an open dialog or menu: Space and Enter belong to it. */
+export function ownsActivationKeys(target: EventTarget | null): boolean {
+  const el = target as Partial<HTMLElement> | null;
+  if (!el || typeof el.closest !== 'function') return false;
+  if (isEditableTarget(target)) return true;
+  return el.closest(INTERACTIVE_SELECTOR) !== null || el.closest('[role="dialog"], [role="menu"], [role="listbox"]') !== null;
+}
+
+/**
+ * Space key: toggles start/stop of the selection unless the focused element activates itself on Space.
+ * Returns true when the event was handled.
+ */
+export function handleSpaceKey(
+  e: Pick<KeyboardEvent, 'key' | 'target' | 'preventDefault'>,
+  ids: number[],
+  toggle: (ids: number[]) => void,
+): boolean {
+  if (e.key !== ' ' || ids.length === 0 || ownsActivationKeys(e.target)) return false;
+  e.preventDefault();
+  toggle(ids);
+  return true;
+}
+
 /**
  * Delete key: opens the remove dialog when connected, focus is neither in an editable
  * control nor inside a dialog, and at least one torrent is selected.
@@ -71,16 +99,11 @@ export function useKeyboardShortcuts(allVisibleIds: number[]) {
       const ids = Array.from(selectedIds);
 
       // Space: toggle start/stop
-      if (e.key === ' ' && ids.length > 0) {
-        e.preventDefault();
-        const firstTorrent = torrents.get(ids[0]);
-        if (firstTorrent && firstTorrent.status === 0) {
-          startTorrents(ids);
-        } else {
-          stopTorrents(ids);
-        }
-        return;
-      }
+      const toggle = (targets: number[]) => {
+        if (torrents.get(targets[0])?.status === 0) startTorrents(targets);
+        else stopTorrents(targets);
+      };
+      if (handleSpaceKey(e, ids, toggle)) return;
 
       // Escape: clear search
       if (e.key === 'Escape') {

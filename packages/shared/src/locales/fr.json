@@ -6,7 +6,9 @@
     "noTorrents": "Aucun torrent",
     "yes": "Oui",
     "no": "Non",
-    "close": "Fermer"
+    "close": "Fermer",
+    "torrentList": "Torrents",
+    "resizePanel": "Redimensionner le panneau"
   },
   "toolbar": {
     "addTorrent": "Ajouter un torrent",
@@ -21,7 +23,8 @@
     "searchPlaceholder": "Rechercher...",
     "preferences": "Préférences",
     "serverSettings": "Paramètres du serveur",
-    "clearSearch": "Effacer la recherche"
+    "clearSearch": "Effacer la recherche",
+    "moreActions": "Plus d’actions"
   },
   "statusBar": {
     "connected": "Connecté",
@@ -40,7 +43,9 @@
     "limitSpeed": "Limiter la vitesse",
     "unlimited": "Illimité",
     "kbs": "Ko/s",
-    "setLimit": "Définir la limite"
+    "setLimit": "Définir la limite",
+    "downloadLimit": "Limite de vitesse de téléchargement",
+    "uploadLimit": "Limite de vitesse d’envoi"
   },
   "sessionStats": {
     "title": "Statistiques de session",
@@ -209,7 +214,8 @@
     "moveUp": "Monter",
     "moveDown": "Descendre",
     "moveToBottom": "Déplacer en bas",
-    "remove": "Supprimer..."
+    "remove": "Supprimer...",
+    "title": "Actions du torrent"
   },
   "dialog": {
     "addTorrent": "Ajouter un torrent",
