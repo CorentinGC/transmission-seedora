@@ -54,9 +54,10 @@ export interface OutboundOptions {
   /** Can only lower the 8 MiB cap (the daemon's answer to most methods is a few KB). */
   maxResponseBytes?: number;
   /**
-   * Called with the one address the call will connect to, after policy passed for all resolved
-   * addresses and before any connection (used for the per-address rate limit, so alias names
-   * gain nothing and extra addresses are not charged). It may
+   * Called with the one address the call is about to connect to, after policy passed for all
+   * resolved addresses and before each connection: once, or twice when a connection error makes
+   * the call retry with the next address (used for the per-address rate limit, so alias names
+   * gain nothing and addresses never connected to are not charged). It may
    * throw an `OutboundError` (e.g. RATE_LIMITED) to refuse the call; that error propagates as is.
    */
   onResolved?: (addresses: readonly ResolvedAddress[]) => void;
@@ -215,23 +216,78 @@ export async function postJson(
   const allowedHosts = options.allowedHosts === undefined ? getAllowedHosts() : options.allowedHosts;
   const allowPrivate = options.allowPrivate && (allowedHosts === null || isListedHost(allowedHosts, host, target.port));
   const addresses = await resolveAndValidate(host, allowPrivate, options.resolver ?? systemResolver, signal, options.clientKey);
-  // Every resolved address was validated above, but the call connects to the first one only and
-  // all limits are charged to it alone: a name listing [attacker, victim] cannot drain the
-  // victim's gate, byte budget or rate tokens with calls that never reach the victim.
-  const pinned = [addresses[0]];
-  options.onResolved?.(pinned);
-  const keys = destinationKeys(pinned);
-  const releaseDestination = (options.destinationGate ?? processDestinationGate).tryAcquireAll(keys);
-  if (!releaseDestination) throw new OutboundError('RATE_LIMITED');
-  const budget = options.byteBudget ?? processByteBudget;
-  let held = 0;
-  const cap = Math.min(options.maxResponseBytes ?? MAX_RESPONSE_BYTES, MAX_RESPONSE_BYTES);
+  const exchange: Exchange = {
+    target,
+    host,
+    payload,
+    signal,
+    options,
+    cap: Math.min(options.maxResponseBytes ?? MAX_RESPONSE_BYTES, MAX_RESPONSE_BYTES),
+    headers: buildHeaders(payload, options),
+  };
+  // Every resolved address was validated above. The call connects to one address at a time and all
+  // limits are charged to the address actually used: a name listing [attacker, victim] cannot
+  // drain the victim's gate, byte budget or rate tokens with calls that never reach the victim.
+  const first: Progress = { admitted: false, connected: false };
+  try {
+    return await sendTo(addresses[0], exchange, first);
+  } catch (error) {
+    // One retry with the next validated address, only when the TCP connection never came up
+    // (nothing was sent) and the shared deadline still runs.
+    const next = addresses[1];
+    const retryable = error instanceof OutboundError && error.code === 'CONNECTION_FAILED' && first.admitted && !first.connected;
+    if (!retryable || next === undefined || signal.aborted) throw error;
+    const second: Progress = { admitted: false, connected: false };
+    try {
+      return await sendTo(next, exchange, second);
+    } catch (retryError) {
+      // A retry refused before it was admitted (rate limit, gate) leaves the original failure.
+      throw second.admitted ? retryError : error;
+    }
+  }
+}
+
+/** Everything one attempt needs besides the address. */
+interface Exchange {
+  target: OutboundTarget;
+  host: string;
+  payload: string;
+  signal: AbortSignal;
+  options: OutboundOptions;
+  cap: number;
+  headers: Record<string, string | number>;
+}
+
+/** What an attempt reached: past the limits, past the TCP handshake. */
+interface Progress {
+  admitted: boolean;
+  connected: boolean;
+}
+
+function buildHeaders(payload: string, options: OutboundOptions): Record<string, string | number> {
   const headers: Record<string, string | number> = {
     'Content-Type': 'application/json',
     'Content-Length': Buffer.byteLength(payload),
   };
   if (options.authorization) headers.Authorization = options.authorization;
   if (options.sessionId) headers['X-Transmission-Session-Id'] = options.sessionId;
+  return headers;
+}
+
+/**
+ * One exchange pinned to `address`: charges the rate limit, gate and byte budget to that address
+ * only, and gives them back when it ends. `progress` tells the caller how far it got.
+ */
+async function sendTo(address: ResolvedAddress, exchange: Exchange, progress: Progress): Promise<OutboundResponse> {
+  const { target, host, payload, signal, options, cap, headers } = exchange;
+  const pinned = [address];
+  options.onResolved?.(pinned);
+  const keys = destinationKeys(pinned);
+  const releaseDestination = (options.destinationGate ?? processDestinationGate).tryAcquireAll(keys);
+  if (!releaseDestination) throw new OutboundError('RATE_LIMITED');
+  progress.admitted = true;
+  const budget = options.byteBudget ?? processByteBudget;
+  let held = 0;
 
   return new Promise<OutboundResponse>((resolve, reject) => {
     let settled = false;
@@ -269,6 +325,14 @@ export async function postJson(
       return;
     }
 
+    request.on('socket', (socket) => {
+      if (!socket.connecting) progress.connected = true;
+      else {
+        socket.once('connect', () => {
+          progress.connected = true;
+        });
+      }
+    });
     request.on('error', (error) => finish(mapTransportError(error)));
     request.on('response', (response) => {
       const status = response.statusCode ?? 0;

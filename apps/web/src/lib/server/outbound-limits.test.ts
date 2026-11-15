@@ -8,7 +8,6 @@ import {
   destinationKeys,
 } from './outbound-limits';
 import {
-  MAX_HUNG_NAMES_PER_DOMAIN,
   MAX_NEGATIVE_ENTRIES,
   MAX_SLOT_WAITERS_PER_CLIENT,
   MIN_HANG_MS,
@@ -375,46 +374,41 @@ describe('createSystemResolver', () => {
     expect(await resolver('fast.test', signal(), 'B')).toHaveLength(2);
   });
 
-  it('refuses every name of a parent domain once several of its names hung, but not other domains (ol7)', async () => {
+  it('hung names under a shared public suffix never refuse other names of that suffix', async () => {
     let now = 1_000;
-    const lookup = vi.fn((host: string) => (host.endsWith('evil.test') ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
-    const resolver = createSystemResolver(lookup, createLookupLimiter(MAX_HUNG_NAMES_PER_DOMAIN + 2, 10), { now: () => now });
-    for (let i = 0; i < MAX_HUNG_NAMES_PER_DOMAIN; i++) {
-      const controller = new AbortController();
-      const hung = resolver(`w${i}.evil.test`, controller.signal);
-      now += MIN_HANG_MS;
-      controller.abort();
-      await codeOf(hung);
-    }
-    const calls = lookup.mock.calls.length;
-    expect(await codeOf(resolver('fresh.evil.test', signal()))).toBe('DNS_FAILED');
-    expect(await codeOf(resolver('a.b.evil.test', signal(), 'C'))).toBe('DNS_FAILED');
-    expect(lookup).toHaveBeenCalledTimes(calls);
-    expect(await resolver('good.test', signal())).toHaveLength(2);
-    expect(lookup).toHaveBeenCalledTimes(calls + 1);
-    now += NEGATIVE_CACHE_TTL_MS + 1;
-    const again = new AbortController();
-    const retry = resolver('fresh.evil.test', again.signal);
-    expect(lookup).toHaveBeenCalledTimes(calls + 2);
-    again.abort();
-    await codeOf(retry);
-  });
-
-  it('fewer hung names than the threshold leave the rest of the domain usable', async () => {
-    let now = 1_000;
-    const lookup = vi.fn((host: string) => (host.startsWith('w') ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
+    const lookup = vi.fn((host: string) => (host.includes('attacker') ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
     const resolver = createSystemResolver(lookup, createLookupLimiter(8, 10), { now: () => now });
-    for (let i = 0; i < MAX_HUNG_NAMES_PER_DOMAIN - 1; i++) {
+    for (const name of ['x1.attacker.co.uk', 'x2.attacker.co.uk', 'x3.attacker.co.uk', 'x4.attacker.co.uk']) {
       const controller = new AbortController();
-      const hung = resolver(`w${i}.zone.test`, controller.signal);
+      const hung = resolver(name, controller.signal);
       now += MIN_HANG_MS;
       controller.abort();
       await codeOf(hung);
     }
-    expect(await resolver('ok.zone.test', signal())).toHaveLength(2);
+    expect(await resolver('seedbox.example.co.uk', signal())).toHaveLength(2);
+    // Per-name refusal still holds for exactly the hung name.
+    const calls = lookup.mock.calls.length;
+    expect(await codeOf(resolver('x1.attacker.co.uk', signal()))).toBe('DNS_FAILED');
+    expect(lookup).toHaveBeenCalledTimes(calls);
   });
 
-  it('keeps the negative cache and the per-domain counters within MAX_NEGATIVE_ENTRIES', async () => {
+  it('an expired negative entry leaves no state: the name is looked up again and can hang again', async () => {
+    let now = 1_000;
+    const lookup = vi.fn((host: string) => (host === 'hang.test' ? new Promise<Answer>(() => undefined) : Promise.resolve(OK)));
+    const resolver = createSystemResolver(lookup, createLookupLimiter(4, 10), { now: () => now });
+    for (let round = 0; round < 2; round++) {
+      const controller = new AbortController();
+      const hung = resolver('hang.test', controller.signal);
+      expect(lookup).toHaveBeenCalledTimes(round + 1);
+      now += MIN_HANG_MS;
+      controller.abort();
+      await codeOf(hung);
+      expect(await codeOf(resolver('hang.test', signal()))).toBe('DNS_FAILED');
+      now += NEGATIVE_CACHE_TTL_MS + 1;
+    }
+  });
+
+  it('keeps the negative cache within MAX_NEGATIVE_ENTRIES', async () => {
     let now = 1_000;
     const resolver = createSystemResolver(() => new Promise<Answer>(() => undefined), createLookupLimiter(MAX_NEGATIVE_ENTRIES + 10, 10), { now: () => now });
     for (let i = 0; i < MAX_NEGATIVE_ENTRIES + 5; i++) {

@@ -2,8 +2,8 @@ import http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { OutboundError, type ErrorCode } from './errors';
-import { createByteBudget, createConcurrencyGate } from './outbound-limits';
-import { postJson, type OutboundTarget, type Resolver } from './outbound';
+import { createByteBudget, createConcurrencyGate, destinationKeys } from './outbound-limits';
+import { postJson, type OutboundTarget, type ResolvedAddress, type Resolver } from './outbound';
 
 /** Per-address limits, the operator allowlist and the client key hand-over of `postJson`. */
 
@@ -11,9 +11,11 @@ let server: http.Server;
 let port: number;
 let pending: http.ServerResponse[] = [];
 let respond: (res: http.ServerResponse) => void;
+let requestsSeen = 0;
 
 beforeAll(async () => {
   server = http.createServer((req, res) => {
+    requestsSeen += 1;
     req.resume();
     req.on('end', () => respond(res));
   });
@@ -27,6 +29,7 @@ afterAll(async () => {
 });
 
 afterEach(() => {
+  requestsSeen = 0;
   pending.forEach((res) => res.end('{}'));
   pending = [];
   respond = (res) => res.end('{}');
@@ -80,6 +83,94 @@ describe('per-address concurrency gate (bth, 9s8)', () => {
 
   it('still refuses the whole call when any resolved address is forbidden, even one it would not connect to', async () => {
     expect(await codeOf(postJson(target(), {}, { allowPrivate: true, allowedHosts: null, resolver: answering('127.0.0.1', '169.254.169.254') }))).toBe('HOST_NOT_ALLOWED');
+  });
+});
+
+describe('one retry on a connection error (fallback address)', () => {
+  const closed: ResolvedAddress = { address: '::1', family: 6 };
+  const live: ResolvedAddress = { address: '127.0.0.1', family: 4 };
+  const resolving = (...addresses: ResolvedAddress[]): Resolver => async () => addresses;
+  const options = (resolver: Resolver, extra: Partial<Parameters<typeof postJson>[2]> = {}) => ({
+    allowPrivate: true,
+    allowedHosts: null,
+    resolver,
+    ...extra,
+  });
+
+  it('connects to the next validated address when the first refuses the connection, and releases the first', async () => {
+    const gate = createConcurrencyGate(1);
+    const budget = createByteBudget(8 * 1024 * 1024);
+    const onResolved = vi.fn();
+    const result = await postJson(target(), {}, options(resolving(closed, live), { destinationGate: gate, byteBudget: budget, onResolved }));
+    expect(result.status).toBe(200);
+    expect(onResolved.mock.calls).toEqual([[[closed]], [[live]]]);
+    expect(gate.tryAcquire(destinationKeys([closed])[0])).not.toBeNull();
+    expect(gate.tryAcquire(destinationKeys([live])[0])).not.toBeNull();
+    expect(budget.inUse()).toBe(0);
+  });
+
+  it('holds only the address in use: the first address is free while the second is being served', async () => {
+    const gate = createConcurrencyGate(1);
+    respond = (res) => pending.push(res);
+    const call = postJson(target(), {}, options(resolving(closed, live), { destinationGate: gate }));
+    await vi.waitFor(() => expect(pending).toHaveLength(1));
+    expect(gate.tryAcquire(destinationKeys([closed])[0])).not.toBeNull();
+    expect(gate.tryAcquire(destinationKeys([live])[0])).toBeNull();
+    pending.forEach((res) => res.end('{}'));
+    await call;
+  });
+
+  it('still refuses the whole call before any connect when the second address is forbidden', async () => {
+    const onResolved = vi.fn();
+    const forbidden: ResolvedAddress = { address: '169.254.169.254', family: 4 };
+    expect(await codeOf(postJson(target(), {}, options(resolving(closed, forbidden), { onResolved })))).toBe('HOST_NOT_ALLOWED');
+    expect(onResolved).not.toHaveBeenCalled();
+    expect(requestsSeen).toBe(0);
+  });
+
+  it('retries at most once: a third address is never tried', async () => {
+    const onResolved = vi.fn();
+    const gate = createConcurrencyGate(1);
+    expect(await codeOf(postJson(target(), {}, options(resolving(closed, closed, live), { onResolved, destinationGate: gate })))).toBe('CONNECTION_FAILED');
+    expect(onResolved).toHaveBeenCalledTimes(2);
+    expect(requestsSeen).toBe(0);
+    expect(gate.tryAcquire(destinationKeys([closed])[0])).not.toBeNull();
+  });
+
+  it('does not retry once the request was sent (connection reset after connect)', async () => {
+    const onResolved = vi.fn();
+    respond = (res) => res.socket?.destroy();
+    expect(await codeOf(postJson(target(), {}, options(resolving(live, live), { onResolved })))).toBe('CONNECTION_FAILED');
+    expect(onResolved).toHaveBeenCalledTimes(1);
+    expect(requestsSeen).toBe(1);
+  });
+
+  it('does not retry on an HTTP status', async () => {
+    const onResolved = vi.fn();
+    respond = (res) => {
+      res.statusCode = 500;
+      res.end('{}');
+    };
+    const result = await postJson(target(), {}, options(resolving(live, live), { onResolved }));
+    expect(result.status).toBe(500);
+    expect(onResolved).toHaveBeenCalledTimes(1);
+    expect(requestsSeen).toBe(1);
+  });
+
+  it('reports the connection failure when the retry itself is refused by the rate limit', async () => {
+    const onResolved = vi.fn().mockImplementationOnce(() => undefined).mockImplementationOnce(() => {
+      throw new OutboundError('RATE_LIMITED');
+    });
+    expect(await codeOf(postJson(target(), {}, options(resolving(closed, live), { onResolved })))).toBe('CONNECTION_FAILED');
+    expect(requestsSeen).toBe(0);
+  });
+
+  it('does not retry after the overall deadline has passed', async () => {
+    const onResolved = vi.fn();
+    const controller = new AbortController();
+    controller.abort();
+    expect(await codeOf(postJson(target(), {}, options(resolving(closed, live), { onResolved, signal: controller.signal })))).toBe('TIMEOUT');
+    expect(onResolved).not.toHaveBeenCalled();
   });
 });
 

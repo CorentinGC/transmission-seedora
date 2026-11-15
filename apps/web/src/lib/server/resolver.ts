@@ -24,21 +24,13 @@ export type Resolver = (host: string, signal?: AbortSignal, clientKey?: string) 
 export const MAX_SLOT_WAITERS_PER_CLIENT = 4;
 /** How long a name whose lookup timed out is refused without a new lookup. */
 export const NEGATIVE_CACHE_TTL_MS = 30_000;
-/** Names (and parent domains) remembered by the negative cache; the oldest are forgotten first. */
+/** Names remembered by the negative cache; the oldest are forgotten first. */
 export const MAX_NEGATIVE_ENTRIES = 1024;
 /**
  * A lookup must have really run this long before its timeout counts as a hang. A healthy name
  * whose queued lookup started a moment before its caller's deadline is not a hang.
  */
 export const MIN_HANG_MS = 3_000;
-/**
- * Distinct hung names under one parent domain (last two labels) after which every name under it
- * is refused for the TTL, so rotating wildcard subdomains cannot each pin a lookup slot. A shared
- * suffix (a dynamic DNS provider) can be refused for 30 s by whoever hangs this many of its names;
- * that is the price of bounding the lookup pool, and it ends by itself.
- */
-export const MAX_HUNG_NAMES_PER_DOMAIN = 3;
-
 type DnsLookup = (host: string, options: { all: true; verbatim: true }) => Promise<Array<{ address: string; family: number }>>;
 
 /** One lookup in flight for a client; concurrent callers of the same name share it. */
@@ -70,54 +62,31 @@ export interface SystemResolverOptions {
  *   deadline (at most a few waiters, then RATE_LIMITED). With no trusted identity there is no
  *   per-client slot;
  * - a name whose lookup had really run for `MIN_HANG_MS` when its callers gave up is refused for
- *   a short time (DNS_FAILED), so a hanging name cannot be retried into the whole pool; once
- *   `MAX_HUNG_NAMES_PER_DOMAIN` names of one parent domain hung, the whole domain is refused.
+ *   a short time (DNS_FAILED), so a hanging name cannot be retried into the whole pool. Refusal is per exact name only: a
+ *   domain-level rule would let an attacker block a whole public suffix for every user.
  * c-ares was rejected: it ignores /etc/hosts, which LAN self-hosters rely on.
  */
 export function createSystemResolver(lookup: DnsLookup, limiter: LookupLimiter, options: SystemResolverOptions = {}): Resolver {
   const { now = Date.now, negativeTtlMs = NEGATIVE_CACHE_TTL_MS, minHangMs = MIN_HANG_MS } = options;
   const inflight = new Map<string, Inflight>();
   const negative = new Map<string, number>();
-  const hungByDomain = new Map<string, { names: Set<string>; until: number }>();
-
-  /** The last two labels: `a.b.example.com` -> `example.com`. */
-  const parentDomain = (name: string): string => name.split('.').slice(-2).join('.');
 
   const isRefused = (name: string): boolean => {
     const until = negative.get(name);
-    if (until !== undefined) {
-      if (now() < until) return true;
-      negative.delete(name);
-    }
-    const domain = parentDomain(name);
-    const hung = hungByDomain.get(domain);
-    if (hung === undefined) return false;
-    if (now() >= hung.until) {
-      hungByDomain.delete(domain);
-      return false;
-    }
-    return hung.names.size >= MAX_HUNG_NAMES_PER_DOMAIN;
-  };
-
-  const trim = <V>(map: Map<string, V>): void => {
-    while (map.size > MAX_NEGATIVE_ENTRIES) {
-      const oldest = map.keys().next();
-      if (oldest.done) break;
-      map.delete(oldest.value);
-    }
+    if (until === undefined) return false;
+    if (now() < until) return true;
+    negative.delete(name);
+    return false;
   };
 
   const refuseFor = (name: string): void => {
-    const until = now() + negativeTtlMs;
     negative.delete(name);
-    negative.set(name, until);
-    trim(negative);
-    const domain = parentDomain(name);
-    const names = hungByDomain.get(domain)?.names ?? new Set<string>();
-    names.add(name);
-    hungByDomain.delete(domain);
-    hungByDomain.set(domain, { names, until });
-    trim(hungByDomain);
+    negative.set(name, now() + negativeTtlMs);
+    while (negative.size > MAX_NEGATIVE_ENTRIES) {
+      const oldest = negative.keys().next();
+      if (oldest.done) break;
+      negative.delete(oldest.value);
+    }
   };
 
   const begin = (clientKey: string, host: string, name: string): Inflight => {
