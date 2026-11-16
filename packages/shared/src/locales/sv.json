@@ -122,7 +122,10 @@
     "created": "Skapad",
     "comment": "Kommentar",
     "fileCount": "Filer",
-    "group": "Grupp"
+    "group": "Grupp",
+    "sortBy": "Sortera efter",
+    "sortAscending": "Sortera stigande",
+    "sortDescending": "Sortera fallande"
   },
   "priority": {
     "high": "Hög",

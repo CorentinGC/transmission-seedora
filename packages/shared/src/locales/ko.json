@@ -122,7 +122,10 @@
     "created": "생성일",
     "comment": "설명",
     "fileCount": "파일 수",
-    "group": "그룹"
+    "group": "그룹",
+    "sortBy": "정렬 기준",
+    "sortAscending": "오름차순 정렬",
+    "sortDescending": "내림차순 정렬"
   },
   "priority": {
     "high": "높음",

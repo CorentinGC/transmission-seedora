@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPACT_LIST_QUERY, menuAnchor, progressWidthPercent } from './card-model';
+import { COMPACT_LIST_QUERY, menuAnchor, progressWidthPercent, sortByField, toggleSortDirection } from './card-model';
 
 describe('progressWidthPercent', () => {
   it('converts a ratio to a percentage', () => {
@@ -24,5 +24,23 @@ describe('menuAnchor', () => {
 describe('COMPACT_LIST_QUERY', () => {
   it('targets widths below 640px', () => {
     expect(COMPACT_LIST_QUERY).toBe('(max-width: 639px)');
+  });
+});
+
+describe('sortByField', () => {
+  it('keeps the current direction', () => {
+    expect(sortByField([{ id: 'name', desc: false }], 'eta')).toEqual([{ id: 'eta', desc: false }]);
+  });
+  it('defaults to descending', () => {
+    expect(sortByField([], 'eta')).toEqual([{ id: 'eta', desc: true }]);
+  });
+});
+
+describe('toggleSortDirection', () => {
+  it('flips the direction', () => {
+    expect(toggleSortDirection([{ id: 'name', desc: false }])).toEqual([{ id: 'name', desc: true }]);
+  });
+  it('does nothing without a sort', () => {
+    expect(toggleSortDirection([])).toEqual([]);
   });
 });

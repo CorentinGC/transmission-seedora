@@ -122,7 +122,10 @@
     "created": "作成日",
     "comment": "コメント",
     "fileCount": "ファイル数",
-    "group": "グループ"
+    "group": "グループ",
+    "sortBy": "並べ替え",
+    "sortAscending": "昇順に並べ替え",
+    "sortDescending": "降順に並べ替え"
   },
   "priority": {
     "high": "高",

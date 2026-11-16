@@ -122,7 +122,10 @@
     "created": "Créé",
     "comment": "Commentaire",
     "fileCount": "Fichiers",
-    "group": "Groupe"
+    "group": "Groupe",
+    "sortBy": "Trier par",
+    "sortAscending": "Tri croissant",
+    "sortDescending": "Tri décroissant"
   },
   "priority": {
     "high": "Haute",

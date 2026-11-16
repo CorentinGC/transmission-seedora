@@ -122,7 +122,10 @@
     "created": "创建时间",
     "comment": "备注",
     "fileCount": "文件数",
-    "group": "分组"
+    "group": "分组",
+    "sortBy": "排序方式",
+    "sortAscending": "升序排序",
+    "sortDescending": "降序排序"
   },
   "priority": {
     "high": "高",

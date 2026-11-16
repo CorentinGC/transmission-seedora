@@ -122,7 +122,10 @@
     "created": "Oluşturulma",
     "comment": "Açıklama",
     "fileCount": "Dosyalar",
-    "group": "Grup"
+    "group": "Grup",
+    "sortBy": "Sırala",
+    "sortAscending": "Artan sırala",
+    "sortDescending": "Azalan sırala"
   },
   "priority": {
     "high": "Yüksek",

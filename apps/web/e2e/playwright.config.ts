@@ -32,7 +32,7 @@ export default defineConfig({
       reuseExistingServer: false,
     },
     {
-      command: 'npm run dev:web -- -H 127.0.0.1',
+      command: 'npm run dev --workspace=@seedora/web -- -H 127.0.0.1',
       cwd: '../../..',
       url: `http://localhost:${WEB_PORT}`,
       reuseExistingServer: false,

@@ -122,7 +122,10 @@
     "created": "Létrehozva",
     "comment": "Megjegyzés",
     "fileCount": "Fájlok",
-    "group": "Csoport"
+    "group": "Csoport",
+    "sortBy": "Rendezés",
+    "sortAscending": "Növekvő sorrend",
+    "sortDescending": "Csökkenő sorrend"
   },
   "priority": {
     "high": "Magas",

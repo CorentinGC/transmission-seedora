@@ -122,7 +122,10 @@
     "created": "Vytvořeno",
     "comment": "Komentář",
     "fileCount": "Soubory",
-    "group": "Skupina"
+    "group": "Skupina",
+    "sortBy": "Seřadit podle",
+    "sortAscending": "Řadit vzestupně",
+    "sortDescending": "Řadit sestupně"
   },
   "priority": {
     "high": "Vysoká",

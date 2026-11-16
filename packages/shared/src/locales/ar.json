@@ -122,7 +122,10 @@
     "created": "تاريخ الإنشاء",
     "comment": "تعليق",
     "fileCount": "الملفات",
-    "group": "المجموعة"
+    "group": "المجموعة",
+    "sortBy": "ترتيب حسب",
+    "sortAscending": "ترتيب تصاعدي",
+    "sortDescending": "ترتيب تنازلي"
   },
   "priority": {
     "high": "عالية",

@@ -122,7 +122,10 @@
     "created": "Creado",
     "comment": "Comentario",
     "fileCount": "Archivos",
-    "group": "Grupo"
+    "group": "Grupo",
+    "sortBy": "Ordenar por",
+    "sortAscending": "Orden ascendente",
+    "sortDescending": "Orden descendente"
   },
   "priority": {
     "high": "Alta",

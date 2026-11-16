@@ -122,7 +122,10 @@
     "created": "Создан",
     "comment": "Комментарий",
     "fileCount": "Файлы",
-    "group": "Группа"
+    "group": "Группа",
+    "sortBy": "Сортировать по",
+    "sortAscending": "По возрастанию",
+    "sortDescending": "По убыванию"
   },
   "priority": {
     "high": "Высокий",

@@ -122,7 +122,10 @@
     "created": "Utworzono",
     "comment": "Komentarz",
     "fileCount": "Pliki",
-    "group": "Grupa"
+    "group": "Grupa",
+    "sortBy": "Sortuj według",
+    "sortAscending": "Sortuj rosnąco",
+    "sortDescending": "Sortuj malejąco"
   },
   "priority": {
     "high": "Wysoki",

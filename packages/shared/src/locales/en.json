@@ -122,7 +122,10 @@
     "created": "Created",
     "comment": "Comment",
     "fileCount": "Files",
-    "group": "Group"
+    "group": "Group",
+    "sortBy": "Sort by",
+    "sortAscending": "Sort ascending",
+    "sortDescending": "Sort descending"
   },
   "priority": {
     "high": "High",

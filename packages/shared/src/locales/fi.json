@@ -122,7 +122,10 @@
     "created": "Luotu",
     "comment": "Kommentti",
     "fileCount": "Tiedostot",
-    "group": "Ryhmä"
+    "group": "Ryhmä",
+    "sortBy": "Järjestä",
+    "sortAscending": "Järjestä nousevasti",
+    "sortDescending": "Järjestä laskevasti"
   },
   "priority": {
     "high": "Korkea",
