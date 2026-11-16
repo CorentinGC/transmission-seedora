@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.3.2...seedora-v1.4.0) (2026-11-16)
+
+
+### Features
+
+* **web:** add the seedora.app landing page and split the app onto app.seedora.app ([ea85ec5](https://github.com/CorentinGC/transmission-seedora/commit/ea85ec520635c5a54402b48888187161249fdf81))
+* **web:** add the seedora.app landing page and split the app onto app.seedora.app ([8e3bcc3](https://github.com/CorentinGC/transmission-seedora/commit/8e3bcc33dc75e9de2f673b4a09778045cea106d5))
+* **web:** add the seedora.app landing page and split the app onto app.seedora.app ([20e8a66](https://github.com/CorentinGC/transmission-seedora/commit/20e8a66f5a533b836910fe7e840e3570c5581577))
+
 ## [1.3.2](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.3.1...seedora-v1.3.2) (2026-11-16)
 
 
