@@ -3,7 +3,7 @@
 [![Licence: MIT](https://img.shields.io/github/license/CorentinGC/transmission-seedora)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/CorentinGC/transmission-seedora)](https://github.com/CorentinGC/transmission-seedora/releases)
 
-A cross-platform application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon. One shared React UI ships as a **desktop app** (macOS, Windows, Linux, built with Electron) and as a **web app** (Next.js, with a web manifest; no service worker, so no offline mode), hosted at [seedora.app](https://www.seedora.app/).
+A cross-platform application to remotely manage a [Transmission](https://transmissionbt.com/) 4+ BitTorrent daemon. One shared React UI ships as a **desktop app** (macOS, Windows, Linux, built with Electron) and as a **web app** (Next.js, with a web manifest; no service worker, so no offline mode), with a landing page at [seedora.app](https://seedora.app/) and the app at [app.seedora.app](https://app.seedora.app/).
 
 ## Why this project?
 
@@ -13,7 +13,7 @@ This project was entirely **vibe-coded** — designed and implemented with the a
 
 ## Try it online
 
-Use Seedora directly in your browser, no installation required: **[seedora.app](https://www.seedora.app/)**. The web server relays your requests to the daemon, so the daemon must be reachable from that server. Read [Known gaps and security](#known-gaps-and-security) first.
+Use Seedora directly in your browser, no installation required: **[app.seedora.app](https://app.seedora.app/)**. The web server relays your requests to the daemon, so the daemon must be reachable from that server. Read [Known gaps and security](#known-gaps-and-security) first.
 
 ## Screenshots
 
