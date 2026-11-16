@@ -57,8 +57,7 @@ function decodeInteger(data: Uint8Array, offset: number): Decoded<number> {
   for (let i = digitsStart; i < end; i++) {
     if (!isDigit(data[i])) throw new TorrentParseError(`Invalid integer at byte ${offset}`);
   }
-  let text = '';
-  for (let i = start; i < end; i++) text += String.fromCharCode(data[i]);
+  const text = String.fromCharCode(...data.subarray(start, end));
   return { value: Number(text), offset: end + 1 };
 }
 
@@ -69,8 +68,7 @@ function decodeString(data: Uint8Array, offset: number): Decoded<string> {
   if (colon === offset || data[colon] !== CHAR_COLON) {
     throw new TorrentParseError(`Invalid string length at byte ${offset}`);
   }
-  let text = '';
-  for (let i = offset; i < colon; i++) text += String.fromCharCode(data[i]);
+  const text = String.fromCharCode(...data.subarray(offset, colon));
   const length = Number(text);
   const bodyStart = colon + 1;
   if (!Number.isSafeInteger(length) || length > data.length - bodyStart) {
@@ -86,8 +84,8 @@ function decodeString(data: Uint8Array, offset: number): Decoded<string> {
 }
 
 function decodeBencode(data: Uint8Array, offset: number, depth: number): Decoded<BencodeValue> {
-  if (offset >= data.length) throw new TorrentParseError('Unexpected end of data');
   const byte = data[offset];
+  if (byte === undefined) throw new TorrentParseError('Unexpected end of data');
 
   if (byte === CHAR_I) return decodeInteger(data, offset);
 

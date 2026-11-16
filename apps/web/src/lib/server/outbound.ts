@@ -173,7 +173,9 @@ export function createPinnedLookup(addresses: readonly ResolvedAddress[]): Looku
       );
       return;
     }
-    callback(null, candidates[0].address, candidates[0].family);
+    const [chosen] = candidates;
+    if (chosen === undefined) return;
+    callback(null, chosen.address, chosen.family);
   };
 }
 
@@ -242,9 +244,11 @@ export async function postJson(
   // Every resolved address was validated above. The call connects to one address at a time and all
   // limits are charged to the address actually used: a name listing [attacker, victim] cannot
   // drain the victim's gate, byte budget or rate tokens with calls that never reach the victim.
+  const [primary] = addresses;
+  if (primary === undefined) throw new OutboundError('DNS_FAILED');
   const first: Progress = { admitted: false, connected: false };
   try {
-    return await sendTo(addresses[0], exchange, first);
+    return await sendTo(primary, exchange, first);
   } catch (error) {
     // One retry with the next validated address, only when the TCP connection never came up
     // (nothing was sent) and the shared deadline still runs.

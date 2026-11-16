@@ -33,6 +33,7 @@ export function useGridNavigation({ rowIds, selectedIds, select, toggle, extendT
       e.preventDefault();
       if (action.type === 'move') {
         const id = rowIds[action.index];
+        if (id === undefined) return;
         setActiveId(id);
         scrollToIndex(action.index);
         if (action.select === 'extend') extendTo(id);
@@ -40,6 +41,7 @@ export function useGridNavigation({ rowIds, selectedIds, select, toggle, extendT
         return;
       }
       const id = rowIds[activeIndex];
+      if (id === undefined) return;
       if (action.type === 'toggle') toggle(id);
       else if (action.type === 'select') select(id);
       else openMenu(id);
@@ -52,7 +54,7 @@ export function useGridNavigation({ rowIds, selectedIds, select, toggle, extendT
       if (e.target !== e.currentTarget) return;
       setFocused(true);
       if (activeIndex !== -1 || rowIds.length === 0) return;
-      setActiveId(rowIds.find((id) => selectedIds.has(id)) ?? rowIds[0]);
+      setActiveId(rowIds.find((id) => selectedIds.has(id)) ?? rowIds[0] ?? null);
     },
     [activeIndex, rowIds, selectedIds],
   );

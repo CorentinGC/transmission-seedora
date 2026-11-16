@@ -72,7 +72,7 @@ export function AddTorrentDialog({ onClose, initial }: Props) {
     setMode('file');
     const reader = new FileReader();
     reader.onload = () => {
-      const base64 = (reader.result as string).split(',')[1];
+      const base64 = (reader.result as string).split(',')[1] ?? '';
       setFileBase64(base64);
     };
     reader.readAsDataURL(file);

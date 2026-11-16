@@ -36,7 +36,7 @@ export function Menu({ x, y, label, onClose, className = 'w-56', children }: Men
     const target = menuNavigationTarget(e.key, current, items.length);
     if (target !== null) {
       e.preventDefault();
-      items[target].focus();
+      items[target]?.focus();
       return;
     }
     if (e.key === 'Escape') {
@@ -55,7 +55,7 @@ export function Menu({ x, y, label, onClose, className = 'w-56', children }: Men
     const match = typeaheadMatch(typeahead.current, e.key, Date.now(), labels, current);
     if (match !== -1) {
       e.preventDefault();
-      items[match].focus();
+      items[match]?.focus();
     }
   };
 

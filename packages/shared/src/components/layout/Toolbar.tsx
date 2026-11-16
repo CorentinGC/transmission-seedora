@@ -218,7 +218,7 @@ export function Toolbar({
       {moreMenu && (
         <TorrentContextMenu x={moreMenu.x} y={moreMenu.y} torrentIds={ids} onClose={() => setMoreMenu(null)} />
       )}
-      {launchQueue.length > 0 ? (
+      {launchQueue[0] ? (
         <AddTorrentDialog
           key={launchQueue[0].id}
           initial={launchQueue[0].initial}

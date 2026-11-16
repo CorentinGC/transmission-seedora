@@ -43,7 +43,8 @@ export function TorrentContextMenu({ x, y, torrentIds, onClose }: Props) {
   const [showLocation, setShowLocation] = useState(false);
   const [showRename, setShowRename] = useState(false);
 
-  const singleTorrent = torrentIds.length === 1 ? torrents.get(torrentIds[0]) : null;
+  const [onlyId] = torrentIds;
+  const singleTorrent = torrentIds.length === 1 && onlyId !== undefined ? torrents.get(onlyId) : null;
 
   const act = (fn: () => void) => {
     fn();
