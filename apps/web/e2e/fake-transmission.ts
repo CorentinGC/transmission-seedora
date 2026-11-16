@@ -53,6 +53,7 @@ function torrentFields(t: FakeTorrent, fields: string[]): Record<string, unknown
     id: t.id,
     name: t.name,
     hashString: t.hashString,
+    magnetLink: `magnet:?xt=urn:btih:${t.hashString}&dn=${encodeURIComponent(t.name)}`,
     status: t.status,
     totalSize: t.totalSize,
     sizeWhenDone: t.totalSize,
