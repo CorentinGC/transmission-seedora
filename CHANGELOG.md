@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.4.3](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.4.2...seedora-v1.4.3) (2026-11-16)
+
+
+### Bug Fixes
+
+* a11y, RTL, plural forms, coded errors, language picker ([bfddcf2](https://github.com/CorentinGC/transmission-seedora/commit/bfddcf2e096c346a15143f3d0ef820f5d06a9933))
+* accessible names, RTL and plural forms, coded errors, language picker default ([03ab3de](https://github.com/CorentinGC/transmission-seedora/commit/03ab3de50290819b4f7cf5946a7817fbf40eb4b3))
+* close four audit findings on credentials, script guard and web session ([478011b](https://github.com/CorentinGC/transmission-seedora/commit/478011b1601d4a457e2fffda3fd6473c09ee6e9e))
+* close four audit findings on credentials, script guard, web session ([e0e734b](https://github.com/CorentinGC/transmission-seedora/commit/e0e734b338e01653b20d5d2517e57800750453f4))
+* promote security audit round 2 and a11y/i18n review fixes ([ea6cc14](https://github.com/CorentinGC/transmission-seedora/commit/ea6cc1403f5f99c319f2f1efcf1b86de508d9614))
+
 ## [1.4.2](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.4.1...seedora-v1.4.2) (2026-11-16)
 
 
