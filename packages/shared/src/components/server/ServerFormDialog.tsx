@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useServerStore } from '../../stores/server-store';
 import type { ServerConfig, NewServerConfig } from '../../types/server';
 import type { ServerConfigPatch } from '../../types';
+import { toNewServerConfig } from '../../lib/new-server-config';
 import { isSecretStorageUnencrypted } from '../../lib/secret-storage';
 import { useApi } from '../../platform/api-context';
 import { isWebPlatform } from '../../platform/capabilities';
@@ -76,7 +77,7 @@ export function ServerFormDialog({ server, onClose }: Props) {
   const handleTest = async () => {
     setTesting(true);
     setTestResult(null);
-    const result = await testConnection(getConfig());
+    const result = await testConnection(toNewServerConfig(getConfig()));
     setTestResult(result);
     setTesting(false);
   };
@@ -90,7 +91,7 @@ export function ServerFormDialog({ server, onClose }: Props) {
       const res = await updateServer(server.id, getConfig());
       if (!res.ok) failure = res.reason;
     } else {
-      const res = await addServer(getConfig());
+      const res = await addServer(toNewServerConfig(getConfig()));
       if (res.ok) await setActiveServer(res.data.id);
       else failure = res.reason;
     }

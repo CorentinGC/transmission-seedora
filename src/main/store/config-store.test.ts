@@ -155,10 +155,11 @@ describe('async secret store', () => {
     failEncrypt = true;
     await expect(store.addServer({ ...server, password: 'pw' })).rejects.toThrow(ConfigStoreError);
     expect(fs.existsSync(file)).toBe(false);
+    expect(store.getServers()).toEqual([]);
     failEncrypt = false;
     await store.setActiveServerId(null);
     expect(onDisk()).not.toContain('"pw"');
-    expect((await open()).getServers()[0]?.password).toBe('pw');
+    expect((await open()).getServers()).toEqual([]);
   });
 
   it('treats an availability error as no secret store', async () => {
