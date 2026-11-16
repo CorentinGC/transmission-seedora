@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.1](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.3.0...seedora-v1.3.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* adding or testing a server failed in the desktop app ([63d60f6](https://github.com/CorentinGC/transmission-seedora/commit/63d60f610c9e820ef48ccecd4278d8802082d8bb))
+* adding or testing a server failed in the desktop app ([f36effe](https://github.com/CorentinGC/transmission-seedora/commit/f36effe338e5f57aa408d08a9f799e8fd718a9c1))
+* adding or testing a server failed in the desktop app ([95054ff](https://github.com/CorentinGC/transmission-seedora/commit/95054ff85cb6764c2fd4294c6af1e01175b6e832))
+
 ## [1.3.0](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.2.2...seedora-v1.3.0) (2026-11-16)
 
 
