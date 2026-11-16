@@ -143,13 +143,12 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
     IPC.SERVER_SET_ACTIVE,
     z.tuple([serverIdSchema.nullable()]),
     async (_e, [id]): Promise<IpcResponse> => {
+      // The store and the connection manager must agree: an unknown id is refused, null disconnects.
+      const server = id === null ? undefined : configStore.getServers().find((s) => s.id === id);
+      if (id !== null && !server) return { success: false, error: 'Invalid request' };
       await configStore.setActiveServerId(id);
-      if (id) {
-        const server = configStore.getServers().find((s) => s.id === id);
-        if (server) {
-          connectionManager.setActiveServer(server);
-        }
-      }
+      if (server) connectionManager.setActiveServer(server);
+      else connectionManager.clearActive();
       return { success: true };
     },
   );
