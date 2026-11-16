@@ -253,6 +253,7 @@ describe('webApi.configImport', () => {
     expect(storage.servers).toHaveLength(2);
     expect(storage.servers[0]).toEqual(server);
     const added = storage.servers[1];
+    if (added === undefined) throw new Error('server was not added');
     expect(added.id).toEqual(expect.any(String));
     expect(added.id).not.toBe('a');
     expect(added).not.toHaveProperty('allowSelfSigned');
@@ -271,7 +272,7 @@ describe('webApi.configImport', () => {
     expect(result).toEqual({ success: true, data: { serversAdded: 2, serversSkipped: 2, prefsImported: false } });
     expect(storage.servers[0]).toEqual(server);
     expect(storage.servers.map((s) => s.path)).toEqual(['/transmission/rpc', '/transmission/rpc', '/other']);
-    expect(storage.servers[1].name).toBe('B');
+    expect(storage.servers[1]?.name).toBe('B');
   });
 
   it('compares host, port and path by exact string equality', async () => {

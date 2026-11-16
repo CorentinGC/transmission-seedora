@@ -37,11 +37,13 @@ export function buildFileTree(files: TorrentFile[]): TreeNode {
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
+    if (!file) continue;
     const parts = file.name.split('/');
     let current = root;
 
     for (let j = 0; j < parts.length; j++) {
       const part = parts[j];
+      if (part === undefined) continue;
       const path = parts.slice(0, j + 1).join('/');
 
       if (j === parts.length - 1) {
@@ -67,7 +69,8 @@ export function buildFileTree(files: TorrentFile[]): TreeNode {
 
   finalize(root);
 
-  if (root.children.length === 1 && root.children[0].isFolder) return root.children[0];
+  const [onlyChild] = root.children;
+  if (root.children.length === 1 && onlyChild?.isFolder) return onlyChild;
   return root;
 }
 

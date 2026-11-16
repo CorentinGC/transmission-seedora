@@ -239,8 +239,8 @@ describe('createPinnedLookup', () => {
 
   it('fails instead of falling back when no validated address matches the family', () => {
     const cb = vi.fn();
-    createPinnedLookup([addrs[0]])('whatever.example', { family: 6 }, cb);
-    expect(cb.mock.calls[0][0]).toMatchObject({ code: 'ENOTFOUND' });
+    createPinnedLookup(addrs.slice(0, 1))('whatever.example', { family: 6 }, cb);
+    expect(cb.mock.calls[0]?.[0]).toMatchObject({ code: 'ENOTFOUND' });
   });
 });
 
@@ -256,11 +256,11 @@ describe('postJson: connection', () => {
       { allowPrivate: true, authorization: 'Basic eDp5', sessionId: 'sid' },
     );
     expect(res).toEqual({ status: 200, sessionId: 'abc', json: { result: 'success' } });
-    expect(requests[0].body).toBe('{"method":"session-get"}');
-    expect(requests[0].headers.authorization).toBe('Basic eDp5');
-    expect(requests[0].headers['x-transmission-session-id']).toBe('sid');
-    expect(requests[0].headers['content-type']).toBe('application/json');
-    expect(requests[0].url).toBe('/transmission/rpc');
+    expect(requests[0]?.body).toBe('{"method":"session-get"}');
+    expect(requests[0]?.headers?.authorization).toBe('Basic eDp5');
+    expect(requests[0]?.headers?.['x-transmission-session-id']).toBe('sid');
+    expect(requests[0]?.headers?.['content-type']).toBe('application/json');
+    expect(requests[0]?.url).toBe('/transmission/rpc');
   });
 
   it('returns non-2xx statuses (409 handshake) and tolerates non-JSON bodies', async () => {
@@ -287,7 +287,7 @@ describe('postJson: connection', () => {
     const res = await postJson(target({ host: 'rebind.example', port }), {}, { allowPrivate: true, resolver });
     expect(res.status).toBe(200);
     expect(resolver).toHaveBeenCalledTimes(1);
-    expect(requests[0].host).toBe(`rebind.example:${port}`);
+    expect(requests[0]?.host).toBe(`rebind.example:${port}`);
   });
 
   it('refuses a rebinding host whose first answer is private, without a second resolution', async () => {

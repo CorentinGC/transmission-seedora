@@ -105,7 +105,9 @@ export function useKeyboardShortcuts(allVisibleIds: number[]) {
 
       // Space: toggle start/stop
       const toggle = (targets: number[]) => {
-        if (torrents.get(targets[0])?.status === 0) startTorrents(targets);
+        const first = targets[0];
+        if (first === undefined) return;
+        if (torrents.get(first)?.status === 0) startTorrents(targets);
         else stopTorrents(targets);
       };
       if (handleSpaceKey(e, ids, toggle)) return;
@@ -130,9 +132,8 @@ export function useKeyboardShortcuts(allVisibleIds: number[]) {
           'error',
         ] as const;
         const index = parseInt(e.key) - 1;
-        if (index < filters.length) {
-          setStatusFilter(filters[index]);
-        }
+        const nextFilter = filters[index];
+        if (nextFilter) setStatusFilter(nextFilter);
         return;
       }
     },

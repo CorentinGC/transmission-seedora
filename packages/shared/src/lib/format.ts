@@ -22,7 +22,7 @@ function activeLocale(): string {
 }
 
 function byteUnit(index: number): string {
-  return translate(`format.unit.${BYTE_UNIT_KEYS[index]}`, BYTE_UNIT_FALLBACKS[index]);
+  return translate(`format.unit.${BYTE_UNIT_KEYS[index]}`, BYTE_UNIT_FALLBACKS[index] ?? '');
 }
 
 function duration(unit: keyof typeof DURATION_FALLBACKS, n: number): string {

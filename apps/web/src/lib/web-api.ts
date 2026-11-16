@@ -107,14 +107,15 @@ export const webApi: PlatformApi = {
   async serverUpdate(id: string, updates: ServerConfigPatch): Promise<IpcResponse> {
     const servers = getServers();
     const idx = servers.findIndex((s) => s.id === id);
-    if (idx === -1) return failure('SERVER_NOT_FOUND');
     const previous = servers[idx];
-    servers[idx] = mergeServerUpdate(previous, updates);
+    if (previous === undefined) return failure('SERVER_NOT_FOUND');
+    const merged = mergeServerUpdate(previous, updates);
+    servers[idx] = merged;
     setServers(servers);
     // The sealed cookie holds a copy of the active target: re-seal it so the edit applies now.
-    const updated: IpcResponse<ServerConfig> = { success: true, data: withPasswordFlags(servers[idx]) };
+    const updated: IpcResponse<ServerConfig> = { success: true, data: withPasswordFlags(merged) };
     if (getActiveServerId() !== id) return updated;
-    const sealed = await resealOrClear(servers[idx]);
+    const sealed = await resealOrClear(merged);
     if (!sealed.success) {
       // Rejected edit: put the previous entry back so storage matches what the cookie will be re-sealed from.
       setServers(getServers().map((s) => (s.id === id ? previous : s)));

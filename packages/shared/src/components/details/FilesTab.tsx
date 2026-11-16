@@ -66,7 +66,8 @@ export function FilesTab({ torrent }: Props) {
       mutate((prev) => {
         const newStats = [...prev.fileStats];
         for (const idx of indices) {
-          newStats[idx] = optimistic(newStats[idx]);
+          const stat = newStats[idx];
+          if (stat) newStats[idx] = optimistic(stat);
         }
         return { ...prev, fileStats: newStats };
       });

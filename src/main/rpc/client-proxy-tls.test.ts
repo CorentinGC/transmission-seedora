@@ -73,7 +73,7 @@ function startHttpConnectProxy(connects: string[]) {
   const server = http.createServer();
   server.on('connect', (req, clientSocket) => {
     connects.push(req.url ?? '');
-    const [host, port] = (req.url ?? '').split(':');
+    const [host = '', port] = (req.url ?? '').split(':');
     tunnel(
       clientSocket as net.Socket,
       host,
@@ -97,7 +97,7 @@ function startSocks5Proxy(connects: string[]) {
           host = Array.from(req.subarray(4, 8)).join('.');
           offset = 8;
         } else {
-          const len = req[4];
+          const len = req[4] ?? 0;
           host = req.subarray(5, 5 + len).toString();
           offset = 5 + len;
         }

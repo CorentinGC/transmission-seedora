@@ -98,6 +98,6 @@ export function trapTab(e: React.KeyboardEvent<HTMLElement>, root: HTMLElement):
   if (action === null) return;
   e.preventDefault();
   e.stopPropagation();
-  if (action === 'first') focusable[0].focus();
-  else if (action === 'last') focusable[focusable.length - 1].focus();
+  if (action === 'first') focusable[0]?.focus();
+  else if (action === 'last') focusable[focusable.length - 1]?.focus();
 }

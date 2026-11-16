@@ -398,6 +398,7 @@ export function TorrentTable({ torrents }: Props) {
           >
             {virtualItems.map((virtualRow) => {
               const row = rows[virtualRow.index];
+              if (!row) return null;
               const isSelected = selectedIds.has(row.original.id);
               const isActive = nav.focused && nav.activeId === row.original.id;
 

@@ -111,6 +111,7 @@ function stripPort(entry: string): string | null {
   const colons = entry.split(':').length - 1;
   if (colons === 1) {
     const [host, port] = entry.split(':');
+    if (host === undefined || port === undefined) return null;
     return /^\d{1,5}$/.test(port) ? host : null;
   }
   return entry;
@@ -124,7 +125,8 @@ function stripPort(entry: string): string | null {
 export function canonicalClientKey(text: string): string | null {
   const bare = stripPort(text);
   if (bare === null) return null;
-  const address = bare.includes('%') && isIP(bare.split('%')[0]) === 6 ? bare.split('%')[0] : bare;
+  const unzoned = bare.split('%')[0] ?? bare;
+  const address = bare.includes('%') && isIP(unzoned) === 6 ? unzoned : bare;
   const family = isIP(address);
   if (family === 4) return parseIPv4(address)?.join('.') ?? null;
   if (family !== 6) return null;
@@ -132,7 +134,7 @@ export function canonicalClientKey(text: string): string | null {
   if (!bytes) return null;
   const mapped = bytes.slice(0, 10).every((b) => b === 0) && bytes[10] === 0xff && bytes[11] === 0xff;
   if (mapped) return bytes.slice(12).join('.');
-  const groups = [0, 2, 4, 6].map((i) => ((bytes[i] << 8) | bytes[i + 1]).toString(16));
+  const groups = [0, 2, 4, 6].map((i) => (((bytes[i] ?? 0) << 8) | (bytes[i + 1] ?? 0)).toString(16));
   return `${groups.join(':')}::/64`;
 }
 

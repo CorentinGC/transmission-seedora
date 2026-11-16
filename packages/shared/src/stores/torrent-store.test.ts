@@ -32,7 +32,7 @@ describe('torrent store failure handling', () => {
     await useTorrentStore.getState().startTorrents([1]);
 
     expect(keys()).toEqual(['notification.actionFailed']);
-    expect(useNotificationStore.getState().notifications[0].params).toEqual({ error: 'permission denied' });
+    expect(useNotificationStore.getState().notifications[0]?.params).toEqual({ error: 'permission denied' });
     expect(api.rpcTorrentGet).not.toHaveBeenCalled();
   });
 
@@ -109,7 +109,9 @@ describe('torrent store failure handling', () => {
   it('reports a failing refresh once until it recovers', async () => {
     api.rpcTorrentGet.mockResolvedValue({ success: false, error: 'down' });
     await useTorrentStore.getState().fetchTorrents();
-    useNotificationStore.getState().dismiss(useNotificationStore.getState().notifications[0].id);
+    const [firstNotification] = useNotificationStore.getState().notifications;
+    if (!firstNotification) throw new Error('expected a failure notification');
+    useNotificationStore.getState().dismiss(firstNotification.id);
     await useTorrentStore.getState().fetchTorrents();
     expect(keys()).toEqual([]);
 

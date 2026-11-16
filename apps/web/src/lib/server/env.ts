@@ -102,7 +102,10 @@ function parseAllowedHost(entry: string): AllowedHost {
     host = entry.slice(0, end + 1);
     portText = rest === '' ? undefined : rest.slice(1);
   } else if (entry.split(':').length === 2) {
-    [host, portText] = entry.split(':');
+    const [bareHost, bareHostPort] = entry.split(':');
+    if (bareHost === undefined) throw invalid();
+    host = bareHost;
+    portText = bareHostPort;
   }
   if (!hostSchema.safeParse(host).success) throw invalid();
   if (portText === undefined) return { host: host.replace(/^\[|\]$/g, '').toLowerCase() };

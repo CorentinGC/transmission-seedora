@@ -158,11 +158,11 @@ describe('createLookupLimiter', () => {
     );
     expect(started).toEqual([0, 1]);
     expect(limiter.queued()).toBe(1);
-    gates[0].resolve('a');
+    gates[0]?.resolve('a');
     await runs[0];
     expect(started).toEqual([0, 1, 2]);
-    gates[1].resolve('b');
-    gates[2].resolve('c');
+    gates[1]?.resolve('b');
+    gates[2]?.resolve('c');
     expect(await Promise.all(runs)).toEqual(['a', 'b', 'c']);
     expect(limiter.active()).toBe(0);
   });
@@ -244,11 +244,14 @@ describe('createSystemResolver', () => {
   it('maps lookup results and bounds concurrent getaddrinfo calls', async () => {
     const holds = Array.from({ length: 5 }, () => deferred<Answer>());
     let calls = 0;
-    const resolver = createSystemResolver(() => holds[calls++].promise, createLookupLimiter(3, 10));
+    const resolver = createSystemResolver(
+      () => holds[calls++]?.promise ?? Promise.reject(new Error('no pending lookup')),
+      createLookupLimiter(3, 10),
+    );
     const results = holds.map((_, i) => resolver('h.test', signal(), `client-${i}`));
     expect(calls).toBe(3);
     holds.forEach((hold) => hold.resolve(OK));
-    expect((await results[0]).map((r) => r.family)).toEqual([6, 4]);
+    expect((await results[0])?.map((r) => r.family)).toEqual([6, 4]);
     await Promise.all(results);
     expect(calls).toBe(5);
   });
