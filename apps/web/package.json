@@ -29,7 +29,7 @@
     "@types/node": "^22.20.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.2",
     "tailwindcss": "^4.2.1",
     "typescript": "~5.7.0"
   },
