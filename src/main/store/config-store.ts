@@ -255,9 +255,17 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
       return state().servers.map(toServer);
     },
 
-    addServer(server: ServerConfig): Promise<void> {
-      state().servers.push(toStored(server));
-      return persist();
+    /** Adds a server. When persisting fails the server is dropped again, so a rejected add leaves no trace. */
+    async addServer(server: ServerConfig): Promise<void> {
+      const stored = toStored(server);
+      const current = state();
+      current.servers.push(stored);
+      try {
+        await persist();
+      } catch (error) {
+        current.servers = current.servers.filter((s) => s !== stored);
+        throw error;
+      }
     },
 
     /**
