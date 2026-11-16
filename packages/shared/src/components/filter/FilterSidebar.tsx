@@ -22,6 +22,8 @@ import type { Torrent } from '../../types/torrent';
 
 interface Props {
   torrents: Torrent[];
+  /** Called after a filter was chosen (lets a drawer close itself). */
+  onSelect?: () => void;
 }
 
 const STATUS_ITEMS: { filter: StatusFilter; labelKey: string; icon: React.ReactNode }[] = [
@@ -50,10 +52,14 @@ function CollapsibleSection({
   return (
     <div className="border-t py-1">
       <button
-        className="w-full flex items-center gap-1 px-3 py-1 text-xs font-medium text-muted-foreground uppercase hover:text-foreground min-w-0"
+        type="button"
+        aria-expanded={open}
+        className="w-full flex items-center gap-1 px-3 py-1 pointer-coarse:py-2.5 text-xs font-medium text-muted-foreground uppercase hover:text-foreground min-w-0"
         onClick={() => setOpen(!open)}
       >
-        <span className="flex-shrink-0">{open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}</span>
+        <span className="flex-shrink-0" aria-hidden="true">
+          {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+        </span>
         <span className="truncate">{title}</span>
       </button>
       {open && children}
@@ -61,7 +67,7 @@ function CollapsibleSection({
   );
 }
 
-export function FilterSidebar({ torrents }: Props) {
+export function FilterSidebar({ torrents, onSelect }: Props) {
   const { t } = useTranslation();
   const statusFilter = useTorrentStore((s) => s.statusFilter);
   const setStatusFilter = useTorrentStore((s) => s.setStatusFilter);
@@ -75,8 +81,14 @@ export function FilterSidebar({ torrents }: Props) {
   const statusCounts = useMemo(() => {
     const counts: Record<StatusFilter, number> = {
       all: torrents.length,
-      downloading: 0, seeding: 0, completed: 0,
-      active: 0, inactive: 0, stopped: 0, error: 0, waiting: 0,
+      downloading: 0,
+      seeding: 0,
+      completed: 0,
+      active: 0,
+      inactive: 0,
+      stopped: 0,
+      error: 0,
+      waiting: 0,
     };
     for (const t of torrents) {
       for (const f of Object.keys(counts) as StatusFilter[]) {
@@ -130,7 +142,9 @@ export function FilterSidebar({ torrents }: Props) {
         {STATUS_ITEMS.map(({ filter, labelKey, icon }) => (
           <button
             key={filter}
-            className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
+            type="button"
+            aria-pressed={statusFilter === filter && !labelFilter && !trackerFilter && !folderFilter}
+            className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 pointer-coarse:py-2.5 ${
               statusFilter === filter && !labelFilter && !trackerFilter && !folderFilter ? 'bg-accent font-medium' : ''
             }`}
             onClick={() => {
@@ -138,6 +152,7 @@ export function FilterSidebar({ torrents }: Props) {
               setLabelFilter(null);
               setTrackerFilter(null);
               setFolderFilter(null);
+              onSelect?.();
             }}
           >
             <span className="flex-shrink-0">{icon}</span>
@@ -153,7 +168,9 @@ export function FilterSidebar({ torrents }: Props) {
           {labels.map(([label, count]) => (
             <button
               key={label}
-              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
+              type="button"
+              aria-pressed={labelFilter === label}
+              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 pointer-coarse:py-2.5 ${
                 labelFilter === label ? 'bg-accent font-medium' : ''
               }`}
               onClick={() => {
@@ -161,6 +178,7 @@ export function FilterSidebar({ torrents }: Props) {
                 setStatusFilter('all');
                 setTrackerFilter(null);
                 setFolderFilter(null);
+                onSelect?.();
               }}
             >
               <Tag size={14} className="flex-shrink-0" />
@@ -177,7 +195,10 @@ export function FilterSidebar({ torrents }: Props) {
           {folders.map(([folder, count]) => (
             <button
               key={folder}
-              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
+              type="button"
+              aria-pressed={folderFilter === folder}
+              title={folder}
+              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 pointer-coarse:py-2.5 ${
                 folderFilter === folder ? 'bg-accent font-medium' : ''
               }`}
               onClick={() => {
@@ -185,6 +206,7 @@ export function FilterSidebar({ torrents }: Props) {
                 setStatusFilter('all');
                 setLabelFilter(null);
                 setTrackerFilter(null);
+                onSelect?.();
               }}
             >
               <FolderOpen size={14} className="flex-shrink-0" />
@@ -201,7 +223,9 @@ export function FilterSidebar({ torrents }: Props) {
           {trackers.map(([tracker, count]) => (
             <button
               key={tracker}
-              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 ${
+              type="button"
+              aria-pressed={trackerFilter === tracker}
+              className={`w-full flex items-center gap-2 px-3 py-1 hover:bg-accent min-w-0 pointer-coarse:py-2.5 ${
                 trackerFilter === tracker ? 'bg-accent font-medium' : ''
               }`}
               onClick={() => {
@@ -209,6 +233,7 @@ export function FilterSidebar({ torrents }: Props) {
                 setStatusFilter('all');
                 setLabelFilter(null);
                 setFolderFilter(null);
+                onSelect?.();
               }}
             >
               <Globe size={14} className="flex-shrink-0" />

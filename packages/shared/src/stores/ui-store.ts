@@ -1,15 +1,24 @@
 import { create } from 'zustand';
 import { getPlatformApi } from '../platform/api-store';
+import { guardedCall } from '../lib/guarded-call';
 
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
-function debouncedPersistColumns(state: { columnVisibility: Record<string, boolean>; columnSizing: Record<string, number>; columnOrder: string[] }) {
+function debouncedPersistColumns(state: {
+  columnVisibility: Record<string, boolean>;
+  columnSizing: Record<string, number>;
+  columnOrder: string[];
+}) {
   if (persistTimer) clearTimeout(persistTimer);
   persistTimer = setTimeout(() => {
-    getPlatformApi().prefsSet({
-      columnVisibility: state.columnVisibility,
-      columnSizing: state.columnSizing,
-      columnOrder: state.columnOrder,
-    });
+    void guardedCall(
+      () =>
+        getPlatformApi().prefsSet({
+          columnVisibility: state.columnVisibility,
+          columnSizing: state.columnSizing,
+          columnOrder: state.columnOrder,
+        }),
+      'notification.columnsSaveFailed',
+    );
   }, 500);
 }
 
@@ -29,10 +38,13 @@ interface UiStore {
   theme: 'light' | 'dark' | 'system';
   pollingInterval: number;
   relativeDates: boolean;
-  confirmOnAdd: boolean;
   speedPresets: number[] | null;
 
+  // Dialogs
+  removeDialogOpen: boolean;
+
   // Actions
+  setRemoveDialogOpen: (open: boolean) => void;
   setSpeedPresets: (presets: number[] | null) => void;
   toggleDetailsPanel: () => void;
   setDetailsPanelSize: (size: number) => void;
@@ -44,7 +56,6 @@ interface UiStore {
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   setPollingInterval: (interval: number) => void;
   setRelativeDates: (value: boolean) => void;
-  setConfirmOnAdd: (value: boolean) => void;
 }
 
 export const useUiStore = create<UiStore>((set) => ({
@@ -60,14 +71,13 @@ export const useUiStore = create<UiStore>((set) => ({
   theme: 'system',
   pollingInterval: 3000,
   relativeDates: false,
-  confirmOnAdd: true,
   speedPresets: null,
+  removeDialogOpen: false,
 
-  toggleDetailsPanel: () =>
-    set((state) => ({ detailsPanelVisible: !state.detailsPanelVisible })),
+  setRemoveDialogOpen: (open) => set({ removeDialogOpen: open }),
+  toggleDetailsPanel: () => set((state) => ({ detailsPanelVisible: !state.detailsPanelVisible })),
   setDetailsPanelSize: (size) => set({ detailsPanelSize: size }),
-  toggleFilterPanel: () =>
-    set((state) => ({ filterPanelVisible: !state.filterPanelVisible })),
+  toggleFilterPanel: () => set((state) => ({ filterPanelVisible: !state.filterPanelVisible })),
   setFilterPanelSize: (size) => set({ filterPanelSize: size }),
   setColumnVisibility: (vis) => {
     set({ columnVisibility: vis });
@@ -84,6 +94,5 @@ export const useUiStore = create<UiStore>((set) => ({
   setTheme: (theme) => set({ theme }),
   setPollingInterval: (interval) => set({ pollingInterval: interval }),
   setRelativeDates: (value) => set({ relativeDates: value }),
-  setConfirmOnAdd: (value) => set({ confirmOnAdd: value }),
   setSpeedPresets: (presets) => set({ speedPresets: presets }),
 }));

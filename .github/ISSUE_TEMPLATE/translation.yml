@@ -1,0 +1,33 @@
+name: Translation
+description: Report a wrong or missing translation, or ask for a new language
+labels: ['translation']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Seedora ships 23 languages in `packages/shared/src/locales/`. See docs/i18n.md for the rules. A pull request is welcome too.
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      description: Language name and code, for example "German (de)". For a new language, say which one.
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is the problem?
+      options:
+        - Wrong or unnatural translation
+        - Text still in English
+        - Text not translatable (hardcoded in the app)
+        - Request for a new language
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Where and what
+      description: The screen or the key (for example `toolbar.addTorrent`), the current text, and your suggested text.
+    validations:
+      required: true

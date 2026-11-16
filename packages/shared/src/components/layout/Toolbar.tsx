@@ -11,6 +11,7 @@ import {
   StopCircle,
   PanelBottom,
   PanelLeft,
+  MoreHorizontal,
   X,
 } from 'lucide-react';
 import { useState, useRef, useCallback, useEffect } from 'react';
@@ -19,13 +20,28 @@ import { useTorrentStore } from '../../stores/torrent-store';
 import { useServerStore } from '../../stores/server-store';
 import { useUiStore } from '../../stores/ui-store';
 import { useMenuEvents } from '../../hooks/useMenuEvents';
+import { useLaunchTargets } from '../../hooks/useLaunchTargets';
+import type { AddDialogInitial } from '../../lib/launch-target';
 import { ServerSwitcher } from '../server/ServerSwitcher';
+import { TorrentContextMenu } from '../torrent/TorrentContextMenu';
 import { AddTorrentDialog } from '../torrent/AddTorrentDialog';
 import { RemoveTorrentDialog } from '../torrent/RemoveTorrentDialog';
 import { SettingsDialog } from '../settings/SettingsDialog';
 import { AppPrefsDialog } from '../settings/AppPrefsDialog';
 
-export function Toolbar() {
+interface ToolbarProps {
+  filterPanelOpen: boolean;
+  detailsPanelOpen: boolean;
+  onToggleFilterPanel: () => void;
+  onToggleDetailsPanel: () => void;
+}
+
+export function Toolbar({
+  filterPanelOpen,
+  detailsPanelOpen,
+  onToggleFilterPanel,
+  onToggleDetailsPanel,
+}: ToolbarProps) {
   const { t } = useTranslation();
   const selectedIds = useTorrentStore((s) => s.selectedIds);
   const startTorrents = useTorrentStore((s) => s.startTorrents);
@@ -36,13 +52,18 @@ export function Toolbar() {
   const globalFilter = useTorrentStore((s) => s.globalFilter);
   const setGlobalFilter = useTorrentStore((s) => s.setGlobalFilter);
   const connectionStatus = useServerStore((s) => s.connectionStatus);
-  const toggleFilterPanel = useUiStore((s) => s.toggleFilterPanel);
-  const toggleDetailsPanel = useUiStore((s) => s.toggleDetailsPanel);
+  const showRemoveDialog = useUiStore((s) => s.removeDialogOpen);
+  const setShowRemoveDialog = useUiStore((s) => s.setRemoveDialogOpen);
 
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+  const [launchQueue, setLaunchQueue] = useState<{ id: number; initial: AddDialogInitial }[]>([]);
+  const launchIdRef = useRef(0);
   const [showSettings, setShowSettings] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
+  const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
+
+  // Magnet links and .torrent files opened through the OS
+  useLaunchTargets((initial) => setLaunchQueue((queue) => [...queue, { id: launchIdRef.current++, initial }]));
 
   // Native menu events
   useMenuEvents({
@@ -50,7 +71,9 @@ export function Toolbar() {
     onAddMagnet: () => setShowAddDialog(true),
     onOpenSettings: () => setShowSettings(true),
     onOpenPreferences: () => setShowPrefs(true),
-    onRemoveTorrent: () => setShowRemoveDialog(true),
+    onRemoveTorrent: () => {
+      if (useTorrentStore.getState().selectedIds.size > 0) setShowRemoveDialog(true);
+    },
   });
 
   const ids = Array.from(selectedIds);
@@ -59,7 +82,7 @@ export function Toolbar() {
 
   return (
     <>
-      <div className="flex items-center gap-1 px-2 py-1.5 border-b bg-card">
+      <div className="flex flex-wrap items-center gap-1 px-2 py-1.5 border-b bg-card">
         <ServerSwitcher />
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -69,7 +92,7 @@ export function Toolbar() {
           tooltip={t('toolbar.addTorrent')}
           onClick={() => setShowAddDialog(true)}
           disabled={!isConnected}
-          colorClass="text-blue-400/80"
+          colorClass="text-info/80"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -79,28 +102,28 @@ export function Toolbar() {
           tooltip={t('toolbar.start')}
           onClick={() => hasSelection && startTorrents(ids)}
           disabled={!hasSelection || !isConnected}
-          colorClass="text-green-400/80"
+          colorClass="text-success/80"
         />
         <ToolbarButton
           icon={<Pause size={16} />}
           tooltip={t('toolbar.stop')}
           onClick={() => hasSelection && stopTorrents(ids)}
           disabled={!hasSelection || !isConnected}
-          colorClass="text-amber-400/80"
+          colorClass="text-warning/80"
         />
         <ToolbarButton
           icon={<Trash2 size={16} />}
           tooltip={t('toolbar.remove')}
           onClick={() => setShowRemoveDialog(true)}
           disabled={!hasSelection || !isConnected}
-          colorClass="text-red-400/70"
+          colorClass="text-destructive-text/70"
         />
         <ToolbarButton
           icon={<CheckCircle size={16} />}
           tooltip={t('toolbar.verify')}
           onClick={() => hasSelection && verifyTorrents(ids)}
           disabled={!hasSelection || !isConnected}
-          colorClass="text-cyan-400/70"
+          colorClass="text-info-alt/70"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -110,14 +133,14 @@ export function Toolbar() {
           tooltip={t('toolbar.startAll')}
           onClick={startAll}
           disabled={!isConnected}
-          colorClass="text-green-400/80"
+          colorClass="text-success/80"
         />
         <ToolbarButton
           icon={<StopCircle size={16} />}
           tooltip={t('toolbar.stopAll')}
           onClick={stopAll}
           disabled={!isConnected}
-          colorClass="text-amber-400/80"
+          colorClass="text-warning/80"
         />
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -125,31 +148,52 @@ export function Toolbar() {
         <ToolbarButton
           icon={<PanelLeft size={16} />}
           tooltip={t('toolbar.filterPanel')}
-          onClick={toggleFilterPanel}
+          pressed={filterPanelOpen}
+          onClick={onToggleFilterPanel}
         />
         <ToolbarButton
           icon={<PanelBottom size={16} />}
           tooltip={t('toolbar.detailsPanel')}
-          onClick={toggleDetailsPanel}
+          pressed={detailsPanelOpen}
+          onClick={onToggleDetailsPanel}
         />
+        <div className="lg:hidden">
+          <ToolbarButton
+            icon={<MoreHorizontal size={16} />}
+            tooltip={t('toolbar.moreActions')}
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              setMoreMenu({ x: rect.left, y: rect.bottom });
+            }}
+            haspopup
+            disabled={!hasSelection || !isConnected}
+          />
+        </div>
 
         <div className="flex-1" />
 
-        <div className="relative">
-          <Search size={14} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative basis-full sm:basis-auto">
+          <Search
+            size={14}
+            aria-hidden="true"
+            className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
           <input
             type="text"
+            data-search-input
             placeholder={t('toolbar.searchPlaceholder')}
+            aria-label={t('toolbar.searchPlaceholder')}
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="h-7 pl-7 pr-7 w-48 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+            className="h-7 pointer-coarse:h-11 pl-7 pr-7 w-full sm:w-48 text-sm rounded border bg-background focus:outline-none focus:ring-1 focus:ring-ring"
           />
           {globalFilter && (
             <button
               onClick={() => setGlobalFilter('')}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label={t('toolbar.clearSearch')}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground pointer-coarse:p-2.5"
             >
-              <X size={14} />
+              <X size={14} aria-hidden="true" />
             </button>
           )}
         </div>
@@ -171,7 +215,18 @@ export function Toolbar() {
         />
       </div>
 
-      {showAddDialog && <AddTorrentDialog onClose={() => setShowAddDialog(false)} />}
+      {moreMenu && (
+        <TorrentContextMenu x={moreMenu.x} y={moreMenu.y} torrentIds={ids} onClose={() => setMoreMenu(null)} />
+      )}
+      {launchQueue.length > 0 ? (
+        <AddTorrentDialog
+          key={launchQueue[0].id}
+          initial={launchQueue[0].initial}
+          onClose={() => setLaunchQueue((queue) => queue.slice(1))}
+        />
+      ) : (
+        showAddDialog && <AddTorrentDialog onClose={() => setShowAddDialog(false)} />
+      )}
       {showRemoveDialog && <RemoveTorrentDialog ids={ids} onClose={() => setShowRemoveDialog(false)} />}
       {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
       {showPrefs && <AppPrefsDialog onClose={() => setShowPrefs(false)} />}
@@ -185,12 +240,18 @@ function ToolbarButton({
   onClick,
   disabled,
   colorClass,
+  pressed,
+  haspopup,
 }: {
   icon: React.ReactNode;
+  /** Visible hint and accessible name of the button. */
   tooltip: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   colorClass?: string;
+  /** Set for toggle buttons: exposes the on/off state. */
+  pressed?: boolean;
+  haspopup?: boolean;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -199,7 +260,7 @@ function ToolbarButton({
     timerRef.current = setTimeout(() => setShowTooltip(true), 800);
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
+  const hideTooltip = useCallback(() => {
     clearTimeout(timerRef.current);
     setShowTooltip(false);
   }, []);
@@ -209,16 +270,28 @@ function ToolbarButton({
   }, []);
 
   return (
-    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={hideTooltip}>
       <button
-        className={`inline-flex items-center justify-center h-7 w-7 rounded hover:bg-accent disabled:opacity-40 disabled:pointer-events-none ${colorClass ?? ''}`}
+        type="button"
+        aria-label={tooltip}
+        aria-pressed={pressed}
+        aria-haspopup={haspopup ? 'menu' : undefined}
+        className={`inline-flex items-center justify-center h-7 w-7 pointer-coarse:h-11 pointer-coarse:w-11 rounded hover:bg-accent disabled:opacity-40 disabled:pointer-events-none ${pressed ? 'bg-accent' : ''} ${colorClass ?? ''}`}
         onClick={onClick}
+        onFocus={(e) => e.currentTarget.matches(':focus-visible') && setShowTooltip(true)}
+        onBlur={hideTooltip}
+        onKeyDown={(e) => e.key === 'Escape' && showTooltip && (e.stopPropagation(), hideTooltip())}
         disabled={disabled}
       >
-        {icon}
+        <span aria-hidden="true" className="inline-flex">
+          {icon}
+        </span>
       </button>
       {showTooltip && (
-        <div className="absolute z-50 top-full mt-1 left-1/2 -translate-x-1/2 px-2 py-1 text-xs rounded bg-popover text-popover-foreground border shadow-md whitespace-nowrap pointer-events-none">
+        <div
+          aria-hidden="true"
+          className="absolute z-50 top-full mt-1 left-1/2 -translate-x-1/2 px-2 py-1 text-xs rounded bg-popover text-popover-foreground border shadow-md whitespace-nowrap pointer-events-none"
+        >
           {tooltip}
         </div>
       )}

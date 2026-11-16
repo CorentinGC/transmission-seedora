@@ -5,19 +5,25 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-  pull-requests: write
+# Least privilege: nothing by default, each job asks for what it needs.
+permissions: {}
 
+# The build matrix needs macOS and Windows runners, so it uses GitHub-hosted runners (like CI). It runs on push to main only: no
+# pull-request or fork code reaches it.
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
       upload_url: ${{ steps.release.outputs.upload_url }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      # Third-party actions are pinned to a full commit SHA (the comment names the tag).
+      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,12 +41,14 @@ jobs:
           - os: windows-latest
             platform: win32
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 20
+          node-version: 22.18
           cache: npm
 
       - name: Install dependencies
@@ -50,7 +58,7 @@ jobs:
         run: npm run make
 
       - name: Upload artifacts to GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           tag_name: ${{ needs.release-please.outputs.tag_name }}
           files: |
@@ -65,13 +73,17 @@ jobs:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
       - name: Sync main into staging
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout staging
           git merge main --no-edit
           git push origin staging

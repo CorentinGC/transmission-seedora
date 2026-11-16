@@ -5,7 +5,10 @@
     "selectTorrent": "Selecteer een torrent om details te bekijken",
     "noTorrents": "Geen torrents",
     "yes": "Ja",
-    "no": "Nee"
+    "no": "Nee",
+    "close": "Sluiten",
+    "torrentList": "Torrents",
+    "resizePanel": "Paneel vergroten of verkleinen"
   },
   "toolbar": {
     "addTorrent": "Torrent toevoegen",
@@ -19,17 +22,46 @@
     "detailsPanel": "Detailpaneel in-/uitschakelen",
     "searchPlaceholder": "Torrents zoeken...",
     "preferences": "Voorkeuren",
-    "serverSettings": "Serverinstellingen"
+    "serverSettings": "Serverinstellingen",
+    "clearSearch": "Zoekopdracht wissen",
+    "moreActions": "Meer acties"
   },
   "statusBar": {
     "connected": "Verbonden",
     "connecting": "Verbinden...",
     "disconnected": "Niet verbonden",
+    "connectionError": "Verbindingsfout",
     "activeTotal": "{{active}} actief / {{total}} totaal",
     "disableAltSpeed": "Alternatieve snelheid uitschakelen",
     "enableAltSpeed": "Alternatieve snelheid inschakelen",
     "alt": "Alt",
-    "freeSpace": "{{space}} vrij"
+    "freeSpace": "{{space}} vrij",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Schijfruimte",
+    "totalFreeSpace": "Totale vrije ruimte",
+    "speedLimit": "Snelheidslimiet",
+    "limitSpeed": "Snelheid beperken",
+    "unlimited": "Onbeperkt",
+    "kbs": "KB/s",
+    "setLimit": "Limiet instellen",
+    "downloadLimit": "Downloadsnelheidslimiet",
+    "uploadLimit": "Uploadsnelheidslimiet"
+  },
+  "sessionStats": {
+    "title": "Sessiestatistieken",
+    "currentSession": "Huidige sessie",
+    "allTime": "Totaal (cumulatief)",
+    "downloaded": "Gedownload",
+    "uploaded": "Geüpload",
+    "ratio": "Ratio",
+    "filesAdded": "Toegevoegde bestanden",
+    "activeTime": "Actieve tijd",
+    "downloadSpeed": "Downloadsnelheid",
+    "uploadSpeed": "Uploadsnelheid",
+    "sessionCount": "Sessies",
+    "activeTorrents": "Actieve torrents",
+    "pausedTorrents": "Gepauzeerde torrents",
+    "totalTorrents": "Totaal aantal torrents"
   },
   "filter": {
     "all": "Alles",
@@ -65,8 +97,8 @@
     "status": "Status",
     "seeds": "Seeds",
     "peers": "Peers",
-    "downSpeed": "Down",
-    "upSpeed": "Up",
+    "downSpeed": "Download",
+    "upSpeed": "Upload",
     "eta": "ETA",
     "ratio": "Ratio",
     "added": "Toegevoegd",
@@ -80,7 +112,17 @@
     "downloaded": "Gedownload",
     "uploaded": "Geüpload",
     "private": "Privé",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Te downloaden",
+    "sizeLeft": "Resterend",
+    "connectedPeers": "Verbonden",
+    "seedingTime": "Seedtijd",
+    "downloadingTime": "Downloadtijd",
+    "created": "Aangemaakt",
+    "comment": "Opmerking",
+    "fileCount": "Bestanden",
+    "group": "Groep"
   },
   "priority": {
     "high": "Hoog",
@@ -110,15 +152,19 @@
     "copied": "Gekopieerd!",
     "loadingFiles": "Bestanden laden...",
     "noPeers": "Geen peers verbonden",
-    "doubleClickEdit": "Dubbelklik om te bewerken"
+    "doubleClickEdit": "Dubbelklik om te bewerken",
+    "loadFailed": "Details konden niet worden geladen: {{error}}",
+    "requestFailed": "Verzoek mislukt",
+    "torrentNotFound": "Torrent niet gevonden"
   },
   "peersTab": {
     "address": "Adres",
     "client": "Client",
     "flags": "Vlaggen",
     "progress": "Voortgang",
-    "down": "Down",
-    "up": "Up"
+    "down": "Download",
+    "up": "Upload",
+    "country": "Land"
   },
   "trackersTab": {
     "tier": "Niveau",
@@ -168,7 +214,8 @@
     "moveUp": "Omhoog verplaatsen",
     "moveDown": "Omlaag verplaatsen",
     "moveToBottom": "Naar beneden verplaatsen",
-    "remove": "Verwijderen..."
+    "remove": "Verwijderen...",
+    "title": "Torrentacties"
   },
   "dialog": {
     "addTorrent": "Torrent toevoegen",
@@ -189,7 +236,7 @@
     "add": "Toevoegen",
     "test": "Verbinding testen",
     "browse": "Bladeren...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnetlink",
     "file": "Bestand",
     "urlOrMagnet": "URL of Magnet-link",
     "urlPlaceholder": "magnet:?xt= of https://...",
@@ -210,12 +257,15 @@
     "editServer": "Server bewerken",
     "addServerTitle": "Server toevoegen",
     "noServer": "Geen server",
+    "switcherLabel": "Van server wisselen",
     "serverName": "Naam",
     "serverNamePlaceholder": "Mijn server",
     "host": "Host",
     "port": "Poort",
     "path": "RPC-pad",
     "useSSL": "SSL/TLS gebruiken",
+    "allowSelfSigned": "Zelfondertekend certificaat accepteren",
+    "allowSelfSignedHint": "Schakelt de certificaatcontrole voor deze server uit. Schakel dit alleen in voor een server die je vertrouwt.",
     "authentication": "Authenticatie",
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
@@ -228,7 +278,23 @@
     "proxyUsername": "Proxygebruikersnaam",
     "proxyPassword": "Proxywachtwoord",
     "testSuccess": "Geslaagd",
-    "testFailed": "Mislukt"
+    "testFailed": "Mislukt",
+    "deleteServer": "Verwijderen",
+    "deleteConfirm": "Server \"{{name}}\" verwijderen?",
+    "cannotDeleteActive": "Verbreek eerst de verbinding",
+    "exportServer": "Exporteren",
+    "exportAll": "Alles exporteren",
+    "importServers": "Importeren...",
+    "importSuccess": "{{added}} toegevoegd, {{skipped}} overgeslagen",
+    "importFailed": "Importeren mislukt.",
+    "saveFailed": "Server kon niet worden opgeslagen. Controleer de waarden en probeer het opnieuw.",
+    "exportPasswords": "Wachtwoorden opnemen in de export",
+    "exportPasswordsWarning": "Wachtwoorden worden als leesbare tekst in het bestand opgeslagen. Houd het bestand privé.",
+    "webStorageWarning": "In de webversie worden serverwachtwoorden onversleuteld in deze browser opgeslagen. Voer ze alleen in op een apparaat dat je vertrouwt.",
+    "passwordStored": "Wachtwoord opgeslagen. Laat leeg om het te behouden.",
+    "removeStoredPassword": "Opgeslagen wachtwoord verwijderen",
+    "removeStoredProxyPassword": "Opgeslagen proxywachtwoord verwijderen",
+    "secretStorageUnencrypted": "Beveiligde opslag is op dit systeem niet beschikbaar: opgeslagen wachtwoorden staan onversleuteld op schijf."
   },
   "settings": {
     "applied": "Instellingen toegepast",
@@ -317,7 +383,7 @@
   },
   "prefs": {
     "title": "Toepassingsvoorkeuren",
-    "polling": "Polling",
+    "polling": "Verversing",
     "refreshInterval": "Verversingsinterval (ms):",
     "appearance": "Weergave",
     "theme": "Thema:",
@@ -331,23 +397,179 @@
     "showNotifications": "Meldingen tonen bij voltooiing",
     "display": "Weergave",
     "relativeDates": "Relatieve datums gebruiken",
-    "confirmOnAdd": "Bevestiging tonen bij toevoegen van torrents",
     "watchFolder": "Map bewaken",
     "watchFolderEnabled": "Map bewaken voor .torrent-bestanden",
     "watchFolderPlaceholder": "/pad/naar/map",
     "deleteWatchedTorrent": ".torrent-bestand verwijderen na toevoegen",
-    "pathMappings": "Padtoewijzingen (Extern → Lokaal)",
-    "pathMappingsAdd": "Toevoegen",
-    "pathMappingsHelp": "Wijs externe daemonpaden toe aan lokale paden voor \"Map openen\"-acties.",
-    "remotePath": "Extern pad",
-    "localPath": "Lokaal pad"
+    "speedPresets": "Snelheidsvoorinstellingen",
+    "speedPresetsHelp": "Snelle waarden voor de snelheidslimiet (KB/s) voor de popover in de statusbalk.",
+    "addPreset": "Toevoegen",
+    "backup": "Back-up en herstel",
+    "exportBackup": "Back-up exporteren",
+    "importBackup": "Back-up importeren",
+    "exportBackupHelp": "Alle servers en voorkeuren exporteren naar een JSON-bestand.",
+    "importSuccess": "Back-up succesvol hersteld.",
+    "saveFailed": "Voorkeuren konden niet worden opgeslagen. Controleer de waarden en probeer het opnieuw.",
+    "invalidValues": "Het verversingsinterval moet minstens 250 ms zijn en de snelheidsvoorinstellingen moeten getallen zijn.",
+    "importFailed": "Importeren mislukt.",
+    "removePreset": "Snelheidsvoorinstelling verwijderen"
+  },
+  "columnMenu": {
+    "setupColumns": "Kolommen instellen"
   },
   "notification": {
-    "downloadComplete": "Download voltooid"
+    "downloadComplete": "Download voltooid",
+    "actionFailed": "Actie mislukt: {{error}}",
+    "refreshFailed": "Torrents konden niet worden vernieuwd: {{error}}",
+    "statsRefreshFailed": "Serverstatistieken konden niet worden vernieuwd: {{error}}",
+    "unknownError": "Onbekende fout",
+    "dismiss": "Sluiten",
+    "columnsSaveFailed": "Kolomindeling kon niet worden opgeslagen.",
+    "serversLoadFailed": "Serverlijst kon niet worden geladen.",
+    "serverRemoveFailed": "Server kon niet worden verwijderd.",
+    "exportFailed": "Configuratie kon niet worden geëxporteerd.",
+    "prefsLoadFailed": "Je voorkeuren konden niet worden geladen.",
+    "pickerFailed": "Bestands- of mapkiezer kon niet worden geopend.",
+    "fileReadFailed": "Het geselecteerde bestand kon niet worden gelezen.",
+    "renameFailed": "Torrent kon niet worden hernoemd.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Kon het bestand of de link waarmee Seedora is gestart niet openen."
   },
   "filesTab": {
     "clickToChangePriority": "Klik om prioriteit te wijzigen",
     "doNotDownload": "Niet downloaden",
     "download": "Downloaden"
+  },
+  "errorBoundary": {
+    "title": "Er is iets misgegaan",
+    "description": "De app is op een onverwachte fout gestuit. Probeer het opnieuw of laad het venster opnieuw.",
+    "retry": "Opnieuw proberen",
+    "reload": "Herladen"
+  },
+  "format": {
+    "done": "Klaar",
+    "justNow": "Zojuist",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} d",
+      "hours": "{{n}} u",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Bestand",
+      "edit": "Bewerken",
+      "view": "Weergave",
+      "torrent": "Torrent",
+      "tools": "Hulpmiddelen",
+      "help": "Help",
+      "preferences": "Voorkeuren…",
+      "addTorrent": "Torrent toevoegen…",
+      "addMagnet": "Magnetlink toevoegen…",
+      "toggleFilter": "Filterzijbalk tonen/verbergen",
+      "toggleDetails": "Detailpaneel tonen/verbergen",
+      "start": "Starten",
+      "stop": "Stoppen",
+      "verify": "Controleren",
+      "reannounce": "Opnieuw aankondigen",
+      "startAll": "Alles starten",
+      "stopAll": "Alles stoppen",
+      "remove": "Verwijderen…",
+      "serverSettings": "Serverinstellingen…",
+      "rpcSpec": "Transmission RPC-specificatie",
+      "reportIssue": "Probleem melden",
+      "about": "Over {{appName}}",
+      "hide": "{{appName}} verbergen",
+      "hideOthers": "Andere verbergen",
+      "unhide": "Alles tonen",
+      "quit": "{{appName}} afsluiten",
+      "close": "Venster sluiten",
+      "undo": "Ongedaan maken",
+      "redo": "Opnieuw",
+      "cut": "Knippen",
+      "copy": "Kopiëren",
+      "paste": "Plakken",
+      "selectAll": "Alles selecteren",
+      "reload": "Opnieuw laden",
+      "forceReload": "Geforceerd opnieuw laden",
+      "resetZoom": "Werkelijke grootte",
+      "zoomIn": "Inzoomen",
+      "zoomOut": "Uitzoomen",
+      "toggleFullscreen": "Volledig scherm in-/uitschakelen"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} actieve overdracht",
+      "activeTransfers_other": "{{count}} actieve overdrachten",
+      "enableAltSpeed": "Alternatieve snelheid inschakelen",
+      "disableAltSpeed": "Alternatieve snelheid uitschakelen",
+      "showWindow": "Venster tonen",
+      "quit": "Afsluiten"
+    },
+    "scriptGuard": {
+      "title": "Scriptinstellingen van de daemon wijzigen?",
+      "message": "Seedora staat op het punt instellingen te wijzigen waardoor de Transmission-daemon een programma op zijn server uitvoert.",
+      "detail": "{{changes}}\n\nGa alleen door als je deze wijziging zelf hebt aangebracht.",
+      "allow": "Toestaan",
+      "cancel": "Annuleren",
+      "declined": "De wijziging van de scriptinstellingen is geweigerd."
+    },
+    "exportSecrets": {
+      "title": "Wachtwoorden opnemen in de back-up?",
+      "message": "Het back-upbestand bevat je server- en proxywachtwoorden in leesbare tekst. Iedereen die het bestand kan lezen, kan ze gebruiken.",
+      "allow": "Wachtwoorden opnemen",
+      "cancel": "Annuleren",
+      "declined": "Het exporteren van de wachtwoorden is geweigerd."
+    },
+    "configError": {
+      "title": "Configuratieprobleem",
+      "corrupt": "Seedora kon het configuratiebestand niet lezen en is gestart met de standaardinstellingen. Het onleesbare bestand is opgeslagen als:\n{{path}}",
+      "unreadable": "Seedora kan het configuratiebestand niet lezen. Het bestand is ongewijzigd gelaten en wijzigingen worden pas opgeslagen als het probleem is opgelost:\n{{path}}",
+      "passwordsLocked": "Het opgeslagen wachtwoord voor deze servers kon niet worden ontsleuteld (mogelijk is de sleutelhanger van het systeem vergrendeld of opnieuw ingesteld): {{names}}. Open elke server in Seedora en voer het wachtwoord opnieuw in."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Ongeldig verzoek.",
+      "NO_SESSION": "Er is geen server actief. Selecteer een server en probeer het opnieuw.",
+      "SESSION_UNAVAILABLE": "De sessie kon niet worden hersteld. Controleer of cookies zijn ingeschakeld.",
+      "RATE_LIMITED": "Te veel verzoeken. Probeer het zo meteen opnieuw.",
+      "HOST_NOT_ALLOWED": "Deze host is niet toegestaan.",
+      "DNS_FAILED": "De hostnaam kon niet worden omgezet.",
+      "CONNECTION_FAILED": "Kan geen verbinding maken met de server.",
+      "TIMEOUT": "De server reageerde niet op tijd.",
+      "TLS_FAILED": "De beveiligde verbinding is mislukt.",
+      "UNEXPECTED_REDIRECT": "De server antwoordde met een omleiding.",
+      "RESPONSE_TOO_LARGE": "Het antwoord van de server is te groot.",
+      "AUTH_FAILED": "Authenticatie mislukt. Controleer de gebruikersnaam en het wachtwoord.",
+      "HTTP_ERROR": "De server antwoordde met een fout.",
+      "SESSION_ID_REJECTED": "De server heeft de sessie-ID geweigerd.",
+      "RPC_ERROR": "De server meldde een fout.",
+      "SERVER_MISCONFIGURED": "De webserver is niet correct geconfigureerd.",
+      "SERVER_NOT_FOUND": "Server niet gevonden.",
+      "IMPORT_INVALID": "Importeren mislukt: het bestand is geen geldige Seedora-back-up."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Het servercertificaat wordt niet vertrouwd.",
+      "TLS_EXPIRED": "Het servercertificaat is verlopen.",
+      "TLS_HOSTNAME": "Het servercertificaat komt niet overeen met de hostnaam.",
+      "NETWORK": "De server is niet bereikbaar.",
+      "TOO_LARGE": "Het antwoord van de server is te groot.",
+      "AUTH": "Authenticatie mislukt. Controleer de gebruikersnaam en het wachtwoord.",
+      "INVALID_RESPONSE": "De server antwoordde niet als een Transmission-daemon.",
+      "SESSION": "De server weigerde de sessie-handshake.",
+      "RPC_FAILURE": "De server meldde een fout.",
+      "NO_CONNECTION": "Er is geen server verbonden.",
+      "UNKNOWN": "Er is een onbekende fout opgetreden."
+    }
   }
 }

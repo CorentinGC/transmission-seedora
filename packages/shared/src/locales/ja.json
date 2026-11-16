@@ -5,7 +5,10 @@
     "selectTorrent": "トレントを選択して詳細を表示",
     "noTorrents": "トレントがありません",
     "yes": "はい",
-    "no": "いいえ"
+    "no": "いいえ",
+    "close": "閉じる",
+    "torrentList": "トレント",
+    "resizePanel": "パネルのサイズを変更"
   },
   "toolbar": {
     "addTorrent": "トレントを追加",
@@ -19,17 +22,46 @@
     "detailsPanel": "詳細パネルの切替",
     "searchPlaceholder": "トレントを検索...",
     "preferences": "環境設定",
-    "serverSettings": "サーバー設定"
+    "serverSettings": "サーバー設定",
+    "clearSearch": "検索をクリア",
+    "moreActions": "その他の操作"
   },
   "statusBar": {
     "connected": "接続済み",
     "connecting": "接続中...",
     "disconnected": "切断",
+    "connectionError": "接続エラー",
     "activeTotal": "{{active}} アクティブ / {{total}} 合計",
     "disableAltSpeed": "代替速度を無効にする",
     "enableAltSpeed": "代替速度を有効にする",
     "alt": "代替",
-    "freeSpace": "{{space}} 空き"
+    "freeSpace": "{{space}} 空き",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "ディスク容量",
+    "totalFreeSpace": "空き容量の合計",
+    "speedLimit": "速度制限",
+    "limitSpeed": "速度を制限",
+    "unlimited": "無制限",
+    "kbs": "KB/s",
+    "setLimit": "制限を設定",
+    "downloadLimit": "ダウンロード速度の制限",
+    "uploadLimit": "アップロード速度の制限"
+  },
+  "sessionStats": {
+    "title": "セッション統計",
+    "currentSession": "現在のセッション",
+    "allTime": "全期間（累計）",
+    "downloaded": "ダウンロード済み",
+    "uploaded": "アップロード済み",
+    "ratio": "共有比",
+    "filesAdded": "追加したファイル",
+    "activeTime": "アクティブ時間",
+    "downloadSpeed": "ダウンロード速度",
+    "uploadSpeed": "アップロード速度",
+    "sessionCount": "セッション数",
+    "activeTorrents": "アクティブなトレント",
+    "pausedTorrents": "一時停止中のトレント",
+    "totalTorrents": "トレント合計"
   },
   "filter": {
     "all": "すべて",
@@ -80,7 +112,17 @@
     "downloaded": "ダウンロード済み",
     "uploaded": "アップロード済み",
     "private": "プライベート",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "ダウンロードするサイズ",
+    "sizeLeft": "残りサイズ",
+    "connectedPeers": "接続中",
+    "seedingTime": "シード時間",
+    "downloadingTime": "ダウンロード時間",
+    "created": "作成日",
+    "comment": "コメント",
+    "fileCount": "ファイル数",
+    "group": "グループ"
   },
   "priority": {
     "high": "高",
@@ -110,7 +152,10 @@
     "copied": "コピーしました！",
     "loadingFiles": "ファイルを読み込み中...",
     "noPeers": "接続中のピアがありません",
-    "doubleClickEdit": "ダブルクリックで編集"
+    "doubleClickEdit": "ダブルクリックで編集",
+    "loadFailed": "詳細を読み込めませんでした: {{error}}",
+    "requestFailed": "リクエストに失敗しました",
+    "torrentNotFound": "トレントが見つかりません"
   },
   "peersTab": {
     "address": "アドレス",
@@ -118,13 +163,14 @@
     "flags": "フラグ",
     "progress": "進捗",
     "down": "受信",
-    "up": "送信"
+    "up": "送信",
+    "country": "国"
   },
   "trackersTab": {
     "tier": "ティア",
     "announceUrl": "アナウンス URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "シード",
+    "leechers": "リーチャー",
     "status": "ステータス",
     "addPlaceholder": "トラッカー URL を追加...",
     "add": "追加",
@@ -168,7 +214,8 @@
     "moveUp": "上に移動",
     "moveDown": "下に移動",
     "moveToBottom": "末尾に移動",
-    "remove": "削除..."
+    "remove": "削除...",
+    "title": "トレントの操作"
   },
   "dialog": {
     "addTorrent": "トレントを追加",
@@ -189,7 +236,7 @@
     "add": "追加",
     "test": "接続テスト",
     "browse": "参照...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / マグネット",
     "file": "ファイル",
     "urlOrMagnet": "URL または Magnet リンク",
     "urlPlaceholder": "magnet:?xt= または https://...",
@@ -210,12 +257,15 @@
     "editServer": "サーバーを編集",
     "addServerTitle": "サーバーを追加",
     "noServer": "サーバーなし",
+    "switcherLabel": "サーバーを切り替え",
     "serverName": "名前",
     "serverNamePlaceholder": "マイサーバー",
     "host": "ホスト",
     "port": "ポート",
     "path": "RPC パス",
     "useSSL": "SSL/TLS を使用",
+    "allowSelfSigned": "自己署名証明書を許可する",
+    "allowSelfSignedHint": "このサーバーの証明書検証を無効にします。信頼できるサーバーでのみ有効にしてください。",
     "authentication": "認証",
     "username": "ユーザー名",
     "password": "パスワード",
@@ -228,7 +278,23 @@
     "proxyUsername": "プロキシユーザー名",
     "proxyPassword": "プロキシパスワード",
     "testSuccess": "成功",
-    "testFailed": "失敗"
+    "testFailed": "失敗",
+    "deleteServer": "削除",
+    "deleteConfirm": "サーバー「{{name}}」を削除しますか？",
+    "cannotDeleteActive": "先に切断してください",
+    "exportServer": "エクスポート",
+    "exportAll": "すべてエクスポート",
+    "importServers": "インポート...",
+    "importSuccess": "{{added}} 件追加、{{skipped}} 件スキップ",
+    "importFailed": "インポートに失敗しました。",
+    "saveFailed": "サーバーを保存できませんでした。値を確認してもう一度お試しください。",
+    "exportPasswords": "エクスポートにパスワードを含める",
+    "exportPasswordsWarning": "パスワードはファイルに平文で書き込まれます。ファイルは外部に漏らさないでください。",
+    "webStorageWarning": "Web 版では、サーバーのパスワードはこのブラウザーに暗号化されずに保存されます。信頼できるデバイスでのみ入力してください。",
+    "passwordStored": "パスワードは保存済みです。変更しない場合は空のままにしてください。",
+    "removeStoredPassword": "保存済みのパスワードを削除",
+    "removeStoredProxyPassword": "保存済みのプロキシパスワードを削除",
+    "secretStorageUnencrypted": "このシステムでは安全なストレージを利用できません。保存したパスワードは暗号化されずにディスクに保存されます。"
   },
   "settings": {
     "applied": "設定が適用されました",
@@ -331,23 +397,178 @@
     "showNotifications": "完了時に通知を表示",
     "display": "表示",
     "relativeDates": "相対日付を使用",
-    "confirmOnAdd": "トレント追加時に確認を表示",
     "watchFolder": "監視フォルダー",
     "watchFolderEnabled": ".torrent ファイルのフォルダーを監視",
     "watchFolderPlaceholder": "/監視/パス",
     "deleteWatchedTorrent": "追加後に .torrent ファイルを削除",
-    "pathMappings": "パスマッピング（リモート → ローカル）",
-    "pathMappingsAdd": "追加",
-    "pathMappingsHelp": "「フォルダーを開く」操作のために、リモートデーモンのパスをローカルパスにマッピングします。",
-    "remotePath": "リモートパス",
-    "localPath": "ローカルパス"
+    "speedPresets": "速度プリセット",
+    "speedPresetsHelp": "ステータスバーのポップオーバー用の速度制限のクイック値 (KB/s)。",
+    "addPreset": "追加",
+    "backup": "バックアップと復元",
+    "exportBackup": "バックアップをエクスポート",
+    "importBackup": "バックアップをインポート",
+    "exportBackupHelp": "すべてのサーバーと設定を JSON ファイルにエクスポートします。",
+    "importSuccess": "バックアップを復元しました。",
+    "saveFailed": "設定を保存できませんでした。値を確認してもう一度お試しください。",
+    "invalidValues": "更新間隔は250ミリ秒以上、速度プリセットは数値にしてください。",
+    "importFailed": "インポートに失敗しました。",
+    "removePreset": "速度プリセットを削除"
+  },
+  "columnMenu": {
+    "setupColumns": "列を設定"
   },
   "notification": {
-    "downloadComplete": "ダウンロード完了"
+    "downloadComplete": "ダウンロード完了",
+    "actionFailed": "操作に失敗しました: {{error}}",
+    "refreshFailed": "トレントを更新できませんでした: {{error}}",
+    "statsRefreshFailed": "サーバー統計を更新できませんでした: {{error}}",
+    "unknownError": "不明なエラー",
+    "dismiss": "閉じる",
+    "columnsSaveFailed": "列のレイアウトを保存できませんでした。",
+    "serversLoadFailed": "サーバーの一覧を読み込めませんでした。",
+    "serverRemoveFailed": "サーバーを削除できませんでした。",
+    "exportFailed": "設定をエクスポートできませんでした。",
+    "prefsLoadFailed": "設定を読み込めませんでした。",
+    "pickerFailed": "ファイルまたはフォルダーの選択ダイアログを開けませんでした。",
+    "fileReadFailed": "選択したファイルを読み取れませんでした。",
+    "renameFailed": "トレントの名前を変更できませんでした。",
+    "withReason": "{{message}}（{{reason}}）",
+    "launchFailed": "Seedora の起動時に指定されたファイルまたはリンクを開けませんでした。"
   },
   "filesTab": {
     "clickToChangePriority": "クリックして優先度を変更",
     "doNotDownload": "ダウンロードしない",
     "download": "ダウンロード"
+  },
+  "errorBoundary": {
+    "title": "問題が発生しました",
+    "description": "アプリで予期しないエラーが発生しました。もう一度試すか、ウィンドウを再読み込みしてください。",
+    "retry": "再試行",
+    "reload": "再読み込み"
+  },
+  "format": {
+    "done": "完了",
+    "justNow": "たった今",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}}日",
+      "hours": "{{n}}時間",
+      "minutes": "{{n}}分",
+      "seconds": "{{n}}秒"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "ファイル",
+      "edit": "編集",
+      "view": "表示",
+      "torrent": "Torrent",
+      "tools": "ツール",
+      "help": "ヘルプ",
+      "preferences": "環境設定…",
+      "addTorrent": "Torrentを追加…",
+      "addMagnet": "マグネットリンクを追加…",
+      "toggleFilter": "フィルタサイドバーを切り替え",
+      "toggleDetails": "詳細パネルを切り替え",
+      "start": "開始",
+      "stop": "停止",
+      "verify": "検証",
+      "reannounce": "再アナウンス",
+      "startAll": "すべて開始",
+      "stopAll": "すべて停止",
+      "remove": "削除…",
+      "serverSettings": "サーバ設定…",
+      "rpcSpec": "Transmission RPC仕様",
+      "reportIssue": "問題を報告",
+      "about": "{{appName}}について",
+      "hide": "{{appName}}を隠す",
+      "hideOthers": "ほかを隠す",
+      "unhide": "すべてを表示",
+      "quit": "{{appName}}を終了",
+      "close": "ウインドウを閉じる",
+      "undo": "取り消す",
+      "redo": "やり直す",
+      "cut": "切り取り",
+      "copy": "コピー",
+      "paste": "ペースト",
+      "selectAll": "すべてを選択",
+      "reload": "再読み込み",
+      "forceReload": "強制再読み込み",
+      "resetZoom": "実際のサイズ",
+      "zoomIn": "拡大",
+      "zoomOut": "縮小",
+      "toggleFullscreen": "フルスクリーンを切り替え"
+    },
+    "tray": {
+      "activeTransfers_other": "アクティブな転送: {{count}}件",
+      "enableAltSpeed": "代替速度を有効にする",
+      "disableAltSpeed": "代替速度を無効にする",
+      "showWindow": "ウインドウを表示",
+      "quit": "終了"
+    },
+    "scriptGuard": {
+      "title": "デーモンのスクリプト設定を変更しますか？",
+      "message": "Seedoraは、Transmissionデーモンがサーバ上でプログラムを実行するようになる設定を変更しようとしています。",
+      "detail": "{{changes}}\n\nこの変更をご自身で行った場合のみ続行してください。",
+      "allow": "許可",
+      "cancel": "キャンセル",
+      "declined": "スクリプト設定の変更は拒否されました。"
+    },
+    "exportSecrets": {
+      "title": "バックアップにパスワードを含めますか？",
+      "message": "バックアップファイルには、サーバとプロキシのパスワードが平文で含まれます。ファイルを読める人は誰でもそれらを使用できます。",
+      "allow": "パスワードを含める",
+      "cancel": "キャンセル",
+      "declined": "パスワードのエクスポートは拒否されました。"
+    },
+    "configError": {
+      "title": "設定の問題",
+      "corrupt": "Seedoraは設定ファイルを読み取れなかったため、デフォルト設定で起動しました。読み取れなかったファイルは次の名前で保存されました:\n{{path}}",
+      "unreadable": "Seedoraは設定ファイルを読み取れません。ファイルは変更されておらず、問題が解決するまで変更は保存されません:\n{{path}}",
+      "passwordsLocked": "これらのサーバーの保存済みパスワードを復号できませんでした（システムのキーチェーンがロックされているか、リセットされた可能性があります）：{{names}}。Seedoraで各サーバーを開き、パスワードをもう一度入力してください。"
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "無効なリクエストです。",
+      "NO_SESSION": "有効なサーバーがありません。サーバーを選択して、もう一度お試しください。",
+      "SESSION_UNAVAILABLE": "セッションを復元できませんでした。Cookie が有効になっているか確認してください。",
+      "RATE_LIMITED": "リクエストが多すぎます。しばらくしてからもう一度お試しください。",
+      "HOST_NOT_ALLOWED": "このホストは許可されていません。",
+      "DNS_FAILED": "ホスト名を解決できませんでした。",
+      "CONNECTION_FAILED": "サーバーに接続できませんでした。",
+      "TIMEOUT": "サーバーが時間内に応答しませんでした。",
+      "TLS_FAILED": "セキュア接続に失敗しました。",
+      "UNEXPECTED_REDIRECT": "サーバーがリダイレクトで応答しました。",
+      "RESPONSE_TOO_LARGE": "サーバーの応答が大きすぎます。",
+      "AUTH_FAILED": "認証に失敗しました。ユーザー名とパスワードを確認してください。",
+      "HTTP_ERROR": "サーバーがエラーで応答しました。",
+      "SESSION_ID_REJECTED": "サーバーがセッション ID を拒否しました。",
+      "RPC_ERROR": "サーバーがエラーを報告しました。",
+      "SERVER_MISCONFIGURED": "Web サーバーが正しく構成されていません。",
+      "SERVER_NOT_FOUND": "サーバーが見つかりません。",
+      "IMPORT_INVALID": "インポートに失敗しました。このファイルは有効な Seedora のバックアップではありません。"
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "サーバー証明書が信頼されていません。",
+      "TLS_EXPIRED": "サーバー証明書の有効期限が切れています。",
+      "TLS_HOSTNAME": "サーバー証明書がホスト名と一致しません。",
+      "NETWORK": "サーバーに到達できませんでした。",
+      "TOO_LARGE": "サーバーの応答が大きすぎます。",
+      "AUTH": "認証に失敗しました。ユーザー名とパスワードを確認してください。",
+      "INVALID_RESPONSE": "サーバーが Transmission デーモンとして応答しませんでした。",
+      "SESSION": "サーバーがセッションのハンドシェイクを拒否しました。",
+      "RPC_FAILURE": "サーバーがエラーを報告しました。",
+      "NO_CONNECTION": "接続中のサーバーがありません。",
+      "UNKNOWN": "不明なエラーが発生しました。"
+    }
   }
 }

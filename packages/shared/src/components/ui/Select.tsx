@@ -15,10 +15,7 @@ const sizeClasses: Record<Size, string> = {
 
 export function Select({ selectSize = 'default', className = '', children, ...rest }: SelectProps) {
   return (
-    <select
-      className={`rounded border bg-background ${sizeClasses[selectSize]} ${className}`}
-      {...rest}
-    >
+    <select className={`rounded border bg-background ${sizeClasses[selectSize]} ${className}`} {...rest}>
       {children}
     </select>
   );

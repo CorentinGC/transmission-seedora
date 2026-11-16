@@ -1,0 +1,17 @@
+node_modules
+dist
+out
+.vite
+.next
+coverage
+package-lock.json
+CHANGELOG.md
+.release-please-manifest.json
+.beads
+.claude
+packages/shared/src/locales
+apps/web/public
+apps/web/next-env.d.ts
+*.tsbuildinfo
+*.md
+.mcp.json

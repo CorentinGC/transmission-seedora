@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+# Enforce Conventional Commits. Chained from .beads/hooks/commit-msg (bd owns core.hooksPath).
+root="$(git rev-parse --show-toplevel)"
+bin="$root/node_modules/.bin/commitlint"
+if [ ! -x "$bin" ]; then
+  echo "commit-msg: commitlint is not installed (run 'npm ci'); the message was NOT checked." >&2
+  exit 0
+fi
+cd "$root" && exec "$bin" --edit "$1"

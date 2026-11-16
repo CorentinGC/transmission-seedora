@@ -5,7 +5,10 @@
     "selectTorrent": "Velg en torrent for å se detaljer",
     "noTorrents": "Ingen torrenter",
     "yes": "Ja",
-    "no": "Nei"
+    "no": "Nei",
+    "close": "Lukk",
+    "torrentList": "Torrenter",
+    "resizePanel": "Endre panelstørrelse"
   },
   "toolbar": {
     "addTorrent": "Legg til torrent",
@@ -19,17 +22,46 @@
     "detailsPanel": "Vis/skjul detaljpanel",
     "searchPlaceholder": "Søk torrenter...",
     "preferences": "Innstillinger",
-    "serverSettings": "Serverinnstillinger"
+    "serverSettings": "Serverinnstillinger",
+    "clearSearch": "Tøm søk",
+    "moreActions": "Flere handlinger"
   },
   "statusBar": {
     "connected": "Tilkoblet",
     "connecting": "Kobler til...",
     "disconnected": "Frakoblet",
+    "connectionError": "Tilkoblingsfeil",
     "activeTotal": "{{active}} aktive / {{total}} totalt",
     "disableAltSpeed": "Deaktiver alternativ hastighet",
     "enableAltSpeed": "Aktiver alternativ hastighet",
     "alt": "Alt",
-    "freeSpace": "{{space}} ledig"
+    "freeSpace": "{{space}} ledig",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Diskplass",
+    "totalFreeSpace": "Total ledig plass",
+    "speedLimit": "Hastighetsgrense",
+    "limitSpeed": "Begrens hastighet",
+    "unlimited": "Ubegrenset",
+    "kbs": "KB/s",
+    "setLimit": "Angi grense",
+    "downloadLimit": "Grense for nedlastingshastighet",
+    "uploadLimit": "Grense for opplastingshastighet"
+  },
+  "sessionStats": {
+    "title": "Øktstatistikk",
+    "currentSession": "Gjeldende økt",
+    "allTime": "Totalt (kumulativt)",
+    "downloaded": "Lastet ned",
+    "uploaded": "Lastet opp",
+    "ratio": "Ratio",
+    "filesAdded": "Filer lagt til",
+    "activeTime": "Aktiv tid",
+    "downloadSpeed": "Nedlastingshastighet",
+    "uploadSpeed": "Opplastingshastighet",
+    "sessionCount": "Økter",
+    "activeTorrents": "Aktive torrenter",
+    "pausedTorrents": "Torrenter på pause",
+    "totalTorrents": "Torrenter totalt"
   },
   "filter": {
     "all": "Alle",
@@ -80,7 +112,17 @@
     "downloaded": "Lastet ned",
     "uploaded": "Lastet opp",
     "private": "Privat",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Størrelse å laste ned",
+    "sizeLeft": "Størrelse igjen",
+    "connectedPeers": "Tilkoblet",
+    "seedingTime": "Seedingtid",
+    "downloadingTime": "Nedlastingstid",
+    "created": "Opprettet",
+    "comment": "Kommentar",
+    "fileCount": "Filer",
+    "group": "Gruppe"
   },
   "priority": {
     "high": "Høy",
@@ -110,7 +152,10 @@
     "copied": "Kopiert!",
     "loadingFiles": "Laster filer...",
     "noPeers": "Ingen peers tilkoblet",
-    "doubleClickEdit": "Dobbeltklikk for å redigere"
+    "doubleClickEdit": "Dobbeltklikk for å redigere",
+    "loadFailed": "Kunne ikke laste inn detaljer: {{error}}",
+    "requestFailed": "Forespørselen mislyktes",
+    "torrentNotFound": "Torrent ble ikke funnet"
   },
   "peersTab": {
     "address": "Adresse",
@@ -118,7 +163,8 @@
     "flags": "Flagg",
     "progress": "Fremdrift",
     "down": "Ned",
-    "up": "Opp"
+    "up": "Opp",
+    "country": "Land"
   },
   "trackersTab": {
     "tier": "Nivå",
@@ -140,7 +186,7 @@
     "downloadLimit": "Nedlastingsgrense (KB/s):",
     "uploadLimit": "Opplastingsgrense (KB/s):",
     "honorSessionLimits": "Overhold øktgrenser",
-    "seeding": "Seeding",
+    "seeding": "Seeder",
     "ratioMode": "Ratiomodus:",
     "idleMode": "Inaktivitetsmodus:",
     "global": "Global",
@@ -168,7 +214,8 @@
     "moveUp": "Flytt opp",
     "moveDown": "Flytt ned",
     "moveToBottom": "Flytt til bunnen",
-    "remove": "Fjern..."
+    "remove": "Fjern...",
+    "title": "Torrent-handlinger"
   },
   "dialog": {
     "addTorrent": "Legg til torrent",
@@ -189,7 +236,7 @@
     "add": "Legg til",
     "test": "Test tilkobling",
     "browse": "Bla gjennom...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnetlenke",
     "file": "Fil",
     "urlOrMagnet": "URL eller Magnet-lenke",
     "urlPlaceholder": "magnet:?xt= eller https://...",
@@ -210,12 +257,15 @@
     "editServer": "Rediger server",
     "addServerTitle": "Legg til server",
     "noServer": "Ingen server",
+    "switcherLabel": "Bytt server",
     "serverName": "Navn",
     "serverNamePlaceholder": "Min server",
     "host": "Vert",
     "port": "Port",
     "path": "RPC-sti",
     "useSSL": "Bruk SSL/TLS",
+    "allowSelfSigned": "Godta selvsignert sertifikat",
+    "allowSelfSignedHint": "Slår av sertifikatverifisering for denne serveren. Slå på kun for en server du stoler på.",
     "authentication": "Autentisering",
     "username": "Brukernavn",
     "password": "Passord",
@@ -228,7 +278,23 @@
     "proxyUsername": "Proxybrukernavn",
     "proxyPassword": "Proxypassord",
     "testSuccess": "Vellykket",
-    "testFailed": "Mislyktes"
+    "testFailed": "Mislyktes",
+    "deleteServer": "Slett",
+    "deleteConfirm": "Slette serveren «{{name}}»?",
+    "cannotDeleteActive": "Koble fra først",
+    "exportServer": "Eksporter",
+    "exportAll": "Eksporter alle",
+    "importServers": "Importer...",
+    "importSuccess": "{{added}} lagt til, {{skipped}} hoppet over",
+    "importFailed": "Importen mislyktes.",
+    "saveFailed": "Kunne ikke lagre serveren. Kontroller verdiene og prøv igjen.",
+    "exportPasswords": "Ta med passord i eksporten",
+    "exportPasswordsWarning": "Passord skrives i klartekst i filen. Hold filen privat.",
+    "webStorageWarning": "I nettversjonen lagres serverpassord ukryptert i denne nettleseren. Skriv dem bare inn på en enhet du stoler på.",
+    "passwordStored": "Passord lagret. La feltet stå tomt for å beholde det.",
+    "removeStoredPassword": "Fjern lagret passord",
+    "removeStoredProxyPassword": "Fjern lagret proxy-passord",
+    "secretStorageUnencrypted": "Sikker lagring er ikke tilgjengelig på dette systemet: lagrede passord ligger ukryptert på disken."
   },
   "settings": {
     "applied": "Innstillinger brukt",
@@ -331,23 +397,179 @@
     "showNotifications": "Vis varsler ved fullføring",
     "display": "Visning",
     "relativeDates": "Bruk relative datoer",
-    "confirmOnAdd": "Vis bekreftelse ved tillegg av torrenter",
     "watchFolder": "Overvåket mappe",
     "watchFolderEnabled": "Overvåk en mappe for .torrent-filer",
     "watchFolderPlaceholder": "/sti/til/mappe",
     "deleteWatchedTorrent": "Slett .torrent-fil etter tillegg",
-    "pathMappings": "Stitilordninger (Fjern → Lokal)",
-    "pathMappingsAdd": "Legg til",
-    "pathMappingsHelp": "Tilordne fjerndaemonens stier til lokale stier for «Åpne mappe»-handlinger.",
-    "remotePath": "Fjernsti",
-    "localPath": "Lokal sti"
+    "speedPresets": "Hastighetsforhåndsvalg",
+    "speedPresetsHelp": "Hurtigverdier for hastighetsgrense (KB/s) til statuslinjens popover.",
+    "addPreset": "Legg til",
+    "backup": "Sikkerhetskopi og gjenoppretting",
+    "exportBackup": "Eksporter sikkerhetskopi",
+    "importBackup": "Importer sikkerhetskopi",
+    "exportBackupHelp": "Eksporter alle servere og innstillinger til en JSON-fil.",
+    "importSuccess": "Sikkerhetskopien ble gjenopprettet.",
+    "saveFailed": "Kunne ikke lagre innstillingene. Kontroller verdiene og prøv igjen.",
+    "invalidValues": "Oppdateringsintervallet må være minst 250 ms, og hastighetsforhåndsinnstillingene må være tall.",
+    "importFailed": "Importen mislyktes.",
+    "removePreset": "Fjern hastighetsforhåndsvalg"
+  },
+  "columnMenu": {
+    "setupColumns": "Sett opp kolonner"
   },
   "notification": {
-    "downloadComplete": "Nedlasting fullført"
+    "downloadComplete": "Nedlasting fullført",
+    "actionFailed": "Handlingen mislyktes: {{error}}",
+    "refreshFailed": "Kunne ikke oppdatere torrents: {{error}}",
+    "statsRefreshFailed": "Kunne ikke oppdatere serverstatistikk: {{error}}",
+    "unknownError": "Ukjent feil",
+    "dismiss": "Lukk",
+    "columnsSaveFailed": "Kunne ikke lagre kolonneoppsettet.",
+    "serversLoadFailed": "Kunne ikke laste serverlisten.",
+    "serverRemoveFailed": "Kunne ikke fjerne serveren.",
+    "exportFailed": "Kunne ikke eksportere konfigurasjonen.",
+    "prefsLoadFailed": "Kunne ikke laste innstillingene dine.",
+    "pickerFailed": "Kunne ikke åpne fil- eller mappevelgeren.",
+    "fileReadFailed": "Kunne ikke lese den valgte filen.",
+    "renameFailed": "Kunne ikke gi torrenten nytt navn.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Kunne ikke åpne filen eller lenken Seedora ble startet med."
   },
   "filesTab": {
     "clickToChangePriority": "Klikk for å endre prioritet",
     "doNotDownload": "Ikke last ned",
     "download": "Last ned"
+  },
+  "errorBoundary": {
+    "title": "Noe gikk galt",
+    "description": "Appen støtte på en uventet feil. Du kan prøve igjen eller laste vinduet på nytt.",
+    "retry": "Prøv igjen",
+    "reload": "Last inn på nytt"
+  },
+  "format": {
+    "done": "Ferdig",
+    "justNow": "Akkurat nå",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} d",
+      "hours": "{{n}} t",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Fil",
+      "edit": "Rediger",
+      "view": "Vis",
+      "torrent": "Torrent",
+      "tools": "Verktøy",
+      "help": "Hjelp",
+      "preferences": "Innstillinger…",
+      "addTorrent": "Legg til torrent…",
+      "addMagnet": "Legg til magnetlenke…",
+      "toggleFilter": "Vis/skjul filtersidefelt",
+      "toggleDetails": "Vis/skjul detaljpanel",
+      "start": "Start",
+      "stop": "Stopp",
+      "verify": "Verifiser",
+      "reannounce": "Annonser på nytt",
+      "startAll": "Start alle",
+      "stopAll": "Stopp alle",
+      "remove": "Fjern…",
+      "serverSettings": "Serverinnstillinger…",
+      "rpcSpec": "Transmission RPC-spesifikasjon",
+      "reportIssue": "Rapporter et problem",
+      "about": "Om {{appName}}",
+      "hide": "Skjul {{appName}}",
+      "hideOthers": "Skjul andre",
+      "unhide": "Vis alle",
+      "quit": "Avslutt {{appName}}",
+      "close": "Lukk vindu",
+      "undo": "Angre",
+      "redo": "Gjør om",
+      "cut": "Klipp ut",
+      "copy": "Kopier",
+      "paste": "Lim inn",
+      "selectAll": "Velg alt",
+      "reload": "Last inn på nytt",
+      "forceReload": "Tving ny innlasting",
+      "resetZoom": "Faktisk størrelse",
+      "zoomIn": "Zoom inn",
+      "zoomOut": "Zoom ut",
+      "toggleFullscreen": "Slå fullskjerm av/på"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} aktiv overføring",
+      "activeTransfers_other": "{{count}} aktive overføringer",
+      "enableAltSpeed": "Aktiver alternativ hastighet",
+      "disableAltSpeed": "Deaktiver alternativ hastighet",
+      "showWindow": "Vis vindu",
+      "quit": "Avslutt"
+    },
+    "scriptGuard": {
+      "title": "Endre daemonens skriptinnstillinger?",
+      "message": "Seedora er i ferd med å endre innstillinger som får Transmission-daemonen til å kjøre et program på serveren sin.",
+      "detail": "{{changes}}\n\nFortsett bare hvis du har gjort denne endringen selv.",
+      "allow": "Tillat",
+      "cancel": "Avbryt",
+      "declined": "Endringen av skriptinnstillingene ble avslått."
+    },
+    "exportSecrets": {
+      "title": "Ta med passord i sikkerhetskopien?",
+      "message": "Sikkerhetskopifilen kommer til å inneholde server- og proxypassordene dine i klartekst. Alle som kan lese filen, kan bruke dem.",
+      "allow": "Ta med passord",
+      "cancel": "Avbryt",
+      "declined": "Eksport av passordene ble avslått."
+    },
+    "configError": {
+      "title": "Konfigurasjonsproblem",
+      "corrupt": "Seedora kunne ikke lese konfigurasjonsfilen og startet med standardinnstillinger. Den uleselige filen ble lagret som:\n{{path}}",
+      "unreadable": "Seedora kan ikke lese konfigurasjonsfilen. Filen ble ikke endret, og endringer lagres ikke før problemet er løst:\n{{path}}",
+      "passwordsLocked": "Det lagrede passordet for disse serverne kunne ikke dekrypteres (systemets nøkkelring kan være låst eller tilbakestilt): {{names}}. Åpne hver server i Seedora og skriv inn passordet på nytt."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Ugyldig forespørsel.",
+      "NO_SESSION": "Ingen server er aktiv. Velg en server og prøv igjen.",
+      "SESSION_UNAVAILABLE": "Økten kunne ikke gjenopprettes. Kontroller at informasjonskapsler er aktivert.",
+      "RATE_LIMITED": "For mange forespørsler. Prøv igjen om litt.",
+      "HOST_NOT_ALLOWED": "Denne verten er ikke tillatt.",
+      "DNS_FAILED": "Vertsnavnet kunne ikke slås opp.",
+      "CONNECTION_FAILED": "Kunne ikke koble til serveren.",
+      "TIMEOUT": "Serveren svarte ikke i tide.",
+      "TLS_FAILED": "Den sikre tilkoblingen mislyktes.",
+      "UNEXPECTED_REDIRECT": "Serveren svarte med en omdirigering.",
+      "RESPONSE_TOO_LARGE": "Serverens svar er for stort.",
+      "AUTH_FAILED": "Autentiseringen mislyktes. Kontroller brukernavn og passord.",
+      "HTTP_ERROR": "Serveren svarte med en feil.",
+      "SESSION_ID_REJECTED": "Serveren avviste økt-ID-en.",
+      "RPC_ERROR": "Serveren rapporterte en feil.",
+      "SERVER_MISCONFIGURED": "Webserveren er ikke riktig konfigurert.",
+      "SERVER_NOT_FOUND": "Fant ikke serveren.",
+      "IMPORT_INVALID": "Importen mislyktes: filen er ikke en gyldig Seedora-sikkerhetskopi."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Serversertifikatet er ikke klarert.",
+      "TLS_EXPIRED": "Serversertifikatet er utløpt.",
+      "TLS_HOSTNAME": "Serversertifikatet samsvarer ikke med vertsnavnet.",
+      "NETWORK": "Kunne ikke nå serveren.",
+      "TOO_LARGE": "Serverens svar er for stort.",
+      "AUTH": "Autentiseringen mislyktes. Kontroller brukernavn og passord.",
+      "INVALID_RESPONSE": "Serveren svarte ikke som en Transmission-daemon.",
+      "SESSION": "Serveren avviste øktens håndtrykk.",
+      "RPC_FAILURE": "Serveren rapporterte en feil.",
+      "NO_CONNECTION": "Ingen server er tilkoblet.",
+      "UNKNOWN": "Det oppstod en ukjent feil."
+    }
   }
 }

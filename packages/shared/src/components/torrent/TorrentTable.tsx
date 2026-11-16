@@ -1,12 +1,6 @@
-import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
+import { useMemo, useCallback, useId, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  flexRender,
-  type ColumnDef,
-} from '@tanstack/react-table';
+import { useReactTable, getCoreRowModel, getSortedRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useTorrentStore } from '../../stores/torrent-store';
 import { useUiStore } from '../../stores/ui-store';
@@ -14,7 +8,11 @@ import { createTorrentColumns, DEFAULT_VISIBLE_COLUMNS } from './TorrentColumns'
 import { TorrentContextMenu } from './TorrentContextMenu';
 import { HeaderContextMenu } from './HeaderContextMenu';
 import type { Torrent } from '../../types/torrent';
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUp, ArrowDown, Columns3 } from 'lucide-react';
+import { useGridNavigation } from './useGridNavigation';
+import { useHeaderKeyboard } from './useHeaderKeyboard';
+import { fitColumnWidth, measureContentWidth } from './column-utils';
+import { FOCUS_FALLBACK_ATTRIBUTE } from '../ui/popup';
 
 const LONG_PRESS_MS = 500;
 
@@ -54,7 +52,9 @@ export function TorrentTable({ torrents }: Props) {
 
   // Build effective column order: use saved order if it exists, otherwise use definition order
   const effectiveColumnOrder = useMemo(() => {
-    const allColIds = columns.map((c) => (c as { accessorKey?: string; id?: string }).accessorKey ?? (c as { id?: string }).id ?? '');
+    const allColIds = columns.map(
+      (c) => (c as { accessorKey?: string; id?: string }).accessorKey ?? (c as { id?: string }).id ?? '',
+    );
     if (columnOrder.length > 0) {
       // Merge: saved order first (filtering removed cols), then any new cols not in saved order
       const ordered = columnOrder.filter((id) => allColIds.includes(id));
@@ -139,20 +139,23 @@ export function TorrentTable({ torrents }: Props) {
     }
   }, []);
 
-  const handleHeaderMouseDown = useCallback((e: React.MouseEvent, columnId: string) => {
-    // Don't start long-press if clicking on the resize handle area (right 6px)
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    if (e.clientX > rect.right - 6) return;
-    // Only left button
-    if (e.button !== 0) return;
+  const handleHeaderMouseDown = useCallback(
+    (e: React.MouseEvent, columnId: string) => {
+      // Don't start long-press if clicking on the resize handle area (right 6px)
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      if (e.clientX > rect.right - 6) return;
+      // Only left button
+      if (e.button !== 0) return;
 
-    cancelLongPress();
-    longPressTimer.current = setTimeout(() => {
-      longPressTimer.current = null;
-      setDragColumnId(columnId);
-      suppressClick.current = true;
-    }, LONG_PRESS_MS);
-  }, [cancelLongPress]);
+      cancelLongPress();
+      longPressTimer.current = setTimeout(() => {
+        longPressTimer.current = null;
+        setDragColumnId(columnId);
+        suppressClick.current = true;
+      }, LONG_PRESS_MS);
+    },
+    [cancelLongPress],
+  );
 
   const handleHeaderMouseUp = useCallback(() => {
     cancelLongPress();
@@ -189,7 +192,9 @@ export function TorrentTable({ torrents }: Props) {
       setDragColumnId(null);
       setDropTargetId(null);
       // Suppress the click event that follows mouseup so sorting doesn't trigger
-      setTimeout(() => { suppressClick.current = false; }, 50);
+      setTimeout(() => {
+        suppressClick.current = false;
+      }, 50);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -209,129 +214,237 @@ export function TorrentTable({ torrents }: Props) {
     toggleSort?.(e);
   }, []);
 
-  const handleResizeDoubleClick = useCallback((columnId: string, headerIndex: number) => {
-    const bodyContainer = parentRef.current;
-    if (!bodyContainer) return;
+  const handleResizeDoubleClick = useCallback(
+    (columnId: string, headerIndex: number) => {
+      const bodyContainer = parentRef.current;
+      if (!bodyContainer) return;
+      const sources: HTMLElement[] = [];
+      const headerEl = headerRefs.current.get(columnId);
+      if (headerEl) sources.push(headerEl);
+      bodyContainer.querySelectorAll(':scope > div > div').forEach((row) => {
+        const cell = row.children[headerIndex];
+        if (cell instanceof HTMLElement) sources.push(cell);
+      });
+      const minSize = table.getColumn(columnId)?.columnDef.minSize ?? 40;
+      setColumnSizing({ ...columnSizing, [columnId]: fitColumnWidth(measureContentWidth(sources), minSize) });
+    },
+    [columnSizing, setColumnSizing, table],
+  );
 
-    // Create off-screen measurement container
-    const measure = document.createElement('div');
-    measure.style.cssText = 'position:absolute;top:-9999px;left:-9999px;white-space:nowrap;visibility:hidden;';
-    document.body.appendChild(measure);
+  const gridId = useId();
+  const gridRef = useRef<HTMLDivElement>(null);
+  const headerScrollRef = useRef<HTMLDivElement>(null);
+  const [headerTabId, setHeaderTabId] = useState<string | null>(null);
+  const visibleColumnIds = table.getVisibleLeafColumns().map((c) => c.id);
+  const rowDomId = (id: number) => `${gridId}-r${id}`;
+  const cellDomId = (id: number, columnIndex: number) => `${rowDomId(id)}-c${columnIndex}`;
 
-    // Measure header
-    const headerEl = headerRefs.current.get(columnId);
-    let maxWidth = 0;
-    if (headerEl) {
-      measure.className = headerEl.className;
-      measure.style.width = 'auto';
-      measure.style.position = 'absolute';
-      measure.style.visibility = 'hidden';
-      measure.style.whiteSpace = 'nowrap';
-      measure.innerHTML = headerEl.innerHTML;
-      maxWidth = measure.offsetWidth;
-    }
+  const openRowMenu = useCallback(
+    (id: number) => {
+      const rect = (document.getElementById(rowDomId(id)) ?? gridRef.current)?.getBoundingClientRect();
+      if (!selectedIds.has(id)) selectTorrent(id);
+      setContextMenu({
+        x: (rect?.left ?? 0) + 32,
+        y: rect?.bottom ?? 0,
+        ids: selectedIds.has(id) ? Array.from(selectedIds) : [id],
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- rowDomId only reads gridId
+    [selectedIds, selectTorrent, gridId],
+  );
 
-    // Measure body cells
-    const rows = bodyContainer.querySelectorAll(':scope > div > div');
-    rows.forEach((row) => {
-      const cell = row.children[headerIndex] as HTMLElement | undefined;
-      if (cell) {
-        measure.className = cell.className;
-        measure.style.width = 'auto';
-        measure.style.position = 'absolute';
-        measure.style.visibility = 'hidden';
-        measure.style.whiteSpace = 'nowrap';
-        measure.innerHTML = cell.innerHTML;
-        maxWidth = Math.max(maxWidth, measure.offsetWidth);
-      }
-    });
+  const nav = useGridNavigation({
+    rowIds: allVisibleIds,
+    selectedIds,
+    select: selectTorrent,
+    toggle: toggleTorrent,
+    extendTo: (id) => selectRange(id, allVisibleIds),
+    scrollToIndex: (index) => virtualizer.scrollToIndex(index),
+    openMenu: openRowMenu,
+  });
 
-    document.body.removeChild(measure);
+  const virtualItems = virtualizer.getVirtualItems();
+  // Only a rendered row can be an active descendant; the id points at its first gridcell.
+  const activeRowRendered =
+    nav.activeId !== null && virtualItems.some((v) => rows[v.index]?.original.id === nav.activeId);
+  const activeDescendant =
+    nav.focused && nav.activeId !== null && activeRowRendered ? cellDomId(nav.activeId, 0) : undefined;
 
-    const col = table.getColumn(columnId);
-    const minSize = col?.columnDef.minSize ?? 40;
-    // Add 2px buffer to avoid sub-pixel rounding issues
-    const newWidth = Math.max(maxWidth + 2, minSize);
+  const openColumnsMenuAt = (el: HTMLElement) => {
+    const rect = el.getBoundingClientRect();
+    setHeaderMenu({ x: rect.left, y: rect.bottom });
+  };
 
-    setColumnSizing({ ...columnSizing, [columnId]: newWidth });
-  }, [columnSizing, setColumnSizing, table]);
+  const handleHeaderKeyDown = useHeaderKeyboard({
+    headerRowRef,
+    visibleColumnIds,
+    columnOrder: effectiveColumnOrder,
+    columnSizing,
+    setColumnOrder,
+    setColumnSizing,
+    openColumnsMenuAt,
+  });
+
+  const syncScroll = (from: HTMLElement, to: HTMLElement | null) => {
+    if (to && to.scrollLeft !== from.scrollLeft) to.scrollLeft = from.scrollLeft;
+  };
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
-      {/* Header */}
-      <div ref={headerRowRef} className="flex border-b bg-muted/50 select-none" onContextMenu={(e) => { e.preventDefault(); setHeaderMenu({ x: e.clientX, y: e.clientY }); }}>
-        {table.getHeaderGroups().map((headerGroup) =>
-          headerGroup.headers.map((header) => (
-            <div
-              key={header.id}
-              ref={(el) => { if (el) headerRefs.current.set(header.column.id, el); else headerRefs.current.delete(header.column.id); }}
-              className={`relative flex items-center px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-accent ${
-                dragColumnId === header.column.id ? 'opacity-40 bg-accent' : ''
-              } ${dropTargetId === header.column.id ? 'border-l-2 border-blue-500' : ''} ${
-                dragColumnId ? 'cursor-grabbing' : 'cursor-pointer'
-              }`}
-              style={{ width: header.getSize(), minWidth: header.column.columnDef.minSize }}
-              onClick={(e) => handleHeaderClick(e, header.column.getToggleSortingHandler())}
-              onMouseDown={(e) => handleHeaderMouseDown(e, header.column.id)}
-              onMouseUp={handleHeaderMouseUp}
-              onMouseLeave={cancelLongPress}
-            >
-              {flexRender(header.column.columnDef.header, header.getContext())}
-              {header.column.getIsSorted() === 'asc' && <ArrowUp size={12} className="ml-1" />}
-              {header.column.getIsSorted() === 'desc' && <ArrowDown size={12} className="ml-1" />}
-
-              {/* Resize handle */}
-              <div
-                onMouseDown={header.getResizeHandler()}
-                onTouchStart={header.getResizeHandler()}
-                onClick={(e) => e.stopPropagation()}
-                onDoubleClick={(e) => { e.stopPropagation(); handleResizeDoubleClick(header.column.id, header.index); }}
-                className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-500"
-              />
-            </div>
-          )),
-        )}
-      </div>
-
-      {/* Body */}
-      <div ref={parentRef} className="flex-1 overflow-auto select-none">
-        <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
-          {virtualizer.getVirtualItems().map((virtualRow) => {
-            const row = rows[virtualRow.index];
-            const isSelected = selectedIds.has(row.original.id);
-
-            return (
-              <div
-                key={row.id}
-                className={`absolute flex items-center w-full text-xs cursor-default border-b border-border/50 ${
-                  isSelected ? 'bg-primary/10' : 'hover:bg-accent/50'
-                } ${row.original.error > 0 ? 'text-red-500' : ''}`}
-                style={{
-                  height: virtualRow.size,
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-                onClick={(e) => handleRowClick(row.original.id, e)}
-                onContextMenu={(e) => handleContextMenu(row.original.id, e)}
-              >
-                {row.getVisibleCells().map((cell) => (
+      <div
+        ref={gridRef}
+        role="grid"
+        aria-label={t('app.torrentList')}
+        aria-rowcount={rows.length + 1}
+        aria-multiselectable="true"
+        aria-activedescendant={activeDescendant}
+        {...{ [FOCUS_FALLBACK_ATTRIBUTE]: '' }}
+        tabIndex={0}
+        onKeyDown={nav.onKeyDown}
+        onFocus={nav.onFocus}
+        onBlur={nav.onBlur}
+        className="flex min-h-0 flex-1 flex-col focus:outline-none"
+      >
+        {/* Header */}
+        <div
+          role="rowgroup"
+          ref={headerScrollRef}
+          className="overflow-hidden"
+          onScroll={(e) => syncScroll(e.currentTarget, parentRef.current)}
+        >
+          {/* The header context menu has keyboard equivalents (ContextMenu key on a header, the columns button). */}
+          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- focus lives on the column headers inside */}
+          <div
+            role="row"
+            aria-rowindex={1}
+            ref={headerRowRef}
+            className="flex border-b bg-muted/50 select-none"
+            style={{ minWidth: table.getTotalSize() }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setHeaderMenu({ x: e.clientX, y: e.clientY });
+            }}
+          >
+            {table.getHeaderGroups().map((headerGroup) =>
+              headerGroup.headers.map((header) => {
+                const sorted = header.column.getIsSorted();
+                return (
                   <div
-                    key={cell.id}
-                    className="px-2 truncate"
-                    style={{ width: cell.column.getSize(), minWidth: cell.column.columnDef.minSize }}
+                    key={header.id}
+                    role="columnheader"
+                    aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : 'none'}
+                    tabIndex={(headerTabId ?? visibleColumnIds[0]) === header.column.id ? 0 : -1}
+                    ref={(el) => {
+                      if (el) headerRefs.current.set(header.column.id, el);
+                      else headerRefs.current.delete(header.column.id);
+                    }}
+                    className={`relative flex items-center px-2 py-1 pointer-coarse:py-3 text-xs font-medium text-muted-foreground hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${
+                      dragColumnId === header.column.id ? 'opacity-40 bg-accent' : ''
+                    } ${dropTargetId === header.column.id ? 'border-l-2 border-info' : ''} ${
+                      dragColumnId ? 'cursor-grabbing' : 'cursor-pointer'
+                    }`}
+                    style={{ width: header.getSize(), minWidth: header.column.columnDef.minSize }}
+                    onClick={(e) => handleHeaderClick(e, header.column.getToggleSortingHandler())}
+                    onKeyDown={(e) => handleHeaderKeyDown(e, header)}
+                    onFocus={() => setHeaderTabId(header.column.id)}
+                    onMouseDown={(e) => handleHeaderMouseDown(e, header.column.id)}
+                    onMouseUp={handleHeaderMouseUp}
+                    onMouseLeave={cancelLongPress}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {sorted === 'asc' && <ArrowUp size={12} className="ml-1" aria-hidden="true" />}
+                    {sorted === 'desc' && <ArrowDown size={12} className="ml-1" aria-hidden="true" />}
+
+                    {/* Resize handle (pointer only; keyboard: Shift+Left/Right on the header) */}
+                    <div
+                      role="presentation"
+                      onMouseDown={header.getResizeHandler()}
+                      onTouchStart={header.getResizeHandler()}
+                      onClick={(e) => e.stopPropagation()}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        handleResizeDoubleClick(header.column.id, header.index);
+                      }}
+                      className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-info"
+                    />
                   </div>
-                ))}
-              </div>
-            );
-          })}
+                );
+              }),
+            )}
+            <div role="columnheader" className="sticky right-0 ml-auto flex items-center bg-muted">
+              <button
+                type="button"
+                aria-label={t('columnMenu.setupColumns')}
+                aria-haspopup="dialog"
+                onClick={(e) => openColumnsMenuAt(e.currentTarget)}
+                className="inline-flex h-full items-center px-1.5 text-muted-foreground hover:bg-accent hover:text-foreground pointer-coarse:min-w-11 pointer-coarse:justify-center"
+              >
+                <Columns3 size={14} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        {torrents.length === 0 && (
-          <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
-            {t('app.noTorrents')}
+        {/* Body */}
+        <div
+          ref={parentRef}
+          role="rowgroup"
+          className="min-h-0 flex-1 overflow-auto select-none"
+          onScroll={(e) => syncScroll(e.currentTarget, headerScrollRef.current)}
+        >
+          <div
+            role="presentation"
+            style={{ height: virtualizer.getTotalSize(), minWidth: table.getTotalSize(), position: 'relative' }}
+          >
+            {virtualItems.map((virtualRow) => {
+              const row = rows[virtualRow.index];
+              const isSelected = selectedIds.has(row.original.id);
+              const isActive = nav.focused && nav.activeId === row.original.id;
+
+              return (
+                // Pointer shortcuts only: the grid owns keyboard focus and handles every row key (useGridNavigation).
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
+                <div
+                  key={row.id}
+                  id={rowDomId(row.original.id)}
+                  role="row"
+                  aria-rowindex={virtualRow.index + 2}
+                  aria-selected={isSelected}
+                  className={`absolute flex items-center w-full text-xs cursor-default border-b border-border/50 ${
+                    isSelected ? 'bg-primary/10' : 'hover:bg-accent/50'
+                  } ${isActive ? 'outline-2 -outline-offset-2 outline-ring' : ''} ${row.original.error > 0 ? 'text-destructive-text' : ''}`}
+                  style={{
+                    height: virtualRow.size,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                  onClick={(e) => {
+                    nav.setActiveId(row.original.id);
+                    handleRowClick(row.original.id, e);
+                  }}
+                  onContextMenu={(e) => handleContextMenu(row.original.id, e)}
+                >
+                  {row.getVisibleCells().map((cell, cellIndex) => (
+                    <div
+                      key={cell.id}
+                      id={cellIndex === 0 ? cellDomId(row.original.id, 0) : undefined}
+                      role="gridcell"
+                      className="px-2 truncate"
+                      style={{ width: cell.column.getSize(), minWidth: cell.column.columnDef.minSize }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
           </div>
-        )}
+
+          {torrents.length === 0 && (
+            <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
+              {t('app.noTorrents')}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Context menu */}

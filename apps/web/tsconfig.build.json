@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "../../packages/shared/src/lib/i18n.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "e2e/**",
+    "../../packages/shared/src/**/*.test.ts",
+    "../../packages/shared/src/**/*.test.tsx",
+    "../../packages/shared/src/hooks/effect-harness.ts"
+  ]
+}

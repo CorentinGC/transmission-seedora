@@ -46,9 +46,19 @@ export function QueueTab({ settings: s }: Props) {
       <div>
         <h3 className="font-medium mb-2">{t('queueTab.downloadQueue')}</h3>
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={downloadQueueEnabled} onChange={(e) => setDownloadQueueEnabled(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={downloadQueueEnabled}
+            onChange={(e) => setDownloadQueueEnabled(e.target.checked)}
+          />
           {t('queueTab.maxDownloads')}
-          <input type="number" className="w-20 h-7 px-2 rounded border bg-background" value={downloadQueueSize} onChange={(e) => setDownloadQueueSize(Number(e.target.value))} disabled={!downloadQueueEnabled} />
+          <input
+            type="number"
+            className="w-20 h-7 px-2 rounded border bg-background"
+            value={downloadQueueSize}
+            onChange={(e) => setDownloadQueueSize(Number(e.target.value))}
+            disabled={!downloadQueueEnabled}
+          />
         </label>
       </div>
 
@@ -57,16 +67,32 @@ export function QueueTab({ settings: s }: Props) {
         <label className="flex items-center gap-2">
           <input type="checkbox" checked={seedQueueEnabled} onChange={(e) => setSeedQueueEnabled(e.target.checked)} />
           {t('queueTab.maxSeeds')}
-          <input type="number" className="w-20 h-7 px-2 rounded border bg-background" value={seedQueueSize} onChange={(e) => setSeedQueueSize(Number(e.target.value))} disabled={!seedQueueEnabled} />
+          <input
+            type="number"
+            className="w-20 h-7 px-2 rounded border bg-background"
+            value={seedQueueSize}
+            onChange={(e) => setSeedQueueSize(Number(e.target.value))}
+            disabled={!seedQueueEnabled}
+          />
         </label>
       </div>
 
       <div className="border-t pt-4">
         <h3 className="font-medium mb-2">{t('queueTab.stalledDetection')}</h3>
         <label className="flex items-center gap-2">
-          <input type="checkbox" checked={queueStalledEnabled} onChange={(e) => setQueueStalledEnabled(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={queueStalledEnabled}
+            onChange={(e) => setQueueStalledEnabled(e.target.checked)}
+          />
           {t('queueTab.idleMinutes')}
-          <input type="number" className="w-20 h-7 px-2 rounded border bg-background" value={queueStalledMinutes} onChange={(e) => setQueueStalledMinutes(Number(e.target.value))} disabled={!queueStalledEnabled} />
+          <input
+            type="number"
+            className="w-20 h-7 px-2 rounded border bg-background"
+            value={queueStalledMinutes}
+            onChange={(e) => setQueueStalledMinutes(Number(e.target.value))}
+            disabled={!queueStalledEnabled}
+          />
         </label>
       </div>
 
@@ -76,20 +102,42 @@ export function QueueTab({ settings: s }: Props) {
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={seedRatioLimited} onChange={(e) => setSeedRatioLimited(e.target.checked)} />
             {t('queueTab.stopAtRatio')}
-            <input type="number" step="0.1" className="w-20 h-7 px-2 rounded border bg-background" value={seedRatioLimit} onChange={(e) => setSeedRatioLimit(Number(e.target.value))} disabled={!seedRatioLimited} />
+            <input
+              type="number"
+              step="0.1"
+              className="w-20 h-7 px-2 rounded border bg-background"
+              value={seedRatioLimit}
+              onChange={(e) => setSeedRatioLimit(Number(e.target.value))}
+              disabled={!seedRatioLimited}
+            />
           </label>
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={idleSeedingLimitEnabled} onChange={(e) => setIdleSeedingLimitEnabled(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={idleSeedingLimitEnabled}
+              onChange={(e) => setIdleSeedingLimitEnabled(e.target.checked)}
+            />
             {t('queueTab.stopIfIdle')}
-            <input type="number" className="w-20 h-7 px-2 rounded border bg-background" value={idleSeedingLimit} onChange={(e) => setIdleSeedingLimit(Number(e.target.value))} disabled={!idleSeedingLimitEnabled} />
+            <input
+              type="number"
+              className="w-20 h-7 px-2 rounded border bg-background"
+              value={idleSeedingLimit}
+              onChange={(e) => setIdleSeedingLimit(Number(e.target.value))}
+              disabled={!idleSeedingLimitEnabled}
+            />
           </label>
         </div>
       </div>
 
       <div className="border-t pt-4 flex items-center gap-3">
-        <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={apply}>{t('dialog.apply')}</button>
-        {applyStatus === 'success' && <span className="text-xs text-green-600">{t('settings.applied')}</span>}
-        {applyStatus === 'error' && <span className="text-xs text-destructive">{t('settings.applyError')}</span>}
+        <button
+          className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90"
+          onClick={apply}
+        >
+          {t('dialog.apply')}
+        </button>
+        {applyStatus === 'success' && <span className="text-xs text-success">{t('settings.applied')}</span>}
+        {applyStatus === 'error' && <span className="text-xs text-destructive-text">{t('settings.applyError')}</span>}
       </div>
     </div>
   );

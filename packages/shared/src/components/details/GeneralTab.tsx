@@ -36,17 +36,21 @@ export function GeneralTab({ torrent: tor }: Props) {
       <InfoRow label={t('torrent.completed')} value={formatDate(tor.doneDate, relativeDates)} />
       <InfoRow label={t('torrent.lastActive')} value={formatDate(tor.activityDate, relativeDates)} />
       <InfoRow label={t('details.created')} value={formatDate(tor.dateCreated, relativeDates)} />
-      <InfoRow label={t('details.pieces')} value={tor.pieceCount > 0 ? t('details.piecesFormat', { count: tor.pieceCount, size: formatBytes(tor.pieceSize) }) : '0'} />
+      <InfoRow
+        label={t('details.pieces')}
+        value={
+          tor.pieceCount > 0
+            ? t('details.piecesFormat', { count: tor.pieceCount, size: formatBytes(tor.pieceSize) })
+            : '0'
+        }
+      />
       <InfoRow label={t('details.comment')} value={tor.comment} />
       <InfoRow label={t('details.creator')} value={tor.creator} />
       {tor.errorString && (
-        <InfoRow label={t('status.error')} value={tor.errorString} className="text-red-500" />
+        <InfoRow label={t('status.error')} value={tor.errorString} className="text-destructive-text" />
       )}
       <div className="col-span-2 mt-2">
-        <button
-          className="text-xs text-blue-500 hover:underline"
-          onClick={copyMagnet}
-        >
+        <button className="text-xs text-info hover:underline" onClick={copyMagnet}>
           {t('details.copyMagnet')}
         </button>
       </div>

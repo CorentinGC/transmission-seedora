@@ -1,0 +1,17 @@
+name: Setup Node and install
+description: Install Node and project dependencies from the lockfile (npm ci).
+
+inputs:
+  node-version:
+    description: Node.js version. Keep in sync with the beads issue seedora-transmission-tmx.
+    default: '22.18'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Install dependencies
+      shell: bash
+      run: npm ci --no-audit --no-fund

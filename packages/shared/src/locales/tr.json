@@ -5,7 +5,10 @@
     "selectTorrent": "Ayrıntıları görüntülemek için bir torrent seçin",
     "noTorrents": "Torrent yok",
     "yes": "Evet",
-    "no": "Hayır"
+    "no": "Hayır",
+    "close": "Kapat",
+    "torrentList": "Torrent’ler",
+    "resizePanel": "Paneli yeniden boyutlandır"
   },
   "toolbar": {
     "addTorrent": "Torrent Ekle",
@@ -19,17 +22,46 @@
     "detailsPanel": "Ayrıntı Panelini Aç/Kapat",
     "searchPlaceholder": "Torrent ara...",
     "preferences": "Tercihler",
-    "serverSettings": "Sunucu Ayarları"
+    "serverSettings": "Sunucu Ayarları",
+    "clearSearch": "Aramayı temizle",
+    "moreActions": "Diğer eylemler"
   },
   "statusBar": {
     "connected": "Bağlı",
     "connecting": "Bağlanıyor...",
     "disconnected": "Bağlantı kesildi",
+    "connectionError": "Bağlantı hatası",
     "activeTotal": "{{active}} aktif / {{total}} toplam",
     "disableAltSpeed": "Alternatif hızı devre dışı bırak",
     "enableAltSpeed": "Alternatif hızı etkinleştir",
     "alt": "Alt",
-    "freeSpace": "{{space}} boş"
+    "freeSpace": "{{space}} boş",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Disk alanı",
+    "totalFreeSpace": "Toplam boş alan",
+    "speedLimit": "Hız sınırı",
+    "limitSpeed": "Hızı sınırla",
+    "unlimited": "Sınırsız",
+    "kbs": "KB/s",
+    "setLimit": "Sınır belirle",
+    "downloadLimit": "İndirme hızı sınırı",
+    "uploadLimit": "Yükleme hızı sınırı"
+  },
+  "sessionStats": {
+    "title": "Oturum istatistikleri",
+    "currentSession": "Geçerli oturum",
+    "allTime": "Tüm zamanlar (kümülatif)",
+    "downloaded": "İndirilen",
+    "uploaded": "Yüklenen",
+    "ratio": "Oran",
+    "filesAdded": "Eklenen dosyalar",
+    "activeTime": "Etkin süre",
+    "downloadSpeed": "İndirme hızı",
+    "uploadSpeed": "Yükleme hızı",
+    "sessionCount": "Oturumlar",
+    "activeTorrents": "Etkin torrentler",
+    "pausedTorrents": "Duraklatılmış torrentler",
+    "totalTorrents": "Toplam torrent"
   },
   "filter": {
     "all": "Tümü",
@@ -80,7 +112,17 @@
     "downloaded": "İndirildi",
     "uploaded": "Gönderildi",
     "private": "Özel",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "İndirilecek boyut",
+    "sizeLeft": "Kalan boyut",
+    "connectedPeers": "Bağlı",
+    "seedingTime": "Tohumlama süresi",
+    "downloadingTime": "İndirme süresi",
+    "created": "Oluşturulma",
+    "comment": "Açıklama",
+    "fileCount": "Dosyalar",
+    "group": "Grup"
   },
   "priority": {
     "high": "Yüksek",
@@ -110,7 +152,10 @@
     "copied": "Kopyalandı!",
     "loadingFiles": "Dosyalar yükleniyor...",
     "noPeers": "Bağlı eş yok",
-    "doubleClickEdit": "Düzenlemek için çift tıklayın"
+    "doubleClickEdit": "Düzenlemek için çift tıklayın",
+    "loadFailed": "Ayrıntılar yüklenemedi: {{error}}",
+    "requestFailed": "İstek başarısız oldu",
+    "torrentNotFound": "Torrent bulunamadı"
   },
   "peersTab": {
     "address": "Adres",
@@ -118,13 +163,14 @@
     "flags": "Bayraklar",
     "progress": "İlerleme",
     "down": "İndirme",
-    "up": "Gönderme"
+    "up": "Gönderme",
+    "country": "Ülke"
   },
   "trackersTab": {
     "tier": "Seviye",
     "announceUrl": "Duyuru URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Kaynaklar",
+    "leechers": "Çekenler",
     "status": "Durum",
     "addPlaceholder": "İzleyici URL ekle...",
     "add": "Ekle",
@@ -133,7 +179,7 @@
     "cancel": "İptal",
     "remove": "Kaldır",
     "ok": "Tamam",
-    "na": "N/A"
+    "na": "Yok"
   },
   "optionsTab": {
     "bandwidth": "Bant Genişliği",
@@ -168,7 +214,8 @@
     "moveUp": "Yukarı Taşı",
     "moveDown": "Aşağı Taşı",
     "moveToBottom": "En Alta Taşı",
-    "remove": "Kaldır..."
+    "remove": "Kaldır...",
+    "title": "Torrent eylemleri"
   },
   "dialog": {
     "addTorrent": "Torrent Ekle",
@@ -189,7 +236,7 @@
     "add": "Ekle",
     "test": "Bağlantıyı Test Et",
     "browse": "Gözat...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / Magnet bağlantısı",
     "file": "Dosya",
     "urlOrMagnet": "URL veya Magnet Bağlantısı",
     "urlPlaceholder": "magnet:?xt= veya https://...",
@@ -210,12 +257,15 @@
     "editServer": "Sunucuyu Düzenle",
     "addServerTitle": "Sunucu Ekle",
     "noServer": "Sunucu yok",
+    "switcherLabel": "Sunucu değiştir",
     "serverName": "Ad",
     "serverNamePlaceholder": "Sunucum",
     "host": "Ana Bilgisayar",
     "port": "Port",
     "path": "RPC Yolu",
     "useSSL": "SSL/TLS Kullan",
+    "allowSelfSigned": "Kendinden imzalı sertifikayı kabul et",
+    "allowSelfSignedHint": "Bu sunucu için sertifika doğrulamasını devre dışı bırakır. Yalnızca güvendiğiniz bir sunucu için etkinleştirin.",
     "authentication": "Kimlik Doğrulama",
     "username": "Kullanıcı Adı",
     "password": "Şifre",
@@ -228,7 +278,23 @@
     "proxyUsername": "Vekil Sunucu Kullanıcı Adı",
     "proxyPassword": "Vekil Sunucu Şifresi",
     "testSuccess": "Başarılı",
-    "testFailed": "Başarısız"
+    "testFailed": "Başarısız",
+    "deleteServer": "Sil",
+    "deleteConfirm": "\"{{name}}\" sunucusu silinsin mi?",
+    "cannotDeleteActive": "Önce bağlantıyı kesin",
+    "exportServer": "Dışa aktar",
+    "exportAll": "Tümünü dışa aktar",
+    "importServers": "İçe aktar...",
+    "importSuccess": "{{added}} eklendi, {{skipped}} atlandı",
+    "importFailed": "İçe aktarma başarısız oldu.",
+    "saveFailed": "Sunucu kaydedilemedi. Değerleri kontrol edip tekrar deneyin.",
+    "exportPasswords": "Şifreleri dışa aktarmaya dahil et",
+    "exportPasswordsWarning": "Şifreler dosyaya düz metin olarak yazılır. Dosyayı gizli tutun.",
+    "webStorageWarning": "Web sürümünde sunucu şifreleri bu tarayıcıda şifrelenmeden saklanır. Bunları yalnızca güvendiğiniz bir cihaza girin.",
+    "passwordStored": "Şifre kaydedildi. Korumak için boş bırakın.",
+    "removeStoredPassword": "Kayıtlı parolayı kaldır",
+    "removeStoredProxyPassword": "Kayıtlı proxy parolasını kaldır",
+    "secretStorageUnencrypted": "Bu sistemde güvenli depolama kullanılamıyor: kayıtlı parolalar diskte şifrelenmeden saklanır."
   },
   "settings": {
     "applied": "Ayarlar uygulandı",
@@ -331,23 +397,179 @@
     "showNotifications": "Tamamlandığında bildirim göster",
     "display": "Görüntüleme",
     "relativeDates": "Göreli tarihler kullan",
-    "confirmOnAdd": "Torrent eklerken onay göster",
     "watchFolder": "İzleme Klasörü",
     "watchFolderEnabled": ".torrent dosyaları için bir klasör izle",
     "watchFolderPlaceholder": "/izlenecek/yol",
     "deleteWatchedTorrent": "Ekledikten sonra .torrent dosyasını sil",
-    "pathMappings": "Yol Eşlemeleri (Uzak → Yerel)",
-    "pathMappingsAdd": "Ekle",
-    "pathMappingsHelp": "\"Klasörü aç\" işlemleri için uzak arka plan hizmeti yollarını yerel yollara eşleyin.",
-    "remotePath": "Uzak yol",
-    "localPath": "Yerel yol"
+    "speedPresets": "Hız ön ayarları",
+    "speedPresetsHelp": "Durum çubuğu açılır penceresi için hızlı hız sınırı değerleri (KB/s).",
+    "addPreset": "Ekle",
+    "backup": "Yedekleme ve geri yükleme",
+    "exportBackup": "Yedeği dışa aktar",
+    "importBackup": "Yedeği içe aktar",
+    "exportBackupHelp": "Tüm sunucuları ve tercihleri bir JSON dosyasına aktarır.",
+    "importSuccess": "Yedek başarıyla geri yüklendi.",
+    "saveFailed": "Tercihler kaydedilemedi. Değerleri kontrol edip tekrar deneyin.",
+    "invalidValues": "Yenileme aralığı en az 250 ms olmalı ve hız ön ayarları sayı olmalıdır.",
+    "importFailed": "İçe aktarma başarısız oldu.",
+    "removePreset": "Hız ön ayarını kaldır"
+  },
+  "columnMenu": {
+    "setupColumns": "Sütunları ayarla"
   },
   "notification": {
-    "downloadComplete": "İndirme Tamamlandı"
+    "downloadComplete": "İndirme Tamamlandı",
+    "actionFailed": "İşlem başarısız oldu: {{error}}",
+    "refreshFailed": "Torrent'ler yenilenemedi: {{error}}",
+    "statsRefreshFailed": "Sunucu istatistikleri yenilenemedi: {{error}}",
+    "unknownError": "Bilinmeyen hata",
+    "dismiss": "Kapat",
+    "columnsSaveFailed": "Sütun düzeni kaydedilemedi.",
+    "serversLoadFailed": "Sunucu listesi yüklenemedi.",
+    "serverRemoveFailed": "Sunucu kaldırılamadı.",
+    "exportFailed": "Yapılandırma dışa aktarılamadı.",
+    "prefsLoadFailed": "Tercihleriniz yüklenemedi.",
+    "pickerFailed": "Dosya veya klasör seçici açılamadı.",
+    "fileReadFailed": "Seçilen dosya okunamadı.",
+    "renameFailed": "Torrent yeniden adlandırılamadı.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Seedora'nın başlatıldığı dosya veya bağlantı açılamadı."
   },
   "filesTab": {
     "clickToChangePriority": "Önceliği değiştirmek için tıklayın",
     "doNotDownload": "İndirme",
     "download": "İndir"
+  },
+  "errorBoundary": {
+    "title": "Bir şeyler ters gitti",
+    "description": "Uygulama beklenmeyen bir hatayla karşılaştı. Tekrar deneyebilir veya pencereyi yeniden yükleyebilirsiniz.",
+    "retry": "Tekrar dene",
+    "reload": "Yeniden yükle"
+  },
+  "format": {
+    "done": "Tamamlandı",
+    "justNow": "Az önce",
+    "perSecond": "{{size}}/sn",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} g",
+      "hours": "{{n}} sa",
+      "minutes": "{{n}} dk",
+      "seconds": "{{n}} sn"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Dosya",
+      "edit": "Düzen",
+      "view": "Görünüm",
+      "torrent": "Torrent",
+      "tools": "Araçlar",
+      "help": "Yardım",
+      "preferences": "Tercihler…",
+      "addTorrent": "Torrent ekle…",
+      "addMagnet": "Magnet bağlantısı ekle…",
+      "toggleFilter": "Filtre kenar çubuğunu aç/kapat",
+      "toggleDetails": "Ayrıntı panelini aç/kapat",
+      "start": "Başlat",
+      "stop": "Durdur",
+      "verify": "Doğrula",
+      "reannounce": "Yeniden duyur",
+      "startAll": "Tümünü başlat",
+      "stopAll": "Tümünü durdur",
+      "remove": "Kaldır…",
+      "serverSettings": "Sunucu ayarları…",
+      "rpcSpec": "Transmission RPC belirtimi",
+      "reportIssue": "Sorun bildir",
+      "about": "{{appName}} hakkında",
+      "hide": "{{appName}} uygulamasını gizle",
+      "hideOthers": "Diğerlerini gizle",
+      "unhide": "Tümünü göster",
+      "quit": "{{appName}} uygulamasından çık",
+      "close": "Pencereyi kapat",
+      "undo": "Geri al",
+      "redo": "Yinele",
+      "cut": "Kes",
+      "copy": "Kopyala",
+      "paste": "Yapıştır",
+      "selectAll": "Tümünü seç",
+      "reload": "Yeniden yükle",
+      "forceReload": "Zorla yeniden yükle",
+      "resetZoom": "Gerçek boyut",
+      "zoomIn": "Yakınlaştır",
+      "zoomOut": "Uzaklaştır",
+      "toggleFullscreen": "Tam ekranı aç/kapat"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} etkin aktarım",
+      "activeTransfers_other": "{{count}} etkin aktarım",
+      "enableAltSpeed": "Alternatif hızı etkinleştir",
+      "disableAltSpeed": "Alternatif hızı devre dışı bırak",
+      "showWindow": "Pencereyi göster",
+      "quit": "Çık"
+    },
+    "scriptGuard": {
+      "title": "Daemon'ın betik ayarları değiştirilsin mi?",
+      "message": "Seedora, Transmission daemon'ının sunucusunda bir program çalıştırmasına yol açan ayarları değiştirmek üzere.",
+      "detail": "{{changes}}\n\nYalnızca bu değişikliği kendiniz yaptıysanız devam edin.",
+      "allow": "İzin ver",
+      "cancel": "İptal",
+      "declined": "Betik ayarı değişikliği reddedildi."
+    },
+    "exportSecrets": {
+      "title": "Parolalar yedeğe dahil edilsin mi?",
+      "message": "Yedek dosyası sunucu ve proxy parolalarınızı düz metin olarak içerecek. Dosyayı okuyabilen herkes bunları kullanabilir.",
+      "allow": "Parolaları dahil et",
+      "cancel": "İptal",
+      "declined": "Parolaların dışa aktarılması reddedildi."
+    },
+    "configError": {
+      "title": "Yapılandırma sorunu",
+      "corrupt": "Seedora yapılandırma dosyasını okuyamadı ve varsayılan ayarlarla başladı. Okunamayan dosya şu adla kaydedildi:\n{{path}}",
+      "unreadable": "Seedora yapılandırma dosyasını okuyamıyor. Dosyaya dokunulmadı ve sorun giderilene kadar değişiklikler kaydedilmeyecek:\n{{path}}",
+      "passwordsLocked": "Bu sunucular için kayıtlı parola çözülemedi (sistem anahtar zinciri kilitli olabilir veya sıfırlanmış olabilir): {{names}}. Seedora’da her sunucuyu açın ve parolayı yeniden girin."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Geçersiz istek.",
+      "NO_SESSION": "Etkin sunucu yok. Bir sunucu seçip tekrar deneyin.",
+      "SESSION_UNAVAILABLE": "Oturum geri yüklenemedi. Çerezlerin etkin olduğunu kontrol edin.",
+      "RATE_LIMITED": "Çok fazla istek. Biraz sonra tekrar deneyin.",
+      "HOST_NOT_ALLOWED": "Bu ana bilgisayara izin verilmiyor.",
+      "DNS_FAILED": "Ana bilgisayar adı çözümlenemedi.",
+      "CONNECTION_FAILED": "Sunucuya bağlanılamadı.",
+      "TIMEOUT": "Sunucu zamanında yanıt vermedi.",
+      "TLS_FAILED": "Güvenli bağlantı başarısız oldu.",
+      "UNEXPECTED_REDIRECT": "Sunucu bir yönlendirmeyle yanıt verdi.",
+      "RESPONSE_TOO_LARGE": "Sunucu yanıtı çok büyük.",
+      "AUTH_FAILED": "Kimlik doğrulama başarısız oldu. Kullanıcı adını ve şifreyi kontrol edin.",
+      "HTTP_ERROR": "Sunucu bir hatayla yanıt verdi.",
+      "SESSION_ID_REJECTED": "Sunucu oturum kimliğini reddetti.",
+      "RPC_ERROR": "Sunucu bir hata bildirdi.",
+      "SERVER_MISCONFIGURED": "Web sunucusu doğru yapılandırılmamış.",
+      "SERVER_NOT_FOUND": "Sunucu bulunamadı.",
+      "IMPORT_INVALID": "İçe aktarma başarısız oldu: dosya geçerli bir Seedora yedeği değil."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Sunucu sertifikasına güvenilmiyor.",
+      "TLS_EXPIRED": "Sunucu sertifikasının süresi dolmuş.",
+      "TLS_HOSTNAME": "Sunucu sertifikası ana bilgisayar adıyla eşleşmiyor.",
+      "NETWORK": "Sunucuya ulaşılamadı.",
+      "TOO_LARGE": "Sunucu yanıtı çok büyük.",
+      "AUTH": "Kimlik doğrulama başarısız oldu. Kullanıcı adını ve şifreyi kontrol edin.",
+      "INVALID_RESPONSE": "Sunucu bir Transmission arka plan programı gibi yanıt vermedi.",
+      "SESSION": "Sunucu oturum el sıkışmasını reddetti.",
+      "RPC_FAILURE": "Sunucu bir hata bildirdi.",
+      "NO_CONNECTION": "Bağlı sunucu yok.",
+      "UNKNOWN": "Bilinmeyen bir hata oluştu."
+    }
   }
 }

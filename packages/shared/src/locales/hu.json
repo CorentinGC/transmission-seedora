@@ -5,7 +5,10 @@
     "selectTorrent": "Válasszon egy torrentet a részletek megtekintéséhez",
     "noTorrents": "Nincsenek torrentek",
     "yes": "Igen",
-    "no": "Nem"
+    "no": "Nem",
+    "close": "Bezárás",
+    "torrentList": "Torrentek",
+    "resizePanel": "Panel átméretezése"
   },
   "toolbar": {
     "addTorrent": "Torrent hozzáadása",
@@ -19,17 +22,46 @@
     "detailsPanel": "Részletek panel",
     "searchPlaceholder": "Torrentek keresése...",
     "preferences": "Beállítások",
-    "serverSettings": "Szerver beállítások"
+    "serverSettings": "Szerver beállítások",
+    "clearSearch": "Keresés törlése",
+    "moreActions": "További műveletek"
   },
   "statusBar": {
     "connected": "Csatlakozva",
     "connecting": "Csatlakozás...",
     "disconnected": "Leválasztva",
+    "connectionError": "Kapcsolódási hiba",
     "activeTotal": "{{active}} aktív / {{total}} összesen",
     "disableAltSpeed": "Alt. sebesség kikapcsolása",
     "enableAltSpeed": "Alt. sebesség bekapcsolása",
     "alt": "Alt",
-    "freeSpace": "{{space}} szabad"
+    "freeSpace": "{{space}} szabad",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Lemezterület",
+    "totalFreeSpace": "Teljes szabad hely",
+    "speedLimit": "Sebességkorlát",
+    "limitSpeed": "Sebesség korlátozása",
+    "unlimited": "Korlátlan",
+    "kbs": "KB/s",
+    "setLimit": "Korlát beállítása",
+    "downloadLimit": "Letöltési sebességkorlát",
+    "uploadLimit": "Feltöltési sebességkorlát"
+  },
+  "sessionStats": {
+    "title": "Munkamenet statisztikái",
+    "currentSession": "Jelenlegi munkamenet",
+    "allTime": "Összesen (halmozott)",
+    "downloaded": "Letöltve",
+    "uploaded": "Feltöltve",
+    "ratio": "Arány",
+    "filesAdded": "Hozzáadott fájlok",
+    "activeTime": "Aktív idő",
+    "downloadSpeed": "Letöltési sebesség",
+    "uploadSpeed": "Feltöltési sebesség",
+    "sessionCount": "Munkamenetek",
+    "activeTorrents": "Aktív torrentek",
+    "pausedTorrents": "Szüneteltetett torrentek",
+    "totalTorrents": "Torrentek összesen"
   },
   "filter": {
     "all": "Összes",
@@ -80,7 +112,17 @@
     "downloaded": "Letöltve",
     "uploaded": "Feltöltve",
     "private": "Privát",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Letöltendő méret",
+    "sizeLeft": "Hátralévő méret",
+    "connectedPeers": "Csatlakozva",
+    "seedingTime": "Seedelési idő",
+    "downloadingTime": "Letöltési idő",
+    "created": "Létrehozva",
+    "comment": "Megjegyzés",
+    "fileCount": "Fájlok",
+    "group": "Csoport"
   },
   "priority": {
     "high": "Magas",
@@ -110,7 +152,10 @@
     "copied": "Másolva!",
     "loadingFiles": "Fájlok betöltése...",
     "noPeers": "Nincs csatlakozott peer",
-    "doubleClickEdit": "Dupla kattintás a szerkesztéshez"
+    "doubleClickEdit": "Dupla kattintás a szerkesztéshez",
+    "loadFailed": "A részletek betöltése sikertelen: {{error}}",
+    "requestFailed": "A kérés sikertelen",
+    "torrentNotFound": "A torrent nem található"
   },
   "peersTab": {
     "address": "Cím",
@@ -118,13 +163,14 @@
     "flags": "Jelzők",
     "progress": "Folyamat",
     "down": "Letöltés",
-    "up": "Feltöltés"
+    "up": "Feltöltés",
+    "country": "Ország"
   },
   "trackersTab": {
     "tier": "Szint",
     "announceUrl": "Bejelentési URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Seedek",
+    "leechers": "Leecherek",
     "status": "Állapot",
     "addPlaceholder": "Tracker URL hozzáadása...",
     "add": "Hozzáadás",
@@ -133,7 +179,7 @@
     "cancel": "Mégse",
     "remove": "Eltávolítás",
     "ok": "OK",
-    "na": "N/A"
+    "na": "n.a."
   },
   "optionsTab": {
     "bandwidth": "Sávszélesség",
@@ -168,7 +214,8 @@
     "moveUp": "Feljebb",
     "moveDown": "Lejjebb",
     "moveToBottom": "Végére",
-    "remove": "Eltávolítás..."
+    "remove": "Eltávolítás...",
+    "title": "Torrent műveletek"
   },
   "dialog": {
     "addTorrent": "Torrent hozzáadása",
@@ -189,7 +236,7 @@
     "add": "Hozzáadás",
     "test": "Kapcsolat tesztelése",
     "browse": "Tallózás...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnet hivatkozás",
     "file": "Fájl",
     "urlOrMagnet": "URL vagy Magnet link",
     "urlPlaceholder": "magnet:?xt= vagy https://...",
@@ -210,12 +257,15 @@
     "editServer": "Szerver szerkesztése",
     "addServerTitle": "Szerver hozzáadása",
     "noServer": "Nincs szerver",
+    "switcherLabel": "Szerverváltás",
     "serverName": "Név",
     "serverNamePlaceholder": "Saját szerver",
     "host": "Kiszolgáló",
     "port": "Port",
     "path": "RPC útvonal",
     "useSSL": "SSL/TLS használata",
+    "allowSelfSigned": "Önaláírt tanúsítvány elfogadása",
+    "allowSelfSignedHint": "Kikapcsolja a tanúsítvány ellenőrzését ennél a kiszolgálónál. Csak megbízható kiszolgálónál kapcsold be.",
     "authentication": "Hitelesítés",
     "username": "Felhasználónév",
     "password": "Jelszó",
@@ -228,7 +278,23 @@
     "proxyUsername": "Proxy felhasználónév",
     "proxyPassword": "Proxy jelszó",
     "testSuccess": "Sikeres",
-    "testFailed": "Sikertelen"
+    "testFailed": "Sikertelen",
+    "deleteServer": "Törlés",
+    "deleteConfirm": "Törli a(z) „{{name}}” szervert?",
+    "cannotDeleteActive": "Előbb szakítsa meg a kapcsolatot",
+    "exportServer": "Exportálás",
+    "exportAll": "Összes exportálása",
+    "importServers": "Importálás...",
+    "importSuccess": "{{added}} hozzáadva, {{skipped}} kihagyva",
+    "importFailed": "Az importálás sikertelen.",
+    "saveFailed": "Nem sikerült menteni a szervert. Ellenőrizze az értékeket, és próbálja újra.",
+    "exportPasswords": "Jelszavak belefoglalása az exportba",
+    "exportPasswordsWarning": "A jelszavak egyszerű szövegként kerülnek a fájlba. Kezelje bizalmasan a fájlt.",
+    "webStorageWarning": "A webes verzióban a szerverjelszavak titkosítatlanul tárolódnak ebben a böngészőben. Csak megbízható eszközön adja meg őket.",
+    "passwordStored": "Jelszó mentve. Hagyja üresen a megtartásához.",
+    "removeStoredPassword": "Mentett jelszó eltávolítása",
+    "removeStoredProxyPassword": "Mentett proxyjelszó eltávolítása",
+    "secretStorageUnencrypted": "A biztonságos tároló nem érhető el ezen a rendszeren: a mentett jelszavak titkosítatlanul kerülnek a lemezre."
   },
   "settings": {
     "applied": "Beállítások alkalmazva",
@@ -331,23 +397,179 @@
     "showNotifications": "Értesítések megjelenítése befejezéskor",
     "display": "Megjelenítés",
     "relativeDates": "Relatív dátumok használata",
-    "confirmOnAdd": "Megerősítés kérése torrent hozzáadásakor",
     "watchFolder": "Figyelt mappa",
     "watchFolderEnabled": "Mappa figyelése .torrent fájlokra",
     "watchFolderPlaceholder": "/útvonal/a/mappához",
     "deleteWatchedTorrent": ".torrent fájl törlése hozzáadás után",
-    "pathMappings": "Útvonal leképezések (Távoli → Helyi)",
-    "pathMappingsAdd": "Hozzáadás",
-    "pathMappingsHelp": "Távoli daemon útvonalak leképezése helyi útvonalakra a \"Mappa megnyitása\" művelethez.",
-    "remotePath": "Távoli útvonal",
-    "localPath": "Helyi útvonal"
+    "speedPresets": "Sebesség-előbeállítások",
+    "speedPresetsHelp": "Gyors sebességkorlát-értékek (KB/s) az állapotsor felugró ablakához.",
+    "addPreset": "Hozzáadás",
+    "backup": "Mentés és visszaállítás",
+    "exportBackup": "Mentés exportálása",
+    "importBackup": "Mentés importálása",
+    "exportBackupHelp": "Az összes szerver és beállítás exportálása JSON-fájlba.",
+    "importSuccess": "A mentés sikeresen visszaállítva.",
+    "saveFailed": "A beállítások mentése sikertelen. Ellenőrizze az értékeket, és próbálja újra.",
+    "invalidValues": "A frissítési időköznek legalább 250 ms-nak kell lennie, a sebesség-előbeállításoknak pedig számoknak kell lenniük.",
+    "importFailed": "Az importálás sikertelen.",
+    "removePreset": "Sebesség-előbeállítás eltávolítása"
+  },
+  "columnMenu": {
+    "setupColumns": "Oszlopok beállítása"
   },
   "notification": {
-    "downloadComplete": "Letöltés befejezve"
+    "downloadComplete": "Letöltés befejezve",
+    "actionFailed": "A művelet sikertelen: {{error}}",
+    "refreshFailed": "A torrentek frissítése sikertelen: {{error}}",
+    "statsRefreshFailed": "Nem sikerült frissíteni a kiszolgáló statisztikáit: {{error}}",
+    "unknownError": "Ismeretlen hiba",
+    "dismiss": "Bezárás",
+    "columnsSaveFailed": "Nem sikerült menteni az oszlopelrendezést.",
+    "serversLoadFailed": "Nem sikerült betölteni a szerverlistát.",
+    "serverRemoveFailed": "Nem sikerült eltávolítani a szervert.",
+    "exportFailed": "Nem sikerült exportálni a konfigurációt.",
+    "prefsLoadFailed": "Nem sikerült betölteni a beállításokat.",
+    "pickerFailed": "Nem sikerült megnyitni a fájl- vagy mappaválasztót.",
+    "fileReadFailed": "Nem sikerült beolvasni a kiválasztott fájlt.",
+    "renameFailed": "Nem sikerült átnevezni a torrentet.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Nem sikerült megnyitni a fájlt vagy hivatkozást, amellyel a Seedora elindult."
   },
   "filesTab": {
     "clickToChangePriority": "Kattintson a prioritás módosításához",
     "doNotDownload": "Ne töltse le",
     "download": "Letöltés"
+  },
+  "errorBoundary": {
+    "title": "Hiba történt",
+    "description": "Az alkalmazás váratlan hibába ütközött. Próbálja újra, vagy töltse újra az ablakot.",
+    "retry": "Újrapróbálás",
+    "reload": "Újratöltés"
+  },
+  "format": {
+    "done": "Kész",
+    "justNow": "Épp most",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} n",
+      "hours": "{{n}} ó",
+      "minutes": "{{n}} p",
+      "seconds": "{{n}} mp"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Fájl",
+      "edit": "Szerkesztés",
+      "view": "Nézet",
+      "torrent": "Torrent",
+      "tools": "Eszközök",
+      "help": "Súgó",
+      "preferences": "Beállítások…",
+      "addTorrent": "Torrent hozzáadása…",
+      "addMagnet": "Magnet-hivatkozás hozzáadása…",
+      "toggleFilter": "Szűrő oldalsáv be/ki",
+      "toggleDetails": "Részletek panel be/ki",
+      "start": "Indítás",
+      "stop": "Leállítás",
+      "verify": "Ellenőrzés",
+      "reannounce": "Újrabejelentés",
+      "startAll": "Összes indítása",
+      "stopAll": "Összes leállítása",
+      "remove": "Eltávolítás…",
+      "serverSettings": "Kiszolgáló beállításai…",
+      "rpcSpec": "Transmission RPC-specifikáció",
+      "reportIssue": "Hiba jelentése",
+      "about": "A(z) {{appName}} névjegye",
+      "hide": "{{appName}} elrejtése",
+      "hideOthers": "Többi elrejtése",
+      "unhide": "Összes megjelenítése",
+      "quit": "Kilépés: {{appName}}",
+      "close": "Ablak bezárása",
+      "undo": "Visszavonás",
+      "redo": "Újra",
+      "cut": "Kivágás",
+      "copy": "Másolás",
+      "paste": "Beillesztés",
+      "selectAll": "Összes kijelölése",
+      "reload": "Újratöltés",
+      "forceReload": "Kényszerített újratöltés",
+      "resetZoom": "Tényleges méret",
+      "zoomIn": "Nagyítás",
+      "zoomOut": "Kicsinyítés",
+      "toggleFullscreen": "Teljes képernyő be/ki"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} aktív átvitel",
+      "activeTransfers_other": "{{count}} aktív átvitel",
+      "enableAltSpeed": "Alternatív sebesség engedélyezése",
+      "disableAltSpeed": "Alternatív sebesség letiltása",
+      "showWindow": "Ablak megjelenítése",
+      "quit": "Kilépés"
+    },
+    "scriptGuard": {
+      "title": "Módosítja a démon szkriptbeállításait?",
+      "message": "A Seedora olyan beállításokat készül módosítani, amelyek hatására a Transmission démon programot futtat a kiszolgálóján.",
+      "detail": "{{changes}}\n\nCsak akkor folytassa, ha ezt a módosítást Ön végezte.",
+      "allow": "Engedélyezés",
+      "cancel": "Mégse",
+      "declined": "A szkriptbeállítások módosítását elutasították."
+    },
+    "exportSecrets": {
+      "title": "Szerepeljenek a jelszavak a biztonsági mentésben?",
+      "message": "A mentési fájl a kiszolgálók és proxyk jelszavait egyszerű szövegként tartalmazza. Bárki, aki el tudja olvasni a fájlt, felhasználhatja azokat.",
+      "allow": "Jelszavak felvétele",
+      "cancel": "Mégse",
+      "declined": "A jelszavak exportálását elutasították."
+    },
+    "configError": {
+      "title": "Konfigurációs probléma",
+      "corrupt": "A Seedora nem tudta beolvasni a konfigurációs fájlját, ezért az alapértelmezett beállításokkal indult. Az olvashatatlan fájl a következő néven lett mentve:\n{{path}}",
+      "unreadable": "A Seedora nem tudja beolvasni a konfigurációs fájlját. A fájlt érintetlenül hagytuk, a módosítások pedig a probléma megoldásáig nem kerülnek mentésre:\n{{path}}",
+      "passwordsLocked": "A kiszolgálók mentett jelszavát nem sikerült visszafejteni (a rendszer kulcstartója lehet, hogy zárolva van, vagy alaphelyzetbe állt): {{names}}. Nyissa meg az egyes kiszolgálókat a Seedora alkalmazásban, és adja meg újra a jelszót."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Érvénytelen kérés.",
+      "NO_SESSION": "Nincs aktív szerver. Válasszon egy szervert, és próbálja újra.",
+      "SESSION_UNAVAILABLE": "A munkamenetet nem sikerült visszaállítani. Ellenőrizze, hogy a sütik engedélyezve vannak-e.",
+      "RATE_LIMITED": "Túl sok kérés. Próbálja újra rövidesen.",
+      "HOST_NOT_ALLOWED": "Ez a kiszolgáló nem engedélyezett.",
+      "DNS_FAILED": "A gazdagépnév nem oldható fel.",
+      "CONNECTION_FAILED": "Nem sikerült csatlakozni a szerverhez.",
+      "TIMEOUT": "A szerver nem válaszolt időben.",
+      "TLS_FAILED": "A biztonságos kapcsolat sikertelen.",
+      "UNEXPECTED_REDIRECT": "A szerver átirányítással válaszolt.",
+      "RESPONSE_TOO_LARGE": "A szerver válasza túl nagy.",
+      "AUTH_FAILED": "A hitelesítés sikertelen. Ellenőrizze a felhasználónevet és a jelszót.",
+      "HTTP_ERROR": "A szerver hibával válaszolt.",
+      "SESSION_ID_REJECTED": "A szerver elutasította a munkamenet-azonosítót.",
+      "RPC_ERROR": "A szerver hibát jelzett.",
+      "SERVER_MISCONFIGURED": "A webszerver konfigurációja hibás.",
+      "SERVER_NOT_FOUND": "A szerver nem található.",
+      "IMPORT_INVALID": "Az importálás sikertelen: a fájl nem érvényes Seedora-mentés."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "A szerver tanúsítványa nem megbízható.",
+      "TLS_EXPIRED": "A szerver tanúsítványa lejárt.",
+      "TLS_HOSTNAME": "A szerver tanúsítványa nem egyezik a gazdagépnévvel.",
+      "NETWORK": "A szerver nem érhető el.",
+      "TOO_LARGE": "A szerver válasza túl nagy.",
+      "AUTH": "A hitelesítés sikertelen. Ellenőrizze a felhasználónevet és a jelszót.",
+      "INVALID_RESPONSE": "A szerver nem úgy válaszolt, mint egy Transmission-démon.",
+      "SESSION": "A szerver elutasította a munkamenet kézfogását.",
+      "RPC_FAILURE": "A szerver hibát jelzett.",
+      "NO_CONNECTION": "Nincs csatlakoztatott szerver.",
+      "UNKNOWN": "Ismeretlen hiba történt."
+    }
   }
 }

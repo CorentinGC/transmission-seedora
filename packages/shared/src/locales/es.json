@@ -5,7 +5,10 @@
     "selectTorrent": "Selecciona un torrent para ver los detalles",
     "noTorrents": "No hay torrents",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "close": "Cerrar",
+    "torrentList": "Torrents",
+    "resizePanel": "Redimensionar panel"
   },
   "toolbar": {
     "addTorrent": "Añadir torrent",
@@ -19,17 +22,46 @@
     "detailsPanel": "Mostrar/ocultar panel de detalles",
     "searchPlaceholder": "Buscar torrents...",
     "preferences": "Preferencias",
-    "serverSettings": "Configuración del servidor"
+    "serverSettings": "Configuración del servidor",
+    "clearSearch": "Borrar búsqueda",
+    "moreActions": "Más acciones"
   },
   "statusBar": {
     "connected": "Conectado",
     "connecting": "Conectando...",
     "disconnected": "Desconectado",
+    "connectionError": "Error de conexión",
     "activeTotal": "{{active}} activos / {{total}} en total",
     "disableAltSpeed": "Desactivar velocidad alternativa",
     "enableAltSpeed": "Activar velocidad alternativa",
     "alt": "Alt",
-    "freeSpace": "{{space}} libre"
+    "freeSpace": "{{space}} libre",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Espacio en disco",
+    "totalFreeSpace": "Espacio libre total",
+    "speedLimit": "Límite de velocidad",
+    "limitSpeed": "Limitar velocidad",
+    "unlimited": "Sin límite",
+    "kbs": "KB/s",
+    "setLimit": "Establecer límite",
+    "downloadLimit": "Límite de velocidad de descarga",
+    "uploadLimit": "Límite de velocidad de subida"
+  },
+  "sessionStats": {
+    "title": "Estadísticas de la sesión",
+    "currentSession": "Sesión actual",
+    "allTime": "Total (acumulado)",
+    "downloaded": "Descargado",
+    "uploaded": "Subido",
+    "ratio": "Ratio",
+    "filesAdded": "Archivos añadidos",
+    "activeTime": "Tiempo activo",
+    "downloadSpeed": "Velocidad de descarga",
+    "uploadSpeed": "Velocidad de subida",
+    "sessionCount": "Sesiones",
+    "activeTorrents": "Torrents activos",
+    "pausedTorrents": "Torrents en pausa",
+    "totalTorrents": "Total de torrents"
   },
   "filter": {
     "all": "Todos",
@@ -80,7 +112,17 @@
     "downloaded": "Descargado",
     "uploaded": "Subido",
     "private": "Privado",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Tamaño a descargar",
+    "sizeLeft": "Tamaño restante",
+    "connectedPeers": "Conectados",
+    "seedingTime": "Tiempo de siembra",
+    "downloadingTime": "Tiempo de descarga",
+    "created": "Creado",
+    "comment": "Comentario",
+    "fileCount": "Archivos",
+    "group": "Grupo"
   },
   "priority": {
     "high": "Alta",
@@ -110,15 +152,19 @@
     "copied": "¡Copiado!",
     "loadingFiles": "Cargando archivos...",
     "noPeers": "No hay peers conectados",
-    "doubleClickEdit": "Doble clic para editar"
+    "doubleClickEdit": "Doble clic para editar",
+    "loadFailed": "No se pudieron cargar los detalles: {{error}}",
+    "requestFailed": "La solicitud falló",
+    "torrentNotFound": "Torrent no encontrado"
   },
   "peersTab": {
     "address": "Dirección",
     "client": "Cliente",
-    "flags": "Flags",
+    "flags": "Indicadores",
     "progress": "Progreso",
     "down": "Bajada",
-    "up": "Subida"
+    "up": "Subida",
+    "country": "País"
   },
   "trackersTab": {
     "tier": "Nivel",
@@ -168,7 +214,8 @@
     "moveUp": "Subir",
     "moveDown": "Bajar",
     "moveToBottom": "Mover al final",
-    "remove": "Eliminar..."
+    "remove": "Eliminar...",
+    "title": "Acciones del torrent"
   },
   "dialog": {
     "addTorrent": "Añadir torrent",
@@ -189,7 +236,7 @@
     "add": "Añadir",
     "test": "Probar conexión",
     "browse": "Examinar...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / enlace magnet",
     "file": "Archivo",
     "urlOrMagnet": "URL o enlace Magnet",
     "urlPlaceholder": "magnet:?xt= o https://...",
@@ -210,12 +257,15 @@
     "editServer": "Editar servidor",
     "addServerTitle": "Añadir servidor",
     "noServer": "Sin servidor",
+    "switcherLabel": "Cambiar de servidor",
     "serverName": "Nombre",
     "serverNamePlaceholder": "Mi servidor",
     "host": "Host",
     "port": "Puerto",
     "path": "Ruta RPC",
     "useSSL": "Usar SSL/TLS",
+    "allowSelfSigned": "Aceptar certificado autofirmado",
+    "allowSelfSignedHint": "Desactiva la verificación del certificado de este servidor. Actívalo solo para un servidor de confianza.",
     "authentication": "Autenticación",
     "username": "Usuario",
     "password": "Contraseña",
@@ -228,7 +278,23 @@
     "proxyUsername": "Usuario del proxy",
     "proxyPassword": "Contraseña del proxy",
     "testSuccess": "Éxito",
-    "testFailed": "Fallido"
+    "testFailed": "Fallido",
+    "deleteServer": "Eliminar",
+    "deleteConfirm": "¿Eliminar el servidor «{{name}}»?",
+    "cannotDeleteActive": "Desconecte primero",
+    "exportServer": "Exportar",
+    "exportAll": "Exportar todo",
+    "importServers": "Importar...",
+    "importSuccess": "{{added}} añadidos, {{skipped}} omitidos",
+    "importFailed": "Error al importar.",
+    "saveFailed": "No se pudo guardar el servidor. Comprueba los valores e inténtalo de nuevo.",
+    "exportPasswords": "Incluir las contraseñas en la exportación",
+    "exportPasswordsWarning": "Las contraseñas se escriben en el archivo en texto sin cifrar. Mantén el archivo en privado.",
+    "webStorageWarning": "En la versión web, las contraseñas de los servidores se guardan sin cifrar en este navegador. Introdúcelas solo en un dispositivo de confianza.",
+    "passwordStored": "Contraseña guardada. Déjalo vacío para conservarla.",
+    "removeStoredPassword": "Eliminar la contraseña guardada",
+    "removeStoredProxyPassword": "Eliminar la contraseña del proxy guardada",
+    "secretStorageUnencrypted": "El almacenamiento seguro no está disponible en este sistema: las contraseñas guardadas se almacenan sin cifrar en el disco."
   },
   "settings": {
     "applied": "Ajustes aplicados",
@@ -331,23 +397,179 @@
     "showNotifications": "Mostrar notificaciones al completar",
     "display": "Visualización",
     "relativeDates": "Usar fechas relativas",
-    "confirmOnAdd": "Mostrar confirmación al añadir torrents",
     "watchFolder": "Carpeta vigilada",
     "watchFolderEnabled": "Vigilar una carpeta en busca de archivos .torrent",
     "watchFolderPlaceholder": "/ruta/a/vigilar",
     "deleteWatchedTorrent": "Eliminar archivo .torrent después de añadir",
-    "pathMappings": "Mapeo de rutas (Remoto → Local)",
-    "pathMappingsAdd": "Añadir",
-    "pathMappingsHelp": "Mapear rutas del daemon remoto a rutas locales para acciones de \"Abrir carpeta\".",
-    "remotePath": "Ruta remota",
-    "localPath": "Ruta local"
+    "speedPresets": "Preajustes de velocidad",
+    "speedPresetsHelp": "Valores rápidos de límite de velocidad (KB/s) para el menú emergente de la barra de estado.",
+    "addPreset": "Añadir",
+    "backup": "Copia de seguridad y restauración",
+    "exportBackup": "Exportar copia de seguridad",
+    "importBackup": "Importar copia de seguridad",
+    "exportBackupHelp": "Exporta todos los servidores y preferencias a un archivo JSON.",
+    "importSuccess": "Copia de seguridad restaurada correctamente.",
+    "saveFailed": "No se pudieron guardar las preferencias. Revise los valores e inténtelo de nuevo.",
+    "invalidValues": "El intervalo de actualización debe ser de al menos 250 ms y los ajustes de velocidad deben ser números.",
+    "importFailed": "Error al importar.",
+    "removePreset": "Quitar preajuste de velocidad"
+  },
+  "columnMenu": {
+    "setupColumns": "Configurar columnas"
   },
   "notification": {
-    "downloadComplete": "Descarga completada"
+    "downloadComplete": "Descarga completada",
+    "actionFailed": "La acción falló: {{error}}",
+    "refreshFailed": "No se pudieron actualizar los torrents: {{error}}",
+    "statsRefreshFailed": "No se pudieron actualizar las estadísticas del servidor: {{error}}",
+    "unknownError": "Error desconocido",
+    "dismiss": "Descartar",
+    "columnsSaveFailed": "No se pudo guardar la disposición de las columnas.",
+    "serversLoadFailed": "No se pudo cargar la lista de servidores.",
+    "serverRemoveFailed": "No se pudo eliminar el servidor.",
+    "exportFailed": "No se pudo exportar la configuración.",
+    "prefsLoadFailed": "No se pudieron cargar tus preferencias.",
+    "pickerFailed": "No se pudo abrir el selector de archivos o carpetas.",
+    "fileReadFailed": "No se pudo leer el archivo seleccionado.",
+    "renameFailed": "No se pudo cambiar el nombre del torrent.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "No se pudo abrir el archivo o enlace con el que se inició Seedora."
   },
   "filesTab": {
     "clickToChangePriority": "Clic para cambiar la prioridad",
     "doNotDownload": "No descargar",
     "download": "Descargar"
+  },
+  "errorBoundary": {
+    "title": "Algo salió mal",
+    "description": "La aplicación encontró un error inesperado. Puedes intentarlo de nuevo o recargar la ventana.",
+    "retry": "Reintentar",
+    "reload": "Recargar"
+  },
+  "format": {
+    "done": "Completado",
+    "justNow": "Ahora mismo",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} d",
+      "hours": "{{n}} h",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Archivo",
+      "edit": "Edición",
+      "view": "Ver",
+      "torrent": "Torrent",
+      "tools": "Herramientas",
+      "help": "Ayuda",
+      "preferences": "Preferencias…",
+      "addTorrent": "Añadir torrent…",
+      "addMagnet": "Añadir enlace magnet…",
+      "toggleFilter": "Mostrar/ocultar barra de filtros",
+      "toggleDetails": "Mostrar/ocultar panel de detalles",
+      "start": "Iniciar",
+      "stop": "Detener",
+      "verify": "Verificar",
+      "reannounce": "Reanunciar",
+      "startAll": "Iniciar todo",
+      "stopAll": "Detener todo",
+      "remove": "Eliminar…",
+      "serverSettings": "Ajustes del servidor…",
+      "rpcSpec": "Especificación RPC de Transmission",
+      "reportIssue": "Informar de un problema",
+      "about": "Acerca de {{appName}}",
+      "hide": "Ocultar {{appName}}",
+      "hideOthers": "Ocultar otros",
+      "unhide": "Mostrar todo",
+      "quit": "Salir de {{appName}}",
+      "close": "Cerrar ventana",
+      "undo": "Deshacer",
+      "redo": "Rehacer",
+      "cut": "Cortar",
+      "copy": "Copiar",
+      "paste": "Pegar",
+      "selectAll": "Seleccionar todo",
+      "reload": "Recargar",
+      "forceReload": "Forzar recarga",
+      "resetZoom": "Tamaño real",
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "toggleFullscreen": "Alternar pantalla completa"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} transferencia activa",
+      "activeTransfers_other": "{{count}} transferencias activas",
+      "enableAltSpeed": "Activar velocidad alternativa",
+      "disableAltSpeed": "Desactivar velocidad alternativa",
+      "showWindow": "Mostrar ventana",
+      "quit": "Salir"
+    },
+    "scriptGuard": {
+      "title": "¿Cambiar los ajustes de script del daemon?",
+      "message": "Seedora está a punto de cambiar ajustes que hacen que el daemon de Transmission ejecute un programa en su servidor.",
+      "detail": "{{changes}}\n\nContinúa solo si has hecho este cambio tú mismo.",
+      "allow": "Permitir",
+      "cancel": "Cancelar",
+      "declined": "Se rechazó el cambio de los ajustes de script."
+    },
+    "exportSecrets": {
+      "title": "¿Incluir las contraseñas en la copia de seguridad?",
+      "message": "El archivo de copia de seguridad contendrá las contraseñas de tus servidores y proxies en texto sin cifrar. Cualquiera que pueda leer el archivo podrá usarlas.",
+      "allow": "Incluir contraseñas",
+      "cancel": "Cancelar",
+      "declined": "Se rechazó la exportación de las contraseñas."
+    },
+    "configError": {
+      "title": "Problema de configuración",
+      "corrupt": "Seedora no pudo leer su archivo de configuración y se inició con los ajustes predeterminados. El archivo ilegible se guardó como:\n{{path}}",
+      "unreadable": "Seedora no puede leer su archivo de configuración. El archivo no se modificó y los cambios no se guardarán hasta que se resuelva el problema:\n{{path}}",
+      "passwordsLocked": "No se pudo descifrar la contraseña guardada de estos servidores (es posible que el llavero del sistema esté bloqueado o se haya restablecido): {{names}}. Abre cada servidor en Seedora e introduce de nuevo su contraseña."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Solicitud no válida.",
+      "NO_SESSION": "No hay ningún servidor activo. Selecciona un servidor e inténtalo de nuevo.",
+      "SESSION_UNAVAILABLE": "No se pudo restaurar la sesión. Comprueba que las cookies estén activadas.",
+      "RATE_LIMITED": "Demasiadas solicitudes. Inténtalo de nuevo en unos instantes.",
+      "HOST_NOT_ALLOWED": "Este host no está permitido.",
+      "DNS_FAILED": "No se pudo resolver el nombre del host.",
+      "CONNECTION_FAILED": "No se pudo conectar con el servidor.",
+      "TIMEOUT": "El servidor no respondió a tiempo.",
+      "TLS_FAILED": "Falló la conexión segura.",
+      "UNEXPECTED_REDIRECT": "El servidor respondió con una redirección.",
+      "RESPONSE_TOO_LARGE": "La respuesta del servidor es demasiado grande.",
+      "AUTH_FAILED": "Falló la autenticación. Comprueba el nombre de usuario y la contraseña.",
+      "HTTP_ERROR": "El servidor respondió con un error.",
+      "SESSION_ID_REJECTED": "El servidor rechazó el ID de sesión.",
+      "RPC_ERROR": "El servidor notificó un error.",
+      "SERVER_MISCONFIGURED": "El servidor web no está configurado correctamente.",
+      "SERVER_NOT_FOUND": "Servidor no encontrado.",
+      "IMPORT_INVALID": "Error al importar: el archivo no es una copia de seguridad válida de Seedora."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "El certificado del servidor no es de confianza.",
+      "TLS_EXPIRED": "El certificado del servidor ha caducado.",
+      "TLS_HOSTNAME": "El certificado del servidor no coincide con el nombre del host.",
+      "NETWORK": "No se pudo acceder al servidor.",
+      "TOO_LARGE": "La respuesta del servidor es demasiado grande.",
+      "AUTH": "Falló la autenticación. Comprueba el nombre de usuario y la contraseña.",
+      "INVALID_RESPONSE": "El servidor no respondió como un demonio de Transmission.",
+      "SESSION": "El servidor rechazó el establecimiento de la sesión.",
+      "RPC_FAILURE": "El servidor notificó un error.",
+      "NO_CONNECTION": "No hay ningún servidor conectado.",
+      "UNKNOWN": "Se produjo un error desconocido."
+    }
   }
 }
