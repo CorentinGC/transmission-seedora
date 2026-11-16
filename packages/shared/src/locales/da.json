@@ -573,7 +573,9 @@
       "SESSION": "Serveren afviste sessionshåndtrykket.",
       "RPC_FAILURE": "Serveren rapporterede en fejl.",
       "NO_CONNECTION": "Ingen server er forbundet.",
-      "UNKNOWN": "Der opstod en ukendt fejl."
+      "UNKNOWN": "Der opstod en ukendt fejl.",
+      "SECRET_STORE_FAILED": "Systemets nøglering afviste adgang, så adgangskoden blev ikke gemt. Lås nøgleringen op, og prøv igen.",
+      "CONFIG_UNWRITABLE": "Konfigurationsfilen kan ikke læses, så intet blev gemt. Ret eller fjern filen, og prøv igen."
     }
   }
 }

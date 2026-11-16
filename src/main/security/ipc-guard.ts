@@ -1,6 +1,7 @@
 import { ipcMain, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron';
 import type { z } from 'zod';
 import type { IpcResponse } from '@shared/types';
+import { ConfigStoreError } from '../store/config-store-error';
 import type { SenderEventLike } from './sender';
 
 /** Predicate deciding whether an IPC event comes from the app's own page. */
@@ -27,6 +28,7 @@ export function guardHandler<S extends z.ZodType<unknown[]>, R>(
       return await handler(event, parsed.data);
     } catch (err) {
       console.error('[IPC] Handler failed:', err instanceof Error ? err.name : 'unknown error');
+      if (err instanceof ConfigStoreError) return { success: false, error: 'Request failed', code: err.code };
       return { success: false, error: 'Request failed' };
     }
   };

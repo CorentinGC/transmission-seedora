@@ -573,7 +573,9 @@
       "SESSION": "Palvelin hylkäsi istunnon kättelyn.",
       "RPC_FAILURE": "Palvelin ilmoitti virheestä.",
       "NO_CONNECTION": "Palvelinta ei ole yhdistetty.",
-      "UNKNOWN": "Tapahtui tuntematon virhe."
+      "UNKNOWN": "Tapahtui tuntematon virhe.",
+      "SECRET_STORE_FAILED": "Järjestelmän avainnippu esti pääsyn, joten salasanaa ei tallennettu. Avaa avainnipun lukitus ja yritä uudelleen.",
+      "CONFIG_UNWRITABLE": "Asetustiedostoa ei voi lukea, joten mitään ei tallennettu. Korjaa tai poista tiedosto ja yritä uudelleen."
     }
   }
 }

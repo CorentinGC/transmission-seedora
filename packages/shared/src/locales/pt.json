@@ -573,7 +573,9 @@
       "SESSION": "O servidor recusou o estabelecimento da sessão.",
       "RPC_FAILURE": "O servidor comunicou um erro.",
       "NO_CONNECTION": "Nenhum servidor ligado.",
-      "UNKNOWN": "Ocorreu um erro desconhecido."
+      "UNKNOWN": "Ocorreu um erro desconhecido.",
+      "SECRET_STORE_FAILED": "O chaveiro do sistema recusou o acesso, por isso a palavra-passe não foi guardada. Desbloqueie o chaveiro e tente novamente.",
+      "CONFIG_UNWRITABLE": "O ficheiro de configuração não é legível, por isso nada foi guardado. Corrija ou remova o ficheiro e tente novamente."
     }
   }
 }

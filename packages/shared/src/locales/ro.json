@@ -573,7 +573,9 @@
       "SESSION": "Serverul a refuzat handshake-ul sesiunii.",
       "RPC_FAILURE": "Serverul a raportat o eroare.",
       "NO_CONNECTION": "Niciun server nu este conectat.",
-      "UNKNOWN": "A apărut o eroare necunoscută."
+      "UNKNOWN": "A apărut o eroare necunoscută.",
+      "SECRET_STORE_FAILED": "Breasla de chei a sistemului a refuzat accesul, deci parola nu a fost salvată. Deblocați breasla de chei și încercați din nou.",
+      "CONFIG_UNWRITABLE": "Fișierul de configurare nu poate fi citit, deci nu s-a salvat nimic. Remediați sau eliminați fișierul, apoi încercați din nou."
     }
   }
 }
