@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.4.0...seedora-v1.4.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* tell the user when the system keychain or config file blocks a save ([ab202a5](https://github.com/CorentinGC/transmission-seedora/commit/ab202a5d26428b8d733b3b98e28a447d95e687a1))
+* tell the user when the system keychain or config file blocks a save ([2f4ebf6](https://github.com/CorentinGC/transmission-seedora/commit/2f4ebf6049a46b31610c385f07c9803e446febab))
+
 ## [1.4.0](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.3.2...seedora-v1.4.0) (2026-11-16)
 
 
