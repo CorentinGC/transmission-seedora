@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 import { getAllowPrivateHosts, getAllowedHosts } from './env';
 import { failureFromError } from './action-error';
 import { ERROR_MESSAGES, failure, type ErrorCode } from './errors';
@@ -65,6 +65,9 @@ export interface TransmissionOptions {
 // Session ids per daemon. Keys are digests, so neither host nor password is held as a map key.
 // Per-process and best effort: a miss only costs one extra 409 round trip.
 const sessionIds = new Map<string, string>();
+// Per-process random key: the cache key is a keyed digest that is never stored or compared across
+// processes, so it cannot be used to test password guesses offline.
+const cacheKeySecret = randomBytes(32);
 
 function cacheKey(target: ServerTarget): string {
   const parts = [
@@ -76,7 +79,7 @@ function cacheKey(target: ServerTarget): string {
     target.username ?? '',
     target.password ?? '',
   ];
-  return createHash('sha256').update(JSON.stringify(parts)).digest('hex');
+  return createHmac('sha256', cacheKeySecret).update(JSON.stringify(parts)).digest('hex');
 }
 
 function rememberSessionId(key: string, id: string): void {

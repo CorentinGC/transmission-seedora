@@ -4,6 +4,8 @@
  */
 export default {
   extends: ['@commitlint/config-conventional'],
+  // The beads CLI writes this commit itself (`bd init`) and it predates the convention.
+  ignores: [(message) => message.startsWith('bd init: ')],
   rules: {
     'type-enum': [
       2,
