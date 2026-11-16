@@ -13,9 +13,7 @@ vi.mock('electron', () => ({
 }));
 vi.mock('./script-confirm-dialog', () => confirm);
 const request = vi.hoisted(() => vi.fn());
-const store = vi.hoisted(() => ({ getServers: vi.fn(), getActiveServerId: vi.fn() }));
-vi.mock('../store/config-store', () => ({ configStore: store }));
-const manager = vi.hoisted(() => ({ getActiveClient: vi.fn() }));
+const manager = vi.hoisted(() => ({ getActive: vi.fn(), getActiveClient: vi.fn() }));
 vi.mock('../rpc/connection-manager', () => ({ connectionManager: manager }));
 
 const { IPC } = await import('@ipc/ipc-channels');
@@ -30,9 +28,10 @@ const sessionSet = (params: Record<string, unknown>) => {
 beforeEach(() => {
   handlers.clear();
   vi.clearAllMocks();
-  manager.getActiveClient.mockReturnValue({ request });
-  store.getActiveServerId.mockReturnValue('a');
-  store.getServers.mockReturnValue([{ id: 'a', name: 'Home', host: 'nas', port: 9091 }]);
+  manager.getActive.mockReturnValue({
+    client: { request },
+    server: { id: 'a', name: 'Home', host: 'nas', port: 9091 },
+  });
   registerRpcHandlers(() => true);
 });
 
@@ -62,7 +61,7 @@ describe('RPC_SESSION_SET guard wiring', () => {
   });
 
   it('returns NO_CONNECTION before running the guard when no server is active', async () => {
-    manager.getActiveClient.mockReturnValue(undefined);
+    manager.getActive.mockReturnValue(null);
     const res = await sessionSet({ 'script-torrent-done-filename': '/x.sh' });
     expect(res).toMatchObject({ success: false, code: 'NO_CONNECTION' });
     expect(confirm.confirmScriptChanges).not.toHaveBeenCalled();
@@ -71,7 +70,10 @@ describe('RPC_SESSION_SET guard wiring', () => {
   it('writes to the client that was checked even if the active server switches meanwhile', async () => {
     const other = vi.fn().mockResolvedValue({});
     request.mockImplementationOnce(async () => {
-      manager.getActiveClient.mockReturnValue({ request: other }); // user switches server during the fetch
+      manager.getActive.mockReturnValue({
+        client: { request: other },
+        server: { id: 'b', name: 'Other', host: 'x', port: 1 },
+      }); // user switches server during the fetch
       return {};
     });
     request.mockResolvedValueOnce({});
@@ -86,5 +88,35 @@ describe('RPC_SESSION_SET guard wiring', () => {
     confirm.confirmScriptChanges.mockResolvedValueOnce(false);
     await sessionSet({ 'script-torrent-done-filename': '/x.sh' });
     expect(confirm.confirmScriptChanges).toHaveBeenCalledWith(null, expect.any(Array), 'Home (nas:9091)');
+  });
+
+  it('labels the confirmation with the server of the client that writes, not the stored active id', async () => {
+    manager.getActive.mockReturnValue({ client: { request }, server: { id: 'b', name: 'Work', host: 'srv', port: 1 } });
+    request.mockResolvedValueOnce({});
+    confirm.confirmScriptChanges.mockResolvedValueOnce(false);
+    await sessionSet({ 'script-torrent-done-filename': '/x.sh' });
+    expect(confirm.confirmScriptChanges).toHaveBeenCalledWith(null, expect.any(Array), 'Work (srv:1)');
+  });
+});
+
+describe('RPC_SESSION_SET validation of script keys', () => {
+  it.each([
+    ['enabled as a string', { 'script-torrent-done-enabled': 'false' }],
+    ['enabled as a number', { script_torrent_added_enabled: 1 }],
+    ['enabled as null', { 'script-torrent-done-seeding-enabled': null }],
+    ['filename as a number', { 'script-torrent-done-filename': 5 }],
+    ['filename as an object', { 'script-torrent-added-filename': { a: 1 } }],
+  ])('rejects %s without contacting the daemon', async (_name, params) => {
+    const res = await sessionSet(params);
+    expect(res).toMatchObject({ success: false, error: 'Invalid request' });
+    expect(request).not.toHaveBeenCalled();
+    expect(confirm.confirmScriptChanges).not.toHaveBeenCalled();
+  });
+
+  it('accepts booleans for enabled keys and strings for filename keys', async () => {
+    request.mockResolvedValueOnce({ 'script-torrent-done-enabled': true }).mockResolvedValueOnce({});
+    confirm.confirmScriptChanges.mockResolvedValueOnce(true);
+    const res = await sessionSet({ 'script-torrent-done-enabled': true, 'script-torrent-done-filename': '' });
+    expect(res.success).toBe(true);
   });
 });

@@ -4,7 +4,7 @@ import path from 'node:path';
 import { z } from 'zod';
 import type { ServerConfig, ServerConfigPatch, AppPreferences } from '@shared/types';
 import { preferenceFields } from '../security/schemas';
-import { sameEndpoint, sameProxy } from '../security/server-credentials';
+import { passwordMayFollow, sameProxy } from '../security/server-credentials';
 import { stripUndefined } from '../security/strip-undefined';
 import { writeFileAtomic } from './atomic-write';
 import { safeStorageCrypto, type SecretCrypto } from './secret-crypto';
@@ -276,7 +276,7 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
     /**
      * Merges a patch. An empty or absent password leaves the stored one untouched; `clearPassword` /
      * `clearProxyPassword` remove it explicitly. A stored password is dropped when the endpoint it belongs to
-     * changes (host, port, path or TLS; proxy host, port or type; username emptied), unless the same patch
+     * changes (host, port, path or TLS; proxy host, port, type or username, unless the proxy is switched off; username emptied), unless the same patch
      * supplies a new one, so credentials can never be redirected or downgraded to cleartext.
      */
     async updateServer(id: string, updates: ServerConfigPatch): Promise<void> {
@@ -295,7 +295,7 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
       const before = { ...stored };
       Object.assign(stored, fields);
 
-      const serverMoved = !sameEndpoint(before, stored) || fields.username === '';
+      const serverMoved = !passwordMayFollow(before, stored) || fields.username === '';
       const proxyMoved = !sameProxy(before, stored) || fields.proxyUsername === '';
       if (serverMoved || clearPassword) setSecret(stored, 'password', undefined);
       if (proxyMoved || clearProxyPassword || stored.proxyType === 'none')

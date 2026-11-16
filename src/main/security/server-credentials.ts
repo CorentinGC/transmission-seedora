@@ -51,8 +51,16 @@ export function sameProxy(a: ProxyFields, b: ProxyFields): boolean {
 }
 
 /**
+ * Whether the stored daemon password may follow an edit: the endpoint is unchanged and the proxy is unchanged
+ * (or switched off), so the password can never be routed through a proxy the renderer chose.
+ */
+export function passwordMayFollow(previous: EndpointFields & ProxyFields, next: EndpointFields & ProxyFields): boolean {
+  return sameEndpoint(previous, next) && (next.proxyType === 'none' || sameProxy(previous, next));
+}
+
+/**
  * Builds the config used by a connection test. When the test targets a stored server (`id`) and the
- * renderer sent no password, the stored password is used, but only if the endpoint is unchanged: otherwise
+ * renderer sent no password, the stored password is used, but only if the endpoint and proxy are unchanged (or the proxy is switched off): otherwise
  * a compromised renderer could aim a stored password at a host of its choosing. An empty password means
  * "not typed", like an absent one.
  */
@@ -71,7 +79,7 @@ export function resolveTestServer(
 
   return {
     ...base,
-    password: base.password ?? (sameEndpoint(stored, base) ? stored.password : undefined),
+    password: base.password ?? (passwordMayFollow(stored, base) ? stored.password : undefined),
     proxyPassword: base.proxyPassword ?? (sameProxy(stored, base) ? stored.proxyPassword : undefined),
   };
 }
