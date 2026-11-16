@@ -15,6 +15,16 @@ This project was entirely **vibe-coded** — designed and implemented with the a
 
 Use Seedora directly in your browser, no installation required: **[seedora.app](https://www.seedora.app/)**. The web server relays your requests to the daemon, so the daemon must be reachable from that server. Read [Known gaps and security](#known-gaps-and-security) first.
 
+## Screenshots
+
+| Light | Dark |
+|-------|------|
+| ![Seedora on desktop width, light theme](docs/screenshots/desktop-light.png) | ![Seedora on desktop width, dark theme](docs/screenshots/desktop-dark.png) |
+
+On narrow screens the torrent table becomes a card list with a sort control:
+
+<img src="docs/screenshots/mobile-dark.png" alt="Seedora on a phone-width screen, dark theme" width="280">
+
 ## Features
 
 - **Multi-server management** — connect to multiple Transmission daemons and switch between them
