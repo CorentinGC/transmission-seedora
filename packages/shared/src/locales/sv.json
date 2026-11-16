@@ -191,7 +191,9 @@
     "honorSessionLimits": "Respektera sessionsgränser",
     "seeding": "Seedning",
     "ratioMode": "Kvotläge:",
+    "ratioLimit": "Kvotgräns",
     "idleMode": "Inaktivitetsläge:",
+    "idleLimit": "Inaktivitetsgräns (minuter)",
     "global": "Global",
     "custom": "Anpassad",
     "unlimited": "Obegränsad",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Aktivera alternativ hastighet",
       "disableAltSpeed": "Inaktivera alternativ hastighet",
       "showWindow": "Visa fönster",
-      "quit": "Avsluta"
+      "quit": "Avsluta",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Ändra daemonens skriptinställningar?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Ingen server är ansluten.",
       "UNKNOWN": "Ett okänt fel inträffade.",
       "SECRET_STORE_FAILED": "Systemets nyckelring nekade åtkomst, så lösenordet sparades inte. Lås upp nyckelringen och försök igen.",
-      "CONFIG_UNWRITABLE": "Konfigurationsfilen går inte att läsa, så ingenting sparades. Åtgärda eller ta bort filen och försök igen."
+      "CONFIG_UNWRITABLE": "Konfigurationsfilen går inte att läsa, så ingenting sparades. Åtgärda eller ta bort filen och försök igen.",
+      "UNTRUSTED_SENDER": "Den här begäran kom inte från programfönstret och avvisades.",
+      "WATCH_FOLDER_NOT_APPROVED": "Den bevakade mappen måste väljas med mappväljaren.",
+      "EXPORT_FAILED": "Konfigurationen kunde inte exporteras."
     }
   }
 }

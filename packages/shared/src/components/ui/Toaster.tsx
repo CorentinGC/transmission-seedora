@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { useNotificationStore, type AppNotification } from '../../stores/notification-store';
@@ -11,16 +11,28 @@ function Toast({ notification }: { notification: AppNotification }) {
   const dismiss = useNotificationStore((s) => s.dismiss);
   const { id, messageKey, params } = notification;
 
+  // Hovering or focusing the toast pauses auto-dismiss so it can be read and its button reached.
+  const [paused, setPaused] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const holding = paused || focused;
+
   useEffect(() => {
+    if (holding) return;
     const timer = setTimeout(() => dismiss(id), AUTO_DISMISS_MS);
     return () => clearTimeout(timer);
-  }, [id, dismiss]);
+  }, [id, dismiss, holding]);
 
   const error = typeof params.error === 'string' && params.error ? params.error : t('notification.unknownError');
 
   return (
     <div
       role="alert"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
+      }}
       className="flex items-start gap-2 rounded-md border border-destructive bg-card px-3 py-2 text-xs text-card-foreground shadow-md"
     >
       <span className="flex-1 break-words">{t(messageKey, { ...params, error })}</span>

@@ -25,6 +25,7 @@ export default defineConfig({
             'src/preload/**/*.test.ts',
             'src/shared/**/*.test.ts',
             'tools/**/*.test.ts',
+            'scripts/**/*.test.ts',
           ],
         },
       },

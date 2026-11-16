@@ -191,7 +191,9 @@
     "honorSessionLimits": "Respetar límites de sesión",
     "seeding": "Compartición",
     "ratioMode": "Modo de ratio:",
+    "ratioLimit": "Límite de ratio",
     "idleMode": "Modo inactivo:",
+    "idleLimit": "Límite de inactividad (minutos)",
     "global": "Global",
     "custom": "Personalizado",
     "unlimited": "Ilimitado",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Activar velocidad alternativa",
       "disableAltSpeed": "Desactivar velocidad alternativa",
       "showWindow": "Mostrar ventana",
-      "quit": "Salir"
+      "quit": "Salir",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "¿Cambiar los ajustes de script del daemon?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "No hay ningún servidor conectado.",
       "UNKNOWN": "Se produjo un error desconocido.",
       "SECRET_STORE_FAILED": "El llavero del sistema denegó el acceso, así que la contraseña no se guardó. Desbloquea el llavero e inténtalo de nuevo.",
-      "CONFIG_UNWRITABLE": "El archivo de configuración no se puede leer, así que no se guardó nada. Corrige o elimina el archivo e inténtalo de nuevo."
+      "CONFIG_UNWRITABLE": "El archivo de configuración no se puede leer, así que no se guardó nada. Corrige o elimina el archivo e inténtalo de nuevo.",
+      "UNTRUSTED_SENDER": "Esta solicitud no procede de la ventana de la aplicación y fue rechazada.",
+      "WATCH_FOLDER_NOT_APPROVED": "La carpeta vigilada debe elegirse con el selector de carpetas.",
+      "EXPORT_FAILED": "No se pudo exportar la configuración."
     }
   }
 }

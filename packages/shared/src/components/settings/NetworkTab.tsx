@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
 import type { SessionSettings } from '../../types/session';
+import { Button } from '../ui';
+import { ApplyStatus, type ApplyState } from './ApplyStatus';
 
 interface Props {
   settings: SessionSettings;
@@ -46,7 +48,7 @@ export function NetworkTab({ settings: s }: Props) {
     );
   };
 
-  const [applyStatus, setApplyStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [applyStatus, setApplyStatus] = useState<ApplyState>('idle');
 
   const apply = async () => {
     const ok = await updateSettings({
@@ -75,14 +77,17 @@ export function NetworkTab({ settings: s }: Props) {
             {t('networkTab.port')}
             <input
               type="number"
+              aria-label={t('networkTab.port')}
               className="w-24 h-7 px-2 rounded border bg-background"
               value={peerPort}
               onChange={(e) => setPeerPort(Number(e.target.value))}
             />
-            <button className="h-7 px-3 text-xs rounded border hover:bg-accent" onClick={handleTestPort}>
+            <Button size="sm" onClick={handleTestPort}>
               {t('networkTab.testPort')}
-            </button>
-            {portTestResult && <span className="text-xs text-muted-foreground">{portTestResult}</span>}
+            </Button>
+            <span role="status" className="text-xs text-muted-foreground">
+              {portTestResult}
+            </span>
           </div>
           <label className="flex items-center gap-2">
             <input
@@ -106,6 +111,7 @@ export function NetworkTab({ settings: s }: Props) {
       <div className="border-t pt-4">
         <h3 className="font-medium mb-2">{t('networkTab.encryption')}</h3>
         <select
+          aria-label={t('networkTab.encryption')}
           className="h-7 px-2 rounded border bg-background"
           value={encryption}
           onChange={(e) => setEncryption(e.target.value)}
@@ -137,7 +143,7 @@ export function NetworkTab({ settings: s }: Props) {
       <div className="border-t pt-4">
         <h3 className="font-medium mb-2">{t('networkTab.peerLimits')}</h3>
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2">
             {t('networkTab.global')}{' '}
             <input
               type="number"
@@ -145,8 +151,8 @@ export function NetworkTab({ settings: s }: Props) {
               value={peerLimitGlobal}
               onChange={(e) => setPeerLimitGlobal(Number(e.target.value))}
             />
-          </div>
-          <div className="flex items-center gap-2">
+          </label>
+          <label className="flex items-center gap-2">
             {t('networkTab.perTorrent')}{' '}
             <input
               type="number"
@@ -154,7 +160,7 @@ export function NetworkTab({ settings: s }: Props) {
               value={peerLimitPerTorrent}
               onChange={(e) => setPeerLimitPerTorrent(Number(e.target.value))}
             />
-          </div>
+          </label>
         </div>
       </div>
 
@@ -172,13 +178,16 @@ export function NetworkTab({ settings: s }: Props) {
                 className="w-full h-7 px-2 rounded border bg-background"
                 value={blocklistUrl}
                 onChange={(e) => setBlocklistUrl(e.target.value)}
+                aria-label={t('networkTab.blocklistUrl')}
                 placeholder={t('networkTab.blocklistUrl')}
               />
               <div className="flex items-center gap-2">
-                <button className="h-7 px-3 text-xs rounded border hover:bg-accent" onClick={handleUpdateBlocklist}>
+                <Button size="sm" onClick={handleUpdateBlocklist}>
                   {t('networkTab.updateBlocklist')}
-                </button>
-                {blocklistResult && <span className="text-xs text-muted-foreground">{blocklistResult}</span>}
+                </Button>
+                <span role="status" className="text-xs text-muted-foreground">
+                  {blocklistResult}
+                </span>
                 <span className="text-xs text-muted-foreground">
                   {t('networkTab.entries', { count: s.blocklistSize })}
                 </span>
@@ -189,14 +198,10 @@ export function NetworkTab({ settings: s }: Props) {
       </div>
 
       <div className="border-t pt-4 flex items-center gap-3">
-        <button
-          className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90"
-          onClick={apply}
-        >
+        <Button variant="primary" onClick={apply}>
           {t('dialog.apply')}
-        </button>
-        {applyStatus === 'success' && <span className="text-xs text-success">{t('settings.applied')}</span>}
-        {applyStatus === 'error' && <span className="text-xs text-destructive-text">{t('settings.applyError')}</span>}
+        </Button>
+        <ApplyStatus status={applyStatus} />
       </div>
     </div>
   );

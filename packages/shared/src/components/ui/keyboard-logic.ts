@@ -70,3 +70,24 @@ export function typeaheadMatch(
   }
   return -1;
 }
+
+/**
+ * Tab a key moves to in a horizontal tab list (wrapping), or null when the key does not navigate.
+ * In a right-to-left layout ArrowLeft advances and ArrowRight goes back, matching the visual order.
+ */
+export function tabNavigationTarget(key: string, current: number, count: number, rtl: boolean): number | null {
+  if (count === 0) return null;
+  const wrap = (index: number) => (index + count) % count;
+  switch (key) {
+    case 'ArrowRight':
+      return wrap(current + (rtl ? -1 : 1));
+    case 'ArrowLeft':
+      return wrap(current + (rtl ? 1 : -1));
+    case 'Home':
+      return 0;
+    case 'End':
+      return count - 1;
+    default:
+      return null;
+  }
+}

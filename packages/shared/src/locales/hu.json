@@ -191,7 +191,9 @@
     "honorSessionLimits": "Munkamenet korlátok betartása",
     "seeding": "Megosztás",
     "ratioMode": "Arány mód:",
+    "ratioLimit": "Arányhatár",
     "idleMode": "Tétlen mód:",
+    "idleLimit": "Tétlenségi határ (perc)",
     "global": "Globális",
     "custom": "Egyéni",
     "unlimited": "Korlátlan",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Alternatív sebesség engedélyezése",
       "disableAltSpeed": "Alternatív sebesség letiltása",
       "showWindow": "Ablak megjelenítése",
-      "quit": "Kilépés"
+      "quit": "Kilépés",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Módosítja a démon szkriptbeállításait?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Nincs csatlakoztatott szerver.",
       "UNKNOWN": "Ismeretlen hiba történt.",
       "SECRET_STORE_FAILED": "A rendszer kulcstartója megtagadta a hozzáférést, ezért a jelszó nem lett mentve. Oldja fel a kulcstartót, és próbálja újra.",
-      "CONFIG_UNWRITABLE": "A konfigurációs fájl nem olvasható, ezért semmi sem lett mentve. Javítsa vagy távolítsa el a fájlt, majd próbálja újra."
+      "CONFIG_UNWRITABLE": "A konfigurációs fájl nem olvasható, ezért semmi sem lett mentve. Javítsa vagy távolítsa el a fájlt, majd próbálja újra.",
+      "UNTRUSTED_SENDER": "Ez a kérés nem az alkalmazás ablakából érkezett, ezért el lett utasítva.",
+      "WATCH_FOLDER_NOT_APPROVED": "A figyelt mappát a mappaválasztóval kell kiválasztani.",
+      "EXPORT_FAILED": "A konfigurációt nem sikerült exportálni."
     }
   }
 }

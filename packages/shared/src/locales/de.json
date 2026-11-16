@@ -191,7 +191,9 @@
     "honorSessionLimits": "Sitzungslimits einhalten",
     "seeding": "Verteilen",
     "ratioMode": "Verhältnis-Modus:",
+    "ratioLimit": "Verhältnislimit",
     "idleMode": "Leerlauf-Modus:",
+    "idleLimit": "Leerlauflimit (Minuten)",
     "global": "Global",
     "custom": "Benutzerdefiniert",
     "unlimited": "Unbegrenzt",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Alternative Geschwindigkeit aktivieren",
       "disableAltSpeed": "Alternative Geschwindigkeit deaktivieren",
       "showWindow": "Fenster anzeigen",
-      "quit": "Beenden"
+      "quit": "Beenden",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Skripteinstellungen des Daemons ändern?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Kein Server verbunden.",
       "UNKNOWN": "Ein unbekannter Fehler ist aufgetreten.",
       "SECRET_STORE_FAILED": "Der Schlüsselbund des Systems hat den Zugriff verweigert, daher wurde das Passwort nicht gespeichert. Schlüsselbund entsperren und erneut versuchen.",
-      "CONFIG_UNWRITABLE": "Die Konfigurationsdatei ist nicht lesbar, daher wurde nichts gespeichert. Datei korrigieren oder entfernen und erneut versuchen."
+      "CONFIG_UNWRITABLE": "Die Konfigurationsdatei ist nicht lesbar, daher wurde nichts gespeichert. Datei korrigieren oder entfernen und erneut versuchen.",
+      "UNTRUSTED_SENDER": "Diese Anfrage stammt nicht vom Anwendungsfenster und wurde abgelehnt.",
+      "WATCH_FOLDER_NOT_APPROVED": "Der Überwachungsordner muss über die Ordnerauswahl gewählt werden.",
+      "EXPORT_FAILED": "Die Konfiguration konnte nicht exportiert werden."
     }
   }
 }

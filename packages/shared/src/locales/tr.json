@@ -191,7 +191,9 @@
     "honorSessionLimits": "Oturum limitlerini uygula",
     "seeding": "Gönderme",
     "ratioMode": "Oran modu:",
+    "ratioLimit": "Oran sınırı",
     "idleMode": "Boşta kalma modu:",
+    "idleLimit": "Boşta kalma sınırı (dakika)",
     "global": "Genel",
     "custom": "Özel",
     "unlimited": "Sınırsız",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Alternatif hızı etkinleştir",
       "disableAltSpeed": "Alternatif hızı devre dışı bırak",
       "showWindow": "Pencereyi göster",
-      "quit": "Çık"
+      "quit": "Çık",
+      "units": {
+        "bytesPerSecond": "{{value}} B/sn",
+        "kilobytesPerSecond": "{{value}} KB/sn",
+        "megabytesPerSecond": "{{value}} MB/sn"
+      }
     },
     "scriptGuard": {
       "title": "Daemon'ın betik ayarları değiştirilsin mi?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Bağlı sunucu yok.",
       "UNKNOWN": "Bilinmeyen bir hata oluştu.",
       "SECRET_STORE_FAILED": "Sistem anahtar zinciri erişimi reddetti, bu yüzden parola kaydedilmedi. Anahtar zincirinin kilidini açın ve tekrar deneyin.",
-      "CONFIG_UNWRITABLE": "Yapılandırma dosyası okunamıyor, bu yüzden hiçbir şey kaydedilmedi. Dosyayı düzeltin veya kaldırın, ardından tekrar deneyin."
+      "CONFIG_UNWRITABLE": "Yapılandırma dosyası okunamıyor, bu yüzden hiçbir şey kaydedilmedi. Dosyayı düzeltin veya kaldırın, ardından tekrar deneyin.",
+      "UNTRUSTED_SENDER": "Bu istek uygulama penceresinden gelmedi ve reddedildi.",
+      "WATCH_FOLDER_NOT_APPROVED": "İzleme klasörü, klasör seçiciyle seçilmelidir.",
+      "EXPORT_FAILED": "Yapılandırma dışa aktarılamadı."
     }
   }
 }

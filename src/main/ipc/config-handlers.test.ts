@@ -80,7 +80,7 @@ describe('isWatchFolderAllowed', () => {
 describe('PREFS_SET', () => {
   it('rejects an unapproved watchFolder without touching the store', async () => {
     const res = await call(IPC.PREFS_SET, { watchFolder: path.join(dir, 'evil') });
-    expect(res.success).toBe(false);
+    expect(res).toMatchObject({ success: false, code: 'WATCH_FOLDER_NOT_APPROVED' });
     expect(store.updatePreferences).not.toHaveBeenCalled();
   });
 
@@ -165,7 +165,11 @@ describe('CONFIG_IMPORT', () => {
     const file = path.join(dir, 'unapproved.json');
     fs.writeFileSync(file, JSON.stringify({ servers: [server] }));
     const res = await call(IPC.CONFIG_IMPORT, { filePath: file });
-    expect(res).toEqual({ success: false, error: 'Import failed: File was not selected through a file dialog' });
+    expect(res).toEqual({
+      success: false,
+      error: 'Import failed: File was not selected through a file dialog',
+      code: 'IMPORT_INVALID',
+    });
     expect(store.addServer).not.toHaveBeenCalled();
   });
 
@@ -183,7 +187,7 @@ describe('CONFIG_IMPORT', () => {
     fs.writeFileSync(file, '{"servers": [{"host": 1}]}');
     approvedPaths.approve([file], 'json');
     const res = await call(IPC.CONFIG_IMPORT, { filePath: file });
-    expect(res).toEqual({ success: false, error: 'Import failed: invalid file' });
+    expect(res).toEqual({ success: false, error: 'Import failed: invalid file', code: 'IMPORT_INVALID' });
   });
 
   it('drops allowSelfSigned from imported servers (inline data and file)', async () => {
