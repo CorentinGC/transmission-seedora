@@ -82,7 +82,7 @@
     "vitest": "^5.1.0"
   },
   "dependencies": {
-    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-table": "^9.3.1",
     "@tanstack/react-virtual": "^3.13.19",
     "chokidar": "^5.0.0",
     "electron-squirrel-startup": "^1.0.1",
