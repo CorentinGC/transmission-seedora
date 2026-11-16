@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.2](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.4.1...seedora-v1.4.2) (2026-11-16)
+
+
+### Bug Fixes
+
+* re-sign the packaged macOS app ad hoc so the keychain accepts it ([e3e892e](https://github.com/CorentinGC/transmission-seedora/commit/e3e892e89c4740a530f6d8935bc1b3429aa6f1be))
+* re-sign the packaged macOS app ad hoc so the keychain accepts it ([4a053c1](https://github.com/CorentinGC/transmission-seedora/commit/4a053c1cafea2d0648ab726e40a47c811fe4be4a))
+
 ## [1.4.1](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.4.0...seedora-v1.4.1) (2026-11-16)
 
 
