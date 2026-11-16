@@ -2,6 +2,8 @@
 
 Seedora is a remote GUI for the Transmission BitTorrent daemon. One React UI ships in two shells: an Electron desktop app and a Next.js web app (installable via a static web manifest; there is no service worker). Both talk to the daemon through its RPC endpoint; neither talks to it from the browser context directly.
 
+The web deployment also serves a static landing page: `apps/web/src/proxy.ts` routes by host (`seedora.app` landing, `app.seedora.app` app, `www` redirect); rules in `src/lib/site/hosts.ts`, copy in `src/lib/site/content.ts` ([ADR 0008](decisions/0008-landing-site-and-app-subdomain.md)).
+
 ## Monorepo layout
 
 npm workspaces (`packages/*`, `apps/*`). The Electron app is the **root package**, not a workspace.
