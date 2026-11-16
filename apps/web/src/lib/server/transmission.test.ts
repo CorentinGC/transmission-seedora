@@ -24,6 +24,13 @@ const target: ServerTarget = {
   password: PASSWORD,
 };
 
+/** The `n`-th call's argument `arg` of the mocked post, failing loudly when that call never happened. */
+const callArg = (post: ReturnType<typeof vi.fn>, n: number, arg: number) => {
+  const call = post.mock.calls[n];
+  if (call === undefined) throw new Error(`post was not called ${n + 1} time(s)`);
+  return call[arg];
+};
+
 const ok = (data: unknown = { a: 1 }): OutboundResponse => ({
   status: 200,
   sessionId: undefined,
@@ -63,7 +70,7 @@ describe('response size per method', () => {
       clientKey: 'k',
       onResolved,
     });
-    expect(post.mock.calls[0][2]).toMatchObject({
+    expect(callArg(post, 0, 2)).toMatchObject({
       maxResponseBytes: SMALL_RESPONSE_MAX_BYTES,
       allowedHosts,
       clientKey: 'k',
@@ -73,7 +80,7 @@ describe('response size per method', () => {
       post,
       allowPrivate: true,
     });
-    expect(post.mock.calls[1][2].maxResponseBytes).toBeUndefined();
+    expect(callArg(post, 1, 2).maxResponseBytes).toBeUndefined();
   });
 
   it('maps a malformed SEEDORA_ALLOWED_HOSTS to SERVER_MISCONFIGURED without a request', async () => {
@@ -100,7 +107,9 @@ describe('callTransmission', () => {
       allowPrivate: true,
     });
     expect(result).toEqual({ success: true, data: { a: 1 } });
-    const [outTarget, body, options] = post.mock.calls[0];
+    const outTarget = callArg(post, 0, 0);
+    const body = callArg(post, 0, 1);
+    const options = callArg(post, 0, 2);
     expect(outTarget).toEqual({ host: 'nas.example.com', port: 9091, path: '/transmission/rpc', useSSL: false });
     expect(body).toEqual({ method: 'torrent-get', arguments: { fields: ['id'] } });
     expect(options.allowPrivate).toBe(true);
@@ -116,13 +125,13 @@ describe('callTransmission', () => {
     const post = vi.fn().mockResolvedValueOnce(conflict('abc123')).mockResolvedValueOnce(ok());
     await callTransmission(target, { method: 'session-get' }, 1000, { post });
     expect(post).toHaveBeenCalledTimes(2);
-    expect(post.mock.calls[0][2].sessionId).toBeUndefined();
-    expect(post.mock.calls[1][2].sessionId).toBe('abc123');
+    expect(callArg(post, 0, 2).sessionId).toBeUndefined();
+    expect(callArg(post, 1, 2).sessionId).toBe('abc123');
 
     post.mockResolvedValueOnce(ok());
     await callTransmission(target, { method: 'session-get' }, 1000, { post });
     expect(post).toHaveBeenCalledTimes(3);
-    expect(post.mock.calls[2][2].sessionId).toBe('abc123');
+    expect(callArg(post, 2, 2).sessionId).toBe('abc123');
   });
 
   it('gives up after a second 409 and never loops', async () => {
@@ -146,7 +155,7 @@ describe('callTransmission', () => {
     await callTransmission(target, { method: 'session-get' }, 1000, { post });
     post.mockClear();
     await callTransmission({ ...target, username: 'bob' }, { method: 'session-get' }, 1000, { post });
-    expect(post.mock.calls[0][2].sessionId).toBeUndefined();
+    expect(callArg(post, 0, 2).sessionId).toBeUndefined();
   });
 
   it('bounds the session id cache', async () => {
@@ -187,6 +196,6 @@ describe('callTransmission', () => {
   it('shares one deadline between the first request and the retry', async () => {
     const post = vi.fn().mockResolvedValueOnce(conflict('s1')).mockResolvedValueOnce(ok());
     await callTransmission(target, { method: 'session-get' }, 1000, { post });
-    expect(post.mock.calls[0][2].signal).toBe(post.mock.calls[1][2].signal);
+    expect(callArg(post, 0, 2).signal).toBe(callArg(post, 1, 2).signal);
   });
 });

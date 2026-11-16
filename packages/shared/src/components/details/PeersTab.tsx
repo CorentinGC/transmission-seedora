@@ -101,6 +101,7 @@ export function PeersTab({ torrent }: Props) {
         <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
           {virtualizer.getVirtualItems().map((item) => {
             const peer = peers[item.index];
+            if (!peer) return null;
             return (
               <PeerRow
                 key={`${peer.address}:${peer.port}`}

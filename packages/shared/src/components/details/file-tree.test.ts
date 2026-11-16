@@ -12,14 +12,14 @@ describe('buildFileTree', () => {
     const tree = buildFileTree(files);
     expect(tree.name).toBe('T');
     expect(tree.children.map((c) => c.name)).toEqual(['dir', 'b.txt']);
-    expect(tree.children[0].children.map((c) => c.name)).toEqual(['a.bin', 'z.bin']);
+    expect(tree.children[0]?.children.map((c) => c.name)).toEqual(['a.bin', 'z.bin']);
   });
 
   it('aggregates sizes and file indices from the file list only', () => {
     const tree = buildFileTree(files);
     expect(tree.totalSize).toBe(32);
     expect(tree.fileIndices.sort()).toEqual([0, 1, 2]);
-    expect(tree.children[0].fileIndices.sort()).toEqual([1, 2]);
+    expect(tree.children[0]?.fileIndices.sort()).toEqual([1, 2]);
   });
 
   it('keeps the synthetic root when there are several top-level entries', () => {

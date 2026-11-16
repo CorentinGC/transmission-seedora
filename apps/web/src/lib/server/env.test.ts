@@ -221,9 +221,9 @@ describe('assertServerConfig and SEEDORA_ALLOWED_HOSTS', () => {
 
   it('says whether the list limits private hosts or has no effect', () => {
     assertServerConfig({ ...base, SEEDORA_ALLOW_PRIVATE_HOSTS: 'true', SEEDORA_ALLOWED_HOSTS: 'nas.lan' });
-    expect(String(vi.mocked(console.warn).mock.calls[0][0])).toContain('SEEDORA_ALLOWED_HOSTS only');
+    expect(String(vi.mocked(console.warn).mock.calls[0]?.[0])).toContain('SEEDORA_ALLOWED_HOSTS only');
     vi.mocked(console.warn).mockClear();
     assertServerConfig({ ...base, SEEDORA_ALLOWED_HOSTS: 'nas.lan' });
-    expect(String(vi.mocked(console.warn).mock.calls[0][0])).toContain('no effect');
+    expect(String(vi.mocked(console.warn).mock.calls[0]?.[0])).toContain('no effect');
   });
 });

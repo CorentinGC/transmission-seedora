@@ -35,19 +35,19 @@ describe('trapTab', () => {
     trapTab(e as never, root);
     expect(e.preventDefault).toHaveBeenCalled();
     expect(e.stopPropagation).toHaveBeenCalled();
-    expect(els[0].focus).toHaveBeenCalled();
+    expect(els[0]?.focus).toHaveBeenCalled();
   });
 
   it('wraps Shift+Tab from the first element to the last', () => {
     const { els, root } = setup(3, 0);
     trapTab(tabEvent({ shiftKey: true }) as never, root);
-    expect(els[2].focus).toHaveBeenCalled();
+    expect(els[2]?.focus).toHaveBeenCalled();
   });
 
   it('wraps Shift+Tab from the root itself', () => {
     const { els, root } = setup(2, -1);
     trapTab(tabEvent({ shiftKey: true }) as never, root);
-    expect(els[1].focus).toHaveBeenCalled();
+    expect(els[1]?.focus).toHaveBeenCalled();
   });
 
   it('leaves Tab in the middle alone', () => {
@@ -71,7 +71,7 @@ describe('trapTab', () => {
     const e = tabEvent({ defaultPrevented: true });
     trapTab(e as never, root);
     expect(e.stopPropagation).not.toHaveBeenCalled();
-    expect(els[0].focus).not.toHaveBeenCalled();
+    expect(els[0]?.focus).not.toHaveBeenCalled();
   });
 
   it('ignores other keys', () => {

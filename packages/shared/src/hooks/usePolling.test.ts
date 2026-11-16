@@ -46,8 +46,8 @@ describe('startPolling', () => {
     const stop = startPolling(cb, 1000, onError);
     await vi.advanceTimersByTimeAsync(3000);
     expect(onError).toHaveBeenCalledTimes(2);
-    expect((onError.mock.calls[0][0] as Error).message).toBe('a');
-    expect((onError.mock.calls[1][0] as Error).message).toBe('c');
+    expect(onError.mock.calls[0]?.[0]).toMatchObject({ message: 'a' });
+    expect(onError.mock.calls[1]?.[0]).toMatchObject({ message: 'c' });
     stop();
   });
 

@@ -35,6 +35,13 @@ afterEach(() => {
   respond = (res) => res.end('{}');
 });
 
+/** The single gate key of one resolved address. */
+const keyOf = (address: ResolvedAddress): string => {
+  const [key] = destinationKeys([address]);
+  if (key === undefined) throw new Error('no destination key');
+  return key;
+};
+
 const target = (over: Partial<OutboundTarget> = {}): OutboundTarget => ({
   host: 'daemon.test',
   port,
@@ -148,8 +155,8 @@ describe('one retry on a connection error (fallback address)', () => {
     );
     expect(result.status).toBe(200);
     expect(onResolved.mock.calls).toEqual([[[closed]], [[live]]]);
-    expect(gate.tryAcquire(destinationKeys([closed])[0])).not.toBeNull();
-    expect(gate.tryAcquire(destinationKeys([live])[0])).not.toBeNull();
+    expect(gate.tryAcquire(keyOf(closed))).not.toBeNull();
+    expect(gate.tryAcquire(keyOf(live))).not.toBeNull();
     expect(budget.inUse()).toBe(0);
   });
 
@@ -158,8 +165,8 @@ describe('one retry on a connection error (fallback address)', () => {
     respond = (res) => pending.push(res);
     const call = postJson(target(), {}, options(resolving(closed, live), { destinationGate: gate }));
     await vi.waitFor(() => expect(pending).toHaveLength(1));
-    expect(gate.tryAcquire(destinationKeys([closed])[0])).not.toBeNull();
-    expect(gate.tryAcquire(destinationKeys([live])[0])).toBeNull();
+    expect(gate.tryAcquire(keyOf(closed))).not.toBeNull();
+    expect(gate.tryAcquire(keyOf(live))).toBeNull();
     pending.forEach((res) => res.end('{}'));
     await call;
   });
@@ -184,7 +191,7 @@ describe('one retry on a connection error (fallback address)', () => {
     ).toBe('CONNECTION_FAILED');
     expect(onResolved).toHaveBeenCalledTimes(2);
     expect(requestsSeen).toBe(0);
-    expect(gate.tryAcquire(destinationKeys([closed])[0])).not.toBeNull();
+    expect(gate.tryAcquire(keyOf(closed))).not.toBeNull();
   });
 
   it('does not retry once the request was sent (connection reset after connect)', async () => {

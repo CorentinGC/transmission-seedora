@@ -83,7 +83,7 @@ describe('credential encryption', () => {
     );
     open().migrateLegacySecrets();
     expect(onDisk()).not.toContain('legacy-pw');
-    expect(open().getServers()[0].password).toBe('legacy-pw');
+    expect(open().getServers()[0]?.password).toBe('legacy-pw');
   });
 
   it('leaves cleartext untouched when no secret store exists', () => {
@@ -102,10 +102,10 @@ describe('credential encryption', () => {
       JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: 's1', preferences: {} }),
     );
     const store = open();
-    expect(store.getServers()[0].password).toBe('legacy-pw');
+    expect(store.getServers()[0]?.password).toBe('legacy-pw');
     store.setActiveServerId('s1');
     expect(onDisk()).not.toContain('legacy-pw');
-    expect(open().getServers()[0].password).toBe('legacy-pw');
+    expect(open().getServers()[0]?.password).toBe('legacy-pw');
   });
 
   it('keeps a password in the 0600 file when no secret store exists, and encrypts it once one does', () => {
@@ -116,7 +116,7 @@ describe('credential encryption', () => {
     available = true;
     store.setActiveServerId('s1');
     expect(onDisk()).not.toContain('"pw"');
-    expect(store.getServers()[0].password).toBe('pw');
+    expect(store.getServers()[0]?.password).toBe('pw');
   });
 
   it('keeps a server whose password cannot be decrypted and preserves the ciphertext on later writes', () => {
@@ -124,7 +124,7 @@ describe('credential encryption', () => {
     failDecrypt = true;
     const store = open();
     expect(store.getServers()[0]).toMatchObject({ id: 's1', hasPassword: true });
-    expect(store.getServers()[0].password).toBeUndefined();
+    expect(store.getServers()[0]?.password).toBeUndefined();
     store.updateServer('s1', { name: 'renamed' });
     failDecrypt = false;
     expect(store.getServers()[0]).toMatchObject({ name: 'renamed', password: 'pw' });
@@ -155,7 +155,7 @@ describe('password update rules', () => {
   it('replaces a password when a new one is sent', () => {
     const store = withPasswords();
     store.updateServer('s1', { password: 'new' });
-    expect(store.getServers()[0].password).toBe('new');
+    expect(store.getServers()[0]?.password).toBe('new');
   });
 
   it('drops the password when the host or port changes, unless a new one comes along', () => {
@@ -164,9 +164,9 @@ describe('password update rules', () => {
     expect(store.getServers()[0]).toMatchObject({ hasPassword: false, hasProxyPassword: true });
     store.updateServer('s1', { password: 'again' });
     store.updateServer('s1', { port: 1, password: 'fresh' });
-    expect(store.getServers()[0].password).toBe('fresh');
+    expect(store.getServers()[0]?.password).toBe('fresh');
     store.updateServer('s1', { port: 2 });
-    expect(store.getServers()[0].hasPassword).toBe(false);
+    expect(store.getServers()[0]?.hasPassword).toBe(false);
   });
 
   it('removes a password only on an explicit clear request, keeping the username', () => {
@@ -182,11 +182,11 @@ describe('password update rules', () => {
     let store = open();
     store.addServer({ ...server, useSSL: true, username: 'u', password: 'pw' });
     store.updateServer('s1', { useSSL: false });
-    expect(store.getServers()[0].hasPassword).toBe(false);
+    expect(store.getServers()[0]?.hasPassword).toBe(false);
     store.updateServer('s1', { password: 'pw' });
     store = open();
     store.updateServer('s1', { path: '/other/rpc' });
-    expect(store.getServers()[0].hasPassword).toBe(false);
+    expect(store.getServers()[0]?.hasPassword).toBe(false);
   });
 
   it.each([
@@ -202,10 +202,10 @@ describe('password update rules', () => {
   it('drops the password when certificate checks are relaxed, not when they are tightened', () => {
     const store = withPasswords();
     store.updateServer('s1', { allowSelfSigned: true });
-    expect(store.getServers()[0].hasPassword).toBe(false);
+    expect(store.getServers()[0]?.hasPassword).toBe(false);
     store.updateServer('s1', { password: 'pw' });
     store.updateServer('s1', { allowSelfSigned: false });
-    expect(store.getServers()[0].password).toBe('pw');
+    expect(store.getServers()[0]?.password).toBe('pw');
   });
 
   it('reports servers whose password cannot be decrypted', () => {
@@ -219,18 +219,18 @@ describe('password update rules', () => {
   it('keeps the password when the host is re-sent unchanged', () => {
     const store = withPasswords();
     store.updateServer('s1', { host: 'nas', port: 9091, name: 'same' });
-    expect(store.getServers()[0].password).toBe('pw');
+    expect(store.getServers()[0]?.password).toBe('pw');
   });
 
   it('drops the proxy password when the proxy changes or is turned off, and the password when the username is emptied', () => {
     const store = withPasswords();
     store.updateServer('s1', { proxyHost: 'elsewhere' });
-    expect(store.getServers()[0].hasProxyPassword).toBe(false);
+    expect(store.getServers()[0]?.hasProxyPassword).toBe(false);
     store.updateServer('s1', { proxyPassword: 'p2' });
     store.updateServer('s1', { proxyType: 'none' });
-    expect(store.getServers()[0].hasProxyPassword).toBe(false);
+    expect(store.getServers()[0]?.hasProxyPassword).toBe(false);
     store.updateServer('s1', { username: '' });
-    expect(store.getServers()[0].hasPassword).toBe(false);
+    expect(store.getServers()[0]?.hasPassword).toBe(false);
   });
 });
 

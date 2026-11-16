@@ -66,7 +66,7 @@ export function typeaheadMatch(
   const start = state.buffer.length === 1 ? current + 1 : Math.max(current, 0);
   for (let i = 0; i < labels.length; i++) {
     const index = (start + i) % labels.length;
-    if (labels[index].trim().toLowerCase().startsWith(state.buffer)) return index;
+    if (labels[index]?.trim().toLowerCase().startsWith(state.buffer)) return index;
   }
   return -1;
 }

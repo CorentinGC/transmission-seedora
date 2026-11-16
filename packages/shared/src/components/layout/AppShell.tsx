@@ -149,6 +149,7 @@ export function AppShell() {
   const selectedTorrent = useTorrentStore((s) => {
     if (s.selectedIds.size !== 1) return null;
     const id = Array.from(s.selectedIds)[0];
+    if (id === undefined) return null;
     return s.torrents.get(id) ?? null;
   });
 

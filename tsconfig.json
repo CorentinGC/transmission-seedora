@@ -8,6 +8,7 @@
     "noImplicitAny": true,
     "strict": true,
     "noUnusedLocals": true,
+    "noUncheckedIndexedAccess": true,
     "sourceMap": true,
     "baseUrl": ".",
     "outDir": "dist",

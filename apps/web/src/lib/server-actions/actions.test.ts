@@ -77,7 +77,7 @@ describe('setActiveServerCookie', () => {
     const stored = jar.store.get(COOKIE)!;
     expect(stored).not.toContain(PASSWORD);
     expect(stored.startsWith('Fe26.')).toBe(true);
-    expect(jar.setCalls[0].options).toMatchObject({ httpOnly: true, sameSite: 'strict', path: '/' });
+    expect(jar.setCalls[0]?.options).toMatchObject({ httpOnly: true, sameSite: 'strict', path: '/' });
     expect(jar.deleted).toContain('seedora_server');
   });
 
@@ -137,8 +137,8 @@ describe('rpcRequest', () => {
     await activate();
     const result = await rpcRequest('torrent-get', JSON.stringify({ fields: ['id'] }));
     expect(result).toEqual({ success: true, data: { ok: true } });
-    expect(post.fn.mock.calls[0][0]).toMatchObject({ host: 'nas.example.com', port: 9091, useSSL: true });
-    expect(post.fn.mock.calls[0][2].allowPrivate).toBe(false);
+    expect(post.fn.mock.calls[0]?.[0]).toMatchObject({ host: 'nas.example.com', port: 9091, useSSL: true });
+    expect(post.fn.mock.calls[0]?.[2]?.allowPrivate).toBe(false);
   });
 
   it('rejects non-allowlisted methods before any outbound call', async () => {
@@ -207,7 +207,7 @@ describe('rpcRequest', () => {
     vi.stubEnv('SEEDORA_ALLOW_PRIVATE_HOSTS', 'true');
     post.fn.mockReset().mockResolvedValue(success);
     expect(await rpcRequest('session-get')).toEqual({ success: true, data: { ok: true } });
-    expect(post.fn.mock.calls[0][2].allowPrivate).toBe(true);
+    expect(post.fn.mock.calls[0]?.[2]?.allowPrivate).toBe(true);
   });
 
   it('retries the 409 handshake once', async () => {
@@ -252,13 +252,13 @@ describe('rpcRequest', () => {
   it('passes the trusted client key (none without one) and the address limiter to the outbound call', async () => {
     await activate();
     await rpcRequest('session-get');
-    const options = post.fn.mock.calls[0][2] as { clientKey?: string; onResolved?: unknown };
+    const options = post.fn.mock.calls[0]?.[2] as { clientKey?: string; onResolved?: unknown };
     expect(options.clientKey).toBeUndefined();
     expect(typeof options.onResolved).toBe('function');
     vi.stubEnv('SEEDORA_TRUST_PROXY_HEADERS', 'true');
     requestHeaders.current = new Headers({ 'x-forwarded-for': '203.0.113.9' });
     await rpcRequest('session-get');
-    expect((post.fn.mock.calls[1][2] as { clientKey?: string }).clientKey).toBe('203.0.113.9');
+    expect((post.fn.mock.calls[1]?.[2] as { clientKey?: string }).clientKey).toBe('203.0.113.9');
   });
 
   it('is rate limited when the client is identified', async () => {
@@ -295,8 +295,8 @@ describe('testServerConnection', () => {
   it('tests session-get within 8 s and returns success only', async () => {
     const result = await testServerConnection(target);
     expect(result).toEqual({ success: true });
-    expect(post.fn.mock.calls[0][1]).toEqual({ method: 'session-get', arguments: { fields: ['version'] } });
-    expect(post.fn.mock.calls[0][2].signal).toBeInstanceOf(AbortSignal);
+    expect(post.fn.mock.calls[0]?.[1]).toEqual({ method: 'session-get', arguments: { fields: ['version'] } });
+    expect(post.fn.mock.calls[0]?.[2]?.signal).toBeInstanceOf(AbortSignal);
   });
 
   it('denies private hosts by default and reports a bad login', async () => {

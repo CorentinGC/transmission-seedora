@@ -44,7 +44,9 @@ export function Tabs({ tabs, activeTab, onTabChange, size = 'default', id, label
               : -1;
     if (next === -1) return;
     e.preventDefault();
-    onTabChange(tabs[next].id);
+    const nextTab = tabs[next];
+    if (!nextTab) return;
+    onTabChange(nextTab.id);
     listRef.current?.querySelectorAll<HTMLElement>('[role="tab"]')[next]?.focus();
   };
 

@@ -5,7 +5,7 @@ export { availableLanguages, getLanguageName } from './i18n-utils';
 
 /** Language code (e.g. "fr" from "fr-FR") of the host, when it is one we ship; otherwise English. */
 export function detectSystemLanguage(navigatorLanguage: string | undefined): string {
-  const code = (navigatorLanguage ?? '').split('-')[0].toLowerCase();
+  const code = (navigatorLanguage ?? '').split('-')[0]?.toLowerCase() ?? '';
   return code in localeResources ? code : 'en';
 }
 

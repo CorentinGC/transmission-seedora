@@ -67,7 +67,8 @@ function isHostname(value: string): boolean {
   if (value.length > MAX_HOST_LENGTH) return false;
   const labels = value.split('.');
   if (!labels.every((l) => l.length <= MAX_LABEL_LENGTH && LABEL_PATTERN.test(l))) return false;
-  return !NUMERIC_LABEL_PATTERN.test(labels[labels.length - 1]);
+  const lastLabel = labels[labels.length - 1];
+  return lastLabel !== undefined && !NUMERIC_LABEL_PATTERN.test(lastLabel);
 }
 
 /** True for a hostname, an IPv4 literal, or an IPv6 literal (bare or in brackets). Zone ids are refused. */

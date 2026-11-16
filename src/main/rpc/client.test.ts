@@ -57,8 +57,8 @@ describe('TransmissionRpcClient', () => {
     );
     const client = new TransmissionRpcClient({ ...base, port, username: 'u', password: 'p' });
     expect(await client.request('session-get')).toEqual({ hello: 'world' });
-    expect(seen[1].sid).toBe('abc');
-    expect(seen[1].auth).toBe(`Basic ${Buffer.from('u:p').toString('base64')}`);
+    expect(seen[1]?.sid).toBe('abc');
+    expect(seen[1]?.auth).toBe(`Basic ${Buffer.from('u:p').toString('base64')}`);
   });
 
   it('times out with a clear error when the daemon never answers', async () => {

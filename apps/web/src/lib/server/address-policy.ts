@@ -34,9 +34,10 @@ export function parseIPv6(text: string): number[] | null {
   const tail = work.slice(lastColon + 1);
   if (tail.includes('.')) {
     const v4 = parseIPv4(tail);
-    if (!v4) return null;
-    const hi = ((v4[0] << 8) | v4[1]).toString(16);
-    const lo = ((v4[2] << 8) | v4[3]).toString(16);
+    const [a, b, c, d] = v4 ?? [];
+    if (a === undefined || b === undefined || c === undefined || d === undefined) return null;
+    const hi = ((a << 8) | b).toString(16);
+    const lo = ((c << 8) | d).toString(16);
     work = `${work.slice(0, lastColon + 1)}${hi}:${lo}`;
   }
   const halves = work.split('::');
@@ -46,8 +47,10 @@ export function parseIPv6(text: string): number[] | null {
     const groups = part.split(':');
     return groups.every((g) => /^[0-9a-fA-F]{1,4}$/.test(g)) ? groups : null;
   };
-  const head = toGroups(halves[0]);
-  const rest = halves.length === 2 ? toGroups(halves[1]) : [];
+  const [headText, restText] = halves;
+  if (headText === undefined) return null;
+  const head = toGroups(headText);
+  const rest = restText === undefined ? [] : toGroups(restText);
   if (!head || !rest) return null;
   let groups: string[];
   if (halves.length === 2) {
@@ -70,7 +73,10 @@ function inCidr(bytes: readonly number[], base: readonly number[], bits: number)
   let remaining = bits;
   for (let i = 0; remaining > 0; i++, remaining -= 8) {
     const mask = remaining >= 8 ? 0xff : (0xff << (8 - remaining)) & 0xff;
-    if ((bytes[i] & mask) !== (base[i] & mask)) return false;
+    const byte = bytes[i];
+    const baseByte = base[i];
+    if (byte === undefined || baseByte === undefined) return false;
+    if ((byte & mask) !== (baseByte & mask)) return false;
   }
   return true;
 }
@@ -145,8 +151,8 @@ function classifyV4(bytes: readonly number[]): AddressClass {
 function classifyV6(bytes: readonly number[]): AddressClass {
   if (matches(bytes, V6_IPV4_MAPPED)) return classifyV4(bytes.slice(12));
   // Specific entries first: `::1` sits inside `::/96`, metadata inside `fc00::/7`.
-  const [loopback] = V6_PRIVATE[0];
-  if (inCidr(bytes, loopback, 128)) return 'private';
+  const loopbackEntry = V6_PRIVATE[0];
+  if (loopbackEntry && inCidr(bytes, loopbackEntry[0], 128)) return 'private';
   if (matches(bytes, V6_FORBIDDEN)) return 'forbidden';
   if (matches(bytes, V6_PRIVATE)) return 'private';
   return matches(bytes, V6_GLOBAL_UNICAST) ? 'public' : 'forbidden';
