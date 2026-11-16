@@ -191,7 +191,9 @@
     "honorSessionLimits": "Honor session limits",
     "seeding": "Seeding",
     "ratioMode": "Ratio mode:",
+    "ratioLimit": "Ratio limit",
     "idleMode": "Idle mode:",
+    "idleLimit": "Idle limit (minutes)",
     "global": "Global",
     "custom": "Custom",
     "unlimited": "Unlimited",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Enable Alt Speed",
       "disableAltSpeed": "Disable Alt Speed",
       "showWindow": "Show Window",
-      "quit": "Quit"
+      "quit": "Quit",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Change the daemon's script settings?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "No server is connected.",
       "UNKNOWN": "An unknown error occurred.",
       "SECRET_STORE_FAILED": "The system keychain refused access, so the password was not saved. Unlock the keychain and try again.",
-      "CONFIG_UNWRITABLE": "The configuration file is unreadable, so nothing was saved. Fix or remove the file, then try again."
+      "CONFIG_UNWRITABLE": "The configuration file is unreadable, so nothing was saved. Fix or remove the file, then try again.",
+      "UNTRUSTED_SENDER": "This request did not come from the application window and was refused.",
+      "WATCH_FOLDER_NOT_APPROVED": "The watch folder must be chosen with the folder picker.",
+      "EXPORT_FAILED": "The configuration could not be exported."
     }
   }
 }

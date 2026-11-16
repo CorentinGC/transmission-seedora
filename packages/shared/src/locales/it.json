@@ -191,7 +191,9 @@
     "honorSessionLimits": "Rispetta i limiti di sessione",
     "seeding": "Condivisione",
     "ratioMode": "Modalità rapporto:",
+    "ratioLimit": "Limite del rapporto",
     "idleMode": "Modalità inattività:",
+    "idleLimit": "Limite di inattività (minuti)",
     "global": "Globale",
     "custom": "Personalizzato",
     "unlimited": "Illimitato",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Attiva velocità alternativa",
       "disableAltSpeed": "Disattiva velocità alternativa",
       "showWindow": "Mostra finestra",
-      "quit": "Esci"
+      "quit": "Esci",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Modificare le impostazioni degli script del daemon?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Nessun server connesso.",
       "UNKNOWN": "Si è verificato un errore sconosciuto.",
       "SECRET_STORE_FAILED": "Il portachiavi di sistema ha negato l'accesso, quindi la password non è stata salvata. Sblocca il portachiavi e riprova.",
-      "CONFIG_UNWRITABLE": "Il file di configurazione non è leggibile, quindi non è stato salvato nulla. Correggi o rimuovi il file, quindi riprova."
+      "CONFIG_UNWRITABLE": "Il file di configurazione non è leggibile, quindi non è stato salvato nulla. Correggi o rimuovi il file, quindi riprova.",
+      "UNTRUSTED_SENDER": "Questa richiesta non proviene dalla finestra dell'applicazione ed è stata rifiutata.",
+      "WATCH_FOLDER_NOT_APPROVED": "La cartella monitorata deve essere scelta con il selettore di cartelle.",
+      "EXPORT_FAILED": "Impossibile esportare la configurazione."
     }
   }
 }

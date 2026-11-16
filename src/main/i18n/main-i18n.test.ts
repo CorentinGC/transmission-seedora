@@ -30,8 +30,9 @@ describe('main i18n', () => {
     expect(t('native.tray.activeTransfers', { count: 1 })).toBe('1 active transfer');
     expect(t('native.tray.activeTransfers', { count: 3 })).toBe('3 active transfers');
     setLanguage('ru');
-    expect(t('native.tray.activeTransfers', { count: 2 })).toContain('2');
-    expect(t('native.tray.activeTransfers', { count: 5 })).not.toBe(t('native.tray.activeTransfers', { count: 2 }));
+    // Depends on the translator adding `_few` / `_many` to ru.json; fails until then.
+    expect(t('native.tray.activeTransfers', { count: 2 })).toBe('2 активные передачи');
+    expect(t('native.tray.activeTransfers', { count: 5 })).toBe('5 активных передач');
   });
 
   it('notifies listeners only on a real change', () => {

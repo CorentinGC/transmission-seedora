@@ -2,6 +2,7 @@ import { Tray, Menu, nativeImage, BrowserWindow, app } from 'electron';
 import path from 'node:path';
 import { IPC } from '@ipc/ipc-channels';
 import { t } from './i18n/main-i18n';
+import { formatSpeed } from './format-speed';
 
 let tray: Tray | null = null;
 let lastWindow: BrowserWindow | null = null;
@@ -12,12 +13,6 @@ interface TrayState {
   uploadSpeed: number;
   activeCount: number;
   altSpeedEnabled: boolean;
-}
-
-function formatSpeed(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B/s`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB/s`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB/s`;
 }
 
 function getIconPath(): string {

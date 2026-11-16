@@ -191,7 +191,9 @@
     "honorSessionLimits": "Overhold sessionsgrænser",
     "seeding": "Seeder",
     "ratioMode": "Ratiotilstand:",
+    "ratioLimit": "Ratiogrænse",
     "idleMode": "Inaktivitetstilstand:",
+    "idleLimit": "Inaktivitetsgrænse (minutter)",
     "global": "Global",
     "custom": "Brugerdefineret",
     "unlimited": "Ubegrænset",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Aktivér alternativ hastighed",
       "disableAltSpeed": "Deaktivér alternativ hastighed",
       "showWindow": "Vis vindue",
-      "quit": "Afslut"
+      "quit": "Afslut",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Ændre dæmonens scriptindstillinger?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Ingen server er forbundet.",
       "UNKNOWN": "Der opstod en ukendt fejl.",
       "SECRET_STORE_FAILED": "Systemets nøglering afviste adgang, så adgangskoden blev ikke gemt. Lås nøgleringen op, og prøv igen.",
-      "CONFIG_UNWRITABLE": "Konfigurationsfilen kan ikke læses, så intet blev gemt. Ret eller fjern filen, og prøv igen."
+      "CONFIG_UNWRITABLE": "Konfigurationsfilen kan ikke læses, så intet blev gemt. Ret eller fjern filen, og prøv igen.",
+      "UNTRUSTED_SENDER": "Denne anmodning kom ikke fra programvinduet og blev afvist.",
+      "WATCH_FOLDER_NOT_APPROVED": "Den overvågede mappe skal vælges med mappevælgeren.",
+      "EXPORT_FAILED": "Konfigurationen kunne ikke eksporteres."
     }
   }
 }

@@ -191,7 +191,9 @@
     "honorSessionLimits": "遵守会话限制",
     "seeding": "做种",
     "ratioMode": "分享率模式:",
+    "ratioLimit": "分享率上限",
     "idleMode": "空闲模式:",
+    "idleLimit": "空闲时间上限（分钟）",
     "global": "全局",
     "custom": "自定义",
     "unlimited": "无限制",
@@ -516,7 +518,12 @@
       "enableAltSpeed": "启用备用速度",
       "disableAltSpeed": "禁用备用速度",
       "showWindow": "显示窗口",
-      "quit": "退出"
+      "quit": "退出",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "要更改守护进程的脚本设置吗？",
@@ -574,7 +581,10 @@
       "NO_CONNECTION": "没有已连接的服务器。",
       "UNKNOWN": "发生未知错误。",
       "SECRET_STORE_FAILED": "系统钥匙串拒绝了访问，因此密码未保存。请解锁钥匙串后重试。",
-      "CONFIG_UNWRITABLE": "配置文件无法读取，因此未保存任何内容。请修复或删除该文件，然后重试。"
+      "CONFIG_UNWRITABLE": "配置文件无法读取，因此未保存任何内容。请修复或删除该文件，然后重试。",
+      "UNTRUSTED_SENDER": "此请求并非来自应用程序窗口，已被拒绝。",
+      "WATCH_FOLDER_NOT_APPROVED": "必须通过文件夹选择器来选择监视文件夹。",
+      "EXPORT_FAILED": "无法导出配置。"
     }
   }
 }

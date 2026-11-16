@@ -191,7 +191,9 @@
     "honorSessionLimits": "セッション制限を尊重",
     "seeding": "シード",
     "ratioMode": "共有比モード:",
+    "ratioLimit": "共有比の上限",
     "idleMode": "アイドルモード:",
+    "idleLimit": "アイドル時間の上限（分）",
     "global": "グローバル",
     "custom": "カスタム",
     "unlimited": "無制限",
@@ -516,7 +518,12 @@
       "enableAltSpeed": "代替速度を有効にする",
       "disableAltSpeed": "代替速度を無効にする",
       "showWindow": "ウインドウを表示",
-      "quit": "終了"
+      "quit": "終了",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "デーモンのスクリプト設定を変更しますか？",
@@ -574,7 +581,10 @@
       "NO_CONNECTION": "接続中のサーバーがありません。",
       "UNKNOWN": "不明なエラーが発生しました。",
       "SECRET_STORE_FAILED": "システムのキーチェーンがアクセスを拒否したため、パスワードは保存されませんでした。キーチェーンのロックを解除して、もう一度お試しください。",
-      "CONFIG_UNWRITABLE": "設定ファイルを読み取れないため、何も保存されませんでした。ファイルを修正するか削除してから、もう一度お試しください。"
+      "CONFIG_UNWRITABLE": "設定ファイルを読み取れないため、何も保存されませんでした。ファイルを修正するか削除してから、もう一度お試しください。",
+      "UNTRUSTED_SENDER": "このリクエストはアプリのウィンドウから送信されたものではないため、拒否されました。",
+      "WATCH_FOLDER_NOT_APPROVED": "監視フォルダーはフォルダー選択ダイアログで選択する必要があります。",
+      "EXPORT_FAILED": "設定をエクスポートできませんでした。"
     }
   }
 }

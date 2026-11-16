@@ -49,6 +49,9 @@ describe('new transport codes and cancellation', () => {
       'UNKNOWN',
       'SECRET_STORE_FAILED',
       'CONFIG_UNWRITABLE',
+      'UNTRUSTED_SENDER',
+      'WATCH_FOLDER_NOT_APPROVED',
+      'EXPORT_FAILED',
     ]) {
       expect(errorCodeKey(code)).toBe(`errors.rpc.${code}`);
     }

@@ -311,7 +311,7 @@ export function AddTorrentDialog({ onClose, initial }: Props) {
         </label>
 
         {error && (
-          <div className="text-sm text-destructive-text bg-destructive/10 p-2 rounded">
+          <div role="alert" className="text-sm text-destructive-text bg-destructive/10 p-2 rounded">
             <p>{error}</p>
             {duplicateId && fileBase64 && (
               <button

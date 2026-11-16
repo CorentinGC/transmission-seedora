@@ -191,7 +191,9 @@
     "honorSessionLimits": "Noudata istuntorajoituksia",
     "seeding": "Jakaminen",
     "ratioMode": "Suhdetila:",
+    "ratioLimit": "Suhderaja",
     "idleMode": "Joutilaistila:",
+    "idleLimit": "Joutilaisuusraja (minuuttia)",
     "global": "Yleinen",
     "custom": "Mukautettu",
     "unlimited": "Rajoittamaton",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Ota vaihtoehtoinen nopeus käyttöön",
       "disableAltSpeed": "Poista vaihtoehtoinen nopeus käytöstä",
       "showWindow": "Näytä ikkuna",
-      "quit": "Lopeta"
+      "quit": "Lopeta",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Muutetaanko daemonin komentosarja-asetuksia?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Palvelinta ei ole yhdistetty.",
       "UNKNOWN": "Tapahtui tuntematon virhe.",
       "SECRET_STORE_FAILED": "Järjestelmän avainnippu esti pääsyn, joten salasanaa ei tallennettu. Avaa avainnipun lukitus ja yritä uudelleen.",
-      "CONFIG_UNWRITABLE": "Asetustiedostoa ei voi lukea, joten mitään ei tallennettu. Korjaa tai poista tiedosto ja yritä uudelleen."
+      "CONFIG_UNWRITABLE": "Asetustiedostoa ei voi lukea, joten mitään ei tallennettu. Korjaa tai poista tiedosto ja yritä uudelleen.",
+      "UNTRUSTED_SENDER": "Tämä pyyntö ei tullut sovellusikkunasta, ja se hylättiin.",
+      "WATCH_FOLDER_NOT_APPROVED": "Seurattava kansio on valittava kansiovalitsimella.",
+      "EXPORT_FAILED": "Asetuksia ei voitu viedä."
     }
   }
 }

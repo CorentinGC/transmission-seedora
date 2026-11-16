@@ -191,7 +191,9 @@
     "honorSessionLimits": "Sessielimieten respecteren",
     "seeding": "Seeden",
     "ratioMode": "Ratiomodus:",
+    "ratioLimit": "Ratiolimiet",
     "idleMode": "Inactieve modus:",
+    "idleLimit": "Inactiviteitslimiet (minuten)",
     "global": "Globaal",
     "custom": "Aangepast",
     "unlimited": "Onbeperkt",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Alternatieve snelheid inschakelen",
       "disableAltSpeed": "Alternatieve snelheid uitschakelen",
       "showWindow": "Venster tonen",
-      "quit": "Afsluiten"
+      "quit": "Afsluiten",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Scriptinstellingen van de daemon wijzigen?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Er is geen server verbonden.",
       "UNKNOWN": "Er is een onbekende fout opgetreden.",
       "SECRET_STORE_FAILED": "De sleutelhanger van het systeem weigerde toegang, dus het wachtwoord is niet opgeslagen. Ontgrendel de sleutelhanger en probeer het opnieuw.",
-      "CONFIG_UNWRITABLE": "Het configuratiebestand is onleesbaar, dus er is niets opgeslagen. Herstel of verwijder het bestand en probeer het opnieuw."
+      "CONFIG_UNWRITABLE": "Het configuratiebestand is onleesbaar, dus er is niets opgeslagen. Herstel of verwijder het bestand en probeer het opnieuw.",
+      "UNTRUSTED_SENDER": "Dit verzoek kwam niet van het toepassingsvenster en is geweigerd.",
+      "WATCH_FOLDER_NOT_APPROVED": "De bewaakte map moet worden gekozen met de mapkiezer.",
+      "EXPORT_FAILED": "De configuratie kon niet worden geëxporteerd."
     }
   }
 }

@@ -5,8 +5,9 @@ import type { AppPreferences, IpcResponse } from '../../types';
 import { useUiStore } from '../../stores/ui-store';
 import { useApi } from '../../platform/api-context';
 import { guardedCall } from '../../lib/guarded-call';
+import { describeFailure } from '../../lib/error-messages';
 import { runConfigExport } from '../../lib/config-export';
-import { availableLanguages, getLanguageName } from '../../lib/i18n-utils';
+import { availableLanguages, getLanguageName, resolveLanguageChoice } from '../../lib/i18n-utils';
 import { hasValidNumbers, parseNumberInput, MIN_POLLING_INTERVAL_MS } from '../../lib/prefs-validation';
 import { Dialog, Button, Input, Select, Checkbox, SectionHeading } from '../ui';
 import { ExportPasswordsOption } from '../server/ExportPasswordsOption';
@@ -38,7 +39,7 @@ export function AppPrefsDialog({ onClose }: Props) {
     setSaveError(null);
     const res = await api.prefsSet(prefs);
     if (!res.success) {
-      setSaveError(res.error ? `${t('prefs.saveFailed')} (${res.error})` : t('prefs.saveFailed'));
+      setSaveError(`${t('prefs.saveFailed')} (${describeFailure(res.error, res.code)})`);
       return;
     }
 
@@ -46,9 +47,8 @@ export function AppPrefsDialog({ onClose }: Props) {
     setPollingInterval(prefs.pollingInterval);
     setRelativeDates(prefs.relativeDates);
 
-    if (i18n.language !== prefs.language) {
-      i18n.changeLanguage(prefs.language);
-    }
+    const { switchTo } = resolveLanguageChoice(prefs.language, i18n.language);
+    if (switchTo) i18n.changeLanguage(switchTo);
 
     useUiStore.getState().setSpeedPresets(prefs.speedPresets ?? null);
     api.watcherRestart?.();
@@ -189,7 +189,7 @@ export function AppPrefsDialog({ onClose }: Props) {
 
         {/* Theme */}
         <SectionHeading bordered>{t('prefs.appearance')}</SectionHeading>
-        <div className="flex items-center gap-2">
+        <label className="flex items-center gap-2">
           {t('prefs.theme')}
           <Select
             selectSize="sm"
@@ -200,11 +200,16 @@ export function AppPrefsDialog({ onClose }: Props) {
             <option value="light">{t('prefs.themeLight')}</option>
             <option value="dark">{t('prefs.themeDark')}</option>
           </Select>
-        </div>
+        </label>
 
         {/* Language */}
         <SectionHeading bordered>{t('prefs.language')}</SectionHeading>
-        <Select selectSize="sm" value={prefs.language} onChange={(e) => updatePref('language', e.target.value)}>
+        <Select
+          selectSize="sm"
+          aria-label={t('prefs.language')}
+          value={resolveLanguageChoice(prefs.language, i18n.language).selected}
+          onChange={(e) => updatePref('language', e.target.value)}
+        >
           {availableLanguages.map((code) => (
             <option key={code} value={code}>
               {getLanguageName(code)}
@@ -257,6 +262,7 @@ export function AppPrefsDialog({ onClose }: Props) {
                 className="flex-1"
                 value={prefs.watchFolder ?? ''}
                 readOnly
+                aria-label={t('prefs.watchFolder')}
                 placeholder={t('prefs.watchFolderPlaceholder')}
               />
               <Button

@@ -7,8 +7,8 @@ import type { SenderEventLike } from './sender';
 /** Predicate deciding whether an IPC event comes from the app's own page. */
 export type SenderValidator = (event: SenderEventLike) => boolean;
 
-const INVALID: IpcResponse = { success: false, error: 'Invalid request' };
-const UNTRUSTED: IpcResponse = { success: false, error: 'Untrusted sender' };
+const INVALID: IpcResponse = { success: false, error: 'Invalid request', code: 'INVALID_INPUT' };
+const UNTRUSTED: IpcResponse = { success: false, error: 'Untrusted sender', code: 'UNTRUSTED_SENDER' };
 
 /**
  * Wraps an invoke handler: sender check, then argument validation against `schema`
@@ -29,7 +29,7 @@ export function guardHandler<S extends z.ZodType<unknown[]>, R>(
     } catch (err) {
       console.error('[IPC] Handler failed:', err instanceof Error ? err.name : 'unknown error');
       if (err instanceof ConfigStoreError) return { success: false, error: 'Request failed', code: err.code };
-      return { success: false, error: 'Request failed' };
+      return { success: false, error: 'Request failed', code: 'UNKNOWN' };
     }
   };
 }

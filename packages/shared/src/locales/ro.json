@@ -191,7 +191,9 @@
     "honorSessionLimits": "Respectă limitele sesiunii",
     "seeding": "Distribuire",
     "ratioMode": "Mod raport:",
+    "ratioLimit": "Limită de raport",
     "idleMode": "Mod inactivitate:",
+    "idleLimit": "Limită de inactivitate (minute)",
     "global": "Global",
     "custom": "Personalizat",
     "unlimited": "Nelimitat",
@@ -513,11 +515,17 @@
     },
     "tray": {
       "activeTransfers_one": "{{count}} transfer activ",
+      "activeTransfers_few": "{{count}} transferuri active",
       "activeTransfers_other": "{{count}} de transferuri active",
       "enableAltSpeed": "Activează viteza alternativă",
       "disableAltSpeed": "Dezactivează viteza alternativă",
       "showWindow": "Afișează fereastra",
-      "quit": "Ieși"
+      "quit": "Ieși",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Modifici setările de scripturi ale daemonului?",
@@ -575,7 +583,10 @@
       "NO_CONNECTION": "Niciun server nu este conectat.",
       "UNKNOWN": "A apărut o eroare necunoscută.",
       "SECRET_STORE_FAILED": "Breasla de chei a sistemului a refuzat accesul, deci parola nu a fost salvată. Deblocați breasla de chei și încercați din nou.",
-      "CONFIG_UNWRITABLE": "Fișierul de configurare nu poate fi citit, deci nu s-a salvat nimic. Remediați sau eliminați fișierul, apoi încercați din nou."
+      "CONFIG_UNWRITABLE": "Fișierul de configurare nu poate fi citit, deci nu s-a salvat nimic. Remediați sau eliminați fișierul, apoi încercați din nou.",
+      "UNTRUSTED_SENDER": "Această solicitare nu a venit din fereastra aplicației și a fost refuzată.",
+      "WATCH_FOLDER_NOT_APPROVED": "Folderul de monitorizare trebuie ales cu selectorul de foldere.",
+      "EXPORT_FAILED": "Configurația nu a putut fi exportată."
     }
   }
 }

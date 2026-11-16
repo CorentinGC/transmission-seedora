@@ -191,7 +191,9 @@
     "honorSessionLimits": "Respeitar limites de sessão",
     "seeding": "Semeadura",
     "ratioMode": "Modo de proporção:",
+    "ratioLimit": "Limite de proporção",
     "idleMode": "Modo inativo:",
+    "idleLimit": "Limite de inatividade (minutos)",
     "global": "Global",
     "custom": "Personalizado",
     "unlimited": "Ilimitado",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Ativar velocidade alternativa",
       "disableAltSpeed": "Desativar velocidade alternativa",
       "showWindow": "Mostrar janela",
-      "quit": "Sair"
+      "quit": "Sair",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Alterar as configurações de script do daemon?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Nenhum servidor ligado.",
       "UNKNOWN": "Ocorreu um erro desconhecido.",
       "SECRET_STORE_FAILED": "O chaveiro do sistema recusou o acesso, por isso a palavra-passe não foi guardada. Desbloqueie o chaveiro e tente novamente.",
-      "CONFIG_UNWRITABLE": "O ficheiro de configuração não é legível, por isso nada foi guardado. Corrija ou remova o ficheiro e tente novamente."
+      "CONFIG_UNWRITABLE": "O ficheiro de configuração não é legível, por isso nada foi guardado. Corrija ou remova o ficheiro e tente novamente.",
+      "UNTRUSTED_SENDER": "Este pedido não veio da janela da aplicação e foi recusado.",
+      "WATCH_FOLDER_NOT_APPROVED": "A pasta monitorizada tem de ser escolhida com o seletor de pastas.",
+      "EXPORT_FAILED": "Não foi possível exportar a configuração."
     }
   }
 }
