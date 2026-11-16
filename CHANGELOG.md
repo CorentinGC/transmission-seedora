@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.2.2...seedora-v1.3.0) (2026-11-16)
+
+
+### Features
+
+* **electron:** add Help menu link to the release notes of the running version ([026d40e](https://github.com/CorentinGC/transmission-seedora/commit/026d40e2e94b170e4224e2c3dadfc4608ccbad8c))
+* mobile card list, async safeStorage, release notes link, CI e2e ([c98e1fb](https://github.com/CorentinGC/transmission-seedora/commit/c98e1fbc4d459532f54ae65920f0e43dcda3e8aa))
+* **ui:** add sort control to the mobile torrent card list ([cecd5d4](https://github.com/CorentinGC/transmission-seedora/commit/cecd5d4b9fb2f029ada0524597323e14c46785a7))
+* **ui:** card layout and sort control for the mobile torrent list ([54eab05](https://github.com/CorentinGC/transmission-seedora/commit/54eab05555d352a7df0c207f68c1ea98b617fc85))
+* **ui:** render torrent list as cards on narrow screens ([100711f](https://github.com/CorentinGC/transmission-seedora/commit/100711f9977334911d6b4652f93ddccde5e182f1))
+
 ## [1.2.2](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.2.1...seedora-v1.2.2) (2026-11-16)
 
 
