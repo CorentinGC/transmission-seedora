@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.2](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.3.1...seedora-v1.3.2) (2026-11-16)
+
+
+### Bug Fixes
+
+* update geoip-lite to 2.0.3 and move the project to Node 24 ([84c88cf](https://github.com/CorentinGC/transmission-seedora/commit/84c88cf4eb66ac201255bb317e345b12ae2abfae))
+* update geoip-lite to 2.0.3 and move the project to Node 24 ([72aaf4a](https://github.com/CorentinGC/transmission-seedora/commit/72aaf4a8935ae8653873723eeccd3850680c8c01))
+* update geoip-lite to 2.0.3 and move the project to Node 24 ([2569416](https://github.com/CorentinGC/transmission-seedora/commit/2569416aebaf73e0706c84fb42d7aba4eafb9260))
+
 ## [1.3.1](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.3.0...seedora-v1.3.1) (2026-11-16)
 
 
