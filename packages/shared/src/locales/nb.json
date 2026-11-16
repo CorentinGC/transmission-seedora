@@ -191,7 +191,9 @@
     "honorSessionLimits": "Overhold øktgrenser",
     "seeding": "Seeder",
     "ratioMode": "Ratiomodus:",
+    "ratioLimit": "Ratiogrense",
     "idleMode": "Inaktivitetsmodus:",
+    "idleLimit": "Inaktivitetsgrense (minutter)",
     "global": "Global",
     "custom": "Egendefinert",
     "unlimited": "Ubegrenset",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Aktiver alternativ hastighet",
       "disableAltSpeed": "Deaktiver alternativ hastighet",
       "showWindow": "Vis vindu",
-      "quit": "Avslutt"
+      "quit": "Avslutt",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Endre daemonens skriptinnstillinger?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Ingen server er tilkoblet.",
       "UNKNOWN": "Det oppstod en ukjent feil.",
       "SECRET_STORE_FAILED": "Systemets nøkkelring avslo tilgang, så passordet ble ikke lagret. Lås opp nøkkelringen og prøv igjen.",
-      "CONFIG_UNWRITABLE": "Konfigurasjonsfilen kan ikke leses, så ingenting ble lagret. Reparer eller fjern filen, og prøv igjen."
+      "CONFIG_UNWRITABLE": "Konfigurasjonsfilen kan ikke leses, så ingenting ble lagret. Reparer eller fjern filen, og prøv igjen.",
+      "UNTRUSTED_SENDER": "Denne forespørselen kom ikke fra programvinduet og ble avvist.",
+      "WATCH_FOLDER_NOT_APPROVED": "Den overvåkede mappen må velges med mappevelgeren.",
+      "EXPORT_FAILED": "Konfigurasjonen kunne ikke eksporteres."
     }
   }
 }

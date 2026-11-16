@@ -5,6 +5,7 @@ import { IPC } from '@ipc/ipc-channels';
 import type { IpcResponse, ServerConfig, AppPreferences } from '@shared/types';
 import { writeFileAtomic } from '../store/atomic-write';
 import { configStore } from '../store/config-store';
+import { ConfigStoreError } from '../store/config-store-error';
 import { t, setLanguage } from '../i18n/main-i18n';
 import { connectionManager } from '../rpc/connection-manager';
 import { toIpcError } from '../rpc/to-ipc-error';
@@ -143,13 +144,12 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
     IPC.SERVER_SET_ACTIVE,
     z.tuple([serverIdSchema.nullable()]),
     async (_e, [id]): Promise<IpcResponse> => {
+      // The store and the connection manager must agree: an unknown id is refused, null disconnects.
+      const server = id === null ? undefined : configStore.getServers().find((s) => s.id === id);
+      if (id !== null && !server) return { success: false, error: 'Invalid request' };
       await configStore.setActiveServerId(id);
-      if (id) {
-        const server = configStore.getServers().find((s) => s.id === id);
-        if (server) {
-          connectionManager.setActiveServer(server);
-        }
-      }
+      if (server) connectionManager.setActiveServer(server);
+      else connectionManager.clearActive();
       return { success: true };
     },
   );
@@ -171,7 +171,11 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
 
   handleGuarded(isTrusted, IPC.PREFS_SET, z.tuple([prefsPatchSchema]), async (_e, [prefs]): Promise<IpcResponse> => {
     if (!isWatchFolderAllowed(prefs.watchFolder)) {
-      return { success: false, error: 'Watch folder must be chosen with the folder dialog' };
+      return {
+        success: false,
+        error: 'Watch folder must be chosen with the folder dialog',
+        code: 'WATCH_FOLDER_NOT_APPROVED',
+      };
     }
     await configStore.updatePreferences(prefs);
     if (prefs.language !== undefined) setLanguage(prefs.language);
@@ -215,7 +219,7 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
         writeFileAtomic(picked.filePath, JSON.stringify(result, null, 2));
       } catch (err) {
         console.error('[Export] Write failed:', err instanceof Error ? err.name : 'unknown error');
-        return { success: false, error: 'Export failed' };
+        return { success: false, error: 'Export failed', code: 'EXPORT_FAILED' };
       }
       return { success: true };
     },
@@ -232,7 +236,8 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
       } catch (err) {
         console.error('[Import] Failed:', err instanceof Error ? err.name : 'unknown error');
         const reason = err instanceof ApprovedPathError ? err.message : 'invalid file';
-        return { success: false, error: `Import failed: ${reason}` };
+        const code = err instanceof ConfigStoreError ? err.code : 'IMPORT_INVALID';
+        return { success: false, error: `Import failed: ${reason}`, code };
       }
     },
   );

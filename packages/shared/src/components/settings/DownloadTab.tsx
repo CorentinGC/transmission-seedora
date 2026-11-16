@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
 import type { SessionSettings } from '../../types/session';
+import { Button } from '../ui';
+import { ApplyStatus, type ApplyState } from './ApplyStatus';
 
 interface Props {
   settings: SessionSettings;
@@ -28,7 +30,7 @@ export function DownloadTab({ settings: s }: Props) {
     s.scriptTorrentDoneSeedingFilename,
   );
 
-  const [applyStatus, setApplyStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [applyStatus, setApplyStatus] = useState<ApplyState>('idle');
 
   const apply = async () => {
     const ok = await updateSettings({
@@ -55,6 +57,7 @@ export function DownloadTab({ settings: s }: Props) {
         <h3 className="font-medium mb-2">{t('downloadTab.downloadDirectory')}</h3>
         <input
           type="text"
+          aria-label={t('downloadTab.downloadDirectory')}
           className="w-full h-7 px-2 rounded border bg-background"
           value={downloadDir}
           onChange={(e) => setDownloadDir(e.target.value)}
@@ -74,6 +77,7 @@ export function DownloadTab({ settings: s }: Props) {
         {incompleteDirEnabled && (
           <input
             type="text"
+            aria-label={t('downloadTab.incompleteDirectory')}
             className="w-full h-7 px-2 mt-1 rounded border bg-background"
             value={incompleteDir}
             onChange={(e) => setIncompleteDir(e.target.value)}
@@ -122,6 +126,7 @@ export function DownloadTab({ settings: s }: Props) {
           {scriptTorrentAddedEnabled && (
             <input
               type="text"
+              aria-label={t('downloadTab.scriptOnAdded')}
               className="w-full h-7 px-2 rounded border bg-background"
               value={scriptTorrentAddedFilename}
               onChange={(e) => setScriptTorrentAddedFilename(e.target.value)}
@@ -139,6 +144,7 @@ export function DownloadTab({ settings: s }: Props) {
           {scriptTorrentDoneEnabled && (
             <input
               type="text"
+              aria-label={t('downloadTab.scriptOnCompleted')}
               className="w-full h-7 px-2 rounded border bg-background"
               value={scriptTorrentDoneFilename}
               onChange={(e) => setScriptTorrentDoneFilename(e.target.value)}
@@ -156,6 +162,7 @@ export function DownloadTab({ settings: s }: Props) {
           {scriptTorrentDoneSeedingEnabled && (
             <input
               type="text"
+              aria-label={t('downloadTab.scriptOnDoneSeeding')}
               className="w-full h-7 px-2 rounded border bg-background"
               value={scriptTorrentDoneSeedingFilename}
               onChange={(e) => setScriptTorrentDoneSeedingFilename(e.target.value)}
@@ -166,14 +173,10 @@ export function DownloadTab({ settings: s }: Props) {
       </div>
 
       <div className="border-t pt-4 flex items-center gap-3">
-        <button
-          className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90"
-          onClick={apply}
-        >
+        <Button variant="primary" onClick={apply}>
           {t('dialog.apply')}
-        </button>
-        {applyStatus === 'success' && <span className="text-xs text-success">{t('settings.applied')}</span>}
-        {applyStatus === 'error' && <span className="text-xs text-destructive-text">{t('settings.applyError')}</span>}
+        </Button>
+        <ApplyStatus status={applyStatus} />
       </div>
     </div>
   );

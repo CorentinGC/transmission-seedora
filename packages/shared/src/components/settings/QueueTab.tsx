@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSessionStore } from '../../stores/session-store';
 import type { SessionSettings } from '../../types/session';
+import { Button } from '../ui';
+import { ApplyStatus, type ApplyState } from './ApplyStatus';
 
 interface Props {
   settings: SessionSettings;
@@ -22,7 +24,7 @@ export function QueueTab({ settings: s }: Props) {
   const [idleSeedingLimitEnabled, setIdleSeedingLimitEnabled] = useState(s.idleSeedingLimitEnabled);
   const [idleSeedingLimit, setIdleSeedingLimit] = useState(s.idleSeedingLimit);
 
-  const [applyStatus, setApplyStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [applyStatus, setApplyStatus] = useState<ApplyState>('idle');
 
   const apply = async () => {
     const ok = await updateSettings({
@@ -54,6 +56,7 @@ export function QueueTab({ settings: s }: Props) {
           {t('queueTab.maxDownloads')}
           <input
             type="number"
+            aria-label={t('queueTab.maxDownloads')}
             className="w-20 h-7 px-2 rounded border bg-background"
             value={downloadQueueSize}
             onChange={(e) => setDownloadQueueSize(Number(e.target.value))}
@@ -69,6 +72,7 @@ export function QueueTab({ settings: s }: Props) {
           {t('queueTab.maxSeeds')}
           <input
             type="number"
+            aria-label={t('queueTab.maxSeeds')}
             className="w-20 h-7 px-2 rounded border bg-background"
             value={seedQueueSize}
             onChange={(e) => setSeedQueueSize(Number(e.target.value))}
@@ -88,6 +92,7 @@ export function QueueTab({ settings: s }: Props) {
           {t('queueTab.idleMinutes')}
           <input
             type="number"
+            aria-label={t('queueTab.idleMinutes')}
             className="w-20 h-7 px-2 rounded border bg-background"
             value={queueStalledMinutes}
             onChange={(e) => setQueueStalledMinutes(Number(e.target.value))}
@@ -104,6 +109,7 @@ export function QueueTab({ settings: s }: Props) {
             {t('queueTab.stopAtRatio')}
             <input
               type="number"
+              aria-label={t('queueTab.stopAtRatio')}
               step="0.1"
               className="w-20 h-7 px-2 rounded border bg-background"
               value={seedRatioLimit}
@@ -120,6 +126,7 @@ export function QueueTab({ settings: s }: Props) {
             {t('queueTab.stopIfIdle')}
             <input
               type="number"
+              aria-label={t('queueTab.stopIfIdle')}
               className="w-20 h-7 px-2 rounded border bg-background"
               value={idleSeedingLimit}
               onChange={(e) => setIdleSeedingLimit(Number(e.target.value))}
@@ -130,14 +137,10 @@ export function QueueTab({ settings: s }: Props) {
       </div>
 
       <div className="border-t pt-4 flex items-center gap-3">
-        <button
-          className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90"
-          onClick={apply}
-        >
+        <Button variant="primary" onClick={apply}>
           {t('dialog.apply')}
-        </button>
-        {applyStatus === 'success' && <span className="text-xs text-success">{t('settings.applied')}</span>}
-        {applyStatus === 'error' && <span className="text-xs text-destructive-text">{t('settings.applyError')}</span>}
+        </Button>
+        <ApplyStatus status={applyStatus} />
       </div>
     </div>
   );

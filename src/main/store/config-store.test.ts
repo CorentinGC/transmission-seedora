@@ -275,11 +275,24 @@ describe('password update rules', () => {
   it.each([
     ['proxy host', { proxyHost: 'evil' }],
     ['proxy type', { proxyType: 'socks5' as const }],
+    ['proxy port', { proxyPort: 1 }],
     ['proxy username', { proxyUsername: 'other' }],
-  ])('drops the proxy password when the %s changes', async (_name, change) => {
+  ])('drops both passwords when the %s changes', async (_name, change) => {
     const store = await withPasswords();
     await store.updateServer('s1', change);
-    expect(store.getServers()[0]).toMatchObject({ hasProxyPassword: false, hasPassword: true });
+    expect(store.getServers()[0]).toMatchObject({ hasProxyPassword: false, hasPassword: false });
+  });
+
+  it('keeps a password supplied in the same patch as a proxy change', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { proxyHost: 'new', password: 'fresh', proxyPassword: 'pfresh' });
+    expect(store.getServers()[0]).toMatchObject({ password: 'fresh', proxyPassword: 'pfresh' });
+  });
+
+  it('keeps the daemon password when the proxy is switched off', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { proxyType: 'none' });
+    expect(store.getServers()[0]).toMatchObject({ hasPassword: true, hasProxyPassword: false });
   });
 
   it('drops the password when certificate checks are relaxed, not when they are tightened', async () => {

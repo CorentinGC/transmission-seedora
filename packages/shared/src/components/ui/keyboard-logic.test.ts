@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   isTypeaheadKey,
   menuNavigationTarget,
+  tabNavigationTarget,
   tabWrapAction,
   typeaheadMatch,
   TYPEAHEAD_RESET_MS,
@@ -83,5 +84,24 @@ describe('isTypeaheadKey', () => {
     expect(isTypeaheadKey({ key: ' ', ...base })).toBe(false);
     expect(isTypeaheadKey({ key: 'Enter', ...base })).toBe(false);
     expect(isTypeaheadKey({ key: 'a', ...base, ctrlKey: true })).toBe(false);
+  });
+});
+
+describe('tabNavigationTarget', () => {
+  it('moves with the arrows in left-to-right layouts, wrapping', () => {
+    expect(tabNavigationTarget('ArrowRight', 0, 3, false)).toBe(1);
+    expect(tabNavigationTarget('ArrowRight', 2, 3, false)).toBe(0);
+    expect(tabNavigationTarget('ArrowLeft', 0, 3, false)).toBe(2);
+  });
+  it('swaps the arrows in right-to-left layouts', () => {
+    expect(tabNavigationTarget('ArrowLeft', 0, 3, true)).toBe(1);
+    expect(tabNavigationTarget('ArrowRight', 0, 3, true)).toBe(2);
+    expect(tabNavigationTarget('ArrowRight', 2, 3, true)).toBe(1);
+  });
+  it('keeps Home and End and ignores other keys', () => {
+    expect(tabNavigationTarget('Home', 2, 3, true)).toBe(0);
+    expect(tabNavigationTarget('End', 0, 3, true)).toBe(2);
+    expect(tabNavigationTarget('a', 0, 3, false)).toBeNull();
+    expect(tabNavigationTarget('ArrowRight', 0, 0, false)).toBeNull();
   });
 });

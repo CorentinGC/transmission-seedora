@@ -191,7 +191,9 @@
     "honorSessionLimits": "Respecter les limites de session",
     "seeding": "Partage",
     "ratioMode": "Mode ratio :",
+    "ratioLimit": "Limite de ratio",
     "idleMode": "Mode inactivité :",
+    "idleLimit": "Limite d'inactivité (minutes)",
     "global": "Global",
     "custom": "Personnalisé",
     "unlimited": "Illimité",
@@ -517,7 +519,12 @@
       "enableAltSpeed": "Activer les vitesses alternatives",
       "disableAltSpeed": "Désactiver les vitesses alternatives",
       "showWindow": "Afficher la fenêtre",
-      "quit": "Quitter"
+      "quit": "Quitter",
+      "units": {
+        "bytesPerSecond": "{{value}} o/s",
+        "kilobytesPerSecond": "{{value}} Ko/s",
+        "megabytesPerSecond": "{{value}} Mo/s"
+      }
     },
     "scriptGuard": {
       "title": "Modifier les paramètres de script du démon ?",
@@ -575,7 +582,10 @@
       "NO_CONNECTION": "Aucun serveur n'est connecté.",
       "UNKNOWN": "Une erreur inconnue s'est produite.",
       "SECRET_STORE_FAILED": "Le trousseau du système a refusé l'accès : le mot de passe n'a pas été enregistré. Déverrouillez le trousseau et réessayez.",
-      "CONFIG_UNWRITABLE": "Le fichier de configuration est illisible : rien n'a été enregistré. Corrigez ou supprimez le fichier, puis réessayez."
+      "CONFIG_UNWRITABLE": "Le fichier de configuration est illisible : rien n'a été enregistré. Corrigez ou supprimez le fichier, puis réessayez.",
+      "UNTRUSTED_SENDER": "Cette requête ne provient pas de la fenêtre de l'application et a été refusée.",
+      "WATCH_FOLDER_NOT_APPROVED": "Le dossier surveillé doit être choisi avec le sélecteur de dossier.",
+      "EXPORT_FAILED": "La configuration n'a pas pu être exportée."
     }
   }
 }

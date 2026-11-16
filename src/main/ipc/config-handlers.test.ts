@@ -28,6 +28,7 @@ const manager = vi.hoisted(() => ({
   refreshClient: vi.fn(),
   removeClient: vi.fn(),
   setActiveServer: vi.fn(),
+  clearActive: vi.fn(),
   createTemporaryClient: vi.fn(),
 }));
 vi.mock('../rpc/connection-manager', () => ({ connectionManager: manager }));
@@ -80,7 +81,7 @@ describe('isWatchFolderAllowed', () => {
 describe('PREFS_SET', () => {
   it('rejects an unapproved watchFolder without touching the store', async () => {
     const res = await call(IPC.PREFS_SET, { watchFolder: path.join(dir, 'evil') });
-    expect(res.success).toBe(false);
+    expect(res).toMatchObject({ success: false, code: 'WATCH_FOLDER_NOT_APPROVED' });
     expect(store.updatePreferences).not.toHaveBeenCalled();
   });
 
@@ -165,7 +166,11 @@ describe('CONFIG_IMPORT', () => {
     const file = path.join(dir, 'unapproved.json');
     fs.writeFileSync(file, JSON.stringify({ servers: [server] }));
     const res = await call(IPC.CONFIG_IMPORT, { filePath: file });
-    expect(res).toEqual({ success: false, error: 'Import failed: File was not selected through a file dialog' });
+    expect(res).toEqual({
+      success: false,
+      error: 'Import failed: File was not selected through a file dialog',
+      code: 'IMPORT_INVALID',
+    });
     expect(store.addServer).not.toHaveBeenCalled();
   });
 
@@ -183,7 +188,7 @@ describe('CONFIG_IMPORT', () => {
     fs.writeFileSync(file, '{"servers": [{"host": 1}]}');
     approvedPaths.approve([file], 'json');
     const res = await call(IPC.CONFIG_IMPORT, { filePath: file });
-    expect(res).toEqual({ success: false, error: 'Import failed: invalid file' });
+    expect(res).toEqual({ success: false, error: 'Import failed: invalid file', code: 'IMPORT_INVALID' });
   });
 
   it('drops allowSelfSigned from imported servers (inline data and file)', async () => {
@@ -370,5 +375,30 @@ describe('secret storage status', () => {
   it('reports whether passwords are encrypted', async () => {
     store.isSecretStorageEncrypted.mockReturnValue(false);
     expect(await call(IPC.CONFIG_SECRET_STORAGE)).toEqual({ success: true, data: false });
+  });
+});
+
+describe('SERVER_SET_ACTIVE', () => {
+  it('rejects an unknown id without touching the store or the connection manager', async () => {
+    store.getServers.mockReturnValue([{ ...server, id: 'known' }]);
+    const res = await call(IPC.SERVER_SET_ACTIVE, 'ghost');
+    expect(res).toMatchObject({ success: false, error: 'Invalid request' });
+    expect(store.setActiveServerId).not.toHaveBeenCalled();
+    expect(manager.setActiveServer).not.toHaveBeenCalled();
+    expect(manager.clearActive).not.toHaveBeenCalled();
+  });
+
+  it('activates a known server in the store and the connection manager', async () => {
+    const known = { ...server, id: 'known' };
+    store.getServers.mockReturnValue([known]);
+    expect(await call(IPC.SERVER_SET_ACTIVE, 'known')).toMatchObject({ success: true });
+    expect(store.setActiveServerId).toHaveBeenCalledWith('known');
+    expect(manager.setActiveServer).toHaveBeenCalledWith(known);
+  });
+
+  it('clears the active client when null is sent', async () => {
+    expect(await call(IPC.SERVER_SET_ACTIVE, null)).toMatchObject({ success: true });
+    expect(store.setActiveServerId).toHaveBeenCalledWith(null);
+    expect(manager.clearActive).toHaveBeenCalled();
   });
 });

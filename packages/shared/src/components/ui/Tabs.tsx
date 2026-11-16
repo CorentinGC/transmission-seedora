@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { tabNavigationTarget } from './keyboard-logic';
 
 interface Tab {
   id: string;
@@ -31,18 +32,9 @@ export function Tabs({ tabs, activeTab, onTabChange, size = 'default', id, label
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     const index = tabs.findIndex((tab) => tab.id === activeTab);
-    const last = tabs.length - 1;
-    const next =
-      e.key === 'ArrowRight'
-        ? (index + 1) % tabs.length
-        : e.key === 'ArrowLeft'
-          ? (index - 1 + tabs.length) % tabs.length
-          : e.key === 'Home'
-            ? 0
-            : e.key === 'End'
-              ? last
-              : -1;
-    if (next === -1) return;
+    const rtl = getComputedStyle(e.currentTarget).direction === 'rtl';
+    const next = tabNavigationTarget(e.key, index, tabs.length, rtl);
+    if (next === null) return;
     e.preventDefault();
     const nextTab = tabs[next];
     if (!nextTab) return;

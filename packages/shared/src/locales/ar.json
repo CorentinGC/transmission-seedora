@@ -191,7 +191,9 @@
     "honorSessionLimits": "احترام حدود الجلسة",
     "seeding": "الرفع",
     "ratioMode": "وضع النسبة:",
+    "ratioLimit": "حد النسبة",
     "idleMode": "وضع الخمول:",
+    "idleLimit": "حد الخمول (بالدقائق)",
     "global": "عام",
     "custom": "مخصص",
     "unlimited": "غير محدود",
@@ -512,12 +514,21 @@
       "toggleFullscreen": "تبديل ملء الشاشة"
     },
     "tray": {
-      "activeTransfers_one": "{{count}} عملية نقل نشطة",
+      "activeTransfers_zero": "لا توجد عمليات نقل نشطة",
+      "activeTransfers_one": "عملية نقل نشطة واحدة",
+      "activeTransfers_two": "عمليتا نقل نشطتان",
+      "activeTransfers_few": "{{count}} عمليات نقل نشطة",
+      "activeTransfers_many": "{{count}} عملية نقل نشطة",
       "activeTransfers_other": "{{count}} عملية نقل نشطة",
       "enableAltSpeed": "تفعيل السرعة البديلة",
       "disableAltSpeed": "تعطيل السرعة البديلة",
       "showWindow": "إظهار النافذة",
-      "quit": "إنهاء"
+      "quit": "إنهاء",
+      "units": {
+        "bytesPerSecond": "{{value}} B/ث",
+        "kilobytesPerSecond": "{{value}} KB/ث",
+        "megabytesPerSecond": "{{value}} MB/ث"
+      }
     },
     "scriptGuard": {
       "title": "تغيير إعدادات السكربت للخدمة الخلفية؟",
@@ -575,7 +586,10 @@
       "NO_CONNECTION": "لا يوجد خادم متصل.",
       "UNKNOWN": "حدث خطأ غير معروف.",
       "SECRET_STORE_FAILED": "رفضت سلسلة مفاتيح النظام الوصول، لذلك لم يتم حفظ كلمة المرور. افتح قفل سلسلة المفاتيح وحاول مرة أخرى.",
-      "CONFIG_UNWRITABLE": "ملف الإعدادات غير قابل للقراءة، لذلك لم يتم حفظ أي شيء. أصلح الملف أو احذفه، ثم حاول مرة أخرى."
+      "CONFIG_UNWRITABLE": "ملف الإعدادات غير قابل للقراءة، لذلك لم يتم حفظ أي شيء. أصلح الملف أو احذفه، ثم حاول مرة أخرى.",
+      "UNTRUSTED_SENDER": "لم يصدر هذا الطلب من نافذة التطبيق، لذا تم رفضه.",
+      "WATCH_FOLDER_NOT_APPROVED": "يجب اختيار مجلد المراقبة باستخدام أداة اختيار المجلدات.",
+      "EXPORT_FAILED": "تعذّر تصدير الإعدادات."
     }
   }
 }

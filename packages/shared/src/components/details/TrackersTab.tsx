@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pencil, Trash2, Plus, Check, X } from 'lucide-react';
 import type { Torrent, TorrentTrackerStats } from '../../types/torrent';
 import { useTorrentStore } from '../../stores/torrent-store';
-import { Button } from '../ui';
+import { Button, Input } from '../ui';
 import { useApi } from '../../platform/api-context';
 import { fetchTorrentFields, useTorrentFields } from '../../hooks/useTorrentFields';
 import { notifyFailure } from '../../stores/notification-store';
@@ -147,11 +147,13 @@ export function TrackersTab({ torrent }: Props) {
               <td className="px-1.5 py-1">
                 {editingId === ts.id ? (
                   <div className="flex items-center gap-1">
-                    <input
+                    <Input
                       type="text"
+                      inputSize="xs"
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
-                      className="flex-1 h-6 px-1.5 text-xs rounded border bg-background"
+                      aria-label={t('trackersTab.announceUrl')}
+                      className="flex-1 px-1.5"
                       // Entering edit mode on a row is an explicit user action; focus belongs in the field.
                       // eslint-disable-next-line jsx-a11y/no-autofocus
                       autoFocus
@@ -165,11 +167,19 @@ export function TrackersTab({ torrent }: Props) {
                       variant="primary"
                       onClick={() => saveEdit(ts.announce)}
                       disabled={loadingAction === `save-${ts.announce}`}
+                      aria-label={t('trackersTab.save')}
+                      title={t('trackersTab.save')}
                     >
-                      <Check size={12} />
+                      <Check size={12} aria-hidden="true" />
                     </Button>
-                    <Button size="xs" variant="ghost" onClick={cancelEdit}>
-                      <X size={12} />
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      onClick={cancelEdit}
+                      aria-label={t('trackersTab.cancel')}
+                      title={t('trackersTab.cancel')}
+                    >
+                      <X size={12} aria-hidden="true" />
                     </Button>
                   </div>
                 ) : (
@@ -186,7 +196,7 @@ export function TrackersTab({ torrent }: Props) {
               <td className="px-1.5 py-1 text-right">{ts.leecherCount >= 0 ? ts.leecherCount : '-'}</td>
               <td
                 className="px-1.5 py-1 max-w-24 truncate"
-                title={ts.lastAnnounceSucceeded ? 'OK' : ts.lastAnnounceResult || ''}
+                title={ts.lastAnnounceSucceeded ? t('trackersTab.ok') : ts.lastAnnounceResult || ''}
               >
                 {ts.lastAnnounceSucceeded ? (
                   <span className="text-success">{t('trackersTab.ok')}</span>
@@ -196,15 +206,16 @@ export function TrackersTab({ torrent }: Props) {
               </td>
               <td className="px-1.5 py-1">
                 {editingId !== ts.id && (
-                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                     <Button
                       size="xs"
                       variant="ghost"
                       onClick={() => startEdit(ts)}
                       title={t('trackersTab.edit')}
+                      aria-label={`${t('trackersTab.edit')} ${ts.announce}`}
                       className="p-1 h-5 w-5"
                     >
-                      <Pencil size={12} />
+                      <Pencil size={12} aria-hidden="true" />
                     </Button>
                     <Button
                       size="xs"
@@ -212,9 +223,10 @@ export function TrackersTab({ torrent }: Props) {
                       onClick={() => removeTracker(ts.announce)}
                       disabled={loadingAction === `remove-${ts.announce}`}
                       title={t('trackersTab.remove')}
+                      aria-label={`${t('trackersTab.remove')} ${ts.announce}`}
                       className="p-1 h-5 w-5 text-destructive-text hover:text-destructive-text"
                     >
-                      <Trash2 size={12} />
+                      <Trash2 size={12} aria-hidden="true" />
                     </Button>
                   </div>
                 )}
@@ -226,12 +238,14 @@ export function TrackersTab({ torrent }: Props) {
 
       {/* Add tracker */}
       <div className="flex items-center gap-2 mt-2 pt-2 border-t px-1.5">
-        <input
+        <Input
           type="text"
+          inputSize="sm"
           placeholder={t('trackersTab.addPlaceholder')}
+          aria-label={t('trackersTab.addPlaceholder')}
           value={newTracker}
           onChange={(e) => setNewTracker(e.target.value)}
-          className="flex-1 h-7 px-2 text-xs rounded border bg-background"
+          className="flex-1 text-xs"
           onKeyDown={(e) => e.key === 'Enter' && addTracker()}
         />
         <Button
@@ -241,7 +255,7 @@ export function TrackersTab({ torrent }: Props) {
           disabled={!newTracker.trim() || loadingAction === 'add'}
           className="shrink-0 whitespace-nowrap"
         >
-          <Plus size={14} className="mr-1" />
+          <Plus size={14} className="mr-1" aria-hidden="true" />
           {t('trackersTab.add')}
         </Button>
       </div>

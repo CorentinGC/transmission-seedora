@@ -191,7 +191,9 @@
     "honorSessionLimits": "Uwzględniaj limity sesji",
     "seeding": "Udostępnianie",
     "ratioMode": "Tryb współczynnika:",
+    "ratioLimit": "Limit współczynnika",
     "idleMode": "Tryb bezczynności:",
+    "idleLimit": "Limit bezczynności (minuty)",
     "global": "Globalny",
     "custom": "Niestandardowy",
     "unlimited": "Bez limitu",
@@ -513,11 +515,18 @@
     },
     "tray": {
       "activeTransfers_one": "{{count}} aktywny transfer",
+      "activeTransfers_few": "{{count}} aktywne transfery",
+      "activeTransfers_many": "{{count}} aktywnych transferów",
       "activeTransfers_other": "{{count}} aktywnego transferu",
       "enableAltSpeed": "Włącz alternatywną prędkość",
       "disableAltSpeed": "Wyłącz alternatywną prędkość",
       "showWindow": "Pokaż okno",
-      "quit": "Zakończ"
+      "quit": "Zakończ",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Zmienić ustawienia skryptów demona?",
@@ -575,7 +584,10 @@
       "NO_CONNECTION": "Brak połączonego serwera.",
       "UNKNOWN": "Wystąpił nieznany błąd.",
       "SECRET_STORE_FAILED": "Systemowy pęk kluczy odmówił dostępu, więc hasło nie zostało zapisane. Odblokuj pęk kluczy i spróbuj ponownie.",
-      "CONFIG_UNWRITABLE": "Plik konfiguracji jest nieczytelny, więc nic nie zostało zapisane. Napraw lub usuń plik, a następnie spróbuj ponownie."
+      "CONFIG_UNWRITABLE": "Plik konfiguracji jest nieczytelny, więc nic nie zostało zapisane. Napraw lub usuń plik, a następnie spróbuj ponownie.",
+      "UNTRUSTED_SENDER": "To żądanie nie pochodziło z okna aplikacji i zostało odrzucone.",
+      "WATCH_FOLDER_NOT_APPROVED": "Obserwowany folder należy wybrać za pomocą selektora folderów.",
+      "EXPORT_FAILED": "Nie udało się wyeksportować konfiguracji."
     }
   }
 }

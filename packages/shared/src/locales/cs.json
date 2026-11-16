@@ -191,7 +191,9 @@
     "honorSessionLimits": "Respektovat limity relace",
     "seeding": "Sdílení",
     "ratioMode": "Režim poměru:",
+    "ratioLimit": "Limit poměru",
     "idleMode": "Režim nečinnosti:",
+    "idleLimit": "Limit nečinnosti (minuty)",
     "global": "Globální",
     "custom": "Vlastní",
     "unlimited": "Neomezeno",
@@ -513,11 +515,18 @@
     },
     "tray": {
       "activeTransfers_one": "{{count}} aktivní přenos",
+      "activeTransfers_few": "{{count}} aktivní přenosy",
+      "activeTransfers_many": "{{count}} aktivního přenosu",
       "activeTransfers_other": "{{count}} aktivních přenosů",
       "enableAltSpeed": "Zapnout alternativní rychlost",
       "disableAltSpeed": "Vypnout alternativní rychlost",
       "showWindow": "Zobrazit okno",
-      "quit": "Ukončit"
+      "quit": "Ukončit",
+      "units": {
+        "bytesPerSecond": "{{value}} B/s",
+        "kilobytesPerSecond": "{{value}} KB/s",
+        "megabytesPerSecond": "{{value}} MB/s"
+      }
     },
     "scriptGuard": {
       "title": "Změnit nastavení skriptů démona?",
@@ -575,7 +584,10 @@
       "NO_CONNECTION": "Není připojen žádný server.",
       "UNKNOWN": "Došlo k neznámé chybě.",
       "SECRET_STORE_FAILED": "Systémová klíčenka odepřela přístup, takže heslo nebylo uloženo. Odemkněte klíčenku a zkuste to znovu.",
-      "CONFIG_UNWRITABLE": "Konfigurační soubor je nečitelný, takže nebylo nic uloženo. Opravte nebo odstraňte soubor a zkuste to znovu."
+      "CONFIG_UNWRITABLE": "Konfigurační soubor je nečitelný, takže nebylo nic uloženo. Opravte nebo odstraňte soubor a zkuste to znovu.",
+      "UNTRUSTED_SENDER": "Tento požadavek nepřišel z okna aplikace a byl zamítnut.",
+      "WATCH_FOLDER_NOT_APPROVED": "Sledovanou složku je nutné vybrat pomocí výběru složky.",
+      "EXPORT_FAILED": "Konfiguraci se nepodařilo exportovat."
     }
   }
 }

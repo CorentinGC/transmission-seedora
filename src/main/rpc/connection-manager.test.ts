@@ -39,3 +39,26 @@ describe('ConnectionManager.refreshClient', () => {
     expect(created.length).toBe(count);
   });
 });
+
+describe('ConnectionManager.getActive', () => {
+  it('returns the active client with the server config it was built for', () => {
+    const manager = new ConnectionManager();
+    expect(manager.getActive()).toBeNull();
+    manager.setActiveServer(server);
+    manager.refreshClient({ ...server, name: 'renamed' });
+    const active = manager.getActive();
+    expect(active?.server.name).toBe('renamed');
+    expect(active?.client).toBe(manager.getActiveClient());
+  });
+
+  it('has no active client after clearActive or after the active server is removed', () => {
+    const manager = new ConnectionManager();
+    manager.setActiveServer(server);
+    manager.clearActive();
+    expect(manager.getActive()).toBeNull();
+    expect(manager.getActiveClient()).toBeNull();
+    manager.setActiveServer(server);
+    manager.removeClient(server.id);
+    expect(manager.getActive()).toBeNull();
+  });
+});

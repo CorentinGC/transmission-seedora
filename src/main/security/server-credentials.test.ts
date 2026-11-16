@@ -65,6 +65,24 @@ describe('resolveTestServer', () => {
     expect(result.proxyPassword).toBe('ppw');
   });
 
+  it.each([
+    ['host', { proxyHost: 'evil' }],
+    ['type', { proxyType: 'socks5' as const }],
+    ['port', { proxyPort: 1 }],
+  ])('never sends the stored daemon password through another proxy %s', (_name, change) => {
+    const result = resolveTestServer({ ...form, ...change }, stored);
+    expect(result.password).toBeUndefined();
+    expect(result.proxyPassword).toBeUndefined();
+  });
+
+  it('keeps the stored daemon password when the proxy is switched off', () => {
+    const result = resolveTestServer(
+      { ...form, proxyType: 'none', proxyHost: undefined, proxyPort: undefined },
+      { ...stored },
+    );
+    expect(result.password).toBe('pw');
+  });
+
   it('never sends the stored proxy password to another proxy', () => {
     expect(resolveTestServer({ ...form, proxyHost: 'evil' }, stored).proxyPassword).toBeUndefined();
     expect(resolveTestServer({ ...form, proxyType: 'socks5' }, stored).proxyPassword).toBeUndefined();

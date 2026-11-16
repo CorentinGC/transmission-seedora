@@ -30,3 +30,15 @@ export const availableLanguages = Object.keys(LANGUAGE_NAMES).sort();
 export function getLanguageName(code: string): string {
   return LANGUAGE_NAMES[code] ?? code.toUpperCase();
 }
+
+/**
+ * The language to show in a picker and the one to switch to on save. An empty preference means "follow the system":
+ * the picker then shows the active language, and nothing is switched (so saving other settings never changes it).
+ */
+export function resolveLanguageChoice(
+  preference: string,
+  active: string,
+): { selected: string; switchTo: string | null } {
+  if (!preference) return { selected: active, switchTo: null };
+  return { selected: preference, switchTo: preference === active ? null : preference };
+}

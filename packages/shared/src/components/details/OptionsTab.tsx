@@ -76,6 +76,7 @@ export function OptionsTab({ torrent: tor }: Props) {
             {t('optionsTab.downloadLimit')}
             <input
               type="number"
+              aria-label={t('optionsTab.downloadLimit')}
               className="w-20 h-6 px-1 rounded border bg-background"
               value={downloadLimit}
               onChange={(e) => setDownloadLimit(Number(e.target.value))}
@@ -87,6 +88,7 @@ export function OptionsTab({ torrent: tor }: Props) {
             {t('optionsTab.uploadLimit')}
             <input
               type="number"
+              aria-label={t('optionsTab.uploadLimit')}
               className="w-20 h-6 px-1 rounded border bg-background"
               value={uploadLimit}
               onChange={(e) => setUploadLimit(Number(e.target.value))}
@@ -102,7 +104,7 @@ export function OptionsTab({ torrent: tor }: Props) {
           />
           {t('optionsTab.honorSessionLimits')}
         </label>
-        <div className="flex items-center gap-2 mt-1">
+        <label className="flex items-center gap-2 mt-1">
           {t('torrent.priority')}
           <select
             className="h-6 px-1 rounded border bg-background"
@@ -113,7 +115,7 @@ export function OptionsTab({ torrent: tor }: Props) {
             <option value={0}>{t('priority.normal')}</option>
             <option value={1}>{t('priority.high')}</option>
           </select>
-        </div>
+        </label>
       </div>
 
       {/* Seeding */}
@@ -123,6 +125,7 @@ export function OptionsTab({ torrent: tor }: Props) {
           <div className="flex items-center gap-2">
             {t('optionsTab.ratioMode')}
             <select
+              aria-label={t('optionsTab.ratioMode')}
               className="h-6 px-1 rounded border bg-background"
               value={seedRatioMode}
               onChange={(e) => setSeedRatioMode(Number(e.target.value))}
@@ -135,6 +138,7 @@ export function OptionsTab({ torrent: tor }: Props) {
               <input
                 type="number"
                 step="0.1"
+                aria-label={t('optionsTab.ratioLimit')}
                 className="w-20 h-6 px-1 rounded border bg-background"
                 value={seedRatioLimit}
                 onChange={(e) => setSeedRatioLimit(Number(e.target.value))}
@@ -144,6 +148,7 @@ export function OptionsTab({ torrent: tor }: Props) {
           <div className="flex items-center gap-2">
             {t('optionsTab.idleMode')}
             <select
+              aria-label={t('optionsTab.idleMode')}
               className="h-6 px-1 rounded border bg-background"
               value={seedIdleMode}
               onChange={(e) => setSeedIdleMode(Number(e.target.value))}
@@ -156,6 +161,7 @@ export function OptionsTab({ torrent: tor }: Props) {
               <>
                 <input
                   type="number"
+                  aria-label={t('optionsTab.idleLimit')}
                   className="w-20 h-6 px-1 rounded border bg-background"
                   value={seedIdleLimit}
                   onChange={(e) => setSeedIdleLimit(Number(e.target.value))}
@@ -171,7 +177,7 @@ export function OptionsTab({ torrent: tor }: Props) {
       <div>
         <h4 className="font-medium mb-1">{t('optionsTab.other')}</h4>
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2">
             {t('optionsTab.maxPeers')}
             <input
               type="number"
@@ -179,7 +185,7 @@ export function OptionsTab({ torrent: tor }: Props) {
               value={peerLimit}
               onChange={(e) => setPeerLimit(Number(e.target.value))}
             />
-          </div>
+          </label>
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -188,7 +194,7 @@ export function OptionsTab({ torrent: tor }: Props) {
             />
             {t('optionsTab.sequentialDownload')}
           </label>
-          <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2">
             {t('optionsTab.labelsLabel')}
             <input
               type="text"
@@ -197,7 +203,7 @@ export function OptionsTab({ torrent: tor }: Props) {
               onChange={(e) => setLabelsText(e.target.value)}
               placeholder={t('optionsTab.labelsPlaceholder')}
             />
-          </div>
+          </label>
         </div>
       </div>
 
