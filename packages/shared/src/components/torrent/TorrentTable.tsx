@@ -13,6 +13,9 @@ import { useGridNavigation } from './useGridNavigation';
 import { useHeaderKeyboard } from './useHeaderKeyboard';
 import { fitColumnWidth, measureContentWidth } from './column-utils';
 import { FOCUS_FALLBACK_ATTRIBUTE } from '../ui/popup';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { TorrentCardList } from './TorrentCardList';
+import { COMPACT_LIST_QUERY } from './card-model';
 
 const LONG_PRESS_MS = 500;
 
@@ -37,6 +40,7 @@ export function TorrentTable({ torrents }: Props) {
   const setColumnOrder = useUiStore((s) => s.setColumnOrder);
   const relativeDates = useUiStore((s) => s.relativeDates);
 
+  const compact = useMediaQuery(COMPACT_LIST_QUERY);
   const columns = useMemo(() => createTorrentColumns(relativeDates, t), [relativeDates, t]);
 
   const parentRef = useRef<HTMLDivElement>(null);
@@ -289,164 +293,181 @@ export function TorrentTable({ torrents }: Props) {
     if (to && to.scrollLeft !== from.scrollLeft) to.scrollLeft = from.scrollLeft;
   };
 
+  const openMenuAt = (id: number, x: number, y: number) => {
+    if (!selectedIds.has(id)) selectTorrent(id);
+    setContextMenu({ x, y, ids: selectedIds.has(id) ? Array.from(selectedIds) : [id] });
+  };
+
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
-      <div
-        ref={gridRef}
-        role="grid"
-        aria-label={t('app.torrentList')}
-        aria-rowcount={rows.length + 1}
-        aria-multiselectable="true"
-        aria-activedescendant={activeDescendant}
-        {...{ [FOCUS_FALLBACK_ATTRIBUTE]: '' }}
-        tabIndex={0}
-        onKeyDown={nav.onKeyDown}
-        onFocus={nav.onFocus}
-        onBlur={nav.onBlur}
-        className="flex min-h-0 flex-1 flex-col focus:outline-none"
-      >
-        {/* Header */}
+      {compact ? (
+        <TorrentCardList
+          torrents={rows.map((r) => r.original)}
+          selectedIds={selectedIds}
+          onRowClick={handleRowClick}
+          select={selectTorrent}
+          toggle={toggleTorrent}
+          extendTo={(id) => selectRange(id, allVisibleIds)}
+          onMenu={openMenuAt}
+        />
+      ) : (
         <div
-          role="rowgroup"
-          ref={headerScrollRef}
-          className="overflow-hidden"
-          onScroll={(e) => syncScroll(e.currentTarget, parentRef.current)}
+          ref={gridRef}
+          role="grid"
+          aria-label={t('app.torrentList')}
+          aria-rowcount={rows.length + 1}
+          aria-multiselectable="true"
+          aria-activedescendant={activeDescendant}
+          {...{ [FOCUS_FALLBACK_ATTRIBUTE]: '' }}
+          tabIndex={0}
+          onKeyDown={nav.onKeyDown}
+          onFocus={nav.onFocus}
+          onBlur={nav.onBlur}
+          className="flex min-h-0 flex-1 flex-col focus:outline-none"
         >
-          {/* The header context menu has keyboard equivalents (ContextMenu key on a header, the columns button). */}
-          {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- focus lives on the column headers inside */}
+          {/* Header */}
           <div
-            role="row"
-            aria-rowindex={1}
-            ref={headerRowRef}
-            className="flex border-b bg-muted/50 select-none"
-            style={{ minWidth: table.getTotalSize() }}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              setHeaderMenu({ x: e.clientX, y: e.clientY });
-            }}
+            role="rowgroup"
+            ref={headerScrollRef}
+            className="overflow-hidden"
+            onScroll={(e) => syncScroll(e.currentTarget, parentRef.current)}
           >
-            {table.getHeaderGroups().map((headerGroup) =>
-              headerGroup.headers.map((header) => {
-                const sorted = header.column.getIsSorted();
-                return (
-                  <div
-                    key={header.id}
-                    role="columnheader"
-                    aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : 'none'}
-                    tabIndex={(headerTabId ?? visibleColumnIds[0]) === header.column.id ? 0 : -1}
-                    ref={(el) => {
-                      if (el) headerRefs.current.set(header.column.id, el);
-                      else headerRefs.current.delete(header.column.id);
-                    }}
-                    className={`relative flex items-center px-2 py-1 pointer-coarse:py-3 text-xs font-medium text-muted-foreground hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${
-                      dragColumnId === header.column.id ? 'opacity-40 bg-accent' : ''
-                    } ${dropTargetId === header.column.id ? 'border-l-2 border-info' : ''} ${
-                      dragColumnId ? 'cursor-grabbing' : 'cursor-pointer'
-                    }`}
-                    style={{ width: header.getSize(), minWidth: header.column.columnDef.minSize }}
-                    onClick={(e) => handleHeaderClick(e, header.column.getToggleSortingHandler())}
-                    onKeyDown={(e) => handleHeaderKeyDown(e, header)}
-                    onFocus={() => setHeaderTabId(header.column.id)}
-                    onMouseDown={(e) => handleHeaderMouseDown(e, header.column.id)}
-                    onMouseUp={handleHeaderMouseUp}
-                    onMouseLeave={cancelLongPress}
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {sorted === 'asc' && <ArrowUp size={12} className="ml-1" aria-hidden="true" />}
-                    {sorted === 'desc' && <ArrowDown size={12} className="ml-1" aria-hidden="true" />}
-
-                    {/* Resize handle (pointer only; keyboard: Shift+Left/Right on the header) */}
+            {/* The header context menu has keyboard equivalents (ContextMenu key on a header, the columns button). */}
+            {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus -- focus lives on the column headers inside */}
+            <div
+              role="row"
+              aria-rowindex={1}
+              ref={headerRowRef}
+              className="flex border-b bg-muted/50 select-none"
+              style={{ minWidth: table.getTotalSize() }}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                setHeaderMenu({ x: e.clientX, y: e.clientY });
+              }}
+            >
+              {table.getHeaderGroups().map((headerGroup) =>
+                headerGroup.headers.map((header) => {
+                  const sorted = header.column.getIsSorted();
+                  return (
                     <div
-                      role="presentation"
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                      onClick={(e) => e.stopPropagation()}
-                      onDoubleClick={(e) => {
-                        e.stopPropagation();
-                        handleResizeDoubleClick(header.column.id, header.index);
+                      key={header.id}
+                      role="columnheader"
+                      aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : 'none'}
+                      tabIndex={(headerTabId ?? visibleColumnIds[0]) === header.column.id ? 0 : -1}
+                      ref={(el) => {
+                        if (el) headerRefs.current.set(header.column.id, el);
+                        else headerRefs.current.delete(header.column.id);
                       }}
-                      className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-info"
-                    />
+                      className={`relative flex items-center px-2 py-1 pointer-coarse:py-3 text-xs font-medium text-muted-foreground hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${
+                        dragColumnId === header.column.id ? 'opacity-40 bg-accent' : ''
+                      } ${dropTargetId === header.column.id ? 'border-l-2 border-info' : ''} ${
+                        dragColumnId ? 'cursor-grabbing' : 'cursor-pointer'
+                      }`}
+                      style={{ width: header.getSize(), minWidth: header.column.columnDef.minSize }}
+                      onClick={(e) => handleHeaderClick(e, header.column.getToggleSortingHandler())}
+                      onKeyDown={(e) => handleHeaderKeyDown(e, header)}
+                      onFocus={() => setHeaderTabId(header.column.id)}
+                      onMouseDown={(e) => handleHeaderMouseDown(e, header.column.id)}
+                      onMouseUp={handleHeaderMouseUp}
+                      onMouseLeave={cancelLongPress}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {sorted === 'asc' && <ArrowUp size={12} className="ml-1" aria-hidden="true" />}
+                      {sorted === 'desc' && <ArrowDown size={12} className="ml-1" aria-hidden="true" />}
+
+                      {/* Resize handle (pointer only; keyboard: Shift+Left/Right on the header) */}
+                      <div
+                        role="presentation"
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        onClick={(e) => e.stopPropagation()}
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          handleResizeDoubleClick(header.column.id, header.index);
+                        }}
+                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-info"
+                      />
+                    </div>
+                  );
+                }),
+              )}
+              <div role="columnheader" className="sticky right-0 ml-auto flex items-center bg-muted">
+                <button
+                  type="button"
+                  aria-label={t('columnMenu.setupColumns')}
+                  aria-haspopup="dialog"
+                  onClick={(e) => openColumnsMenuAt(e.currentTarget)}
+                  className="inline-flex h-full items-center px-1.5 text-muted-foreground hover:bg-accent hover:text-foreground pointer-coarse:min-w-11 pointer-coarse:justify-center"
+                >
+                  <Columns3 size={14} aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Body */}
+          <div
+            ref={parentRef}
+            role="rowgroup"
+            className="min-h-0 flex-1 overflow-auto select-none"
+            onScroll={(e) => syncScroll(e.currentTarget, headerScrollRef.current)}
+          >
+            <div
+              role="presentation"
+              style={{ height: virtualizer.getTotalSize(), minWidth: table.getTotalSize(), position: 'relative' }}
+            >
+              {virtualItems.map((virtualRow) => {
+                const row = rows[virtualRow.index];
+                if (!row) return null;
+                const isSelected = selectedIds.has(row.original.id);
+                const isActive = nav.focused && nav.activeId === row.original.id;
+
+                return (
+                  // Pointer shortcuts only: the grid owns keyboard focus and handles every row key (useGridNavigation).
+                  // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
+                  <div
+                    key={row.id}
+                    id={rowDomId(row.original.id)}
+                    role="row"
+                    aria-rowindex={virtualRow.index + 2}
+                    aria-selected={isSelected}
+                    className={`absolute flex items-center w-full text-xs cursor-default border-b border-border/50 ${
+                      isSelected ? 'bg-primary/10' : 'hover:bg-accent/50'
+                    } ${isActive ? 'outline-2 -outline-offset-2 outline-ring' : ''} ${row.original.error > 0 ? 'text-destructive-text' : ''}`}
+                    style={{
+                      height: virtualRow.size,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    onClick={(e) => {
+                      nav.setActiveId(row.original.id);
+                      handleRowClick(row.original.id, e);
+                    }}
+                    onContextMenu={(e) => handleContextMenu(row.original.id, e)}
+                  >
+                    {row.getVisibleCells().map((cell, cellIndex) => (
+                      <div
+                        key={cell.id}
+                        id={cellIndex === 0 ? cellDomId(row.original.id, 0) : undefined}
+                        role="gridcell"
+                        className="px-2 truncate"
+                        style={{ width: cell.column.getSize(), minWidth: cell.column.columnDef.minSize }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </div>
+                    ))}
                   </div>
                 );
-              }),
+              })}
+            </div>
+
+            {torrents.length === 0 && (
+              <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
+                {t('app.noTorrents')}
+              </div>
             )}
-            <div role="columnheader" className="sticky right-0 ml-auto flex items-center bg-muted">
-              <button
-                type="button"
-                aria-label={t('columnMenu.setupColumns')}
-                aria-haspopup="dialog"
-                onClick={(e) => openColumnsMenuAt(e.currentTarget)}
-                className="inline-flex h-full items-center px-1.5 text-muted-foreground hover:bg-accent hover:text-foreground pointer-coarse:min-w-11 pointer-coarse:justify-center"
-              >
-                <Columns3 size={14} aria-hidden="true" />
-              </button>
-            </div>
           </div>
         </div>
-
-        {/* Body */}
-        <div
-          ref={parentRef}
-          role="rowgroup"
-          className="min-h-0 flex-1 overflow-auto select-none"
-          onScroll={(e) => syncScroll(e.currentTarget, headerScrollRef.current)}
-        >
-          <div
-            role="presentation"
-            style={{ height: virtualizer.getTotalSize(), minWidth: table.getTotalSize(), position: 'relative' }}
-          >
-            {virtualItems.map((virtualRow) => {
-              const row = rows[virtualRow.index];
-              if (!row) return null;
-              const isSelected = selectedIds.has(row.original.id);
-              const isActive = nav.focused && nav.activeId === row.original.id;
-
-              return (
-                // Pointer shortcuts only: the grid owns keyboard focus and handles every row key (useGridNavigation).
-                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
-                <div
-                  key={row.id}
-                  id={rowDomId(row.original.id)}
-                  role="row"
-                  aria-rowindex={virtualRow.index + 2}
-                  aria-selected={isSelected}
-                  className={`absolute flex items-center w-full text-xs cursor-default border-b border-border/50 ${
-                    isSelected ? 'bg-primary/10' : 'hover:bg-accent/50'
-                  } ${isActive ? 'outline-2 -outline-offset-2 outline-ring' : ''} ${row.original.error > 0 ? 'text-destructive-text' : ''}`}
-                  style={{
-                    height: virtualRow.size,
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                  onClick={(e) => {
-                    nav.setActiveId(row.original.id);
-                    handleRowClick(row.original.id, e);
-                  }}
-                  onContextMenu={(e) => handleContextMenu(row.original.id, e)}
-                >
-                  {row.getVisibleCells().map((cell, cellIndex) => (
-                    <div
-                      key={cell.id}
-                      id={cellIndex === 0 ? cellDomId(row.original.id, 0) : undefined}
-                      role="gridcell"
-                      className="px-2 truncate"
-                      style={{ width: cell.column.getSize(), minWidth: cell.column.columnDef.minSize }}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-
-          {torrents.length === 0 && (
-            <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
-              {t('app.noTorrents')}
-            </div>
-          )}
-        </div>
-      </div>
+      )}
 
       {/* Context menu */}
       {contextMenu && (
