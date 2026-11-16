@@ -573,7 +573,9 @@
       "SESSION": "Servern avvisade sessionens handskakning.",
       "RPC_FAILURE": "Servern rapporterade ett fel.",
       "NO_CONNECTION": "Ingen server är ansluten.",
-      "UNKNOWN": "Ett okänt fel inträffade."
+      "UNKNOWN": "Ett okänt fel inträffade.",
+      "SECRET_STORE_FAILED": "Systemets nyckelring nekade åtkomst, så lösenordet sparades inte. Lås upp nyckelringen och försök igen.",
+      "CONFIG_UNWRITABLE": "Konfigurationsfilen går inte att läsa, så ingenting sparades. Åtgärda eller ta bort filen och försök igen."
     }
   }
 }

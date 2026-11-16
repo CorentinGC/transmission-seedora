@@ -31,8 +31,8 @@ export interface ConfigLoadError {
   backupPath?: string;
 }
 
-/** Raised for writes while the configuration file is unreadable: the existing file must not be overwritten. */
-export class ConfigStoreError extends Error {}
+import { ConfigStoreError } from './config-store-error';
+export { ConfigStoreError };
 
 const DEFAULT_PREFERENCES: AppPreferences = {
   pollingInterval: 3000,
@@ -188,7 +188,11 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
       }
       pending = pendingSecrets(state().servers, failed);
     }
-    if (failed.size > 0) throw new ConfigStoreError('Encrypting a credential failed; the configuration was not saved');
+    if (failed.size > 0)
+      throw new ConfigStoreError(
+        'Encrypting a credential failed; the configuration was not saved',
+        'SECRET_STORE_FAILED',
+      );
   }
 
   /** Forgets decrypted secrets whose ciphertext is no longer stored. */
@@ -198,7 +202,8 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
   }
 
   async function flush(): Promise<void> {
-    if (writeBlocked) throw new ConfigStoreError('The configuration file is unreadable and was left untouched');
+    if (writeBlocked)
+      throw new ConfigStoreError('The configuration file is unreadable and was left untouched', 'CONFIG_UNWRITABLE');
     await sealPending();
     const current = state();
     pruneDecrypted(current.servers);

@@ -573,7 +573,9 @@
       "SESSION": "De server weigerde de sessie-handshake.",
       "RPC_FAILURE": "De server meldde een fout.",
       "NO_CONNECTION": "Er is geen server verbonden.",
-      "UNKNOWN": "Er is een onbekende fout opgetreden."
+      "UNKNOWN": "Er is een onbekende fout opgetreden.",
+      "SECRET_STORE_FAILED": "De sleutelhanger van het systeem weigerde toegang, dus het wachtwoord is niet opgeslagen. Ontgrendel de sleutelhanger en probeer het opnieuw.",
+      "CONFIG_UNWRITABLE": "Het configuratiebestand is onleesbaar, dus er is niets opgeslagen. Herstel of verwijder het bestand en probeer het opnieuw."
     }
   }
 }

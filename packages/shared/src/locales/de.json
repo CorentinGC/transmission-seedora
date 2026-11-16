@@ -573,7 +573,9 @@
       "SESSION": "Der Server hat den Sitzungsaufbau abgelehnt.",
       "RPC_FAILURE": "Der Server hat einen Fehler gemeldet.",
       "NO_CONNECTION": "Kein Server verbunden.",
-      "UNKNOWN": "Ein unbekannter Fehler ist aufgetreten."
+      "UNKNOWN": "Ein unbekannter Fehler ist aufgetreten.",
+      "SECRET_STORE_FAILED": "Der Schlüsselbund des Systems hat den Zugriff verweigert, daher wurde das Passwort nicht gespeichert. Schlüsselbund entsperren und erneut versuchen.",
+      "CONFIG_UNWRITABLE": "Die Konfigurationsdatei ist nicht lesbar, daher wurde nichts gespeichert. Datei korrigieren oder entfernen und erneut versuchen."
     }
   }
 }

@@ -40,7 +40,16 @@ describe('describeFailure', () => {
 
 describe('new transport codes and cancellation', () => {
   it('maps the RPC client codes under errors.rpc', () => {
-    for (const code of ['AUTH', 'INVALID_RESPONSE', 'SESSION', 'RPC_FAILURE', 'NO_CONNECTION', 'UNKNOWN']) {
+    for (const code of [
+      'AUTH',
+      'INVALID_RESPONSE',
+      'SESSION',
+      'RPC_FAILURE',
+      'NO_CONNECTION',
+      'UNKNOWN',
+      'SECRET_STORE_FAILED',
+      'CONFIG_UNWRITABLE',
+    ]) {
       expect(errorCodeKey(code)).toBe(`errors.rpc.${code}`);
     }
     expect(errorCodeKey('HTTP_ERROR')).toBe('errors.web.HTTP_ERROR');

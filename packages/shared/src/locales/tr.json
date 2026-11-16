@@ -573,7 +573,9 @@
       "SESSION": "Sunucu oturum el sıkışmasını reddetti.",
       "RPC_FAILURE": "Sunucu bir hata bildirdi.",
       "NO_CONNECTION": "Bağlı sunucu yok.",
-      "UNKNOWN": "Bilinmeyen bir hata oluştu."
+      "UNKNOWN": "Bilinmeyen bir hata oluştu.",
+      "SECRET_STORE_FAILED": "Sistem anahtar zinciri erişimi reddetti, bu yüzden parola kaydedilmedi. Anahtar zincirinin kilidini açın ve tekrar deneyin.",
+      "CONFIG_UNWRITABLE": "Yapılandırma dosyası okunamıyor, bu yüzden hiçbir şey kaydedilmedi. Dosyayı düzeltin veya kaldırın, ardından tekrar deneyin."
     }
   }
 }

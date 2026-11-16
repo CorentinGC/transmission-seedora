@@ -573,7 +573,9 @@
       "SESSION": "The server refused the session handshake.",
       "RPC_FAILURE": "The server reported an error.",
       "NO_CONNECTION": "No server is connected.",
-      "UNKNOWN": "An unknown error occurred."
+      "UNKNOWN": "An unknown error occurred.",
+      "SECRET_STORE_FAILED": "The system keychain refused access, so the password was not saved. Unlock the keychain and try again.",
+      "CONFIG_UNWRITABLE": "The configuration file is unreadable, so nothing was saved. Fix or remove the file, then try again."
     }
   }
 }

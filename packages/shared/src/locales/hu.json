@@ -573,7 +573,9 @@
       "SESSION": "A szerver elutasította a munkamenet kézfogását.",
       "RPC_FAILURE": "A szerver hibát jelzett.",
       "NO_CONNECTION": "Nincs csatlakoztatott szerver.",
-      "UNKNOWN": "Ismeretlen hiba történt."
+      "UNKNOWN": "Ismeretlen hiba történt.",
+      "SECRET_STORE_FAILED": "A rendszer kulcstartója megtagadta a hozzáférést, ezért a jelszó nem lett mentve. Oldja fel a kulcstartót, és próbálja újra.",
+      "CONFIG_UNWRITABLE": "A konfigurációs fájl nem olvasható, ezért semmi sem lett mentve. Javítsa vagy távolítsa el a fájlt, majd próbálja újra."
     }
   }
 }
