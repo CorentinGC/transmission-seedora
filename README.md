@@ -51,7 +51,7 @@ Builds are **unsigned and not notarized**, and there is **no auto-update**: down
 
 ## Run from source
 
-Prerequisites: [Node.js](https://nodejs.org/) 22.17 or later (`.nvmrc` pins 22.18, the version used in CI and releases), npm 10 or later, and a Transmission daemon with RPC enabled.
+Prerequisites: [Node.js](https://nodejs.org/) 24 or later (`.nvmrc` pins 24, the version used in CI and releases), npm 10 or later, and a Transmission daemon with RPC enabled.
 
 ```bash
 git clone https://github.com/CorentinGC/transmission-seedora.git

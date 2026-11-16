@@ -4,7 +4,7 @@ description: Install Node and project dependencies from the lockfile (npm ci).
 inputs:
   node-version:
     description: Node.js version. Keep in sync with the beads issue seedora-transmission-tmx.
-    default: '22.18'
+    default: '24'
 
 runs:
   using: composite
