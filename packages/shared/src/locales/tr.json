@@ -488,6 +488,7 @@
       "serverSettings": "Sunucu ayarları…",
       "rpcSpec": "Transmission RPC belirtimi",
       "reportIssue": "Sorun bildir",
+      "releaseNotes": "Sürüm notları",
       "about": "{{appName}} hakkında",
       "hide": "{{appName}} uygulamasını gizle",
       "hideOthers": "Diğerlerini gizle",

@@ -488,6 +488,7 @@
       "serverSettings": "Ρυθμίσεις διακομιστή…",
       "rpcSpec": "Προδιαγραφή RPC του Transmission",
       "reportIssue": "Αναφορά προβλήματος",
+      "releaseNotes": "Σημειώσεις έκδοσης",
       "about": "Σχετικά με το {{appName}}",
       "hide": "Απόκρυψη του {{appName}}",
       "hideOthers": "Απόκρυψη των υπολοίπων",

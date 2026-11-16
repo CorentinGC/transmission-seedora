@@ -488,6 +488,7 @@
       "serverSettings": "Serverinnstillinger…",
       "rpcSpec": "Transmission RPC-spesifikasjon",
       "reportIssue": "Rapporter et problem",
+      "releaseNotes": "Utgivelsesnotater",
       "about": "Om {{appName}}",
       "hide": "Skjul {{appName}}",
       "hideOthers": "Skjul andre",

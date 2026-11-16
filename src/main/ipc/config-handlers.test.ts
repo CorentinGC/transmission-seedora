@@ -92,9 +92,9 @@ describe('PREFS_SET', () => {
 });
 
 describe('applyImport', () => {
-  it('never imports watchFolder and skips duplicate servers', () => {
+  it('never imports watchFolder and skips duplicate servers', async () => {
     store.getServers.mockReturnValue([{ ...server, id: 'x' }]);
-    const res = applyImport({
+    const res = await applyImport({
       servers: [server, { ...server, host: 'other' }],
       preferences: { theme: 'dark', watchFolder: '/etc' },
     });
@@ -103,9 +103,9 @@ describe('applyImport', () => {
     expect(store.addServer).toHaveBeenCalledTimes(1);
   });
 
-  it('dedupes by host+port+path only, ignoring name, SSL and credentials', () => {
+  it('dedupes by host+port+path only, ignoring name, SSL and credentials', async () => {
     store.getServers.mockReturnValue([{ ...server, id: 'x' }]);
-    const res = applyImport({
+    const res = await applyImport({
       servers: [
         { ...server, name: 'renamed', useSSL: true, username: 'u', password: 'p' },
         { ...server, port: 9092 },
@@ -115,8 +115,8 @@ describe('applyImport', () => {
     expect(res.data).toEqual({ serversAdded: 2, serversSkipped: 1, prefsImported: false });
   });
 
-  it('dedupes duplicates inside the file itself and regenerates ids', () => {
-    const res = applyImport({
+  it('dedupes duplicates inside the file itself and regenerates ids', async () => {
+    const res = await applyImport({
       servers: [
         { ...server, id: 'from-file' },
         { ...server, id: 'other-id' },
@@ -128,9 +128,9 @@ describe('applyImport', () => {
     expect(added.id).toEqual(expect.any(String));
   });
 
-  it('never replaces or removes existing servers and leaves the active server untouched', () => {
+  it('never replaces or removes existing servers and leaves the active server untouched', async () => {
     store.getServers.mockReturnValue([{ ...server, id: 'x' }]);
-    applyImport({ servers: [{ ...server, host: 'new' }] });
+    await applyImport({ servers: [{ ...server, host: 'new' }] });
     expect(store.removeServer).not.toHaveBeenCalled();
     expect(store.updateServer).not.toHaveBeenCalled();
     expect(store.setActiveServerId).not.toHaveBeenCalled();
@@ -138,14 +138,14 @@ describe('applyImport', () => {
     expect(manager.removeClient).not.toHaveBeenCalled();
   });
 
-  it('reports a servers-only and a preferences-only import', () => {
-    expect(applyImport({ servers: [server] }).data).toEqual({
+  it('reports a servers-only and a preferences-only import', async () => {
+    expect((await applyImport({ servers: [server] })).data).toEqual({
       serversAdded: 1,
       serversSkipped: 0,
       prefsImported: false,
     });
     expect(store.updatePreferences).not.toHaveBeenCalled();
-    expect(applyImport({ preferences: { theme: 'dark' } }).data).toEqual({
+    expect((await applyImport({ preferences: { theme: 'dark' } })).data).toEqual({
       serversAdded: 0,
       serversSkipped: 0,
       prefsImported: true,

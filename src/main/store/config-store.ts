@@ -96,6 +96,10 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
   let data: StoreData | null = null;
   let loadError: ConfigLoadError | undefined;
   let writeBlocked = false;
+  let secretStoreAvailable = false;
+  /** Decrypted secrets by ciphertext: the synchronous readers never call the async `safeStorage` API. */
+  const decrypted = new Map<string, string>();
+  let writeQueue: Promise<unknown> = Promise.resolve();
 
   const fresh = (): StoreData => ({ servers: [], activeServerId: null, preferences: { ...DEFAULT_PREFERENCES } });
 
@@ -150,49 +154,75 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
 
   const state = (): StoreData => (data ??= load());
 
-  /** Moves cleartext passwords into encrypted fields once a secret store is available. */
-  function encryptLegacySecrets(servers: StoredServer[]): void {
+  /** Cleartext secrets waiting to be encrypted, skipping the ones whose encryption already failed. */
+  function pendingSecrets(servers: StoredServer[], failed: Set<string>) {
+    const pending: { server: StoredServer; field: SecretField; value: string }[] = [];
     for (const server of servers) {
       for (const field of ['password', 'proxyPassword'] as const) {
-        const clear = server[field];
-        if (clear !== undefined) seal(server, field, clear);
+        const value = server[field];
+        if (value !== undefined && !failed.has(`${server.id}:${field}`)) pending.push({ server, field, value });
       }
     }
+    return pending;
   }
 
-  function persist(): void {
+  /**
+   * Moves cleartext passwords into encrypted fields once a secret store is available. Fails closed: when the
+   * store is available but encryption fails, nothing is written (a secret never silently stays in cleartext).
+   */
+  async function sealPending(): Promise<void> {
+    if (!secretStoreAvailable) return;
+    const failed = new Set<string>();
+    for (let pending = pendingSecrets(state().servers, failed); pending.length > 0;) {
+      for (const { server, field, value } of pending) {
+        try {
+          const enc = await crypto.encrypt(value);
+          // The secret may have been replaced or removed while encrypting; the next pass handles a new one.
+          if (server[field] !== value) continue;
+          delete server[field];
+          server[`${field}Enc` as const] = enc;
+          decrypted.set(enc, value);
+        } catch {
+          failed.add(`${server.id}:${field}`);
+        }
+      }
+      pending = pendingSecrets(state().servers, failed);
+    }
+    if (failed.size > 0) throw new ConfigStoreError('Encrypting a credential failed; the configuration was not saved');
+  }
+
+  /** Forgets decrypted secrets whose ciphertext is no longer stored. */
+  function pruneDecrypted(servers: StoredServer[]): void {
+    const kept = new Set(servers.flatMap((s) => [s.passwordEnc, s.proxyPasswordEnc]));
+    for (const enc of decrypted.keys()) if (!kept.has(enc)) decrypted.delete(enc);
+  }
+
+  async function flush(): Promise<void> {
     if (writeBlocked) throw new ConfigStoreError('The configuration file is unreadable and was left untouched');
+    await sealPending();
     const current = state();
-    encryptLegacySecrets(current.servers);
+    pruneDecrypted(current.servers);
     writeFileAtomic(filePath(), JSON.stringify(current, null, 2));
   }
 
-  /** Stores `value` encrypted when a secret store exists, else cleartext (file mode 0600); an empty value removes it. */
-  function seal(server: StoredServer, field: SecretField, value: string | undefined): void {
-    const encField = `${field}Enc` as const;
+  /** Writes the store; writes are serialised so concurrent changes cannot interleave their encryption steps. */
+  function persist(): Promise<void> {
+    const run = writeQueue.then(flush);
+    writeQueue = run.catch(() => undefined);
+    return run;
+  }
+
+  /** Sets (or, when empty, removes) a secret as pending cleartext; `persist` encrypts it when a store exists. */
+  function setSecret(server: StoredServer, field: SecretField, value: string | undefined): void {
     delete server[field];
-    delete server[encField];
-    if (!value) return;
-    if (crypto.isAvailable()) {
-      try {
-        server[encField] = crypto.encrypt(value);
-        return;
-      } catch {
-        console.error('[Config] Encrypting a credential failed; it is kept in the 0600 configuration file.');
-      }
-    }
-    server[field] = value;
+    delete server[`${field}Enc` as const];
+    if (value) server[field] = value;
   }
 
   /** A decrypted secret; undefined when absent or when it cannot be decrypted (the ciphertext is kept on disk). */
   function reveal(server: StoredServer, field: SecretField): string | undefined {
     const enc = server[`${field}Enc` as const];
-    if (enc === undefined) return server[field];
-    try {
-      return crypto.decrypt(enc);
-    } catch {
-      return undefined;
-    }
+    return enc === undefined ? server[field] : decrypted.get(enc);
   }
 
   const hasSecret = (server: StoredServer, field: SecretField): boolean =>
@@ -214,8 +244,8 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
   function toStored(server: ServerConfig): StoredServer {
     const { password, proxyPassword, hasPassword: _hp, hasProxyPassword: _hpp, ...rest } = server;
     const stored: StoredServer = { ...rest }; // undefined keys vanish in JSON
-    seal(stored, 'password', password);
-    seal(stored, 'proxyPassword', proxyPassword);
+    setSecret(stored, 'password', password);
+    setSecret(stored, 'proxyPassword', proxyPassword);
     return stored;
   }
 
@@ -225,9 +255,9 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
       return state().servers.map(toServer);
     },
 
-    addServer(server: ServerConfig): void {
+    addServer(server: ServerConfig): Promise<void> {
       state().servers.push(toStored(server));
-      persist();
+      return persist();
     },
 
     /**
@@ -236,7 +266,7 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
      * changes (host, port, path or TLS; proxy host, port or type; username emptied), unless the same patch
      * supplies a new one, so credentials can never be redirected or downgraded to cleartext.
      */
-    updateServer(id: string, updates: ServerConfigPatch): void {
+    async updateServer(id: string, updates: ServerConfigPatch): Promise<void> {
       const stored = state().servers.find((s) => s.id === id);
       if (!stored) return;
       const {
@@ -254,37 +284,38 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
 
       const serverMoved = !sameEndpoint(before, stored) || fields.username === '';
       const proxyMoved = !sameProxy(before, stored) || fields.proxyUsername === '';
-      if (serverMoved || clearPassword) seal(stored, 'password', undefined);
-      if (proxyMoved || clearProxyPassword || stored.proxyType === 'none') seal(stored, 'proxyPassword', undefined);
-      if (password) seal(stored, 'password', password);
-      if (proxyPassword) seal(stored, 'proxyPassword', proxyPassword);
-      persist();
+      if (serverMoved || clearPassword) setSecret(stored, 'password', undefined);
+      if (proxyMoved || clearProxyPassword || stored.proxyType === 'none')
+        setSecret(stored, 'proxyPassword', undefined);
+      if (password) setSecret(stored, 'password', password);
+      if (proxyPassword) setSecret(stored, 'proxyPassword', proxyPassword);
+      await persist();
     },
 
-    removeServer(id: string): void {
+    removeServer(id: string): Promise<void> {
       const current = state();
       current.servers = current.servers.filter((s) => s.id !== id);
       if (current.activeServerId === id) current.activeServerId = null;
-      persist();
+      return persist();
     },
 
     getActiveServerId(): string | null {
       return state().activeServerId;
     },
 
-    setActiveServerId(id: string | null): void {
+    setActiveServerId(id: string | null): Promise<void> {
       state().activeServerId = id;
-      persist();
+      return persist();
     },
 
     getPreferences(): AppPreferences {
       return state().preferences;
     },
 
-    updatePreferences(updates: Partial<AppPreferences>): void {
+    updatePreferences(updates: Partial<AppPreferences>): Promise<void> {
       const current = state();
       current.preferences = { ...current.preferences, ...stripUndefined(updates) };
-      persist();
+      return persist();
     },
 
     /** Set when the configuration file was invalid or unreadable at startup (the user must be told). */
@@ -293,10 +324,38 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
       return loadError;
     },
 
+    /**
+     * Loads the file, asks the OS whether a secret store exists and decrypts the stored passwords. Call once
+     * after `ready`, before the first read of a server: until then every encrypted password reads as locked.
+     * A password that cannot be decrypted stays locked and its ciphertext is never overwritten.
+     */
+    async init(): Promise<void> {
+      const { servers } = state();
+      try {
+        secretStoreAvailable = await crypto.isAvailable();
+      } catch {
+        secretStoreAvailable = false;
+        console.error('[Config] The secret store could not be queried; new passwords stay in the 0600 file.');
+      }
+      for (const server of servers) {
+        for (const field of ['password', 'proxyPassword'] as const) {
+          const enc = server[`${field}Enc` as const];
+          if (enc === undefined) continue;
+          try {
+            const { value, shouldReEncrypt } = await crypto.decrypt(enc);
+            decrypted.set(enc, value);
+            if (shouldReEncrypt && secretStoreAvailable) setSecret(server, field, value);
+          } catch {
+            // locked: reported by getLockedServerNames, ciphertext kept
+          }
+        }
+      }
+    },
+
     /** Encrypts cleartext passwords left from an older version, once a secret store is available (no-op otherwise). */
-    migrateLegacySecrets(): void {
-      if (!crypto.isAvailable() || writeBlocked) return;
-      if (state().servers.some((s) => s.password !== undefined || s.proxyPassword !== undefined)) persist();
+    async migrateLegacySecrets(): Promise<void> {
+      if (!secretStoreAvailable || writeBlocked) return;
+      if (state().servers.some((s) => s.password !== undefined || s.proxyPassword !== undefined)) await persist();
     },
 
     /** Names of the servers whose stored password cannot be decrypted (the user must re-enter it). */
@@ -310,7 +369,7 @@ export function createConfigStore({ filePath, crypto, now = Date.now }: ConfigSt
 
     /** Whether new passwords are encrypted (false: cleartext in the 0600 file, no OS secret store). */
     isSecretStorageEncrypted(): boolean {
-      return crypto.isAvailable();
+      return secretStoreAvailable;
     },
   };
 }

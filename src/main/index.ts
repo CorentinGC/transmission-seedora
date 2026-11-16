@@ -180,8 +180,9 @@ function registerAsMagnetHandlerIfUnclaimed(): void {
   app.setAsDefaultProtocolClient('magnet');
 }
 
-app.on('ready', () => {
+app.on('ready', async () => {
   if (!hasSingleInstanceLock) return;
+  await configStore.init();
   if (!MAIN_WINDOW_VITE_DEV_SERVER_URL) serveRendererFrom(rendererRoot);
   denyAllPermissions(trustedOrigins);
   setLanguage(configStore.getPreferences().language);
@@ -192,7 +193,9 @@ app.on('ready', () => {
   createWindow();
   registerAsMagnetHandlerIfUnclaimed();
   reportConfigLoadProblem();
-  configStore.migrateLegacySecrets();
+  await configStore.migrateLegacySecrets().catch(() => {
+    console.error('[Config] Encrypting the stored passwords failed; they were left unchanged.');
+  });
 });
 
 app.on('before-quit', () => {
