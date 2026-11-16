@@ -46,7 +46,7 @@ Download an installer from [GitHub Releases](https://github.com/CorentinGC/trans
 Builds are **unsigned and not notarized**, and there is **no auto-update**: download new versions manually. What changed in each version: [CHANGELOG.md](CHANGELOG.md).
 
 - **macOS, "App is damaged"**: Gatekeeper blocks unsigned apps. Run `xattr -cr /Applications/Seedora.app` (adjust the path to where you put the app), then open it.
-- **macOS, keychain prompt**: passwords are sealed with the macOS keychain. Because builds are signed ad hoc, macOS asks once for access to "Seedora Safe Storage" (also after you install a build with a different signature); click "Always Allow". Seedora waits for the answer at startup, so the window appears only after you respond. If the keychain stays locked or access is denied, Seedora refuses to save the password and says so; it never falls back to cleartext.
+- **macOS, keychain**: passwords are sealed with the macOS keychain (item "Seedora Safe Storage"). Builds are signed ad hoc, so macOS may ask once for access, for example after you install a build with a different signature; click "Always Allow". If the keychain stays locked or access is denied, Seedora refuses to save the password and says so; it never falls back to cleartext.
 - **Windows, SmartScreen "Unknown publisher"**: click "More info", then "Run anyway".
 - **Linux**: `sudo dpkg -i seedora_*.deb` (Debian/Ubuntu) or `sudo rpm -i seedora-*.rpm` (Fedora/RHEL).
 

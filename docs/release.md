@@ -64,7 +64,7 @@ Local hooks (`.beads/hooks`, chaining `scripts/git-hooks/`): `pre-commit` runs l
 ## What a release contains
 
 - Electron installers built by Electron Forge (`forge.config.ts`): DMG + ZIP (macOS), Squirrel `Seedora-Setup.exe` (Windows), deb + rpm (Linux).
-- **Builds are unsigned and not notarized.** Users see Gatekeeper / SmartScreen warnings; the README documents the workarounds. On macOS the build is only signed ad hoc, so the keychain asks for access to "Seedora Safe Storage" at startup after a restart or a build with another signature (verified 2026-11-16: an ad-hoc packaged copy blocks at launch on that prompt, while a Developer ID signed copy restarts silently). A Developer ID signature and notarisation need signing secrets in the repository and are an owner decision.
+- **Builds are unsigned and not notarized.** Users see Gatekeeper / SmartScreen warnings; the README documents the workarounds. On macOS the packaged app is re-signed ad hoc after packaging and the fuse flip (`tools/macos-adhoc-sign.ts`, `postPackage` hook in `forge.config.ts`): without it the bundle keeps the stale signature of the stock Electron binary and the keychain refuses `safeStorage`, so no password can be saved (verified 2026-11-16 on the login keychain: add, restart and clearPassword pass with the re-signed build, add fails with the stale one). A different signature than the one that created the "Seedora Safe Storage" item makes macOS ask once for access. A Developer ID signature and notarisation remove the Gatekeeper warnings and need signing secrets in the repository: an owner decision.
 - **There is no auto-update.** Users download new versions from GitHub Releases.
 - The web app is not built or deployed by this workflow.
 

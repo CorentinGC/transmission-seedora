@@ -7,6 +7,7 @@ import { MakerDMG } from '@electron-forge/maker-dmg';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { APP_FUSES } from './src/main/security/fuses';
+import { adhocSignMacApps } from './tools/macos-adhoc-sign';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -49,6 +50,9 @@ const config: ForgeConfig = {
         },
       ],
     },
+  },
+  hooks: {
+    postPackage: async (_config, { platform, outputPaths }) => adhocSignMacApps(platform, outputPaths, 'Seedora'),
   },
   rebuildConfig: {},
   makers: [
