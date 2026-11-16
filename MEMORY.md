@@ -15,7 +15,7 @@ Nothing is open in the backlog. New work starts from `bd ready` and the GitHub I
 
 ### Owner actions (cannot be done from the repo)
 
-1. First launch of the installed 1.4.2 on the owner's machine: it encrypts the cleartext server password still stored in the real `config.json` (`migrateLegacySecrets`, verified on a copy of that config, not yet on the real one). Click "Always Allow" if macOS asks about "Seedora Safe Storage".
+1. The cleartext server password in the owner's real `config.json` was encrypted on 2026-11-16 by a dev Electron run that picked up the real user data directory by mistake (`--user-data-dir` is not forwarded through `electron-forge start`). The key item "Seedora Safe Storage" was created by that dev binary, so the first launch of the installed app may ask for keychain access: click "Always Allow", then confirm the server connects. Decryption by the installed app is not verified; if the server shows as locked, retype the password.
 2. Three `gh` commands in `docs/release.md` ("Self-hosted runner on a public repository" and "Community settings"): require approval for all external contributors on fork PR workflows, enable private vulnerability reporting, create the `translation` label.
 3. Create the Vercel firewall rate-limit rule for server actions (command in `docs/security.md`, "Platform rate limiting"). Confirm the plan allows rate limiting first.
 
@@ -47,6 +47,8 @@ Nothing is open in the backlog. New work starts from `bd ready` and the GitHub I
 - 2026-11-15 — Tracked agent and project files are written in English (community-facing).
 
 ## Gotchas
+
+- To run Electron against a throwaway profile, do not rely on `npm run start:debug -- -- --user-data-dir=…` (the flag is ignored and the real `userData` is used): launch the packaged app or set the path explicitly. Never start the dev app while the real config holds secrets you want left untouched.
 
 - `@shared` is `packages/shared/src` in every build; `@ipc` is `src/shared` (IPC channel names). Main imports only `types` and `key-utils` from `@shared`: keep them dependency-free.
 - `useMenuEvents` exists twice (`src/renderer/hooks/` and `packages/shared/src/hooks/`); check which one is imported before editing.
