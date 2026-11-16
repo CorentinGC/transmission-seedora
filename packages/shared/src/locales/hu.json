@@ -491,6 +491,7 @@
       "serverSettings": "Kiszolgáló beállításai…",
       "rpcSpec": "Transmission RPC-specifikáció",
       "reportIssue": "Hiba jelentése",
+      "releaseNotes": "Kiadási megjegyzések",
       "about": "A(z) {{appName}} névjegye",
       "hide": "{{appName}} elrejtése",
       "hideOthers": "Többi elrejtése",

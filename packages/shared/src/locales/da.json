@@ -491,6 +491,7 @@
       "serverSettings": "Serverindstillinger…",
       "rpcSpec": "Transmission RPC-specifikation",
       "reportIssue": "Rapportér et problem",
+      "releaseNotes": "Udgivelsesnoter",
       "about": "Om {{appName}}",
       "hide": "Skjul {{appName}}",
       "hideOthers": "Skjul andre",

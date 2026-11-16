@@ -48,7 +48,7 @@ export function isWatchFolderAllowed(candidate: string | undefined): boolean {
 }
 
 /** Applies validated backup data: new servers (duplicates skipped) and preferences without `watchFolder`. */
-export function applyImport(data: ImportData): IpcResponse {
+export async function applyImport(data: ImportData): Promise<IpcResponse> {
   let serversAdded = 0;
   let serversSkipped = 0;
   let prefsImported = false;
@@ -63,7 +63,7 @@ export function applyImport(data: ImportData): IpcResponse {
         serversSkipped++;
       } else {
         const newServer: ServerConfig = { ...server, id: randomUUID() };
-        configStore.addServer(newServer);
+        await configStore.addServer(newServer);
         existing.push(newServer);
         serversAdded++;
       }
@@ -73,7 +73,7 @@ export function applyImport(data: ImportData): IpcResponse {
   if (data.preferences) {
     // A backup must not be able to point the watcher at an arbitrary folder.
     const { watchFolder: _ignored, ...safePrefs } = data.preferences;
-    configStore.updatePreferences(safePrefs);
+    await configStore.updatePreferences(safePrefs);
     if (safePrefs.language !== undefined) setLanguage(safePrefs.language);
     prefsImported = true;
   }
@@ -109,40 +109,50 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
     data: configStore.isSecretStorageEncrypted(),
   }));
 
-  handleGuarded(isTrusted, IPC.SERVER_ADD, z.tuple([newServerSchema]), (_e, [config]): IpcResponse<ServerConfig> => {
-    const server: ServerConfig = { ...config, id: randomUUID() };
-    configStore.addServer(server);
-    return { success: true, data: toPublicServer(server) };
-  });
+  handleGuarded(
+    isTrusted,
+    IPC.SERVER_ADD,
+    z.tuple([newServerSchema]),
+    async (_e, [config]): Promise<IpcResponse<ServerConfig>> => {
+      const server: ServerConfig = { ...config, id: randomUUID() };
+      await configStore.addServer(server);
+      return { success: true, data: toPublicServer(server) };
+    },
+  );
 
   handleGuarded(
     isTrusted,
     IPC.SERVER_UPDATE,
     z.tuple([serverIdSchema, serverUpdateSchema]),
-    (_e, [id, updates]): IpcResponse => {
-      configStore.updateServer(id, updates);
+    async (_e, [id, updates]): Promise<IpcResponse> => {
+      await configStore.updateServer(id, updates);
       const updated = configStore.getServers().find((s) => s.id === id);
       if (updated) connectionManager.refreshClient(updated);
       return { success: true };
     },
   );
 
-  handleGuarded(isTrusted, IPC.SERVER_REMOVE, z.tuple([serverIdSchema]), (_e, [id]): IpcResponse => {
-    configStore.removeServer(id);
+  handleGuarded(isTrusted, IPC.SERVER_REMOVE, z.tuple([serverIdSchema]), async (_e, [id]): Promise<IpcResponse> => {
+    await configStore.removeServer(id);
     connectionManager.removeClient(id);
     return { success: true };
   });
 
-  handleGuarded(isTrusted, IPC.SERVER_SET_ACTIVE, z.tuple([serverIdSchema.nullable()]), (_e, [id]): IpcResponse => {
-    configStore.setActiveServerId(id);
-    if (id) {
-      const server = configStore.getServers().find((s) => s.id === id);
-      if (server) {
-        connectionManager.setActiveServer(server);
+  handleGuarded(
+    isTrusted,
+    IPC.SERVER_SET_ACTIVE,
+    z.tuple([serverIdSchema.nullable()]),
+    async (_e, [id]): Promise<IpcResponse> => {
+      await configStore.setActiveServerId(id);
+      if (id) {
+        const server = configStore.getServers().find((s) => s.id === id);
+        if (server) {
+          connectionManager.setActiveServer(server);
+        }
       }
-    }
-    return { success: true };
-  });
+      return { success: true };
+    },
+  );
 
   handleGuarded(isTrusted, IPC.SERVER_TEST, z.tuple([testServerSchema]), async (_e, [config]): Promise<IpcResponse> => {
     try {
@@ -159,11 +169,11 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
     return { success: true, data: configStore.getPreferences() };
   });
 
-  handleGuarded(isTrusted, IPC.PREFS_SET, z.tuple([prefsPatchSchema]), (_e, [prefs]): IpcResponse => {
+  handleGuarded(isTrusted, IPC.PREFS_SET, z.tuple([prefsPatchSchema]), async (_e, [prefs]): Promise<IpcResponse> => {
     if (!isWatchFolderAllowed(prefs.watchFolder)) {
       return { success: false, error: 'Watch folder must be chosen with the folder dialog' };
     }
-    configStore.updatePreferences(prefs);
+    await configStore.updatePreferences(prefs);
     if (prefs.language !== undefined) setLanguage(prefs.language);
     return { success: true };
   });
@@ -212,13 +222,18 @@ export function registerConfigHandlers(isTrusted: SenderValidator): void {
   );
 
   // Data is either the parsed JSON itself or { filePath } of a dialog-approved file.
-  handleGuarded(isTrusted, IPC.CONFIG_IMPORT, z.tuple([importRequestSchema]), (_e, [request]): IpcResponse => {
-    try {
-      return applyImport(resolveImportData(request));
-    } catch (err) {
-      console.error('[Import] Failed:', err instanceof Error ? err.name : 'unknown error');
-      const reason = err instanceof ApprovedPathError ? err.message : 'invalid file';
-      return { success: false, error: `Import failed: ${reason}` };
-    }
-  });
+  handleGuarded(
+    isTrusted,
+    IPC.CONFIG_IMPORT,
+    z.tuple([importRequestSchema]),
+    async (_e, [request]): Promise<IpcResponse> => {
+      try {
+        return await applyImport(resolveImportData(request));
+      } catch (err) {
+        console.error('[Import] Failed:', err instanceof Error ? err.name : 'unknown error');
+        const reason = err instanceof ApprovedPathError ? err.message : 'invalid file';
+        return { success: false, error: `Import failed: ${reason}` };
+      }
+    },
+  );
 }

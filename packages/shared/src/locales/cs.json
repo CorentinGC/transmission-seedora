@@ -491,6 +491,7 @@
       "serverSettings": "Nastavení serveru…",
       "rpcSpec": "Specifikace RPC Transmission",
       "reportIssue": "Nahlásit problém",
+      "releaseNotes": "Poznámky k vydání",
       "about": "O aplikaci {{appName}}",
       "hide": "Skrýt {{appName}}",
       "hideOthers": "Skrýt ostatní",
