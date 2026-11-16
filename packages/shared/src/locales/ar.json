@@ -488,6 +488,7 @@
       "serverSettings": "إعدادات الخادم…",
       "rpcSpec": "مواصفات RPC لـ Transmission",
       "reportIssue": "الإبلاغ عن مشكلة",
+      "releaseNotes": "ملاحظات الإصدار",
       "about": "حول {{appName}}",
       "hide": "إخفاء {{appName}}",
       "hideOthers": "إخفاء الآخرين",

@@ -488,6 +488,7 @@
       "serverSettings": "サーバ設定…",
       "rpcSpec": "Transmission RPC仕様",
       "reportIssue": "問題を報告",
+      "releaseNotes": "リリースノート",
       "about": "{{appName}}について",
       "hide": "{{appName}}を隠す",
       "hideOthers": "ほかを隠す",

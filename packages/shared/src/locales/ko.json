@@ -488,6 +488,7 @@
       "serverSettings": "서버 설정…",
       "rpcSpec": "Transmission RPC 사양",
       "reportIssue": "문제 신고",
+      "releaseNotes": "릴리스 노트",
       "about": "{{appName}} 정보",
       "hide": "{{appName}} 가리기",
       "hideOthers": "기타 가리기",

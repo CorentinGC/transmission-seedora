@@ -488,6 +488,7 @@
       "serverSettings": "Paramètres du serveur…",
       "rpcSpec": "Spécification RPC de Transmission",
       "reportIssue": "Signaler un problème",
+      "releaseNotes": "Notes de version",
       "about": "À propos de {{appName}}",
       "hide": "Masquer {{appName}}",
       "hideOthers": "Masquer les autres",

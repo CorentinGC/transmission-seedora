@@ -488,6 +488,7 @@
       "serverSettings": "Palvelimen asetukset…",
       "rpcSpec": "Transmissionin RPC-määrittely",
       "reportIssue": "Ilmoita ongelmasta",
+      "releaseNotes": "Julkaisutiedot",
       "about": "Tietoja: {{appName}}",
       "hide": "Piilota {{appName}}",
       "hideOthers": "Piilota muut",

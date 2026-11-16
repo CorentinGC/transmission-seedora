@@ -488,6 +488,7 @@
       "serverSettings": "服务器设置…",
       "rpcSpec": "Transmission RPC 规范",
       "reportIssue": "报告问题",
+      "releaseNotes": "发行说明",
       "about": "关于 {{appName}}",
       "hide": "隐藏 {{appName}}",
       "hideOthers": "隐藏其他",
