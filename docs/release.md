@@ -49,7 +49,7 @@ The runners are GitHub-hosted, so fork PR code never touches your hardware. Thes
 
 1. Settings > Actions > General > Fork pull request workflows: choose "Require approval for all external contributors" (currently `first_time_contributors`). CLI: `gh api -X PUT repos/CorentinGC/transmission-seedora/actions/permissions/fork-pr-contributor-approval -f approval_policy=all_external_contributors`.
 2. Settings > Actions > General > Workflow permissions: "Read repository contents" as the default, and leave "Allow GitHub Actions to create and approve pull requests" on only if release-please needs it (it does, to open the release PR).
-3. Branch protection (or a ruleset) on `staging` and `main`: require the CI checks listed above and one review; this is also what makes "red gate is fixed" enforceable.
+3. Branch protection on `staging` and `main`: block force-push and deletion. Required status checks and required reviews are deliberately off: the release-please PR and the `sync-staging` bot push cannot satisfy them, and the owner is the only maintainer. CI is still run on every PR and a red gate is fixed before merging.
 4. Settings > Code security: turn CodeQL "default setup" off (the repo ships `codeql.yml`), and turn on Dependabot alerts and security updates.
 
 Local hooks (`.beads/hooks`, chaining `scripts/git-hooks/`): `pre-commit` runs lint-staged, `commit-msg` runs commitlint (Conventional Commits).
