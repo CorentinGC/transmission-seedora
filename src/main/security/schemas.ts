@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { findScriptChanges, hasValidScriptValue } from './script-guard';
 import { stripUndefined } from './strip-undefined';
 
 /** Runtime schemas for every value the renderer can send over IPC. */
@@ -135,6 +136,12 @@ const rpcKey = z
 export const rpcParamsSchema = z
   .record(rpcKey, z.union([z.json(), z.undefined()]))
   .refine((v) => JSON.stringify(v).length <= MAX_JSON_BYTES, 'Parameters too large');
+
+/** `session-set` params: script `*-enabled` keys must be booleans and `*-filename` keys strings, so the guard sees exactly what the daemon would act on. */
+export const sessionSetParamsSchema = rpcParamsSchema.refine(
+  (v) => findScriptChanges(v).every(hasValidScriptValue),
+  'Invalid script setting',
+);
 
 /** `torrent-set` / `group-set` style params: must not override the ids the handler sets itself. */
 export const rpcParamsWithoutIdsSchema = rpcParamsSchema.refine((v) => !('ids' in v), 'ids not allowed here');

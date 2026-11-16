@@ -4,7 +4,6 @@ import { IPC } from '@ipc/ipc-channels';
 import type { IpcResponse } from '@shared/types';
 import { t } from '../i18n/main-i18n';
 import { RpcError } from '../rpc/client';
-import { configStore } from '../store/config-store';
 import { connectionManager } from '../rpc/connection-manager';
 import { toIpcError } from '../rpc/to-ipc-error';
 import { handleGuarded, type SenderValidator } from '../security/ipc-guard';
@@ -12,7 +11,13 @@ import { ApprovedPathError } from '../security/approved-paths';
 import { isSessionChangeAllowed } from '../security/script-guard';
 import { resolveTorrentAddParams } from '../security/torrent-source';
 import { confirmScriptChanges } from './script-confirm-dialog';
-import { rpcParamsSchema, rpcParamsWithoutIdsSchema, torrentAddSchema, torrentIdsSchema } from '../security/schemas';
+import {
+  rpcParamsSchema,
+  rpcParamsWithoutIdsSchema,
+  sessionSetParamsSchema,
+  torrentAddSchema,
+  torrentIdsSchema,
+} from '../security/schemas';
 
 function getClient() {
   const client = connectionManager.getActiveClient();
@@ -89,17 +94,17 @@ export function registerRpcHandlers(isTrusted: SenderValidator): void {
   handleGuarded(
     isTrusted,
     IPC.RPC_SESSION_SET,
-    z.tuple([rpcParamsSchema]),
+    z.tuple([sessionSetParamsSchema]),
     async (event, [params]): Promise<IpcResponse> => {
-      // One client for the whole check-then-write: switching server meanwhile cannot redirect the write.
-      const client = connectionManager.getActiveClient();
-      if (!client) return toIpcError(new RpcError('NO_CONNECTION', 'No active server connection'));
+      // One client and its own server config for the whole check-then-write: the label shown to the user always
+      // describes the daemon that receives the write, and switching server meanwhile cannot redirect it.
+      const active = connectionManager.getActive();
+      if (!active) return toIpcError(new RpcError('NO_CONNECTION', 'No active server connection'));
+      const { client, server } = active;
       const window = BrowserWindow.fromWebContents(event.sender);
-      const server = configStore.getServers().find((s) => s.id === configStore.getActiveServerId());
       const allowed = await isSessionChangeAllowed(params, {
         fetchCurrent: async (fields) => (await client.request('session-get', { fields: [...fields] })) ?? undefined,
-        confirm: (changes) =>
-          confirmScriptChanges(window, changes, server && `${server.name} (${server.host}:${server.port})`),
+        confirm: (changes) => confirmScriptChanges(window, changes, `${server.name} (${server.host}:${server.port})`),
       });
       if (!allowed) return { success: false, error: t('native.scriptGuard.declined'), code: 'CANCELLED' };
       try {

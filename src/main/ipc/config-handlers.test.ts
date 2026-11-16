@@ -28,6 +28,7 @@ const manager = vi.hoisted(() => ({
   refreshClient: vi.fn(),
   removeClient: vi.fn(),
   setActiveServer: vi.fn(),
+  clearActive: vi.fn(),
   createTemporaryClient: vi.fn(),
 }));
 vi.mock('../rpc/connection-manager', () => ({ connectionManager: manager }));
@@ -374,5 +375,30 @@ describe('secret storage status', () => {
   it('reports whether passwords are encrypted', async () => {
     store.isSecretStorageEncrypted.mockReturnValue(false);
     expect(await call(IPC.CONFIG_SECRET_STORAGE)).toEqual({ success: true, data: false });
+  });
+});
+
+describe('SERVER_SET_ACTIVE', () => {
+  it('rejects an unknown id without touching the store or the connection manager', async () => {
+    store.getServers.mockReturnValue([{ ...server, id: 'known' }]);
+    const res = await call(IPC.SERVER_SET_ACTIVE, 'ghost');
+    expect(res).toMatchObject({ success: false, error: 'Invalid request' });
+    expect(store.setActiveServerId).not.toHaveBeenCalled();
+    expect(manager.setActiveServer).not.toHaveBeenCalled();
+    expect(manager.clearActive).not.toHaveBeenCalled();
+  });
+
+  it('activates a known server in the store and the connection manager', async () => {
+    const known = { ...server, id: 'known' };
+    store.getServers.mockReturnValue([known]);
+    expect(await call(IPC.SERVER_SET_ACTIVE, 'known')).toMatchObject({ success: true });
+    expect(store.setActiveServerId).toHaveBeenCalledWith('known');
+    expect(manager.setActiveServer).toHaveBeenCalledWith(known);
+  });
+
+  it('clears the active client when null is sent', async () => {
+    expect(await call(IPC.SERVER_SET_ACTIVE, null)).toMatchObject({ success: true });
+    expect(store.setActiveServerId).toHaveBeenCalledWith(null);
+    expect(manager.clearActive).toHaveBeenCalled();
   });
 });

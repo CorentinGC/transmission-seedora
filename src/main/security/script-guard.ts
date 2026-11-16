@@ -25,6 +25,13 @@ export function findScriptChanges(params: Record<string, unknown>): ScriptChange
     .filter(({ key }) => SCRIPT_SETTING_KEYS.has(key));
 }
 
+/** Whether a script setting carries the type the daemon expects: a boolean for `*-enabled`, a string for `*-filename` (undefined is dropped on the wire). */
+export function hasValidScriptValue({ key, value }: ScriptChange): boolean {
+  if (value === undefined) return true; // dropped by JSON serialisation: never reaches the daemon
+  if (key.endsWith('-enabled')) return typeof value === 'boolean';
+  return typeof value === 'string';
+}
+
 /** Canonical names of every script setting (the fields to read back from the daemon). */
 export const SCRIPT_SETTING_FIELDS: readonly string[] = [...SCRIPT_SETTING_KEYS];
 

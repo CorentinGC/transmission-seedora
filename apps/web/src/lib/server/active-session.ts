@@ -25,6 +25,7 @@ export async function readActiveServer(): Promise<ServerTarget | null> {
     useSSL: payload.useSSL,
     username: payload.username,
     password: payload.password,
+    allowSelfSigned: payload.allowSelfSigned,
   };
 }
 
