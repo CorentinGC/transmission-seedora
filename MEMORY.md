@@ -49,7 +49,7 @@
 
 - Electron 45.3.2 (exact pin), Electron Forge 8, Vite 8, sharp 0.35, Next 16. `engines.node` is `>=22.17` (Forge 8 floor); `.nvmrc`, the CI setup action and the release workflow use 22.18.
 - `@ducanh2912/next-pwa` is gone (`0yd`): it never produced a service worker under Next 16 Turbopack. The manifest is static; there is no offline mode. A real service worker is a separate issue (`0nw`, mind ADR 0007).
-- `safeStorage` sync methods (`isEncryptionAvailable`, `encryptString`, `decryptString`) are deprecated in Electron 45 and removed in 46. `src/main/store/secret-crypto.ts` uses them: migrate to the async API before any Electron 46 upgrade (`fu8`).
+- `safeStorage` uses the async API (`isAsyncEncryptionAvailable`, `encryptStringAsync`, `decryptStringAsync`; the sync methods go away in Electron 46, `fu8` done). `configStore.init()` (awaited at `ready`) caches decrypted secrets for the synchronous readers; every store mutator is async and must be awaited. Runtime check on a real keychain with an existing `config.json` still to do.
 - `geoip-lite` stays on 1.4.10: 2.0.3 needs Node >=24 (owner decision, `gt3`).
 - Open audit items: `appdmg` / `image-size`, `typescript-eslint` / `minimatch`, `geoip-lite` / `ip-address`. See `docs/dependency-audit.md`.
 
@@ -75,7 +75,7 @@
 - Electron debugging for agents: `chrome-devtools` MCP on port 9222; web: `chrome-devtools-web`. The main session may start the apps in the background (and stops them after); subagents never do.
 
 - The packaged renderer's origin is `app://seedora`, not `file://`. Renderer-only `localStorage` from older builds resets once. Never trust a `file:` URL in `sender.ts`, never add `corsEnabled`/`bypassCSP` to the scheme.
-- `configStore.getServers()` returns decrypted passwords: main-process use only. Anything sent to the renderer goes through `toPublicServer`. `safeStorage` works only after `ready`, so the store is first used there.
+- `configStore.getServers()` returns decrypted passwords: main-process use only. Anything sent to the renderer goes through `toPublicServer`. `safeStorage` works only after `ready`, so the store is first used there (`await configStore.init()` first).
 - A new IPC channel needs: constant in `src/shared/ipc-channels.ts`, zod schema in `security/schemas.ts`, a `handleGuarded` registration, a preload method, a `PlatformApi` entry; renderer-bound events also go in `RENDERER_EVENT_CHANNELS`.
 
 ## Pointers
