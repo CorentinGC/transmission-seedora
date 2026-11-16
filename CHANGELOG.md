@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.2.2](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.2.1...seedora-v1.2.2) (2026-11-16)
+
+
+### Bug Fixes
+
+* accessible dialogs, menus and grid, responsive layout, single alias for shared types ([4546117](https://github.com/CorentinGC/transmission-seedora/commit/45461171fc523bbc9746ec0833532a7514025b37))
+* add error boundary, merge-and-validate config import on web, drop dead path mappings ([f1865db](https://github.com/CorentinGC/transmission-seedora/commit/f1865db394171cda8b29a6ac77d4bd2155bba360))
+* **deps:** upgrade next to 16.4.6 and allow 60 s server actions ([fdb5ae1](https://github.com/CorentinGC/transmission-seedora/commit/fdb5ae1d23dd0844e2e95438ba80b7327c3c7f38))
+* drop the password from the session-id cache key ([fea39c1](https://github.com/CorentinGC/transmission-seedora/commit/fea39c14b67c0160c112d885c2ed44a3cef62075))
+* **electron:** sandbox the renderer, serve it from app://, validate every IPC call ([3801a64](https://github.com/CorentinGC/transmission-seedora/commit/3801a64e1affc1a66b94896bce7c6bb3d439fff0))
+* harden credentials and IPC, surface failures, translate errors, open magnet/.torrent files ([a717652](https://github.com/CorentinGC/transmission-seedora/commit/a717652f958d55dd6b98ea96d81841745801c5ce))
+* **i18n:** translate the 49 missing keys in 21 locales and the English leftovers ([947eb04](https://github.com/CorentinGC/transmission-seedora/commit/947eb04b32a29e34c671d3f22d25eb8309cf8466))
+* key the session-id cache digest with a per-process secret ([78aab5f](https://github.com/CorentinGC/transmission-seedora/commit/78aab5f8d1c564baf3c4ed6ec4ff68c0188c76ab))
+* review findings on keyboard logic, focus restore, grid ARIA, e2e scope and main import guard ([4d3f51e](https://github.com/CorentinGC/transmission-seedora/commit/4d3f51e2b54d0bb99fbfde1d68335b302d90809a))
+* surface action failures, refresh detail tabs, harden RPC client and web session ([ecc872f](https://github.com/CorentinGC/transmission-seedora/commit/ecc872f34d076c3370f0ebbc05302f74825d985e))
+* **ui:** show a connection error when activating a server fails ([d9f5f6d](https://github.com/CorentinGC/transmission-seedora/commit/d9f5f6d9136bbf8cd240ccb0a5fddc9fae11b5c6))
+* **ui:** surface failed prefs save and import, lock watch folder input ([0199091](https://github.com/CorentinGC/transmission-seedora/commit/0199091e013f99fccf0f97f9177cd4e9f5a05101))
+* **web:** bound outbound memory and DNS use, harden rate-limit keys and CSP ([5e5d692](https://github.com/CorentinGC/transmission-seedora/commit/5e5d69221a8b5d06af0a0d59c8586e862dfe6706))
+* **web:** bound per-destination resources, add host allowlist and harden session recovery ([b191279](https://github.com/CorentinGC/transmission-seedora/commit/b191279a47a152d4e708c0d1c34f0bd390eff2cd))
+* **web:** declare @types/node so the isolated Vercel install can type-check ([8e67a16](https://github.com/CorentinGC/transmission-seedora/commit/8e67a169b7e08f58ad1981ffb38ea58f7331b7f6))
+* **web:** drop the domain-wide DNS refusal and retry once on the next address ([e3961d8](https://github.com/CorentinGC/transmission-seedora/commit/e3961d8fd1c2868e8fc391ad587c42ecdae1724e))
+* **web:** exclude test files from the production type-check so the isolated Vercel build passes ([ae7efa3](https://github.com/CorentinGC/transmission-seedora/commit/ae7efa3e6d1daaa07a4a3b3a17c65a478129a670))
+* **web:** route server actions through the SSRF guard with a sealed session cookie ([5252c91](https://github.com/CorentinGC/transmission-seedora/commit/5252c91d5b8b2b9fde211befafdd399ab76026a6))
+* **web:** send RPC args as a JSON string and pin each call to one address ([fa466d6](https://github.com/CorentinGC/transmission-seedora/commit/fa466d6a7dfe93937ff1159a2ccbbfc5f8e994b1))
+* **web:** set security headers (CSP, HSTS, framing, referrer policy) ([02d1321](https://github.com/CorentinGC/transmission-seedora/commit/02d1321e045eae9efc7c6ad40c954245a7311480))
+
 ## [1.2.1](https://github.com/CorentinGC/transmission-seedora/compare/seedora-v1.2.0...seedora-v1.2.1) (2026-03-05)
 
 
