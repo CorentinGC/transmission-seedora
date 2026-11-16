@@ -122,7 +122,10 @@
     "created": "Vytvořeno",
     "comment": "Komentář",
     "fileCount": "Soubory",
-    "group": "Skupina"
+    "group": "Skupina",
+    "sortBy": "Seřadit podle",
+    "sortAscending": "Řadit vzestupně",
+    "sortDescending": "Řadit sestupně"
   },
   "priority": {
     "high": "Vysoká",
@@ -488,6 +491,7 @@
       "serverSettings": "Nastavení serveru…",
       "rpcSpec": "Specifikace RPC Transmission",
       "reportIssue": "Nahlásit problém",
+      "releaseNotes": "Poznámky k vydání",
       "about": "O aplikaci {{appName}}",
       "hide": "Skrýt {{appName}}",
       "hideOthers": "Skrýt ostatní",

@@ -14,16 +14,30 @@ let dir: string;
 let file: string;
 let available: boolean;
 let failDecrypt: boolean;
+let failEncrypt: boolean;
+let availabilityFails: boolean;
+let reEncrypt: boolean;
 
 const fakeCrypto: SecretCrypto = {
-  isAvailable: () => available,
-  encrypt: (plain) => Buffer.from(`enc:${plain}`).toString('base64'),
-  decrypt: (b64) => {
+  isAvailable: async () => {
+    if (availabilityFails) throw new Error('no store');
+    return available;
+  },
+  encrypt: async (plain) => {
+    if (failEncrypt) throw new Error('encryption failed');
+    return Buffer.from(`enc:${plain}`).toString('base64');
+  },
+  decrypt: async (b64) => {
     if (failDecrypt) throw new Error('keychain locked');
-    return Buffer.from(b64, 'base64').toString().replace(/^enc:/, '');
+    return { value: Buffer.from(b64, 'base64').toString().replace(/^enc:/, ''), shouldReEncrypt: reEncrypt };
   },
 };
-const open = () => createConfigStore({ filePath: () => file, crypto: fakeCrypto, now: () => 1234 });
+/** Opens a store and runs the async startup (availability check and decryption), as `ready` does. */
+const open = async () => {
+  const store = createConfigStore({ filePath: () => file, crypto: fakeCrypto, now: () => 1234 });
+  await store.init();
+  return store;
+};
 const onDisk = () => fs.readFileSync(file, 'utf-8');
 
 beforeEach(() => {
@@ -31,6 +45,9 @@ beforeEach(() => {
   file = path.join(dir, 'config.json');
   available = true;
   failDecrypt = false;
+  failEncrypt = false;
+  availabilityFails = false;
+  reEncrypt = false;
   vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 afterEach(() => {
@@ -39,25 +56,25 @@ afterEach(() => {
 });
 
 describe('patches', () => {
-  it('does not erase a server field when the patch carries an explicit undefined', () => {
-    const store = open();
-    store.addServer(server);
-    store.updateServer('s1', { host: undefined, port: 1234 });
+  it('does not erase a server field when the patch carries an explicit undefined', async () => {
+    const store = await open();
+    await store.addServer(server);
+    await store.updateServer('s1', { host: undefined, port: 1234 });
     expect(store.getServers()[0]).toMatchObject({ host: 'nas', port: 1234 });
   });
 
-  it('does not erase a preference when the patch carries an explicit undefined', () => {
-    const store = open();
-    store.updatePreferences({ language: 'fr' });
-    store.updatePreferences({ language: undefined, theme: 'dark' });
+  it('does not erase a preference when the patch carries an explicit undefined', async () => {
+    const store = await open();
+    await store.updatePreferences({ language: 'fr' });
+    await store.updatePreferences({ language: undefined, theme: 'dark' });
     expect(store.getPreferences()).toMatchObject({ language: 'fr', theme: 'dark' });
   });
 });
 
 describe('credential encryption', () => {
-  it('writes no cleartext password, round-trips it and creates the file with mode 0600', () => {
-    const store = open();
-    store.addServer({ ...server, password: 'hunter2', proxyPassword: 'proxy-secret' });
+  it('writes no cleartext password, round-trips it and creates the file with mode 0600', async () => {
+    const store = await open();
+    await store.addServer({ ...server, password: 'hunter2', proxyPassword: 'proxy-secret' });
     expect(onDisk()).not.toContain('hunter2');
     expect(onDisk()).not.toContain('proxy-secret');
     expect(store.getServers()[0]).toMatchObject({
@@ -69,72 +86,137 @@ describe('credential encryption', () => {
     if (process.platform !== 'win32') expect(fs.statSync(file).mode & 0o777).toBe(0o600);
   });
 
-  it('leaves no temp file behind and tightens an existing 0644 file', () => {
+  it('leaves no temp file behind and tightens an existing 0644 file', async () => {
     fs.writeFileSync(file, JSON.stringify({ servers: [], preferences: {} }), { mode: 0o644 });
-    open().addServer(server);
+    await (await open()).addServer(server);
     expect(fs.readdirSync(dir)).toEqual(['config.json']);
     if (process.platform !== 'win32') expect(fs.statSync(file).mode & 0o777).toBe(0o600);
   });
 
-  it('encrypts legacy cleartext passwords at startup without any other write', () => {
+  it('encrypts legacy cleartext passwords at startup without any other write', async () => {
     fs.writeFileSync(
       file,
       JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: null, preferences: {} }),
     );
-    open().migrateLegacySecrets();
+    await (await open()).migrateLegacySecrets();
     expect(onDisk()).not.toContain('legacy-pw');
-    expect(open().getServers()[0]?.password).toBe('legacy-pw');
+    expect((await open()).getServers()[0]?.password).toBe('legacy-pw');
   });
 
-  it('leaves cleartext untouched when no secret store exists', () => {
+  it('leaves cleartext untouched when no secret store exists', async () => {
     available = false;
     fs.writeFileSync(
       file,
       JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: null, preferences: {} }),
     );
-    open().migrateLegacySecrets();
+    await (await open()).migrateLegacySecrets();
     expect(onDisk()).toContain('legacy-pw');
   });
 
-  it('migrates a legacy cleartext config on the first write', () => {
+  it('migrates a legacy cleartext config on the first write', async () => {
     fs.writeFileSync(
       file,
       JSON.stringify({ servers: [{ ...server, password: 'legacy-pw' }], activeServerId: 's1', preferences: {} }),
     );
-    const store = open();
+    const store = await open();
     expect(store.getServers()[0]?.password).toBe('legacy-pw');
-    store.setActiveServerId('s1');
+    await store.setActiveServerId('s1');
     expect(onDisk()).not.toContain('legacy-pw');
-    expect(open().getServers()[0]?.password).toBe('legacy-pw');
+    expect((await open()).getServers()[0]?.password).toBe('legacy-pw');
   });
 
-  it('keeps a password in the 0600 file when no secret store exists, and encrypts it once one does', () => {
+  it('keeps a password in the 0600 file when no secret store exists, and encrypts it once one does', async () => {
     available = false;
-    const store = open();
-    store.addServer({ ...server, password: 'pw' });
+    const store = await open();
+    await store.addServer({ ...server, password: 'pw' });
     expect(onDisk()).toContain('"password": "pw"');
     available = true;
-    store.setActiveServerId('s1');
+    const reopened = await open();
+    await reopened.migrateLegacySecrets();
     expect(onDisk()).not.toContain('"pw"');
-    expect(store.getServers()[0]?.password).toBe('pw');
+    expect(reopened.getServers()[0]?.password).toBe('pw');
   });
 
-  it('keeps a server whose password cannot be decrypted and preserves the ciphertext on later writes', () => {
-    open().addServer({ ...server, password: 'pw' });
+  it('keeps a server whose password cannot be decrypted and preserves the ciphertext on later writes', async () => {
+    await (await open()).addServer({ ...server, password: 'pw' });
     failDecrypt = true;
-    const store = open();
+    const store = await open();
     expect(store.getServers()[0]).toMatchObject({ id: 's1', hasPassword: true });
     expect(store.getServers()[0]?.password).toBeUndefined();
-    store.updateServer('s1', { name: 'renamed' });
+    await store.updateServer('s1', { name: 'renamed' });
     failDecrypt = false;
-    expect(store.getServers()[0]).toMatchObject({ name: 'renamed', password: 'pw' });
+    expect((await open()).getServers()[0]).toMatchObject({ name: 'renamed', password: 'pw' });
+  });
+});
+
+describe('async secret store', () => {
+  it('fails closed: a failed encryption writes nothing and never leaves the secret in cleartext on disk', async () => {
+    const store = await open();
+    failEncrypt = true;
+    await expect(store.addServer({ ...server, password: 'pw' })).rejects.toThrow(ConfigStoreError);
+    expect(fs.existsSync(file)).toBe(false);
+    failEncrypt = false;
+    await store.setActiveServerId(null);
+    expect(onDisk()).not.toContain('"pw"');
+    expect((await open()).getServers()[0]?.password).toBe('pw');
+  });
+
+  it('treats an availability error as no secret store', async () => {
+    availabilityFails = true;
+    const store = await open();
+    expect(store.isSecretStorageEncrypted()).toBe(false);
+  });
+
+  it('reads encrypted passwords as locked until init has run', async () => {
+    await (await open()).addServer({ ...server, password: 'pw' });
+    const store = createConfigStore({ filePath: () => file, crypto: fakeCrypto });
+    expect(store.getServers()[0]).toMatchObject({ hasPassword: true });
+    expect(store.getServers()[0]?.password).toBeUndefined();
+  });
+
+  it('re-encrypts a secret the OS asks to refresh', async () => {
+    await (await open()).addServer({ ...server, password: 'pw' });
+    const before = onDisk();
+    reEncrypt = true;
+    const store = await open();
+    expect(store.getServers()[0]?.password).toBe('pw');
+    await store.migrateLegacySecrets();
+    reEncrypt = false;
+    expect(onDisk()).not.toContain('"pw"');
+    expect((await open()).getServers()[0]?.password).toBe('pw');
+    expect(onDisk()).toContain('passwordEnc');
+    expect(before).toContain('passwordEnc');
+  });
+
+  it('decrypts a ciphertext written by a previous version (base64 of the safeStorage blob)', async () => {
+    fs.writeFileSync(
+      file,
+      JSON.stringify({
+        servers: [{ ...server, passwordEnc: Buffer.from('enc:legacy').toString('base64') }],
+        preferences: {},
+      }),
+    );
+    expect((await open()).getServers()[0]?.password).toBe('legacy');
+  });
+
+  it('serialises concurrent writes', async () => {
+    const store = await open();
+    await Promise.all([
+      store.addServer({ ...server, password: 'a' }),
+      store.addServer({ ...server, id: 's2', password: 'b' }),
+      store.updatePreferences({ theme: 'dark' }),
+    ]);
+    const reopened = await open();
+    expect(reopened.getServers().map((s) => s.password)).toEqual(['a', 'b']);
+    expect(reopened.getPreferences().theme).toBe('dark');
+    expect(onDisk()).not.toMatch(/"password":/);
   });
 });
 
 describe('password update rules', () => {
-  const withPasswords = () => {
-    const store = open();
-    store.addServer({
+  const withPasswords = async () => {
+    const store = await open();
+    await store.addServer({
       ...server,
       username: 'u',
       password: 'pw',
@@ -146,46 +228,46 @@ describe('password update rules', () => {
     return store;
   };
 
-  it('keeps the stored passwords when the patch omits them or sends an empty string', () => {
-    const store = withPasswords();
-    store.updateServer('s1', { name: 'x', password: '', proxyPassword: '' });
+  it('keeps the stored passwords when the patch omits them or sends an empty string', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { name: 'x', password: '', proxyPassword: '' });
     expect(store.getServers()[0]).toMatchObject({ password: 'pw', proxyPassword: 'ppw' });
   });
 
-  it('replaces a password when a new one is sent', () => {
-    const store = withPasswords();
-    store.updateServer('s1', { password: 'new' });
+  it('replaces a password when a new one is sent', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { password: 'new' });
     expect(store.getServers()[0]?.password).toBe('new');
   });
 
-  it('drops the password when the host or port changes, unless a new one comes along', () => {
-    const store = withPasswords();
-    store.updateServer('s1', { host: 'other' });
+  it('drops the password when the host or port changes, unless a new one comes along', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { host: 'other' });
     expect(store.getServers()[0]).toMatchObject({ hasPassword: false, hasProxyPassword: true });
-    store.updateServer('s1', { password: 'again' });
-    store.updateServer('s1', { port: 1, password: 'fresh' });
+    await store.updateServer('s1', { password: 'again' });
+    await store.updateServer('s1', { port: 1, password: 'fresh' });
     expect(store.getServers()[0]?.password).toBe('fresh');
-    store.updateServer('s1', { port: 2 });
+    await store.updateServer('s1', { port: 2 });
     expect(store.getServers()[0]?.hasPassword).toBe(false);
   });
 
-  it('removes a password only on an explicit clear request, keeping the username', () => {
-    const store = withPasswords();
-    store.updateServer('s1', { clearPassword: true });
+  it('removes a password only on an explicit clear request, keeping the username', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { clearPassword: true });
     expect(store.getServers()[0]).toMatchObject({ username: 'u', hasPassword: false, hasProxyPassword: true });
-    store.updateServer('s1', { clearProxyPassword: true });
+    await store.updateServer('s1', { clearProxyPassword: true });
     expect(store.getServers()[0]).toMatchObject({ hasProxyPassword: false });
     expect(onDisk()).not.toContain('clearPassword');
   });
 
-  it('drops the password when TLS is switched off or the RPC path changes', () => {
-    let store = open();
-    store.addServer({ ...server, useSSL: true, username: 'u', password: 'pw' });
-    store.updateServer('s1', { useSSL: false });
+  it('drops the password when TLS is switched off or the RPC path changes', async () => {
+    let store = await open();
+    await store.addServer({ ...server, useSSL: true, username: 'u', password: 'pw' });
+    await store.updateServer('s1', { useSSL: false });
     expect(store.getServers()[0]?.hasPassword).toBe(false);
-    store.updateServer('s1', { password: 'pw' });
-    store = open();
-    store.updateServer('s1', { path: '/other/rpc' });
+    await store.updateServer('s1', { password: 'pw' });
+    store = await open();
+    await store.updateServer('s1', { path: '/other/rpc' });
     expect(store.getServers()[0]?.hasPassword).toBe(false);
   });
 
@@ -193,82 +275,82 @@ describe('password update rules', () => {
     ['proxy host', { proxyHost: 'evil' }],
     ['proxy type', { proxyType: 'socks5' as const }],
     ['proxy username', { proxyUsername: 'other' }],
-  ])('drops the proxy password when the %s changes', (_name, change) => {
-    const store = withPasswords();
-    store.updateServer('s1', change);
+  ])('drops the proxy password when the %s changes', async (_name, change) => {
+    const store = await withPasswords();
+    await store.updateServer('s1', change);
     expect(store.getServers()[0]).toMatchObject({ hasProxyPassword: false, hasPassword: true });
   });
 
-  it('drops the password when certificate checks are relaxed, not when they are tightened', () => {
-    const store = withPasswords();
-    store.updateServer('s1', { allowSelfSigned: true });
+  it('drops the password when certificate checks are relaxed, not when they are tightened', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { allowSelfSigned: true });
     expect(store.getServers()[0]?.hasPassword).toBe(false);
-    store.updateServer('s1', { password: 'pw' });
-    store.updateServer('s1', { allowSelfSigned: false });
+    await store.updateServer('s1', { password: 'pw' });
+    await store.updateServer('s1', { allowSelfSigned: false });
     expect(store.getServers()[0]?.password).toBe('pw');
   });
 
-  it('reports servers whose password cannot be decrypted', () => {
-    open().addServer({ ...server, name: 'NAS', password: 'pw' });
+  it('reports servers whose password cannot be decrypted', async () => {
+    await (await open()).addServer({ ...server, name: 'NAS', password: 'pw' });
     failDecrypt = true;
-    expect(open().getLockedServerNames()).toEqual(['NAS']);
+    expect((await open()).getLockedServerNames()).toEqual(['NAS']);
     failDecrypt = false;
-    expect(open().getLockedServerNames()).toEqual([]);
+    expect((await open()).getLockedServerNames()).toEqual([]);
   });
 
-  it('keeps the password when the host is re-sent unchanged', () => {
-    const store = withPasswords();
-    store.updateServer('s1', { host: 'nas', port: 9091, name: 'same' });
+  it('keeps the password when the host is re-sent unchanged', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { host: 'nas', port: 9091, name: 'same' });
     expect(store.getServers()[0]?.password).toBe('pw');
   });
 
-  it('drops the proxy password when the proxy changes or is turned off, and the password when the username is emptied', () => {
-    const store = withPasswords();
-    store.updateServer('s1', { proxyHost: 'elsewhere' });
+  it('drops the proxy password when the proxy changes or is turned off, and the password when the username is emptied', async () => {
+    const store = await withPasswords();
+    await store.updateServer('s1', { proxyHost: 'elsewhere' });
     expect(store.getServers()[0]?.hasProxyPassword).toBe(false);
-    store.updateServer('s1', { proxyPassword: 'p2' });
-    store.updateServer('s1', { proxyType: 'none' });
+    await store.updateServer('s1', { proxyPassword: 'p2' });
+    await store.updateServer('s1', { proxyType: 'none' });
     expect(store.getServers()[0]?.hasProxyPassword).toBe(false);
-    store.updateServer('s1', { username: '' });
+    await store.updateServer('s1', { username: '' });
     expect(store.getServers()[0]?.hasPassword).toBe(false);
   });
 });
 
 describe('load failures', () => {
-  it('moves a corrupt file aside (mode 0600), reports it and keeps working', () => {
+  it('moves a corrupt file aside (mode 0600), reports it and keeps working', async () => {
     fs.writeFileSync(file, '{"servers": [ {"id": "x", "password": "secret"', { mode: 0o644 });
-    const store = open();
+    const store = await open();
     expect(store.getServers()).toEqual([]);
     expect(store.getLoadError()).toEqual({ kind: 'corrupt', backupPath: `${file}.corrupt-1234` });
     expect(fs.readFileSync(`${file}.corrupt-1234`, 'utf-8')).toContain('"secret"');
     if (process.platform !== 'win32') expect(fs.statSync(`${file}.corrupt-1234`).mode & 0o777).toBe(0o600);
-    store.addServer(server);
-    expect(open().getServers()).toHaveLength(1);
+    await store.addServer(server);
+    expect((await open()).getServers()).toHaveLength(1);
     expect(fs.existsSync(`${file}.corrupt-1234`)).toBe(true);
   });
 
-  it('treats valid JSON of the wrong shape as corrupt', () => {
+  it('treats valid JSON of the wrong shape as corrupt', async () => {
     fs.writeFileSync(file, '[1,2,3]');
-    expect(open().getLoadError()?.kind).toBe('corrupt');
+    expect((await open()).getLoadError()?.kind).toBe('corrupt');
   });
 
-  it('starts silently on a missing file', () => {
-    const store = open();
+  it('starts silently on a missing file', async () => {
+    const store = await open();
     expect(store.getServers()).toEqual([]);
     expect(store.getLoadError()).toBeUndefined();
   });
 
-  it('refuses to overwrite a file it cannot read', () => {
+  it('refuses to overwrite a file it cannot read', async () => {
     fs.mkdirSync(file); // reading a directory fails with EISDIR
-    const store = open();
+    const store = await open();
     expect(store.getLoadError()).toEqual({ kind: 'unreadable' });
-    expect(() => store.addServer(server)).toThrow(ConfigStoreError);
+    await expect(store.addServer(server)).rejects.toThrow(ConfigStoreError);
     expect(fs.statSync(file).isDirectory()).toBe(true);
   });
 
-  it('backs up once, not on every read', () => {
+  it('backs up once, not on every read', async () => {
     fs.writeFileSync(file, 'nope');
-    const store = open();
+    const store = await open();
     store.getServers();
     store.getPreferences();
     store.getActiveServerId();
@@ -277,7 +359,7 @@ describe('load failures', () => {
 });
 
 describe('stored preferences', () => {
-  it('drops removed or invalid preference keys instead of failing, keeping the valid ones', () => {
+  it('drops removed or invalid preference keys instead of failing, keeping the valid ones', async () => {
     fs.writeFileSync(
       file,
       JSON.stringify({
@@ -292,14 +374,14 @@ describe('stored preferences', () => {
         },
       }),
     );
-    const store = open();
+    const store = await open();
     expect(store.getLoadError()).toBeUndefined();
     const prefs = store.getPreferences();
     expect(prefs).toMatchObject({ language: 'fr', theme: 'dark', pollingInterval: 3000 });
     expect(prefs).not.toHaveProperty('confirmOnAdd');
     expect(prefs).not.toHaveProperty('pathMappings');
     expect(prefs).not.toHaveProperty('bogus');
-    store.updatePreferences({ showNotifications: false });
+    await store.updatePreferences({ showNotifications: false });
     expect(onDisk()).not.toContain('confirmOnAdd');
   });
 });

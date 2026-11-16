@@ -122,7 +122,10 @@
     "created": "Создан",
     "comment": "Комментарий",
     "fileCount": "Файлы",
-    "group": "Группа"
+    "group": "Группа",
+    "sortBy": "Сортировать по",
+    "sortAscending": "По возрастанию",
+    "sortDescending": "По убыванию"
   },
   "priority": {
     "high": "Высокий",
@@ -488,6 +491,7 @@
       "serverSettings": "Настройки сервера…",
       "rpcSpec": "Спецификация RPC Transmission",
       "reportIssue": "Сообщить о проблеме",
+      "releaseNotes": "Примечания к выпуску",
       "about": "О программе {{appName}}",
       "hide": "Скрыть {{appName}}",
       "hideOthers": "Скрыть остальные",

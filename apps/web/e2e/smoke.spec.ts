@@ -122,8 +122,8 @@ test.describe('mobile viewport (390px)', () => {
     await page.goto('/');
     await addServer(page, 'Fake NAS');
     await page
-      .getByRole('grid', { name: 'Torrents' })
-      .getByRole('row', { name: /ubuntu-24\.04/ })
+      .getByRole('listbox', { name: 'Torrents' })
+      .getByRole('option', { name: /ubuntu-24\.04/ })
       .click();
     await page.getByRole('button', { name: 'Toggle Details Panel' }).click();
     const sheet = page.getByRole('dialog', { name: 'Toggle Details Panel' });
@@ -131,5 +131,15 @@ test.describe('mobile viewport (390px)', () => {
     await expect(sheet.getByText('Hash:', { exact: true })).toBeVisible();
     await sheet.getByRole('button', { name: 'Close' }).click();
     await expect(sheet).toBeHidden();
+  });
+
+  test('torrents render as cards with a sort control', async ({ page }) => {
+    await page.goto('/');
+    await addServer(page, 'Fake NAS');
+    const list = page.getByRole('listbox', { name: 'Torrents' });
+    await expect(list.getByRole('option', { name: /ubuntu-24\.04/ })).toBeVisible();
+    await page.getByRole('combobox', { name: 'Sort by' }).selectOption('name');
+    await page.getByRole('button', { name: /^Sort (ascending|descending)$/ }).click();
+    await expect(list.getByRole('option').first()).toBeVisible();
   });
 });

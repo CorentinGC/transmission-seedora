@@ -122,7 +122,10 @@
     "created": "생성일",
     "comment": "설명",
     "fileCount": "파일 수",
-    "group": "그룹"
+    "group": "그룹",
+    "sortBy": "정렬 기준",
+    "sortAscending": "오름차순 정렬",
+    "sortDescending": "내림차순 정렬"
   },
   "priority": {
     "high": "높음",
@@ -488,6 +491,7 @@
       "serverSettings": "서버 설정…",
       "rpcSpec": "Transmission RPC 사양",
       "reportIssue": "문제 신고",
+      "releaseNotes": "릴리스 노트",
       "about": "{{appName}} 정보",
       "hide": "{{appName}} 가리기",
       "hideOthers": "기타 가리기",

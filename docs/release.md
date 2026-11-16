@@ -41,7 +41,7 @@ Consequence: commit types are release decisions. A `fix:` that is really a refac
 
 ### Which commit types reach the changelog
 
-`release-please-config.json` lists the sections. Only `feat`, `fix` and `perf` are visible, and release-please drops hidden types from both the changelog and the release trigger: a `build:` or `revert:` commit never opens a release PR, and never appears in a changelog. Showing one of them is a release-policy decision (it would make each such commit ship a patch version), tracked in `ec9`. Scopes do not create sections: `fix(security):` lands under Bug Fixes. `commitlint` allows `feat fix perf refactor docs test build ci chore style revert` locally (pre-commit hook) and in CI (PR title and commits).
+`release-please-config.json` lists the sections. Only `feat`, `fix` and `perf` are visible, and release-please drops hidden types from both the changelog and the release trigger: a `build:` or `revert:` commit never opens a release PR, and never appears in a changelog. Showing one of them is a release-policy decision (it would make each such commit ship a patch version), decided in `ec9` (2026-11-16): keep them hidden, so a dependency bump, build change or revert never ships a release on its own; a user-visible revert or dependency fix is written as `fix:` / `fix(deps):`. Scopes do not create sections: `fix(security):` lands under Bug Fixes. `commitlint` allows `feat fix perf refactor docs test build ci chore style revert` locally (pre-commit hook) and in CI (PR title and commits).
 
 ### Repository settings (owner actions)
 

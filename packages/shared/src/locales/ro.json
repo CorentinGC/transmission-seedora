@@ -122,7 +122,10 @@
     "created": "Creat",
     "comment": "Comentariu",
     "fileCount": "Fișiere",
-    "group": "Grup"
+    "group": "Grup",
+    "sortBy": "Sortează după",
+    "sortAscending": "Sortare crescătoare",
+    "sortDescending": "Sortare descrescătoare"
   },
   "priority": {
     "high": "Înaltă",
@@ -488,6 +491,7 @@
       "serverSettings": "Setări server…",
       "rpcSpec": "Specificația RPC Transmission",
       "reportIssue": "Raportează o problemă",
+      "releaseNotes": "Note de lansare",
       "about": "Despre {{appName}}",
       "hide": "Ascunde {{appName}}",
       "hideOthers": "Ascunde celelalte",

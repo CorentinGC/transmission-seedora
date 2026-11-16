@@ -122,7 +122,10 @@
     "created": "Utworzono",
     "comment": "Komentarz",
     "fileCount": "Pliki",
-    "group": "Grupa"
+    "group": "Grupa",
+    "sortBy": "Sortuj według",
+    "sortAscending": "Sortuj rosnąco",
+    "sortDescending": "Sortuj malejąco"
   },
   "priority": {
     "high": "Wysoki",
@@ -488,6 +491,7 @@
       "serverSettings": "Ustawienia serwera…",
       "rpcSpec": "Specyfikacja RPC Transmission",
       "reportIssue": "Zgłoś problem",
+      "releaseNotes": "Informacje o wydaniu",
       "about": "O programie {{appName}}",
       "hide": "Ukryj {{appName}}",
       "hideOthers": "Ukryj pozostałe",

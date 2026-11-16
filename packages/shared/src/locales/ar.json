@@ -122,7 +122,10 @@
     "created": "تاريخ الإنشاء",
     "comment": "تعليق",
     "fileCount": "الملفات",
-    "group": "المجموعة"
+    "group": "المجموعة",
+    "sortBy": "ترتيب حسب",
+    "sortAscending": "ترتيب تصاعدي",
+    "sortDescending": "ترتيب تنازلي"
   },
   "priority": {
     "high": "عالية",
@@ -488,6 +491,7 @@
       "serverSettings": "إعدادات الخادم…",
       "rpcSpec": "مواصفات RPC لـ Transmission",
       "reportIssue": "الإبلاغ عن مشكلة",
+      "releaseNotes": "ملاحظات الإصدار",
       "about": "حول {{appName}}",
       "hide": "إخفاء {{appName}}",
       "hideOthers": "إخفاء الآخرين",

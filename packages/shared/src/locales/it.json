@@ -122,7 +122,10 @@
     "created": "Creato",
     "comment": "Commento",
     "fileCount": "File",
-    "group": "Gruppo"
+    "group": "Gruppo",
+    "sortBy": "Ordina per",
+    "sortAscending": "Ordine crescente",
+    "sortDescending": "Ordine decrescente"
   },
   "priority": {
     "high": "Alta",
@@ -488,6 +491,7 @@
       "serverSettings": "Impostazioni del server…",
       "rpcSpec": "Specifica RPC di Transmission",
       "reportIssue": "Segnala un problema",
+      "releaseNotes": "Note di rilascio",
       "about": "Informazioni su {{appName}}",
       "hide": "Nascondi {{appName}}",
       "hideOthers": "Nascondi altre",

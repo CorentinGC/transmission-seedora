@@ -122,7 +122,10 @@
     "created": "Luotu",
     "comment": "Kommentti",
     "fileCount": "Tiedostot",
-    "group": "Ryhmä"
+    "group": "Ryhmä",
+    "sortBy": "Järjestä",
+    "sortAscending": "Järjestä nousevasti",
+    "sortDescending": "Järjestä laskevasti"
   },
   "priority": {
     "high": "Korkea",
@@ -488,6 +491,7 @@
       "serverSettings": "Palvelimen asetukset…",
       "rpcSpec": "Transmissionin RPC-määrittely",
       "reportIssue": "Ilmoita ongelmasta",
+      "releaseNotes": "Julkaisutiedot",
       "about": "Tietoja: {{appName}}",
       "hide": "Piilota {{appName}}",
       "hideOthers": "Piilota muut",

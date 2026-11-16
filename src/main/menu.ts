@@ -1,6 +1,7 @@
 import { app, Menu, shell, BrowserWindow } from 'electron';
 import { IPC } from '@ipc/ipc-channels';
 import { t } from './i18n/main-i18n';
+import { releaseNotesUrl } from './security/external-urls';
 
 const APP_NAME = 'Seedora';
 const m = (key: string, vars?: Record<string, string | number>) => t(`native.menu.${key}`, vars);
@@ -157,6 +158,10 @@ export function createMenu(mainWindow: BrowserWindow): void {
         {
           label: m('reportIssue'),
           click: () => shell.openExternal('https://github.com/CorentinGC/transmission-seedora/issues'),
+        },
+        {
+          label: m('releaseNotes'),
+          click: () => shell.openExternal(releaseNotesUrl(app.getVersion())),
         },
       ],
     },

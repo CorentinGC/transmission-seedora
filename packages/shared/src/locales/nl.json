@@ -122,7 +122,10 @@
     "created": "Aangemaakt",
     "comment": "Opmerking",
     "fileCount": "Bestanden",
-    "group": "Groep"
+    "group": "Groep",
+    "sortBy": "Sorteren op",
+    "sortAscending": "Oplopend sorteren",
+    "sortDescending": "Aflopend sorteren"
   },
   "priority": {
     "high": "Hoog",
@@ -488,6 +491,7 @@
       "serverSettings": "Serverinstellingen…",
       "rpcSpec": "Transmission RPC-specificatie",
       "reportIssue": "Probleem melden",
+      "releaseNotes": "Release-opmerkingen",
       "about": "Over {{appName}}",
       "hide": "{{appName}} verbergen",
       "hideOthers": "Andere verbergen",

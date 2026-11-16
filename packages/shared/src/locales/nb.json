@@ -122,7 +122,10 @@
     "created": "Opprettet",
     "comment": "Kommentar",
     "fileCount": "Filer",
-    "group": "Gruppe"
+    "group": "Gruppe",
+    "sortBy": "Sorter etter",
+    "sortAscending": "Sorter stigende",
+    "sortDescending": "Sorter synkende"
   },
   "priority": {
     "high": "Høy",
@@ -488,6 +491,7 @@
       "serverSettings": "Serverinnstillinger…",
       "rpcSpec": "Transmission RPC-spesifikasjon",
       "reportIssue": "Rapporter et problem",
+      "releaseNotes": "Utgivelsesnotater",
       "about": "Om {{appName}}",
       "hide": "Skjul {{appName}}",
       "hideOthers": "Skjul andre",
