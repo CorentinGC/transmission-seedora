@@ -573,7 +573,9 @@
       "SESSION": "Server odmítl navázání relace.",
       "RPC_FAILURE": "Server nahlásil chybu.",
       "NO_CONNECTION": "Není připojen žádný server.",
-      "UNKNOWN": "Došlo k neznámé chybě."
+      "UNKNOWN": "Došlo k neznámé chybě.",
+      "SECRET_STORE_FAILED": "Systémová klíčenka odepřela přístup, takže heslo nebylo uloženo. Odemkněte klíčenku a zkuste to znovu.",
+      "CONFIG_UNWRITABLE": "Konfigurační soubor je nečitelný, takže nebylo nic uloženo. Opravte nebo odstraňte soubor a zkuste to znovu."
     }
   }
 }

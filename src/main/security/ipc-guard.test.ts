@@ -72,3 +72,17 @@ describe('guardListener', () => {
     log.mockRestore();
   });
 });
+
+describe('guardHandler config store failures', () => {
+  it('reports the stable code of a rejected configuration write, never the raw text', async () => {
+    const { ConfigStoreError } = await import('../store/config-store-error');
+    const result = await guardHandler(
+      () => true,
+      schema,
+      () => {
+        throw new ConfigStoreError('Encrypting a credential failed', 'SECRET_STORE_FAILED');
+      },
+    )(event, { a: 1 });
+    expect(result).toEqual({ success: false, error: 'Request failed', code: 'SECRET_STORE_FAILED' });
+  });
+});

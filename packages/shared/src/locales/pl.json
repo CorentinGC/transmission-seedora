@@ -573,7 +573,9 @@
       "SESSION": "Serwer odrzucił uzgadnianie sesji.",
       "RPC_FAILURE": "Serwer zgłosił błąd.",
       "NO_CONNECTION": "Brak połączonego serwera.",
-      "UNKNOWN": "Wystąpił nieznany błąd."
+      "UNKNOWN": "Wystąpił nieznany błąd.",
+      "SECRET_STORE_FAILED": "Systemowy pęk kluczy odmówił dostępu, więc hasło nie zostało zapisane. Odblokuj pęk kluczy i spróbuj ponownie.",
+      "CONFIG_UNWRITABLE": "Plik konfiguracji jest nieczytelny, więc nic nie zostało zapisane. Napraw lub usuń plik, a następnie spróbuj ponownie."
     }
   }
 }

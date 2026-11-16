@@ -572,7 +572,9 @@
       "SESSION": "服务器拒绝了会话握手。",
       "RPC_FAILURE": "服务器报告了错误。",
       "NO_CONNECTION": "没有已连接的服务器。",
-      "UNKNOWN": "发生未知错误。"
+      "UNKNOWN": "发生未知错误。",
+      "SECRET_STORE_FAILED": "系统钥匙串拒绝了访问，因此密码未保存。请解锁钥匙串后重试。",
+      "CONFIG_UNWRITABLE": "配置文件无法读取，因此未保存任何内容。请修复或删除该文件，然后重试。"
     }
   }
 }

@@ -573,7 +573,9 @@
       "SESSION": "El servidor rechazó el establecimiento de la sesión.",
       "RPC_FAILURE": "El servidor notificó un error.",
       "NO_CONNECTION": "No hay ningún servidor conectado.",
-      "UNKNOWN": "Se produjo un error desconocido."
+      "UNKNOWN": "Se produjo un error desconocido.",
+      "SECRET_STORE_FAILED": "El llavero del sistema denegó el acceso, así que la contraseña no se guardó. Desbloquea el llavero e inténtalo de nuevo.",
+      "CONFIG_UNWRITABLE": "El archivo de configuración no se puede leer, así que no se guardó nada. Corrige o elimina el archivo e inténtalo de nuevo."
     }
   }
 }

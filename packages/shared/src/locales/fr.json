@@ -573,7 +573,9 @@
       "SESSION": "Le serveur a refusé la négociation de session.",
       "RPC_FAILURE": "Le serveur a signalé une erreur.",
       "NO_CONNECTION": "Aucun serveur n'est connecté.",
-      "UNKNOWN": "Une erreur inconnue s'est produite."
+      "UNKNOWN": "Une erreur inconnue s'est produite.",
+      "SECRET_STORE_FAILED": "Le trousseau du système a refusé l'accès : le mot de passe n'a pas été enregistré. Déverrouillez le trousseau et réessayez.",
+      "CONFIG_UNWRITABLE": "Le fichier de configuration est illisible : rien n'a été enregistré. Corrigez ou supprimez le fichier, puis réessayez."
     }
   }
 }

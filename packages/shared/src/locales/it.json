@@ -573,7 +573,9 @@
       "SESSION": "Il server ha rifiutato l'handshake di sessione.",
       "RPC_FAILURE": "Il server ha segnalato un errore.",
       "NO_CONNECTION": "Nessun server connesso.",
-      "UNKNOWN": "Si è verificato un errore sconosciuto."
+      "UNKNOWN": "Si è verificato un errore sconosciuto.",
+      "SECRET_STORE_FAILED": "Il portachiavi di sistema ha negato l'accesso, quindi la password non è stata salvata. Sblocca il portachiavi e riprova.",
+      "CONFIG_UNWRITABLE": "Il file di configurazione non è leggibile, quindi non è stato salvato nulla. Correggi o rimuovi il file, quindi riprova."
     }
   }
 }

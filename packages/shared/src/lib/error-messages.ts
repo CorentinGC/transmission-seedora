@@ -35,6 +35,8 @@ const RPC_CODES = new Set([
   'RPC_FAILURE',
   'NO_CONNECTION',
   'UNKNOWN',
+  'SECRET_STORE_FAILED',
+  'CONFIG_UNWRITABLE',
 ]);
 
 /** Failure code for an action the user declined or cancelled; it is never reported as an error. */
