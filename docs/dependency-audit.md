@@ -24,7 +24,7 @@ Gates after each group (typecheck, lint, `npm test` 1224 tests, `i18n:check`, `f
 
 | Package | Severity | Reachable? | Action |
 |---|---|---|---|
-| `electron` 45.3.2 | none | Fixed by the upgrade. | `9xk` done. Follow-up: `safeStorage` sync methods are deprecated in Electron 45 and removed in 46; migrate to the async API before moving to 46 (beads issue filed from `9xk`). |
+| `electron` 45.3.2 | none | Fixed by the upgrade. | `9xk` done. The `safeStorage` sync methods (removed in Electron 46) are already replaced by the async API (`src/main/store/secret-crypto.ts`). |
 | `geoip-lite` > `ip-address` | high / moderate | Barely: XSS is in HTML-emitting `Address6` methods (not used); the octal and leading-zero SSRF concerns resolvers, while `geoip-lite` only looks an address up in a local database. Input size is bounded by `c07.6`. | **Blocked**, `gt3`: `geoip-lite@2.0.3` declares `engines.node >=24.0.0`, the project line is Node 22 (`.nvmrc`, `engines`, CI, release workflow, `tmx`). Owner decision needed (Node 24 for CI, web hosting and contributors, or replace the library, or an `overrides` entry for `ip-address`, which is an API-incompatible major for geoip-lite 1.x and not applied). |
 | `@ducanh2912/next-pwa` | none | Removed. | `0yd` done: `next build` uses Turbopack in Next 16 and the plugin only acts in webpack builds, so no `sw.js` or workbox file was ever produced (checked in `apps/web/public` and `.next`). Behaviour is unchanged. `manifest.json` stays static. A real service worker, if wanted, is a separate issue (Serwist needs webpack or `@serwist/turbopack`; mind ADR 0007). |
 
