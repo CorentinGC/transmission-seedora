@@ -2,7 +2,9 @@
 
 > Working memory. READ before coding, UPDATE when a task changes the state. Keep it under 150 lines. Stable documentation lives in `docs/` (index: `llms.txt`); the backlog lives in beads (`bd ready`).
 
-## Current state (2026-11-15)
+## Current state (2026-11-16)
+
+- **Delivered to `main`** (releases 1.2.2, 1.3.0, 1.3.1, 1.3.2): phases 1-3 and 4. The project runs on **Node 24** (`geoip-lite` 2.0.3, `npm audit --omit=dev` clean). `seedora.app` serves the landing (EN/FR), `app.seedora.app` the web app, `www` redirects (host proxy `apps/web/src/proxy.ts`, ADR 0008); DNS is on Vercel; Search Console domain property verified (DNS TXT) with `sitemap.xml` submitted. Still open: `2df` and `jnr` (manual checks of the packaged Electron app in a normal desktop session). The bullets below describe the older branch-era state and are history.
 
 - Project resumed after an 8-month pause (last release 1.2.1, 2026-03-05). Overhaul in phases: (1) agentic setup, (2) repo cleanup and community readiness, (3) full review with fixes.
 - **Phase 1 done**: `CLAUDE.md`, `AGENTS.md`, nested `CLAUDE.md`, `docs/`, `llms.txt`, 12 agents, 3 skills, tracked `.claude/settings.json`, `scripts/i18n-check.mjs`, beads backlog (exported to `.beads/issues.jsonl`).
@@ -23,7 +25,7 @@
 - [ ] Remaining web items: `c07.17` (nonce CSP, decided against, ADR 0007), `46b` (rate-limit shared-key lockout), `d9w` (confirm 60 s server actions on Vercel), tests `c07.3`, `c07.11`-`c07.15`.
 - [ ] Verify on Vercel (unconfirmed): which forwarding header is overwritten, function max duration above 30 s, CSP violations in a real browser, pinned HTTPS connections (SNI, certificate) against a real TLS server.
 - [ ] Phase 3 continued: finish `mi9.7` (other session), bugs `0cl`, a11y/design `vpz`.
-- [ ] Phase 4 (after 2-3), epic `52c`: landing page on `seedora.app`, web app moved to `app.seedora.app`, landing SEO, Google Search Console. Hosting **Vercel**; DNS **Cloudflare** (user decision 2026-11-15). **Landing is pending the owner's confirmation; do not start it.**
+- [x] Phase 4 (epic `52c`) done 2026-11-16: landing, app subdomain, SEO, Search Console. Users of the old `seedora.app/` app start empty on `app.seedora.app` (origin-bound `localStorage`).
 - [ ] Deploying the new web code needs `COOKIE_SECRET` (>= 32 characters) set on the host first, or the server will not start in production (`apps/web/.env.example`).
 - [ ] Visual review pass (`vpz.10`) needs the main session to start Electron (`npm run start:debug`) and web (`npm run dev:web`).
 
@@ -31,8 +33,7 @@
 
 1. Three `gh` commands in `docs/release.md` ("Self-hosted runner on a public repository" and "Community settings"): require approval for all external contributors on fork PR workflows, enable private vulnerability reporting, create the `translation` label.
 2. Create the Vercel firewall rate-limit rule for server actions (command in `docs/security.md`, "Platform rate limiting"; `c07.18`). Confirm the plan allows rate limiting first.
-3. Decide on Node 24 (`gt3`): `geoip-lite@2.0.3`, which fixes the `ip-address` advisories, requires Node >=24 while the project targets >=22.17 (CI on 22.18, web hosting, contributors). Owner decision 2026-11-15: stay on `geoip-lite` 1.4.10.
-4. Confirm the landing epic `52c` before it starts.
+3. Node 24 decided and shipped 2026-11-16.
 
 ## Gate baseline (re-measured 2026-11-15 on `chore/repo-cleanup`)
 
