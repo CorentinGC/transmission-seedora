@@ -122,7 +122,10 @@
     "created": "Creat",
     "comment": "Comentariu",
     "fileCount": "Fișiere",
-    "group": "Grup"
+    "group": "Grup",
+    "sortBy": "Sortează după",
+    "sortAscending": "Sortare crescătoare",
+    "sortDescending": "Sortare descrescătoare"
   },
   "priority": {
     "high": "Înaltă",

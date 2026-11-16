@@ -122,7 +122,10 @@
     "created": "Erstellt",
     "comment": "Kommentar",
     "fileCount": "Dateien",
-    "group": "Gruppe"
+    "group": "Gruppe",
+    "sortBy": "Sortieren nach",
+    "sortAscending": "Aufsteigend sortieren",
+    "sortDescending": "Absteigend sortieren"
   },
   "priority": {
     "high": "Hoch",

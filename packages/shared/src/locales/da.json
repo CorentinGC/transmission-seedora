@@ -122,7 +122,10 @@
     "created": "Oprettet",
     "comment": "Kommentar",
     "fileCount": "Filer",
-    "group": "Gruppe"
+    "group": "Gruppe",
+    "sortBy": "Sortér efter",
+    "sortAscending": "Sortér stigende",
+    "sortDescending": "Sortér faldende"
   },
   "priority": {
     "high": "Høj",

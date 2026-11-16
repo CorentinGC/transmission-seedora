@@ -122,7 +122,10 @@
     "created": "Δημιουργήθηκε",
     "comment": "Σχόλιο",
     "fileCount": "Αρχεία",
-    "group": "Ομάδα"
+    "group": "Ομάδα",
+    "sortBy": "Ταξινόμηση κατά",
+    "sortAscending": "Αύξουσα ταξινόμηση",
+    "sortDescending": "Φθίνουσα ταξινόμηση"
   },
   "priority": {
     "high": "Υψηλή",
