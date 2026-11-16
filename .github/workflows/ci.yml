@@ -14,14 +14,13 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Every job runs on the self-hosted Linux runner `helmut` (project decision: no GitHub-hosted
-# runners for CI). The repository is public, so jobs are skipped for pull requests from forks:
-# their code must never execute on the runner (see beads seedora-transmission-3o1).
+# Every job runs on GitHub-hosted runners (owner decision, 2026-11-16: the self-hosted `helmut`
+# runners are bound to other repositories). The repository is public, so fork pull requests run
+# here too, with a read-only token and no secrets.
 jobs:
   lint:
     name: Lint
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -30,8 +29,7 @@ jobs:
 
   format:
     name: Format check
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -40,8 +38,7 @@ jobs:
 
   typecheck:
     name: Typecheck
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -50,8 +47,7 @@ jobs:
 
   test:
     name: Unit tests
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -60,8 +56,7 @@ jobs:
 
   i18n:
     name: i18n parity
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -70,8 +65,7 @@ jobs:
 
   build-web:
     name: Build web app
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -80,8 +74,7 @@ jobs:
 
   package:
     name: Package Electron (Linux smoke)
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -92,8 +85,8 @@ jobs:
     name: Conventional Commits
     # Commit types are release decisions (docs/release.md). Pull requests only: the check reads the
     # PR title and, for PRs into staging, the commits it adds. Values go through env, never inlined.
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       PR_TITLE: ${{ github.event.pull_request.title }}

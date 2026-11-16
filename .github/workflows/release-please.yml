@@ -8,8 +8,7 @@ on:
 # Least privilege: nothing by default, each job asks for what it needs.
 permissions: {}
 
-# The build matrix needs macOS and Windows runners, so this workflow stays on GitHub-hosted
-# runners (the self-hosted `helmut` runner is Linux only). It runs on push to main only: no
+# The build matrix needs macOS and Windows runners, so it uses GitHub-hosted runners (like CI). It runs on push to main only: no
 # pull-request or fork code reaches it.
 jobs:
   release-please:

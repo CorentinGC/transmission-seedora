@@ -22,10 +22,7 @@ concurrency:
 jobs:
   analyze:
     name: Analyze (javascript-typescript)
-    # Skipped for fork PRs: the repository is public and the runner is self-hosted
-    # (seedora-transmission-3o1). Scheduled and push runs are unaffected.
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, helmut]
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: read
