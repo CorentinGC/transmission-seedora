@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js >= 22.17 (`engines.node`; `.nvmrc`, CI and the release workflow use 22.18), npm >= 10
+- Node.js >= 24 (`engines.node`; `.nvmrc`, CI and the release workflow use Node 24), npm >= 10
 - A Transmission daemon with RPC enabled, reachable from your machine
 
 ## Install
