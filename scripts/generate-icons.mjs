@@ -42,7 +42,7 @@ async function buildIco(sizes, outputPath) {
     sizes.map(async (size) => {
       const buf = await src.clone().resize(size, size).png().toBuffer();
       return { size, buf };
-    })
+    }),
   );
 
   const headerSize = 6;
@@ -103,9 +103,7 @@ async function buildIcns(outputPath) {
   ];
 
   await Promise.all(
-    variants.map(({ name, size }) =>
-      src.clone().resize(size, size).png().toFile(path.join(iconsetDir, name))
-    )
+    variants.map(({ name, size }) => src.clone().resize(size, size).png().toFile(path.join(iconsetDir, name))),
   );
 
   execSync(`iconutil -c icns "${iconsetDir}" -o "${outputPath}"`);

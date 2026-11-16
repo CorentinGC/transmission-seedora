@@ -59,11 +59,51 @@ export const IPC = {
 
   // Config export/import
   CONFIG_EXPORT: 'config:export',
+  CONFIG_SECRET_STORAGE: 'config:secret-storage',
   CONFIG_IMPORT: 'config:import',
   DIALOG_SAVE_FILE: 'dialog:save-file',
 
   // GeoIP
   GEOIP_LOOKUP: 'geoip:lookup',
+
+  // Magnet links and .torrent files opened through the OS
+  LAUNCH_TAKE: 'launch:take',
+  LAUNCH_TARGET: 'launch:target',
+
+  // Main -> renderer events (native menu and tray)
+  MENU_PREFERENCES: 'menu:preferences',
+  MENU_ADD_TORRENT: 'menu:add-torrent',
+  MENU_ADD_MAGNET: 'menu:add-magnet',
+  MENU_TOGGLE_FILTER: 'menu:toggle-filter',
+  MENU_TOGGLE_DETAILS: 'menu:toggle-details',
+  MENU_TORRENT_START: 'menu:torrent-start',
+  MENU_TORRENT_STOP: 'menu:torrent-stop',
+  MENU_TORRENT_VERIFY: 'menu:torrent-verify',
+  MENU_TORRENT_REANNOUNCE: 'menu:torrent-reannounce',
+  MENU_START_ALL: 'menu:start-all',
+  MENU_STOP_ALL: 'menu:stop-all',
+  MENU_TORRENT_REMOVE: 'menu:torrent-remove',
+  MENU_SETTINGS: 'menu:settings',
+  TRAY_TOGGLE_ALT_SPEED: 'tray:toggle-alt-speed',
 } as const;
 
 export type IpcChannel = (typeof IPC)[keyof typeof IPC];
+
+/** Main -> renderer channels the preload lets the renderer subscribe to (nothing else). */
+export const RENDERER_EVENT_CHANNELS: readonly string[] = [
+  IPC.MENU_PREFERENCES,
+  IPC.MENU_ADD_TORRENT,
+  IPC.MENU_ADD_MAGNET,
+  IPC.MENU_TOGGLE_FILTER,
+  IPC.MENU_TOGGLE_DETAILS,
+  IPC.MENU_TORRENT_START,
+  IPC.MENU_TORRENT_STOP,
+  IPC.MENU_TORRENT_VERIFY,
+  IPC.MENU_TORRENT_REANNOUNCE,
+  IPC.MENU_START_ALL,
+  IPC.MENU_STOP_ALL,
+  IPC.MENU_TORRENT_REMOVE,
+  IPC.MENU_SETTINGS,
+  IPC.TRAY_TOGGLE_ALT_SPEED,
+  IPC.LAUNCH_TARGET,
+];

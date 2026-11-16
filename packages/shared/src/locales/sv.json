@@ -5,7 +5,10 @@
     "selectTorrent": "Välj en torrent för att visa detaljer",
     "noTorrents": "Inga torrents",
     "yes": "Ja",
-    "no": "Nej"
+    "no": "Nej",
+    "close": "Stäng",
+    "torrentList": "Torrents",
+    "resizePanel": "Ändra panelstorlek"
   },
   "toolbar": {
     "addTorrent": "Lägg till torrent",
@@ -19,17 +22,46 @@
     "detailsPanel": "Visa/dölj detaljpanel",
     "searchPlaceholder": "Sök torrents...",
     "preferences": "Inställningar",
-    "serverSettings": "Serverinställningar"
+    "serverSettings": "Serverinställningar",
+    "clearSearch": "Rensa sökning",
+    "moreActions": "Fler åtgärder"
   },
   "statusBar": {
     "connected": "Ansluten",
     "connecting": "Ansluter...",
     "disconnected": "Frånkopplad",
+    "connectionError": "Anslutningsfel",
     "activeTotal": "{{active}} aktiva / {{total}} totalt",
     "disableAltSpeed": "Inaktivera alternativ hastighet",
     "enableAltSpeed": "Aktivera alternativ hastighet",
     "alt": "Alt",
-    "freeSpace": "{{space}} ledigt"
+    "freeSpace": "{{space}} ledigt",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Diskutrymme",
+    "totalFreeSpace": "Totalt ledigt utrymme",
+    "speedLimit": "Hastighetsgräns",
+    "limitSpeed": "Begränsa hastighet",
+    "unlimited": "Obegränsad",
+    "kbs": "KB/s",
+    "setLimit": "Ange gräns",
+    "downloadLimit": "Gräns för nedladdningshastighet",
+    "uploadLimit": "Gräns för uppladdningshastighet"
+  },
+  "sessionStats": {
+    "title": "Sessionsstatistik",
+    "currentSession": "Aktuell session",
+    "allTime": "Totalt (ackumulerat)",
+    "downloaded": "Nedladdat",
+    "uploaded": "Uppladdat",
+    "ratio": "Kvot",
+    "filesAdded": "Tillagda filer",
+    "activeTime": "Aktiv tid",
+    "downloadSpeed": "Nedladdningshastighet",
+    "uploadSpeed": "Uppladdningshastighet",
+    "sessionCount": "Sessioner",
+    "activeTorrents": "Aktiva torrenter",
+    "pausedTorrents": "Pausade torrenter",
+    "totalTorrents": "Torrenter totalt"
   },
   "filter": {
     "all": "Alla",
@@ -80,7 +112,17 @@
     "downloaded": "Nerladdat",
     "uploaded": "Uppladdat",
     "private": "Privat",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Storlek att ladda ned",
+    "sizeLeft": "Storlek kvar",
+    "connectedPeers": "Anslutna",
+    "seedingTime": "Seedtid",
+    "downloadingTime": "Nedladdningstid",
+    "created": "Skapad",
+    "comment": "Kommentar",
+    "fileCount": "Filer",
+    "group": "Grupp"
   },
   "priority": {
     "high": "Hög",
@@ -110,7 +152,10 @@
     "copied": "Kopierad!",
     "loadingFiles": "Laddar filer...",
     "noPeers": "Inga peers anslutna",
-    "doubleClickEdit": "Dubbelklicka för att redigera"
+    "doubleClickEdit": "Dubbelklicka för att redigera",
+    "loadFailed": "Det gick inte att läsa in detaljer: {{error}}",
+    "requestFailed": "Begäran misslyckades",
+    "torrentNotFound": "Torrenten hittades inte"
   },
   "peersTab": {
     "address": "Adress",
@@ -118,7 +163,8 @@
     "flags": "Flaggor",
     "progress": "Förlopp",
     "down": "Ner",
-    "up": "Upp"
+    "up": "Upp",
+    "country": "Land"
   },
   "trackersTab": {
     "tier": "Nivå",
@@ -148,7 +194,7 @@
     "unlimited": "Obegränsad",
     "minutes": "minuter",
     "other": "Övrigt",
-    "maxPeers": "Max peers:",
+    "maxPeers": "Max antal peers:",
     "sequentialDownload": "Sekventiell nedladdning",
     "labelsLabel": "Etiketter:",
     "labelsPlaceholder": "etikett1, etikett2"
@@ -168,7 +214,8 @@
     "moveUp": "Flytta upp",
     "moveDown": "Flytta ner",
     "moveToBottom": "Flytta längst ner",
-    "remove": "Ta bort..."
+    "remove": "Ta bort...",
+    "title": "Torrentåtgärder"
   },
   "dialog": {
     "addTorrent": "Lägg till torrent",
@@ -189,7 +236,7 @@
     "add": "Lägg till",
     "test": "Testa anslutning",
     "browse": "Bläddra...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magnetlänk",
     "file": "Fil",
     "urlOrMagnet": "URL eller Magnet-länk",
     "urlPlaceholder": "magnet:?xt= eller https://...",
@@ -210,12 +257,15 @@
     "editServer": "Redigera server",
     "addServerTitle": "Lägg till server",
     "noServer": "Ingen server",
+    "switcherLabel": "Byt server",
     "serverName": "Namn",
     "serverNamePlaceholder": "Min server",
     "host": "Värd",
     "port": "Port",
     "path": "RPC-sökväg",
     "useSSL": "Använd SSL/TLS",
+    "allowSelfSigned": "Acceptera självsignerat certifikat",
+    "allowSelfSignedHint": "Inaktiverar certifikatverifiering för den här servern. Aktivera endast för en server du litar på.",
     "authentication": "Autentisering",
     "username": "Användarnamn",
     "password": "Lösenord",
@@ -228,7 +278,23 @@
     "proxyUsername": "Proxyanvändarnamn",
     "proxyPassword": "Proxylösenord",
     "testSuccess": "Lyckades",
-    "testFailed": "Misslyckades"
+    "testFailed": "Misslyckades",
+    "deleteServer": "Ta bort",
+    "deleteConfirm": "Ta bort servern \"{{name}}\"?",
+    "cannotDeleteActive": "Koppla från först",
+    "exportServer": "Exportera",
+    "exportAll": "Exportera alla",
+    "importServers": "Importera...",
+    "importSuccess": "{{added}} tillagda, {{skipped}} hoppades över",
+    "importFailed": "Importen misslyckades.",
+    "saveFailed": "Det gick inte att spara servern. Kontrollera värdena och försök igen.",
+    "exportPasswords": "Ta med lösenord i exporten",
+    "exportPasswordsWarning": "Lösenord skrivs som klartext i filen. Håll filen privat.",
+    "webStorageWarning": "I webbversionen lagras serverlösenord okrypterade i den här webbläsaren. Ange dem bara på en enhet du litar på.",
+    "passwordStored": "Lösenordet är sparat. Lämna tomt för att behålla det.",
+    "removeStoredPassword": "Ta bort sparat lösenord",
+    "removeStoredProxyPassword": "Ta bort sparat proxylösenord",
+    "secretStorageUnencrypted": "Säker lagring är inte tillgänglig på det här systemet: sparade lösenord lagras okrypterade på disken."
   },
   "settings": {
     "applied": "Inställningar tillämpade",
@@ -331,23 +397,179 @@
     "showNotifications": "Visa aviseringar vid slutförande",
     "display": "Visning",
     "relativeDates": "Använd relativa datum",
-    "confirmOnAdd": "Visa bekräftelse vid tillägg av torrents",
     "watchFolder": "Bevakad mapp",
     "watchFolderEnabled": "Bevaka en mapp för .torrent-filer",
     "watchFolderPlaceholder": "/sökväg/till/mapp",
     "deleteWatchedTorrent": "Ta bort .torrent-fil efter tillägg",
-    "pathMappings": "Sökvägsmappningar (Fjärr → Lokal)",
-    "pathMappingsAdd": "Lägg till",
-    "pathMappingsHelp": "Mappa fjärrdaemonens sökvägar till lokala sökvägar för \"Öppna mapp\"-åtgärder.",
-    "remotePath": "Fjärrsökväg",
-    "localPath": "Lokal sökväg"
+    "speedPresets": "Hastighetsförval",
+    "speedPresetsHelp": "Snabbvärden för hastighetsgräns (KB/s) till statusradens popover.",
+    "addPreset": "Lägg till",
+    "backup": "Säkerhetskopiering och återställning",
+    "exportBackup": "Exportera säkerhetskopia",
+    "importBackup": "Importera säkerhetskopia",
+    "exportBackupHelp": "Exportera alla servrar och inställningar till en JSON-fil.",
+    "importSuccess": "Säkerhetskopian återställdes.",
+    "saveFailed": "Det gick inte att spara inställningarna. Kontrollera värdena och försök igen.",
+    "invalidValues": "Uppdateringsintervallet måste vara minst 250 ms och hastighetsförinställningarna måste vara tal.",
+    "importFailed": "Importen misslyckades.",
+    "removePreset": "Ta bort hastighetsförval"
+  },
+  "columnMenu": {
+    "setupColumns": "Konfigurera kolumner"
   },
   "notification": {
-    "downloadComplete": "Nedladdning slutförd"
+    "downloadComplete": "Nedladdning slutförd",
+    "actionFailed": "Åtgärden misslyckades: {{error}}",
+    "refreshFailed": "Det gick inte att uppdatera torrents: {{error}}",
+    "statsRefreshFailed": "Det gick inte att uppdatera serverstatistiken: {{error}}",
+    "unknownError": "Okänt fel",
+    "dismiss": "Stäng",
+    "columnsSaveFailed": "Det gick inte att spara kolumnlayouten.",
+    "serversLoadFailed": "Det gick inte att läsa in serverlistan.",
+    "serverRemoveFailed": "Det gick inte att ta bort servern.",
+    "exportFailed": "Det gick inte att exportera konfigurationen.",
+    "prefsLoadFailed": "Det gick inte att läsa in dina inställningar.",
+    "pickerFailed": "Det gick inte att öppna fil- eller mappväljaren.",
+    "fileReadFailed": "Det gick inte att läsa den valda filen.",
+    "renameFailed": "Det gick inte att byta namn på torrenten.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Det gick inte att öppna filen eller länken som Seedora startades med."
   },
   "filesTab": {
     "clickToChangePriority": "Klicka för att ändra prioritet",
     "doNotDownload": "Ladda inte ner",
     "download": "Ladda ner"
+  },
+  "errorBoundary": {
+    "title": "Något gick fel",
+    "description": "Appen stötte på ett oväntat fel. Du kan försöka igen eller ladda om fönstret.",
+    "retry": "Försök igen",
+    "reload": "Ladda om"
+  },
+  "format": {
+    "done": "Klar",
+    "justNow": "Nyss",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} d",
+      "hours": "{{n}} tim",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Arkiv",
+      "edit": "Redigera",
+      "view": "Visa",
+      "torrent": "Torrent",
+      "tools": "Verktyg",
+      "help": "Hjälp",
+      "preferences": "Inställningar…",
+      "addTorrent": "Lägg till torrent…",
+      "addMagnet": "Lägg till magnetlänk…",
+      "toggleFilter": "Växla filtersidofält",
+      "toggleDetails": "Växla detaljpanel",
+      "start": "Starta",
+      "stop": "Stoppa",
+      "verify": "Verifiera",
+      "reannounce": "Annonsera igen",
+      "startAll": "Starta alla",
+      "stopAll": "Stoppa alla",
+      "remove": "Ta bort…",
+      "serverSettings": "Serverinställningar…",
+      "rpcSpec": "Transmission RPC-specifikation",
+      "reportIssue": "Rapportera ett problem",
+      "about": "Om {{appName}}",
+      "hide": "Dölj {{appName}}",
+      "hideOthers": "Dölj övriga",
+      "unhide": "Visa alla",
+      "quit": "Avsluta {{appName}}",
+      "close": "Stäng fönster",
+      "undo": "Ångra",
+      "redo": "Gör om",
+      "cut": "Klipp ut",
+      "copy": "Kopiera",
+      "paste": "Klistra in",
+      "selectAll": "Markera alla",
+      "reload": "Ladda om",
+      "forceReload": "Tvinga omladdning",
+      "resetZoom": "Verklig storlek",
+      "zoomIn": "Zooma in",
+      "zoomOut": "Zooma ut",
+      "toggleFullscreen": "Växla helskärm"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} aktiv överföring",
+      "activeTransfers_other": "{{count}} aktiva överföringar",
+      "enableAltSpeed": "Aktivera alternativ hastighet",
+      "disableAltSpeed": "Inaktivera alternativ hastighet",
+      "showWindow": "Visa fönster",
+      "quit": "Avsluta"
+    },
+    "scriptGuard": {
+      "title": "Ändra daemonens skriptinställningar?",
+      "message": "Seedora är på väg att ändra inställningar som gör att Transmission-daemonen kör ett program på sin server.",
+      "detail": "{{changes}}\n\nFortsätt bara om du har gjort ändringen själv.",
+      "allow": "Tillåt",
+      "cancel": "Avbryt",
+      "declined": "Ändringen av skriptinställningarna avvisades."
+    },
+    "exportSecrets": {
+      "title": "Ta med lösenord i säkerhetskopian?",
+      "message": "Säkerhetskopian kommer att innehålla dina server- och proxylösenord i klartext. Alla som kan läsa filen kan använda dem.",
+      "allow": "Ta med lösenord",
+      "cancel": "Avbryt",
+      "declined": "Exporten av lösenorden avvisades."
+    },
+    "configError": {
+      "title": "Konfigurationsproblem",
+      "corrupt": "Seedora kunde inte läsa sin konfigurationsfil och startade med standardinställningar. Den oläsliga filen sparades som:\n{{path}}",
+      "unreadable": "Seedora kan inte läsa sin konfigurationsfil. Filen lämnades orörd och ändringar sparas inte förrän problemet är löst:\n{{path}}",
+      "passwordsLocked": "Det sparade lösenordet för dessa servrar kunde inte dekrypteras (systemets nyckelring kan vara låst eller ha återställts): {{names}}. Öppna varje server i Seedora och ange lösenordet igen."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Ogiltig begäran.",
+      "NO_SESSION": "Ingen server är aktiv. Välj en server och försök igen.",
+      "SESSION_UNAVAILABLE": "Sessionen kunde inte återställas. Kontrollera att cookies är aktiverade.",
+      "RATE_LIMITED": "För många begäranden. Försök igen om en stund.",
+      "HOST_NOT_ALLOWED": "Den här värden är inte tillåten.",
+      "DNS_FAILED": "Värdnamnet kunde inte slås upp.",
+      "CONNECTION_FAILED": "Det gick inte att ansluta till servern.",
+      "TIMEOUT": "Servern svarade inte i tid.",
+      "TLS_FAILED": "Den säkra anslutningen misslyckades.",
+      "UNEXPECTED_REDIRECT": "Servern svarade med en omdirigering.",
+      "RESPONSE_TOO_LARGE": "Serverns svar är för stort.",
+      "AUTH_FAILED": "Autentiseringen misslyckades. Kontrollera användarnamn och lösenord.",
+      "HTTP_ERROR": "Servern svarade med ett fel.",
+      "SESSION_ID_REJECTED": "Servern avvisade sessions-ID:t.",
+      "RPC_ERROR": "Servern rapporterade ett fel.",
+      "SERVER_MISCONFIGURED": "Webbservern är inte korrekt konfigurerad.",
+      "SERVER_NOT_FOUND": "Servern hittades inte.",
+      "IMPORT_INVALID": "Importen misslyckades: filen är inte en giltig Seedora-säkerhetskopia."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Serverns certifikat är inte betrott.",
+      "TLS_EXPIRED": "Serverns certifikat har gått ut.",
+      "TLS_HOSTNAME": "Serverns certifikat matchar inte värdnamnet.",
+      "NETWORK": "Det gick inte att nå servern.",
+      "TOO_LARGE": "Serverns svar är för stort.",
+      "AUTH": "Autentiseringen misslyckades. Kontrollera användarnamn och lösenord.",
+      "INVALID_RESPONSE": "Servern svarade inte som en Transmission-daemon.",
+      "SESSION": "Servern avvisade sessionens handskakning.",
+      "RPC_FAILURE": "Servern rapporterade ett fel.",
+      "NO_CONNECTION": "Ingen server är ansluten.",
+      "UNKNOWN": "Ett okänt fel inträffade."
+    }
   }
 }

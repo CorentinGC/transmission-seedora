@@ -5,7 +5,10 @@
     "selectTorrent": "Valitse torrent nähdäksesi tiedot",
     "noTorrents": "Ei torrentteja",
     "yes": "Kyllä",
-    "no": "Ei"
+    "no": "Ei",
+    "close": "Sulje",
+    "torrentList": "Torrentit",
+    "resizePanel": "Muuta paneelin kokoa"
   },
   "toolbar": {
     "addTorrent": "Lisää torrent",
@@ -19,17 +22,46 @@
     "detailsPanel": "Näytä/piilota tietopaneeli",
     "searchPlaceholder": "Hae torrentteja...",
     "preferences": "Asetukset",
-    "serverSettings": "Palvelinasetukset"
+    "serverSettings": "Palvelinasetukset",
+    "clearSearch": "Tyhjennä haku",
+    "moreActions": "Lisää toimintoja"
   },
   "statusBar": {
     "connected": "Yhdistetty",
     "connecting": "Yhdistetään...",
     "disconnected": "Yhteys katkaistu",
+    "connectionError": "Yhteysvirhe",
     "activeTotal": "{{active}} aktiivista / {{total}} yhteensä",
     "disableAltSpeed": "Poista vaihtoehtoinen nopeus käytöstä",
     "enableAltSpeed": "Ota vaihtoehtoinen nopeus käyttöön",
     "alt": "Alt",
-    "freeSpace": "{{space}} vapaana"
+    "freeSpace": "{{space}} vapaana",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Levytila",
+    "totalFreeSpace": "Vapaa tila yhteensä",
+    "speedLimit": "Nopeusrajoitus",
+    "limitSpeed": "Rajoita nopeutta",
+    "unlimited": "Rajoittamaton",
+    "kbs": "KB/s",
+    "setLimit": "Aseta raja",
+    "downloadLimit": "Latausnopeuden raja",
+    "uploadLimit": "Lähetysnopeuden raja"
+  },
+  "sessionStats": {
+    "title": "Istunnon tilastot",
+    "currentSession": "Nykyinen istunto",
+    "allTime": "Koko ajalta (kumulatiivinen)",
+    "downloaded": "Ladattu",
+    "uploaded": "Lähetetty",
+    "ratio": "Suhde",
+    "filesAdded": "Lisätyt tiedostot",
+    "activeTime": "Aktiivinen aika",
+    "downloadSpeed": "Latausnopeus",
+    "uploadSpeed": "Lähetysnopeus",
+    "sessionCount": "Istunnot",
+    "activeTorrents": "Aktiiviset torrentit",
+    "pausedTorrents": "Keskeytetyt torrentit",
+    "totalTorrents": "Torrentit yhteensä"
   },
   "filter": {
     "all": "Kaikki",
@@ -63,8 +95,8 @@
     "progress": "Edistyminen",
     "done": "Valmis",
     "status": "Tila",
-    "seeds": "Seeds",
-    "peers": "Peers",
+    "seeds": "Seedit",
+    "peers": "Peerit",
     "downSpeed": "Lataus",
     "upSpeed": "Lähetys",
     "eta": "ETA",
@@ -80,7 +112,17 @@
     "downloaded": "Ladattu",
     "uploaded": "Lähetetty",
     "private": "Yksityinen",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Ladattavaa",
+    "sizeLeft": "Jäljellä",
+    "connectedPeers": "Yhdistetty",
+    "seedingTime": "Jakoaika",
+    "downloadingTime": "Latausaika",
+    "created": "Luotu",
+    "comment": "Kommentti",
+    "fileCount": "Tiedostot",
+    "group": "Ryhmä"
   },
   "priority": {
     "high": "Korkea",
@@ -90,7 +132,7 @@
   "details": {
     "general": "Yleistä",
     "files": "Tiedostot",
-    "peers": "Peers",
+    "peers": "Peerit",
     "trackers": "Trackerit",
     "options": "Asetukset",
     "hash": "Tiiviste",
@@ -110,7 +152,10 @@
     "copied": "Kopioitu!",
     "loadingFiles": "Ladataan tiedostoja...",
     "noPeers": "Ei yhdistettyjä peerejä",
-    "doubleClickEdit": "Kaksoisnapsauta muokataksesi"
+    "doubleClickEdit": "Kaksoisnapsauta muokataksesi",
+    "loadFailed": "Tietoja ei voitu ladata: {{error}}",
+    "requestFailed": "Pyyntö epäonnistui",
+    "torrentNotFound": "Torrentia ei löytynyt"
   },
   "peersTab": {
     "address": "Osoite",
@@ -118,13 +163,14 @@
     "flags": "Liput",
     "progress": "Edistyminen",
     "down": "Lataus",
-    "up": "Lähetys"
+    "up": "Lähetys",
+    "country": "Maa"
   },
   "trackersTab": {
     "tier": "Taso",
-    "announceUrl": "Announce URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "announceUrl": "Announce-URL",
+    "seeds": "Seedit",
+    "leechers": "Leecherit",
     "status": "Tila",
     "addPlaceholder": "Lisää tracker-URL...",
     "add": "Lisää",
@@ -168,7 +214,8 @@
     "moveUp": "Siirrä ylös",
     "moveDown": "Siirrä alas",
     "moveToBottom": "Siirrä alimmaksi",
-    "remove": "Poista..."
+    "remove": "Poista...",
+    "title": "Torrentin toiminnot"
   },
   "dialog": {
     "addTorrent": "Lisää torrent",
@@ -189,7 +236,7 @@
     "add": "Lisää",
     "test": "Testaa yhteys",
     "browse": "Selaa...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / magneettilinkki",
     "file": "Tiedosto",
     "urlOrMagnet": "URL tai Magnet-linkki",
     "urlPlaceholder": "magnet:?xt= tai https://...",
@@ -210,12 +257,15 @@
     "editServer": "Muokkaa palvelinta",
     "addServerTitle": "Lisää palvelin",
     "noServer": "Ei palvelinta",
+    "switcherLabel": "Vaihda palvelinta",
     "serverName": "Nimi",
     "serverNamePlaceholder": "Oma palvelin",
     "host": "Isäntä",
     "port": "Portti",
     "path": "RPC-polku",
     "useSSL": "Käytä SSL/TLS",
+    "allowSelfSigned": "Hyväksy itse allekirjoitettu varmenne",
+    "allowSelfSignedHint": "Poistaa varmenteen tarkistuksen tältä palvelimelta. Ota käyttöön vain luotettavalle palvelimelle.",
     "authentication": "Tunnistautuminen",
     "username": "Käyttäjänimi",
     "password": "Salasana",
@@ -228,7 +278,23 @@
     "proxyUsername": "Välityspalvelimen käyttäjänimi",
     "proxyPassword": "Välityspalvelimen salasana",
     "testSuccess": "Onnistui",
-    "testFailed": "Epäonnistui"
+    "testFailed": "Epäonnistui",
+    "deleteServer": "Poista",
+    "deleteConfirm": "Poistetaanko palvelin \"{{name}}\"?",
+    "cannotDeleteActive": "Katkaise yhteys ensin",
+    "exportServer": "Vie",
+    "exportAll": "Vie kaikki",
+    "importServers": "Tuo...",
+    "importSuccess": "{{added}} lisätty, {{skipped}} ohitettu",
+    "importFailed": "Tuonti epäonnistui.",
+    "saveFailed": "Palvelimen tallentaminen epäonnistui. Tarkista arvot ja yritä uudelleen.",
+    "exportPasswords": "Sisällytä salasanat vientiin",
+    "exportPasswordsWarning": "Salasanat tallennetaan tiedostoon selkotekstinä. Pidä tiedosto yksityisenä.",
+    "webStorageWarning": "Verkkoversiossa palvelinten salasanat tallennetaan tähän selaimeen salaamattomina. Anna ne vain laitteella, johon luotat.",
+    "passwordStored": "Salasana tallennettu. Jätä tyhjäksi säilyttääksesi sen.",
+    "removeStoredPassword": "Poista tallennettu salasana",
+    "removeStoredProxyPassword": "Poista tallennettu välityspalvelimen salasana",
+    "secretStorageUnencrypted": "Suojattu tallennus ei ole käytettävissä tässä järjestelmässä: tallennetut salasanat säilytetään levyllä salaamattomina."
   },
   "settings": {
     "applied": "Asetukset käytetty",
@@ -281,7 +347,7 @@
     "enableLpd": "Ota LPD käyttöön",
     "peerLimits": "Peer-rajoitukset",
     "global": "Yleinen:",
-    "perTorrent": "Per torrent:",
+    "perTorrent": "Torrentkohtainen:",
     "blocklist": "Estolista",
     "enableBlocklist": "Ota estolista käyttöön",
     "blocklistUrl": "Estolistan URL",
@@ -331,23 +397,179 @@
     "showNotifications": "Näytä ilmoitukset valmistumisesta",
     "display": "Näyttö",
     "relativeDates": "Käytä suhteellisia päivämääriä",
-    "confirmOnAdd": "Näytä vahvistus torrenttien lisäyksessä",
     "watchFolder": "Seurattava kansio",
     "watchFolderEnabled": "Seuraa kansiota .torrent-tiedostojen varalta",
     "watchFolderPlaceholder": "/polku/kansioon",
     "deleteWatchedTorrent": "Poista .torrent-tiedosto lisäämisen jälkeen",
-    "pathMappings": "Polkumääritykset (Etä → Paikallinen)",
-    "pathMappingsAdd": "Lisää",
-    "pathMappingsHelp": "Yhdistä etädaemonin polut paikallisiin polkuihin \"Avaa kansio\" -toimintoja varten.",
-    "remotePath": "Etäpolku",
-    "localPath": "Paikallinen polku"
+    "speedPresets": "Nopeusvalmiit",
+    "speedPresetsHelp": "Nopeat nopeusrajoitusarvot (KB/s) tilapalkin ponnahdusikkunaa varten.",
+    "addPreset": "Lisää",
+    "backup": "Varmuuskopiointi ja palautus",
+    "exportBackup": "Vie varmuuskopio",
+    "importBackup": "Tuo varmuuskopio",
+    "exportBackupHelp": "Vie kaikki palvelimet ja asetukset JSON-tiedostoon.",
+    "importSuccess": "Varmuuskopio palautettu onnistuneesti.",
+    "saveFailed": "Asetusten tallentaminen epäonnistui. Tarkista arvot ja yritä uudelleen.",
+    "invalidValues": "Päivitysvälin on oltava vähintään 250 ms ja nopeuden esiasetusten on oltava lukuja.",
+    "importFailed": "Tuonti epäonnistui.",
+    "removePreset": "Poista nopeusesiasetus"
+  },
+  "columnMenu": {
+    "setupColumns": "Määritä sarakkeet"
   },
   "notification": {
-    "downloadComplete": "Lataus valmis"
+    "downloadComplete": "Lataus valmis",
+    "actionFailed": "Toiminto epäonnistui: {{error}}",
+    "refreshFailed": "Torrentteja ei voitu päivittää: {{error}}",
+    "statsRefreshFailed": "Palvelimen tilastojen päivitys epäonnistui: {{error}}",
+    "unknownError": "Tuntematon virhe",
+    "dismiss": "Sulje",
+    "columnsSaveFailed": "Sarakeasettelun tallentaminen epäonnistui.",
+    "serversLoadFailed": "Palvelinluettelon lataaminen epäonnistui.",
+    "serverRemoveFailed": "Palvelimen poistaminen epäonnistui.",
+    "exportFailed": "Asetusten vieminen epäonnistui.",
+    "prefsLoadFailed": "Asetustesi lataaminen epäonnistui.",
+    "pickerFailed": "Tiedosto- tai kansionvalitsimen avaaminen epäonnistui.",
+    "fileReadFailed": "Valitun tiedoston lukeminen epäonnistui.",
+    "renameFailed": "Torrentin nimeäminen uudelleen epäonnistui.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Tiedostoa tai linkkiä, jolla Seedora käynnistettiin, ei voitu avata."
   },
   "filesTab": {
     "clickToChangePriority": "Napsauta muuttaaksesi prioriteettia",
     "doNotDownload": "Älä lataa",
     "download": "Lataa"
+  },
+  "errorBoundary": {
+    "title": "Jokin meni pieleen",
+    "description": "Sovellus kohtasi odottamattoman virheen. Voit yrittää uudelleen tai ladata ikkunan uudelleen.",
+    "retry": "Yritä uudelleen",
+    "reload": "Lataa uudelleen"
+  },
+  "format": {
+    "done": "Valmis",
+    "justNow": "Juuri nyt",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} pv",
+      "hours": "{{n}} t",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Tiedosto",
+      "edit": "Muokkaa",
+      "view": "Näytä",
+      "torrent": "Torrent",
+      "tools": "Työkalut",
+      "help": "Ohje",
+      "preferences": "Asetukset…",
+      "addTorrent": "Lisää torrent…",
+      "addMagnet": "Lisää magnet-linkki…",
+      "toggleFilter": "Näytä/piilota suodatinsivupalkki",
+      "toggleDetails": "Näytä/piilota tietopaneeli",
+      "start": "Käynnistä",
+      "stop": "Pysäytä",
+      "verify": "Tarkista",
+      "reannounce": "Ilmoita uudelleen",
+      "startAll": "Käynnistä kaikki",
+      "stopAll": "Pysäytä kaikki",
+      "remove": "Poista…",
+      "serverSettings": "Palvelimen asetukset…",
+      "rpcSpec": "Transmissionin RPC-määrittely",
+      "reportIssue": "Ilmoita ongelmasta",
+      "about": "Tietoja: {{appName}}",
+      "hide": "Piilota {{appName}}",
+      "hideOthers": "Piilota muut",
+      "unhide": "Näytä kaikki",
+      "quit": "Lopeta {{appName}}",
+      "close": "Sulje ikkuna",
+      "undo": "Kumoa",
+      "redo": "Tee uudelleen",
+      "cut": "Leikkaa",
+      "copy": "Kopioi",
+      "paste": "Liitä",
+      "selectAll": "Valitse kaikki",
+      "reload": "Lataa uudelleen",
+      "forceReload": "Pakota uudelleenlataus",
+      "resetZoom": "Todellinen koko",
+      "zoomIn": "Lähennä",
+      "zoomOut": "Loitonna",
+      "toggleFullscreen": "Vaihda koko näytön tila"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} aktiivinen siirto",
+      "activeTransfers_other": "{{count}} aktiivista siirtoa",
+      "enableAltSpeed": "Ota vaihtoehtoinen nopeus käyttöön",
+      "disableAltSpeed": "Poista vaihtoehtoinen nopeus käytöstä",
+      "showWindow": "Näytä ikkuna",
+      "quit": "Lopeta"
+    },
+    "scriptGuard": {
+      "title": "Muutetaanko daemonin komentosarja-asetuksia?",
+      "message": "Seedora on muuttamassa asetuksia, joiden vuoksi Transmission-daemon suorittaa ohjelman palvelimellaan.",
+      "detail": "{{changes}}\n\nJatka vain, jos teit tämän muutoksen itse.",
+      "allow": "Salli",
+      "cancel": "Peruuta",
+      "declined": "Komentosarja-asetusten muutos hylättiin."
+    },
+    "exportSecrets": {
+      "title": "Sisällytetäänkö salasanat varmuuskopioon?",
+      "message": "Varmuuskopiotiedosto sisältää palvelimesi ja välityspalvelimesi salasanat selkotekstinä. Kuka tahansa tiedoston lukemaan pystyvä voi käyttää niitä.",
+      "allow": "Sisällytä salasanat",
+      "cancel": "Peruuta",
+      "declined": "Salasanojen vienti hylättiin."
+    },
+    "configError": {
+      "title": "Asetusongelma",
+      "corrupt": "Seedora ei voinut lukea asetustiedostoaan ja käynnistyi oletusasetuksilla. Lukukelvoton tiedosto tallennettiin nimellä:\n{{path}}",
+      "unreadable": "Seedora ei voi lukea asetustiedostoaan. Tiedostoa ei muutettu, eikä muutoksia tallenneta ennen kuin ongelma on korjattu:\n{{path}}",
+      "passwordsLocked": "Näiden palvelimien tallennettua salasanaa ei voitu purkaa (järjestelmän avainnippu voi olla lukittu tai nollattu): {{names}}. Avaa jokainen palvelin Seedora-sovelluksessa ja syötä salasana uudelleen."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Virheellinen pyyntö.",
+      "NO_SESSION": "Yksikään palvelin ei ole aktiivinen. Valitse palvelin ja yritä uudelleen.",
+      "SESSION_UNAVAILABLE": "Istuntoa ei voitu palauttaa. Tarkista, että evästeet ovat käytössä.",
+      "RATE_LIMITED": "Liian monta pyyntöä. Yritä hetken kuluttua uudelleen.",
+      "HOST_NOT_ALLOWED": "Tämä isäntä ei ole sallittu.",
+      "DNS_FAILED": "Isäntänimeä ei voitu selvittää.",
+      "CONNECTION_FAILED": "Palvelimeen ei voitu muodostaa yhteyttä.",
+      "TIMEOUT": "Palvelin ei vastannut ajoissa.",
+      "TLS_FAILED": "Suojattu yhteys epäonnistui.",
+      "UNEXPECTED_REDIRECT": "Palvelin vastasi uudelleenohjauksella.",
+      "RESPONSE_TOO_LARGE": "Palvelimen vastaus on liian suuri.",
+      "AUTH_FAILED": "Todennus epäonnistui. Tarkista käyttäjätunnus ja salasana.",
+      "HTTP_ERROR": "Palvelin vastasi virheellä.",
+      "SESSION_ID_REJECTED": "Palvelin hylkäsi istuntotunnuksen.",
+      "RPC_ERROR": "Palvelin ilmoitti virheestä.",
+      "SERVER_MISCONFIGURED": "Verkkopalvelinta ei ole määritetty oikein.",
+      "SERVER_NOT_FOUND": "Palvelinta ei löytynyt.",
+      "IMPORT_INVALID": "Tuonti epäonnistui: tiedosto ei ole kelvollinen Seedora-varmuuskopio."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Palvelimen varmenteeseen ei luoteta.",
+      "TLS_EXPIRED": "Palvelimen varmenne on vanhentunut.",
+      "TLS_HOSTNAME": "Palvelimen varmenne ei vastaa isäntänimeä.",
+      "NETWORK": "Palvelinta ei tavoitettu.",
+      "TOO_LARGE": "Palvelimen vastaus on liian suuri.",
+      "AUTH": "Todennus epäonnistui. Tarkista käyttäjätunnus ja salasana.",
+      "INVALID_RESPONSE": "Palvelin ei vastannut kuten Transmission-daemon.",
+      "SESSION": "Palvelin hylkäsi istunnon kättelyn.",
+      "RPC_FAILURE": "Palvelin ilmoitti virheestä.",
+      "NO_CONNECTION": "Palvelinta ei ole yhdistetty.",
+      "UNKNOWN": "Tapahtui tuntematon virhe."
+    }
   }
 }

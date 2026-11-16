@@ -6,7 +6,9 @@
     "noTorrents": "No torrents",
     "yes": "Yes",
     "no": "No",
-    "close": "Close"
+    "close": "Close",
+    "torrentList": "Torrents",
+    "resizePanel": "Resize panel"
   },
   "toolbar": {
     "addTorrent": "Add Torrent",
@@ -20,12 +22,15 @@
     "detailsPanel": "Toggle Details Panel",
     "searchPlaceholder": "Search torrents...",
     "preferences": "Preferences",
-    "serverSettings": "Server Settings"
+    "serverSettings": "Server Settings",
+    "clearSearch": "Clear search",
+    "moreActions": "More actions"
   },
   "statusBar": {
     "connected": "Connected",
     "connecting": "Connecting...",
     "disconnected": "Disconnected",
+    "connectionError": "Connection error",
     "activeTotal": "{{active}} active / {{total}} total",
     "disableAltSpeed": "Disable alt speed",
     "enableAltSpeed": "Enable alt speed",
@@ -38,7 +43,9 @@
     "limitSpeed": "Limit speed",
     "unlimited": "Unlimited",
     "kbs": "KB/s",
-    "setLimit": "Set limit"
+    "setLimit": "Set limit",
+    "downloadLimit": "Download speed limit",
+    "uploadLimit": "Upload speed limit"
   },
   "sessionStats": {
     "title": "Session Statistics",
@@ -145,7 +152,10 @@
     "copied": "Copied!",
     "loadingFiles": "Loading files...",
     "noPeers": "No peers connected",
-    "doubleClickEdit": "Double-click to edit"
+    "doubleClickEdit": "Double-click to edit",
+    "loadFailed": "Could not load details: {{error}}",
+    "requestFailed": "Request failed",
+    "torrentNotFound": "Torrent not found"
   },
   "peersTab": {
     "address": "Address",
@@ -153,7 +163,8 @@
     "flags": "Flags",
     "progress": "Progress",
     "down": "Down",
-    "up": "Up"
+    "up": "Up",
+    "country": "Country"
   },
   "trackersTab": {
     "tier": "Tier",
@@ -203,7 +214,8 @@
     "moveUp": "Move Up",
     "moveDown": "Move Down",
     "moveToBottom": "Move to Bottom",
-    "remove": "Remove..."
+    "remove": "Remove...",
+    "title": "Torrent actions"
   },
   "dialog": {
     "addTorrent": "Add Torrent",
@@ -245,12 +257,15 @@
     "editServer": "Edit Server",
     "addServerTitle": "Add Server",
     "noServer": "No server",
+    "switcherLabel": "Switch server",
     "serverName": "Name",
     "serverNamePlaceholder": "My Server",
     "host": "Host",
     "port": "Port",
     "path": "RPC Path",
     "useSSL": "Use SSL/TLS",
+    "allowSelfSigned": "Accept self-signed certificate",
+    "allowSelfSignedHint": "Disables certificate verification for this server. Only enable it for a server you trust.",
     "authentication": "Authentication",
     "username": "Username",
     "password": "Password",
@@ -270,7 +285,16 @@
     "exportServer": "Export",
     "exportAll": "Export All",
     "importServers": "Import...",
-    "importSuccess": "{{added}} added, {{skipped}} skipped"
+    "importSuccess": "{{added}} added, {{skipped}} skipped",
+    "importFailed": "Import failed.",
+    "saveFailed": "Could not save the server. Check the values and try again.",
+    "exportPasswords": "Include passwords in the export",
+    "exportPasswordsWarning": "Passwords are written to the file in plain text. Keep the file private.",
+    "webStorageWarning": "In the web version, server passwords are stored unencrypted in this browser. Only enter them on a device you trust.",
+    "passwordStored": "Password saved. Leave empty to keep it.",
+    "removeStoredPassword": "Remove stored password",
+    "removeStoredProxyPassword": "Remove stored proxy password",
+    "secretStorageUnencrypted": "Secure storage is unavailable on this system: saved passwords are stored unencrypted on disk."
   },
   "settings": {
     "applied": "Settings applied",
@@ -373,16 +397,10 @@
     "showNotifications": "Show notifications on completion",
     "display": "Display",
     "relativeDates": "Use relative dates",
-    "confirmOnAdd": "Show confirmation when adding torrents",
     "watchFolder": "Watch Folder",
     "watchFolderEnabled": "Watch a folder for .torrent files",
     "watchFolderPlaceholder": "/path/to/watch",
     "deleteWatchedTorrent": "Delete .torrent file after adding",
-    "pathMappings": "Path Mappings (Remote → Local)",
-    "pathMappingsAdd": "Add",
-    "pathMappingsHelp": "Map remote daemon paths to local paths for \"Open folder\" actions.",
-    "remotePath": "Remote path",
-    "localPath": "Local path",
     "speedPresets": "Speed Presets",
     "speedPresetsHelp": "Quick speed limit values (KB/s) for the status bar popover.",
     "addPreset": "Add",
@@ -390,17 +408,168 @@
     "exportBackup": "Export backup",
     "importBackup": "Import backup",
     "exportBackupHelp": "Export all servers and preferences to a JSON file.",
-    "importSuccess": "Backup restored successfully."
+    "importSuccess": "Backup restored successfully.",
+    "saveFailed": "Could not save preferences. Check the values and try again.",
+    "invalidValues": "Refresh interval must be at least 250 ms and speed presets must be numbers.",
+    "importFailed": "Import failed.",
+    "removePreset": "Remove speed preset"
   },
   "columnMenu": {
     "setupColumns": "Setup Columns"
   },
   "notification": {
-    "downloadComplete": "Download Complete"
+    "downloadComplete": "Download Complete",
+    "actionFailed": "Action failed: {{error}}",
+    "refreshFailed": "Could not refresh torrents: {{error}}",
+    "statsRefreshFailed": "Could not refresh server statistics: {{error}}",
+    "unknownError": "Unknown error",
+    "dismiss": "Dismiss",
+    "columnsSaveFailed": "Could not save the column layout.",
+    "serversLoadFailed": "Could not load the server list.",
+    "serverRemoveFailed": "Could not remove the server.",
+    "exportFailed": "Could not export the configuration.",
+    "prefsLoadFailed": "Could not load your preferences.",
+    "pickerFailed": "Could not open the file or folder picker.",
+    "fileReadFailed": "Could not read the selected file.",
+    "renameFailed": "Could not rename the torrent.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Could not open the file or link Seedora was launched with."
   },
   "filesTab": {
     "clickToChangePriority": "Click to change priority",
     "doNotDownload": "Do not download",
     "download": "Download"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "The app hit an unexpected error. You can try again or reload the window.",
+    "retry": "Try again",
+    "reload": "Reload"
+  },
+  "format": {
+    "done": "Done",
+    "justNow": "Just now",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}}d",
+      "hours": "{{n}}h",
+      "minutes": "{{n}}m",
+      "seconds": "{{n}}s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "File",
+      "edit": "Edit",
+      "view": "View",
+      "torrent": "Torrent",
+      "tools": "Tools",
+      "help": "Help",
+      "preferences": "Preferences…",
+      "addTorrent": "Add Torrent…",
+      "addMagnet": "Add Magnet Link…",
+      "toggleFilter": "Toggle Filter Sidebar",
+      "toggleDetails": "Toggle Details Panel",
+      "start": "Start",
+      "stop": "Stop",
+      "verify": "Verify",
+      "reannounce": "Reannounce",
+      "startAll": "Start All",
+      "stopAll": "Stop All",
+      "remove": "Remove…",
+      "serverSettings": "Server Settings…",
+      "rpcSpec": "Transmission RPC Spec",
+      "reportIssue": "Report an Issue",
+      "about": "About {{appName}}",
+      "hide": "Hide {{appName}}",
+      "hideOthers": "Hide Others",
+      "unhide": "Show All",
+      "quit": "Quit {{appName}}",
+      "close": "Close Window",
+      "undo": "Undo",
+      "redo": "Redo",
+      "cut": "Cut",
+      "copy": "Copy",
+      "paste": "Paste",
+      "selectAll": "Select All",
+      "reload": "Reload",
+      "forceReload": "Force Reload",
+      "resetZoom": "Actual Size",
+      "zoomIn": "Zoom In",
+      "zoomOut": "Zoom Out",
+      "toggleFullscreen": "Toggle Full Screen"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} active transfer",
+      "activeTransfers_other": "{{count}} active transfers",
+      "enableAltSpeed": "Enable Alt Speed",
+      "disableAltSpeed": "Disable Alt Speed",
+      "showWindow": "Show Window",
+      "quit": "Quit"
+    },
+    "scriptGuard": {
+      "title": "Change the daemon's script settings?",
+      "message": "Seedora is about to change settings that make the Transmission daemon run a program on its server.",
+      "detail": "{{changes}}\n\nOnly continue if you made this change yourself.",
+      "allow": "Allow",
+      "cancel": "Cancel",
+      "declined": "The script settings change was declined."
+    },
+    "exportSecrets": {
+      "title": "Include passwords in the backup?",
+      "message": "The backup file will contain your server and proxy passwords in clear text. Anyone who can read the file can use them.",
+      "allow": "Include passwords",
+      "cancel": "Cancel",
+      "declined": "Exporting the passwords was declined."
+    },
+    "configError": {
+      "title": "Configuration problem",
+      "corrupt": "Seedora could not read its configuration file and started with default settings. The unreadable file was saved as:\n{{path}}",
+      "unreadable": "Seedora cannot read its configuration file. The file was left untouched and changes will not be saved until the problem is fixed:\n{{path}}",
+      "passwordsLocked": "The saved password for these servers could not be decrypted (the system keychain may be locked or was reset): {{names}}. Open each server in Seedora and enter its password again."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Invalid request.",
+      "NO_SESSION": "No server is active. Select a server and try again.",
+      "SESSION_UNAVAILABLE": "The session could not be restored. Check that cookies are enabled.",
+      "RATE_LIMITED": "Too many requests. Try again shortly.",
+      "HOST_NOT_ALLOWED": "This host is not allowed.",
+      "DNS_FAILED": "Could not resolve the host name.",
+      "CONNECTION_FAILED": "Could not connect to the server.",
+      "TIMEOUT": "The server did not answer in time.",
+      "TLS_FAILED": "The secure connection failed.",
+      "UNEXPECTED_REDIRECT": "The server answered with a redirect.",
+      "RESPONSE_TOO_LARGE": "The server response is too large.",
+      "AUTH_FAILED": "Authentication failed. Check the username and password.",
+      "HTTP_ERROR": "The server answered with an error.",
+      "SESSION_ID_REJECTED": "The server rejected the session id.",
+      "RPC_ERROR": "The server reported an error.",
+      "SERVER_MISCONFIGURED": "The web server is not configured correctly.",
+      "SERVER_NOT_FOUND": "Server not found.",
+      "IMPORT_INVALID": "Import failed: the file is not a valid Seedora backup."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "The server certificate is not trusted.",
+      "TLS_EXPIRED": "The server certificate has expired.",
+      "TLS_HOSTNAME": "The server certificate does not match the host name.",
+      "NETWORK": "Could not reach the server.",
+      "TOO_LARGE": "The server response is too large.",
+      "AUTH": "Authentication failed. Check the username and password.",
+      "INVALID_RESPONSE": "The server did not answer like a Transmission daemon.",
+      "SESSION": "The server refused the session handshake.",
+      "RPC_FAILURE": "The server reported an error.",
+      "NO_CONNECTION": "No server is connected.",
+      "UNKNOWN": "An unknown error occurred."
+    }
   }
 }

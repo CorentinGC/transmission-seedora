@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+# Lint staged files. Chained from .beads/hooks/pre-commit (bd owns core.hooksPath).
+root="$(git rev-parse --show-toplevel)"
+bin="$root/node_modules/.bin/lint-staged"
+if [ ! -x "$bin" ]; then
+  echo "pre-commit: lint-staged is not installed (run 'npm ci'); staged files were NOT linted." >&2
+  exit 0
+fi
+cd "$root" && exec "$bin"

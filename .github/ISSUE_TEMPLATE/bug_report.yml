@@ -1,0 +1,57 @@
+name: Bug report
+description: Something does not work as expected
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Do not include passwords, cookies or the address of a private daemon. For a security problem, do not use this form: see SECURITY.md.
+  - type: dropdown
+    id: app
+    attributes:
+      label: Which app?
+      options:
+        - Desktop app (Electron)
+        - Web app (seedora.app or self-hosted)
+        - Both
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Seedora version
+      description: Desktop app version (the installer file name, or the About entry of the app menu on macOS), or "seedora.app" / the commit for the web app.
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and browser
+      description: For example "macOS 15", "Windows 11", "Ubuntu 24.04", "Firefox 130".
+    validations:
+      required: true
+  - type: input
+    id: transmission
+    attributes:
+      label: Transmission daemon version
+      description: For example "4.0.6". Leave empty if unknown.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Browser console output or a screenshot. Remove anything private first.

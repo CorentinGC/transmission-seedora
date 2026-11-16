@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import i18n from '@shared/lib/i18n';
 import { useTorrentStore } from '@shared/stores/torrent-store';
 import { useSessionStore } from '@shared/stores/session-store';
 import type { Torrent } from '@shared/types/torrent';
@@ -43,10 +44,7 @@ export function useTrayAndNotifications() {
     for (const [id, torrent] of torrents) {
       const prevTorrent = prev.get(id);
       if (prevTorrent && prevTorrent.percentDone < 1 && torrent.percentDone >= 1) {
-        api.notificationShow?.(
-          'Download Complete',
-          torrent.name,
-        );
+        api.notificationShow?.(i18n.t('notification.downloadComplete'), torrent.name);
       }
     }
 

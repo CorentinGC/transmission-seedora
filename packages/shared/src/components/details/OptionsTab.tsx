@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Torrent } from '../../types/torrent';
 import { useTorrentStore } from '../../stores/torrent-store';
-import { formatBytes } from '../../lib/format';
 
 interface Props {
   torrent: Torrent;
@@ -26,8 +25,26 @@ export function OptionsTab({ torrent: tor }: Props) {
   const [sequentialDownload, setSequentialDownload] = useState(tor.sequentialDownload);
   const [labelsText, setLabelsText] = useState(tor.labels?.join(', ') ?? '');
 
-  const apply = () => {
-    setTorrentProps([tor.id], {
+  /** Puts every field back to the values the daemon last reported for this torrent. */
+  const revert = () => {
+    setDownloadLimit(tor.downloadLimit);
+    setDownloadLimited(tor.downloadLimited);
+    setUploadLimit(tor.uploadLimit);
+    setUploadLimited(tor.uploadLimited);
+    setSeedRatioLimit(tor.seedRatioLimit);
+    setSeedRatioMode(tor.seedRatioMode);
+    setSeedIdleLimit(tor.seedIdleLimit);
+    setSeedIdleMode(tor.seedIdleMode);
+    setPeerLimit(tor.peerLimit);
+    setBandwidthPriority(tor.bandwidthPriority);
+    setHonorsSessionLimits(tor.honorsSessionLimits);
+    setSequentialDownload(tor.sequentialDownload);
+    setLabelsText(tor.labels?.join(', ') ?? '');
+  };
+
+  const apply = async () => {
+    // The store notifies the user of a failure; the form must not keep showing values the daemon refused.
+    const ok = await setTorrentProps([tor.id], {
       downloadLimit,
       downloadLimited,
       uploadLimit,
@@ -40,8 +57,12 @@ export function OptionsTab({ torrent: tor }: Props) {
       bandwidthPriority,
       honorsSessionLimits,
       sequentialDownload,
-      labels: labelsText.split(',').map((l) => l.trim()).filter(Boolean),
+      labels: labelsText
+        .split(',')
+        .map((l) => l.trim())
+        .filter(Boolean),
     });
+    if (!ok) revert();
   };
 
   return (
@@ -53,21 +74,41 @@ export function OptionsTab({ torrent: tor }: Props) {
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={downloadLimited} onChange={(e) => setDownloadLimited(e.target.checked)} />
             {t('optionsTab.downloadLimit')}
-            <input type="number" className="w-20 h-6 px-1 rounded border bg-background" value={downloadLimit} onChange={(e) => setDownloadLimit(Number(e.target.value))} disabled={!downloadLimited} />
+            <input
+              type="number"
+              className="w-20 h-6 px-1 rounded border bg-background"
+              value={downloadLimit}
+              onChange={(e) => setDownloadLimit(Number(e.target.value))}
+              disabled={!downloadLimited}
+            />
           </label>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={uploadLimited} onChange={(e) => setUploadLimited(e.target.checked)} />
             {t('optionsTab.uploadLimit')}
-            <input type="number" className="w-20 h-6 px-1 rounded border bg-background" value={uploadLimit} onChange={(e) => setUploadLimit(Number(e.target.value))} disabled={!uploadLimited} />
+            <input
+              type="number"
+              className="w-20 h-6 px-1 rounded border bg-background"
+              value={uploadLimit}
+              onChange={(e) => setUploadLimit(Number(e.target.value))}
+              disabled={!uploadLimited}
+            />
           </label>
         </div>
         <label className="flex items-center gap-2 mt-1">
-          <input type="checkbox" checked={honorsSessionLimits} onChange={(e) => setHonorsSessionLimits(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={honorsSessionLimits}
+            onChange={(e) => setHonorsSessionLimits(e.target.checked)}
+          />
           {t('optionsTab.honorSessionLimits')}
         </label>
         <div className="flex items-center gap-2 mt-1">
           {t('torrent.priority')}
-          <select className="h-6 px-1 rounded border bg-background" value={bandwidthPriority} onChange={(e) => setBandwidthPriority(Number(e.target.value))}>
+          <select
+            className="h-6 px-1 rounded border bg-background"
+            value={bandwidthPriority}
+            onChange={(e) => setBandwidthPriority(Number(e.target.value))}
+          >
             <option value={-1}>{t('priority.low')}</option>
             <option value={0}>{t('priority.normal')}</option>
             <option value={1}>{t('priority.high')}</option>
@@ -81,25 +122,44 @@ export function OptionsTab({ torrent: tor }: Props) {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             {t('optionsTab.ratioMode')}
-            <select className="h-6 px-1 rounded border bg-background" value={seedRatioMode} onChange={(e) => setSeedRatioMode(Number(e.target.value))}>
+            <select
+              className="h-6 px-1 rounded border bg-background"
+              value={seedRatioMode}
+              onChange={(e) => setSeedRatioMode(Number(e.target.value))}
+            >
               <option value={0}>{t('optionsTab.global')}</option>
               <option value={1}>{t('optionsTab.custom')}</option>
               <option value={2}>{t('optionsTab.unlimited')}</option>
             </select>
             {seedRatioMode === 1 && (
-              <input type="number" step="0.1" className="w-20 h-6 px-1 rounded border bg-background" value={seedRatioLimit} onChange={(e) => setSeedRatioLimit(Number(e.target.value))} />
+              <input
+                type="number"
+                step="0.1"
+                className="w-20 h-6 px-1 rounded border bg-background"
+                value={seedRatioLimit}
+                onChange={(e) => setSeedRatioLimit(Number(e.target.value))}
+              />
             )}
           </div>
           <div className="flex items-center gap-2">
             {t('optionsTab.idleMode')}
-            <select className="h-6 px-1 rounded border bg-background" value={seedIdleMode} onChange={(e) => setSeedIdleMode(Number(e.target.value))}>
+            <select
+              className="h-6 px-1 rounded border bg-background"
+              value={seedIdleMode}
+              onChange={(e) => setSeedIdleMode(Number(e.target.value))}
+            >
               <option value={0}>{t('optionsTab.global')}</option>
               <option value={1}>{t('optionsTab.custom')}</option>
               <option value={2}>{t('optionsTab.unlimited')}</option>
             </select>
             {seedIdleMode === 1 && (
               <>
-                <input type="number" className="w-20 h-6 px-1 rounded border bg-background" value={seedIdleLimit} onChange={(e) => setSeedIdleLimit(Number(e.target.value))} />
+                <input
+                  type="number"
+                  className="w-20 h-6 px-1 rounded border bg-background"
+                  value={seedIdleLimit}
+                  onChange={(e) => setSeedIdleLimit(Number(e.target.value))}
+                />
                 <span className="text-muted-foreground">{t('optionsTab.minutes')}</span>
               </>
             )}
@@ -113,15 +173,30 @@ export function OptionsTab({ torrent: tor }: Props) {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             {t('optionsTab.maxPeers')}
-            <input type="number" className="w-20 h-6 px-1 rounded border bg-background" value={peerLimit} onChange={(e) => setPeerLimit(Number(e.target.value))} />
+            <input
+              type="number"
+              className="w-20 h-6 px-1 rounded border bg-background"
+              value={peerLimit}
+              onChange={(e) => setPeerLimit(Number(e.target.value))}
+            />
           </div>
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={sequentialDownload} onChange={(e) => setSequentialDownload(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={sequentialDownload}
+              onChange={(e) => setSequentialDownload(e.target.checked)}
+            />
             {t('optionsTab.sequentialDownload')}
           </label>
           <div className="flex items-center gap-2">
             {t('optionsTab.labelsLabel')}
-            <input type="text" className="flex-1 h-6 px-1 rounded border bg-background" value={labelsText} onChange={(e) => setLabelsText(e.target.value)} placeholder={t('optionsTab.labelsPlaceholder')} />
+            <input
+              type="text"
+              className="flex-1 h-6 px-1 rounded border bg-background"
+              value={labelsText}
+              onChange={(e) => setLabelsText(e.target.value)}
+              placeholder={t('optionsTab.labelsPlaceholder')}
+            />
           </div>
         </div>
       </div>

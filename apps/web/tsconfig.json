@@ -2,14 +2,11 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "noUnusedLocals": true,
     "noEmit": true,
     "esModuleInterop": true,
     "moduleResolution": "bundler",
@@ -24,12 +21,8 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@shared/*": [
-        "../../packages/shared/src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": [
@@ -41,8 +34,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "../../packages/shared/src/lib/i18n.ts"
-  ]
+  "exclude": ["node_modules", "../../packages/shared/src/lib/i18n.ts"]
 }

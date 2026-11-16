@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Torrent } from '../../types/torrent';
+import { Tabs } from '../ui';
 import { GeneralTab } from './GeneralTab';
 import { FilesTab } from './FilesTab';
 import { PeersTab } from './PeersTab';
@@ -24,28 +25,29 @@ export function DetailsPanel({ torrent }: Props) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('General');
 
+  const idBase = useId();
+
   return (
     <div className="flex flex-col h-full bg-card">
-      <div className="flex border-b select-none">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            className={`px-3 py-1.5 text-xs font-medium ${
-              activeTab === tab.id
-                ? 'border-b-2 border-primary text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {t(tab.labelKey)}
-          </button>
-        ))}
+      <Tabs
+        id={idBase}
+        size="sm"
+        label={t('toolbar.detailsPanel')}
+        tabs={TABS.map((tab) => ({ id: tab.id, label: t(tab.labelKey) }))}
+        activeTab={activeTab}
+        onTabChange={(id) => setActiveTab(id as Tab)}
+      >
         <div className="flex-1" />
-        <div className="px-3 py-1.5 text-xs text-muted-foreground truncate max-w-xs">
+        <div className="px-3 py-1.5 text-xs text-muted-foreground truncate max-w-xs self-center" title={torrent.name}>
           {torrent.name}
         </div>
-      </div>
-      <div className="flex-1 overflow-auto p-3 text-sm">
+      </Tabs>
+      <div
+        role="tabpanel"
+        id={`${idBase}-panel`}
+        aria-labelledby={`${idBase}-tab-${activeTab}`}
+        className="flex-1 overflow-auto p-3 text-sm"
+      >
         {activeTab === 'General' && <GeneralTab torrent={torrent} />}
         {activeTab === 'Files' && <FilesTab torrent={torrent} />}
         {activeTab === 'Peers' && <PeersTab torrent={torrent} />}

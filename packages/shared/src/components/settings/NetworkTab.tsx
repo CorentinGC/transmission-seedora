@@ -40,7 +40,9 @@ export function NetworkTab({ settings: s }: Props) {
     const res = await updateBlocklist();
     const data = res.data as { 'blocklist-size'?: number } | undefined;
     setBlocklistResult(
-      res.success ? t('networkTab.updatedEntries', { count: data?.['blocklist-size'] ?? 0 }) : t('networkTab.updateFailed'),
+      res.success
+        ? t('networkTab.updatedEntries', { count: data?.['blocklist-size'] ?? 0 })
+        : t('networkTab.updateFailed'),
     );
   };
 
@@ -71,18 +73,31 @@ export function NetworkTab({ settings: s }: Props) {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             {t('networkTab.port')}
-            <input type="number" className="w-24 h-7 px-2 rounded border bg-background" value={peerPort} onChange={(e) => setPeerPort(Number(e.target.value))} />
+            <input
+              type="number"
+              className="w-24 h-7 px-2 rounded border bg-background"
+              value={peerPort}
+              onChange={(e) => setPeerPort(Number(e.target.value))}
+            />
             <button className="h-7 px-3 text-xs rounded border hover:bg-accent" onClick={handleTestPort}>
               {t('networkTab.testPort')}
             </button>
             {portTestResult && <span className="text-xs text-muted-foreground">{portTestResult}</span>}
           </div>
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={peerPortRandomOnStart} onChange={(e) => setPeerPortRandomOnStart(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={peerPortRandomOnStart}
+              onChange={(e) => setPeerPortRandomOnStart(e.target.checked)}
+            />
             {t('networkTab.randomPort')}
           </label>
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={portForwardingEnabled} onChange={(e) => setPortForwardingEnabled(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={portForwardingEnabled}
+              onChange={(e) => setPortForwardingEnabled(e.target.checked)}
+            />
             {t('networkTab.enableUpnp')}
           </label>
         </div>
@@ -90,7 +105,11 @@ export function NetworkTab({ settings: s }: Props) {
 
       <div className="border-t pt-4">
         <h3 className="font-medium mb-2">{t('networkTab.encryption')}</h3>
-        <select className="h-7 px-2 rounded border bg-background" value={encryption} onChange={(e) => setEncryption(e.target.value)}>
+        <select
+          className="h-7 px-2 rounded border bg-background"
+          value={encryption}
+          onChange={(e) => setEncryption(e.target.value)}
+        >
           <option value="tolerated">{t('networkTab.allowEncryption')}</option>
           <option value="preferred">{t('networkTab.preferEncryption')}</option>
           <option value="required">{t('networkTab.requireEncryption')}</option>
@@ -100,9 +119,18 @@ export function NetworkTab({ settings: s }: Props) {
       <div className="border-t pt-4">
         <h3 className="font-medium mb-2">{t('networkTab.protocol')}</h3>
         <div className="space-y-1">
-          <label className="flex items-center gap-2"><input type="checkbox" checked={dhtEnabled} onChange={(e) => setDhtEnabled(e.target.checked)} /> {t('networkTab.enableDht')}</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={pexEnabled} onChange={(e) => setPexEnabled(e.target.checked)} /> {t('networkTab.enablePex')}</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={lpdEnabled} onChange={(e) => setLpdEnabled(e.target.checked)} /> {t('networkTab.enableLpd')}</label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={dhtEnabled} onChange={(e) => setDhtEnabled(e.target.checked)} />{' '}
+            {t('networkTab.enableDht')}
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={pexEnabled} onChange={(e) => setPexEnabled(e.target.checked)} />{' '}
+            {t('networkTab.enablePex')}
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={lpdEnabled} onChange={(e) => setLpdEnabled(e.target.checked)} />{' '}
+            {t('networkTab.enableLpd')}
+          </label>
         </div>
       </div>
 
@@ -110,10 +138,22 @@ export function NetworkTab({ settings: s }: Props) {
         <h3 className="font-medium mb-2">{t('networkTab.peerLimits')}</h3>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            {t('networkTab.global')} <input type="number" className="w-24 h-7 px-2 rounded border bg-background" value={peerLimitGlobal} onChange={(e) => setPeerLimitGlobal(Number(e.target.value))} />
+            {t('networkTab.global')}{' '}
+            <input
+              type="number"
+              className="w-24 h-7 px-2 rounded border bg-background"
+              value={peerLimitGlobal}
+              onChange={(e) => setPeerLimitGlobal(Number(e.target.value))}
+            />
           </div>
           <div className="flex items-center gap-2">
-            {t('networkTab.perTorrent')} <input type="number" className="w-24 h-7 px-2 rounded border bg-background" value={peerLimitPerTorrent} onChange={(e) => setPeerLimitPerTorrent(Number(e.target.value))} />
+            {t('networkTab.perTorrent')}{' '}
+            <input
+              type="number"
+              className="w-24 h-7 px-2 rounded border bg-background"
+              value={peerLimitPerTorrent}
+              onChange={(e) => setPeerLimitPerTorrent(Number(e.target.value))}
+            />
           </div>
         </div>
       </div>
@@ -127,11 +167,21 @@ export function NetworkTab({ settings: s }: Props) {
           </label>
           {blocklistEnabled && (
             <div className="space-y-1">
-              <input type="text" className="w-full h-7 px-2 rounded border bg-background" value={blocklistUrl} onChange={(e) => setBlocklistUrl(e.target.value)} placeholder={t('networkTab.blocklistUrl')} />
+              <input
+                type="text"
+                className="w-full h-7 px-2 rounded border bg-background"
+                value={blocklistUrl}
+                onChange={(e) => setBlocklistUrl(e.target.value)}
+                placeholder={t('networkTab.blocklistUrl')}
+              />
               <div className="flex items-center gap-2">
-                <button className="h-7 px-3 text-xs rounded border hover:bg-accent" onClick={handleUpdateBlocklist}>{t('networkTab.updateBlocklist')}</button>
+                <button className="h-7 px-3 text-xs rounded border hover:bg-accent" onClick={handleUpdateBlocklist}>
+                  {t('networkTab.updateBlocklist')}
+                </button>
                 {blocklistResult && <span className="text-xs text-muted-foreground">{blocklistResult}</span>}
-                <span className="text-xs text-muted-foreground">{t('networkTab.entries', { count: s.blocklistSize })}</span>
+                <span className="text-xs text-muted-foreground">
+                  {t('networkTab.entries', { count: s.blocklistSize })}
+                </span>
               </div>
             </div>
           )}
@@ -139,9 +189,14 @@ export function NetworkTab({ settings: s }: Props) {
       </div>
 
       <div className="border-t pt-4 flex items-center gap-3">
-        <button className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90" onClick={apply}>{t('dialog.apply')}</button>
-        {applyStatus === 'success' && <span className="text-xs text-green-600">{t('settings.applied')}</span>}
-        {applyStatus === 'error' && <span className="text-xs text-destructive">{t('settings.applyError')}</span>}
+        <button
+          className="h-8 px-4 text-sm rounded bg-primary text-primary-foreground hover:opacity-90"
+          onClick={apply}
+        >
+          {t('dialog.apply')}
+        </button>
+        {applyStatus === 'success' && <span className="text-xs text-success">{t('settings.applied')}</span>}
+        {applyStatus === 'error' && <span className="text-xs text-destructive-text">{t('settings.applyError')}</span>}
       </div>
     </div>
   );

@@ -1,0 +1,27 @@
+# Seedora
+
+> Seedora is a cross-platform remote GUI for the Transmission BitTorrent daemon: one shared React 19 UI shipped as an Electron desktop app and a Next.js 16 web app (web manifest, no service worker), in an npm-workspaces TypeScript monorepo.
+
+The Electron app is the root package (`src/`); the UI lives in `packages/shared/src/`; the web app in `apps/web/`. Both apps reach the daemon's RPC endpoint through a trusted process (Electron main, Next.js server), never from the page.
+
+## Documentation
+
+- [Architecture](docs/architecture.md): monorepo layout, entry points, the PlatformApi abstraction, RPC data flow on Electron and web, the Electron renderer origin (`app://seedora`) and file access, stores, build outputs
+- [Setup](docs/setup.md): prerequisites, install, running and packaging both apps, environment variables, MCP servers
+- [Conventions](docs/conventions.md): TypeScript, file layout and naming, IPC rules, UI primitives and theme tokens, commits and branches
+- [Security](docs/security.md): trust boundaries, what is enforced today (web and Electron: credentials, IPC, launch targets, script confirmation), known gaps, rules for new code
+- [Internationalisation](docs/i18n.md): 23 locales, key rules, the locale registry, main-process `native.*` strings, the `i18n:check` gate
+- [Release](docs/release.md): staging → main flow, release-please, the release workflow, what a release contains
+- [Dependency audit](docs/dependency-audit.md): npm audit triage, what is reachable, what waits for a major
+- [Decisions](docs/decisions/0001-record-architecture-decisions.md): architecture decision records and their template; web: 0002 to 0005 (cookie, outbound policy, action hardening, headers) and [0007](docs/decisions/0007-web-csp-nonce-evaluation.md) (CSP nonce evaluation); Electron: [0006](docs/decisions/0006-packaged-renderer-app-scheme.md) (packaged renderer served from `app://seedora`)
+
+## Agent reference
+
+- [CLAUDE.md](CLAUDE.md): project instructions for coding agents
+- [AGENTS.md](AGENTS.md): agent workflow, team roles and issue tracking
+- [MEMORY.md](MEMORY.md): working memory — current state, next steps, gotchas
+
+## Optional
+
+- [README](README.md): user-facing overview and installation notes
+- [Changelog](CHANGELOG.md): release history

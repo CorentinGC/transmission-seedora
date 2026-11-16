@@ -50,9 +50,10 @@ export function keysToKebab(obj: Record<string, unknown>): Record<string, unknow
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
     const kebabKey = camelToKebab(key);
-    result[kebabKey] = typeof value === 'object' && value !== null && !Array.isArray(value)
-      ? keysToKebab(value as Record<string, unknown>)
-      : value;
+    result[kebabKey] =
+      typeof value === 'object' && value !== null && !Array.isArray(value)
+        ? keysToKebab(value as Record<string, unknown>)
+        : value;
   }
   return result;
 }

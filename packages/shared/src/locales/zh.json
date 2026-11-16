@@ -5,7 +5,10 @@
     "selectTorrent": "选择一个种子以查看详情",
     "noTorrents": "没有种子",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "close": "关闭",
+    "torrentList": "种子",
+    "resizePanel": "调整面板大小"
   },
   "toolbar": {
     "addTorrent": "添加种子",
@@ -19,17 +22,46 @@
     "detailsPanel": "切换详情面板",
     "searchPlaceholder": "搜索种子...",
     "preferences": "偏好设置",
-    "serverSettings": "服务器设置"
+    "serverSettings": "服务器设置",
+    "clearSearch": "清除搜索",
+    "moreActions": "更多操作"
   },
   "statusBar": {
     "connected": "已连接",
     "connecting": "连接中...",
     "disconnected": "已断开",
+    "connectionError": "连接错误",
     "activeTotal": "{{active}} 活动 / {{total}} 总计",
     "disableAltSpeed": "关闭备用速度",
     "enableAltSpeed": "开启备用速度",
     "alt": "备用",
-    "freeSpace": "{{space}} 可用"
+    "freeSpace": "{{space}} 可用",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "磁盘空间",
+    "totalFreeSpace": "总可用空间",
+    "speedLimit": "速度限制",
+    "limitSpeed": "限制速度",
+    "unlimited": "不限制",
+    "kbs": "KB/s",
+    "setLimit": "设置限制",
+    "downloadLimit": "下载速度限制",
+    "uploadLimit": "上传速度限制"
+  },
+  "sessionStats": {
+    "title": "会话统计",
+    "currentSession": "当前会话",
+    "allTime": "全部（累计）",
+    "downloaded": "已下载",
+    "uploaded": "已上传",
+    "ratio": "分享率",
+    "filesAdded": "已添加文件",
+    "activeTime": "活动时间",
+    "downloadSpeed": "下载速度",
+    "uploadSpeed": "上传速度",
+    "sessionCount": "会话数",
+    "activeTorrents": "活动的种子",
+    "pausedTorrents": "已暂停的种子",
+    "totalTorrents": "种子总数"
   },
   "filter": {
     "all": "全部",
@@ -80,7 +112,17 @@
     "downloaded": "已下载",
     "uploaded": "已上传",
     "private": "私有",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "待下载大小",
+    "sizeLeft": "剩余大小",
+    "connectedPeers": "已连接",
+    "seedingTime": "做种时间",
+    "downloadingTime": "下载用时",
+    "created": "创建时间",
+    "comment": "备注",
+    "fileCount": "文件数",
+    "group": "分组"
   },
   "priority": {
     "high": "高",
@@ -110,7 +152,10 @@
     "copied": "已复制！",
     "loadingFiles": "正在加载文件...",
     "noPeers": "没有已连接的节点",
-    "doubleClickEdit": "双击编辑"
+    "doubleClickEdit": "双击编辑",
+    "loadFailed": "无法加载详细信息：{{error}}",
+    "requestFailed": "请求失败",
+    "torrentNotFound": "未找到种子"
   },
   "peersTab": {
     "address": "地址",
@@ -118,13 +163,14 @@
     "flags": "标志",
     "progress": "进度",
     "down": "下载",
-    "up": "上传"
+    "up": "上传",
+    "country": "国家/地区"
   },
   "trackersTab": {
     "tier": "层级",
     "announceUrl": "通告 URL",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "做种者",
+    "leechers": "下载者",
     "status": "状态",
     "addPlaceholder": "添加 Tracker URL...",
     "add": "添加",
@@ -168,7 +214,8 @@
     "moveUp": "上移",
     "moveDown": "下移",
     "moveToBottom": "移到底部",
-    "remove": "删除..."
+    "remove": "删除...",
+    "title": "种子操作"
   },
   "dialog": {
     "addTorrent": "添加种子",
@@ -189,7 +236,7 @@
     "add": "添加",
     "test": "测试连接",
     "browse": "浏览...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / 磁力链接",
     "file": "文件",
     "urlOrMagnet": "URL 或 Magnet 链接",
     "urlPlaceholder": "magnet:?xt= 或 https://...",
@@ -210,12 +257,15 @@
     "editServer": "编辑服务器",
     "addServerTitle": "添加服务器",
     "noServer": "无服务器",
+    "switcherLabel": "切换服务器",
     "serverName": "名称",
     "serverNamePlaceholder": "我的服务器",
     "host": "主机",
     "port": "端口",
     "path": "RPC 路径",
     "useSSL": "使用 SSL/TLS",
+    "allowSelfSigned": "接受自签名证书",
+    "allowSelfSignedHint": "停用此服务器的证书验证。仅对您信任的服务器启用。",
     "authentication": "认证",
     "username": "用户名",
     "password": "密码",
@@ -228,7 +278,23 @@
     "proxyUsername": "代理用户名",
     "proxyPassword": "代理密码",
     "testSuccess": "成功",
-    "testFailed": "失败"
+    "testFailed": "失败",
+    "deleteServer": "删除",
+    "deleteConfirm": "删除服务器“{{name}}”？",
+    "cannotDeleteActive": "请先断开连接",
+    "exportServer": "导出",
+    "exportAll": "全部导出",
+    "importServers": "导入...",
+    "importSuccess": "已添加 {{added}} 个，已跳过 {{skipped}} 个",
+    "importFailed": "导入失败。",
+    "saveFailed": "无法保存服务器。请检查各项数值后重试。",
+    "exportPasswords": "导出时包含密码",
+    "exportPasswordsWarning": "密码将以明文写入文件。请妥善保管该文件。",
+    "webStorageWarning": "在网页版中，服务器密码未加密存储在此浏览器中。请仅在您信任的设备上输入。",
+    "passwordStored": "密码已保存。留空则保持不变。",
+    "removeStoredPassword": "移除已保存的密码",
+    "removeStoredProxyPassword": "移除已保存的代理密码",
+    "secretStorageUnencrypted": "此系统无法使用安全存储：已保存的密码将以未加密形式存放在磁盘上。"
   },
   "settings": {
     "applied": "设置已应用",
@@ -331,23 +397,178 @@
     "showNotifications": "完成时显示通知",
     "display": "显示",
     "relativeDates": "使用相对日期",
-    "confirmOnAdd": "添加种子时显示确认",
     "watchFolder": "监视文件夹",
     "watchFolderEnabled": "监视文件夹中的 .torrent 文件",
     "watchFolderPlaceholder": "/监视/路径",
     "deleteWatchedTorrent": "添加后删除 .torrent 文件",
-    "pathMappings": "路径映射（远程 → 本地）",
-    "pathMappingsAdd": "添加",
-    "pathMappingsHelp": "将远程守护进程路径映射到本地路径，用于“打开文件夹”操作。",
-    "remotePath": "远程路径",
-    "localPath": "本地路径"
+    "speedPresets": "速度预设",
+    "speedPresetsHelp": "状态栏弹出窗口的速度限制快捷值 (KB/s)。",
+    "addPreset": "添加",
+    "backup": "备份与恢复",
+    "exportBackup": "导出备份",
+    "importBackup": "导入备份",
+    "exportBackupHelp": "将所有服务器和偏好设置导出为 JSON 文件。",
+    "importSuccess": "备份已成功恢复。",
+    "saveFailed": "无法保存偏好设置。请检查输入的值后重试。",
+    "invalidValues": "刷新间隔不得小于 250 毫秒，速度预设必须为数字。",
+    "importFailed": "导入失败。",
+    "removePreset": "移除速度预设"
+  },
+  "columnMenu": {
+    "setupColumns": "设置列"
   },
   "notification": {
-    "downloadComplete": "下载完成"
+    "downloadComplete": "下载完成",
+    "actionFailed": "操作失败：{{error}}",
+    "refreshFailed": "无法刷新种子：{{error}}",
+    "statsRefreshFailed": "无法刷新服务器统计信息：{{error}}",
+    "unknownError": "未知错误",
+    "dismiss": "关闭",
+    "columnsSaveFailed": "无法保存列布局。",
+    "serversLoadFailed": "无法加载服务器列表。",
+    "serverRemoveFailed": "无法移除服务器。",
+    "exportFailed": "无法导出配置。",
+    "prefsLoadFailed": "无法加载您的偏好设置。",
+    "pickerFailed": "无法打开文件或文件夹选择器。",
+    "fileReadFailed": "无法读取所选文件。",
+    "renameFailed": "无法重命名种子。",
+    "withReason": "{{message}}（{{reason}}）",
+    "launchFailed": "无法打开启动 Seedora 时指定的文件或链接。"
   },
   "filesTab": {
     "clickToChangePriority": "点击更改优先级",
     "doNotDownload": "不下载",
     "download": "下载"
+  },
+  "errorBoundary": {
+    "title": "出错了",
+    "description": "应用遇到了意外错误。您可以重试或重新加载窗口。",
+    "retry": "重试",
+    "reload": "重新加载"
+  },
+  "format": {
+    "done": "完成",
+    "justNow": "刚刚",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}}天",
+      "hours": "{{n}}小时",
+      "minutes": "{{n}}分钟",
+      "seconds": "{{n}}秒"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "文件",
+      "edit": "编辑",
+      "view": "视图",
+      "torrent": "种子",
+      "tools": "工具",
+      "help": "帮助",
+      "preferences": "偏好设置…",
+      "addTorrent": "添加种子…",
+      "addMagnet": "添加磁力链接…",
+      "toggleFilter": "切换过滤器侧边栏",
+      "toggleDetails": "切换详情面板",
+      "start": "开始",
+      "stop": "停止",
+      "verify": "校验",
+      "reannounce": "重新汇报",
+      "startAll": "全部开始",
+      "stopAll": "全部停止",
+      "remove": "移除…",
+      "serverSettings": "服务器设置…",
+      "rpcSpec": "Transmission RPC 规范",
+      "reportIssue": "报告问题",
+      "about": "关于 {{appName}}",
+      "hide": "隐藏 {{appName}}",
+      "hideOthers": "隐藏其他",
+      "unhide": "全部显示",
+      "quit": "退出 {{appName}}",
+      "close": "关闭窗口",
+      "undo": "撤销",
+      "redo": "重做",
+      "cut": "剪切",
+      "copy": "拷贝",
+      "paste": "粘贴",
+      "selectAll": "全选",
+      "reload": "重新加载",
+      "forceReload": "强制重新加载",
+      "resetZoom": "实际大小",
+      "zoomIn": "放大",
+      "zoomOut": "缩小",
+      "toggleFullscreen": "切换全屏"
+    },
+    "tray": {
+      "activeTransfers_other": "{{count}} 个活动传输",
+      "enableAltSpeed": "启用备用速度",
+      "disableAltSpeed": "禁用备用速度",
+      "showWindow": "显示窗口",
+      "quit": "退出"
+    },
+    "scriptGuard": {
+      "title": "要更改守护进程的脚本设置吗？",
+      "message": "Seedora 即将更改会让 Transmission 守护进程在其服务器上运行程序的设置。",
+      "detail": "{{changes}}\n\n仅当此更改由您本人所做时才继续。",
+      "allow": "允许",
+      "cancel": "取消",
+      "declined": "脚本设置更改已被拒绝。"
+    },
+    "exportSecrets": {
+      "title": "要在备份中包含密码吗？",
+      "message": "备份文件将以明文包含您的服务器和代理密码。任何能读取该文件的人都可以使用这些密码。",
+      "allow": "包含密码",
+      "cancel": "取消",
+      "declined": "导出密码已被拒绝。"
+    },
+    "configError": {
+      "title": "配置问题",
+      "corrupt": "Seedora 无法读取其配置文件，已使用默认设置启动。无法读取的文件已另存为：\n{{path}}",
+      "unreadable": "Seedora 无法读取其配置文件。该文件未被改动，在问题解决之前更改将不会被保存：\n{{path}}",
+      "passwordsLocked": "无法解密这些服务器已保存的密码（系统钥匙串可能已锁定或已被重置）：{{names}}。请在 Seedora 中打开每个服务器，并重新输入密码。"
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "请求无效。",
+      "NO_SESSION": "没有活动的服务器。请选择服务器后重试。",
+      "SESSION_UNAVAILABLE": "无法恢复会话。请检查是否已启用 Cookie。",
+      "RATE_LIMITED": "请求过多，请稍后重试。",
+      "HOST_NOT_ALLOWED": "不允许使用此主机。",
+      "DNS_FAILED": "无法解析主机名。",
+      "CONNECTION_FAILED": "无法连接到服务器。",
+      "TIMEOUT": "服务器响应超时。",
+      "TLS_FAILED": "安全连接失败。",
+      "UNEXPECTED_REDIRECT": "服务器返回了重定向。",
+      "RESPONSE_TOO_LARGE": "服务器响应过大。",
+      "AUTH_FAILED": "身份验证失败。请检查用户名和密码。",
+      "HTTP_ERROR": "服务器返回了错误。",
+      "SESSION_ID_REJECTED": "服务器拒绝了会话 ID。",
+      "RPC_ERROR": "服务器报告了错误。",
+      "SERVER_MISCONFIGURED": "Web 服务器配置不正确。",
+      "SERVER_NOT_FOUND": "未找到服务器。",
+      "IMPORT_INVALID": "导入失败：该文件不是有效的 Seedora 备份。"
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "服务器证书不受信任。",
+      "TLS_EXPIRED": "服务器证书已过期。",
+      "TLS_HOSTNAME": "服务器证书与主机名不匹配。",
+      "NETWORK": "无法访问服务器。",
+      "TOO_LARGE": "服务器响应过大。",
+      "AUTH": "身份验证失败。请检查用户名和密码。",
+      "INVALID_RESPONSE": "服务器的响应不像 Transmission 守护进程。",
+      "SESSION": "服务器拒绝了会话握手。",
+      "RPC_FAILURE": "服务器报告了错误。",
+      "NO_CONNECTION": "没有已连接的服务器。",
+      "UNKNOWN": "发生未知错误。"
+    }
   }
 }

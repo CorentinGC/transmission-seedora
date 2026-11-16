@@ -6,7 +6,7 @@ import { MakerRpm } from '@electron-forge/maker-rpm';
 import { MakerDMG } from '@electron-forge/maker-dmg';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
-import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import { APP_FUSES } from './src/main/security/fuses';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -30,21 +30,25 @@ const config: ForgeConfig = {
     asar: {
       unpack: '**/node_modules/geoip-lite/**',
     },
-    afterCopy: [
-      (buildPath: string, _electronVersion: string, _platform: string, _arch: string, callback: (err?: Error) => void) => {
-        try {
-          copyExternalModules(buildPath);
-          callback();
-        } catch (err) {
-          callback(err as Error);
-        }
-      },
-    ],
+    afterCopy: [({ buildPath }) => copyExternalModules(buildPath)],
     name: 'Seedora',
     executableName: 'seedora',
     appBundleId: 'com.seedora.app',
     appCategoryType: 'public.app-category.utilities',
     icon: './resources/icon',
+    // macOS: lets Seedora appear as a handler for magnet: links and .torrent files (it never becomes the
+    // default on its own: 'Alternate' rank, and main only registers itself when no handler exists).
+    protocols: [{ name: 'Magnet link', schemes: ['magnet'] }],
+    extendInfo: {
+      CFBundleDocumentTypes: [
+        {
+          CFBundleTypeName: 'BitTorrent file',
+          CFBundleTypeExtensions: ['torrent'],
+          CFBundleTypeRole: 'Viewer',
+          LSHandlerRank: 'Alternate',
+        },
+      ],
+    },
   },
   rebuildConfig: {},
   makers: [
@@ -72,6 +76,7 @@ const config: ForgeConfig = {
         productName: 'Seedora',
         description: 'Remote GUI for Transmission daemon',
         categories: ['Network', 'P2P'],
+        mimeType: ['application/x-bittorrent', 'x-scheme-handler/magnet'],
       },
     }),
   ],
@@ -96,15 +101,7 @@ const config: ForgeConfig = {
         },
       ],
     }),
-    new FusesPlugin({
-      version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
-      [FuseV1Options.EnableCookieEncryption]: true,
-      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-      [FuseV1Options.EnableNodeCliInspectArguments]: false,
-      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-      [FuseV1Options.OnlyLoadAppFromAsar]: true,
-    }),
+    new FusesPlugin(APP_FUSES),
   ],
 };
 

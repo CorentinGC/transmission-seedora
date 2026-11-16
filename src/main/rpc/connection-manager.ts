@@ -1,7 +1,8 @@
 import type { ServerConfig } from '@shared/types';
 import { TransmissionRpcClient } from './client';
 
-class ConnectionManager {
+/** Holds one RPC client per server and tracks the active one. */
+export class ConnectionManager {
   private clients = new Map<string, TransmissionRpcClient>();
   private activeServerId: string | null = null;
 
@@ -28,7 +29,9 @@ class ConnectionManager {
     return new TransmissionRpcClient(config);
   }
 
+  /** Rebuilds the cached client of an edited server so new host/credentials/TLS options apply to the next request. */
   refreshClient(server: ServerConfig): void {
+    if (!this.clients.has(server.id)) return;
     this.clients.set(server.id, new TransmissionRpcClient(server));
   }
 }

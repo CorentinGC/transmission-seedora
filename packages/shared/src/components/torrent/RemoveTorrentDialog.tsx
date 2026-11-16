@@ -16,35 +16,36 @@ export function RemoveTorrentDialog({ ids, onClose }: Props) {
   const names = ids.map((id) => torrents.get(id)?.name ?? `#${id}`);
 
   const handleRemove = async (deleteData: boolean) => {
-    await removeTorrents(ids, deleteData);
-    onClose();
+    if (await removeTorrents(ids, deleteData)) onClose();
   };
 
   return (
     <Dialog
       title={
         <span className="flex items-center gap-2">
-          <AlertTriangle size={18} className="text-destructive" />
+          <AlertTriangle size={18} className="text-destructive-text" />
           {ids.length > 1 ? t('dialog.removeTorrents') : t('dialog.removeTorrent')}
         </span>
       }
       onClose={onClose}
-      width="w-fit min-w-[420px]"
+      width="w-fit min-w-[min(420px,100%)]"
       footer={
-        <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <Button onClick={onClose}>{t('dialog.cancel')}</Button>
           <Button onClick={() => handleRemove(false)}>{t('dialog.removeTorrentBtn')}</Button>
-          <Button variant="destructive" onClick={() => handleRemove(true)}>{t('dialog.removeWithData')}</Button>
+          <Button variant="destructive" onClick={() => handleRemove(true)}>
+            {t('dialog.removeWithData')}
+          </Button>
         </div>
       }
     >
       <div className="space-y-3">
-        <p className="text-sm">
-          {t('dialog.removeTorrentConfirm', { count: ids.length })}
-        </p>
+        <p className="text-sm">{t('dialog.removeTorrentConfirm', { count: ids.length })}</p>
         <div className="max-h-32 overflow-auto text-xs text-muted-foreground space-y-0.5">
           {names.map((name, i) => (
-            <div key={i} className="truncate">{name}</div>
+            <div key={i} className="truncate">
+              {name}
+            </div>
           ))}
         </div>
       </div>

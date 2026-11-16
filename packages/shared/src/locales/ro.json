@@ -5,7 +5,10 @@
     "selectTorrent": "Selectați un torrent pentru a vedea detaliile",
     "noTorrents": "Niciun torrent",
     "yes": "Da",
-    "no": "Nu"
+    "no": "Nu",
+    "close": "Închide",
+    "torrentList": "Torrente",
+    "resizePanel": "Redimensionează panoul"
   },
   "toolbar": {
     "addTorrent": "Adaugă torrent",
@@ -19,17 +22,46 @@
     "detailsPanel": "Panou de detalii",
     "searchPlaceholder": "Caută torrente...",
     "preferences": "Preferințe",
-    "serverSettings": "Setări server"
+    "serverSettings": "Setări server",
+    "clearSearch": "Șterge căutarea",
+    "moreActions": "Mai multe acțiuni"
   },
   "statusBar": {
     "connected": "Conectat",
     "connecting": "Se conectează...",
     "disconnected": "Deconectat",
+    "connectionError": "Eroare de conexare",
     "activeTotal": "{{active}} active / {{total}} total",
     "disableAltSpeed": "Dezactivează viteza alt.",
     "enableAltSpeed": "Activează viteza alt.",
     "alt": "Alt",
-    "freeSpace": "{{space}} liber"
+    "freeSpace": "{{space}} liber",
+    "freeOfTotal": "{{free}} / {{total}}",
+    "diskSpaceTitle": "Spațiu pe disc",
+    "totalFreeSpace": "Spațiu liber total",
+    "speedLimit": "Limită de viteză",
+    "limitSpeed": "Limitează viteza",
+    "unlimited": "Nelimitat",
+    "kbs": "KB/s",
+    "setLimit": "Setează limita",
+    "downloadLimit": "Limită viteză de descărcare",
+    "uploadLimit": "Limită viteză de încărcare"
+  },
+  "sessionStats": {
+    "title": "Statistici sesiune",
+    "currentSession": "Sesiunea curentă",
+    "allTime": "Total (cumulat)",
+    "downloaded": "Descărcat",
+    "uploaded": "Încărcat",
+    "ratio": "Raport",
+    "filesAdded": "Fișiere adăugate",
+    "activeTime": "Timp activ",
+    "downloadSpeed": "Viteză de descărcare",
+    "uploadSpeed": "Viteză de încărcare",
+    "sessionCount": "Sesiuni",
+    "activeTorrents": "Torrente active",
+    "pausedTorrents": "Torrente în pauză",
+    "totalTorrents": "Total torrente"
   },
   "filter": {
     "all": "Toate",
@@ -80,7 +112,17 @@
     "downloaded": "Descărcat",
     "uploaded": "Încărcat",
     "private": "Privat",
-    "queuePosition": "#"
+    "queuePosition": "#",
+    "id": "ID",
+    "sizeToDownload": "Dimensiune de descărcat",
+    "sizeLeft": "Dimensiune rămasă",
+    "connectedPeers": "Conectați",
+    "seedingTime": "Timp de seeding",
+    "downloadingTime": "Timp de descărcare",
+    "created": "Creat",
+    "comment": "Comentariu",
+    "fileCount": "Fișiere",
+    "group": "Grup"
   },
   "priority": {
     "high": "Înaltă",
@@ -110,7 +152,10 @@
     "copied": "Copiat!",
     "loadingFiles": "Se încarcă fișierele...",
     "noPeers": "Niciun peer conectat",
-    "doubleClickEdit": "Dublu-clic pentru a edita"
+    "doubleClickEdit": "Dublu-clic pentru a edita",
+    "loadFailed": "Detaliile nu au putut fi încărcate: {{error}}",
+    "requestFailed": "Solicitarea a eșuat",
+    "torrentNotFound": "Torrentul nu a fost găsit"
   },
   "peersTab": {
     "address": "Adresă",
@@ -118,13 +163,14 @@
     "flags": "Indicatori",
     "progress": "Progres",
     "down": "Descărcare",
-    "up": "Încărcare"
+    "up": "Încărcare",
+    "country": "Țara"
   },
   "trackersTab": {
     "tier": "Nivel",
     "announceUrl": "URL de anunț",
-    "seeds": "Seeds",
-    "leechers": "Leechers",
+    "seeds": "Seeduri",
+    "leechers": "Leecheri",
     "status": "Stare",
     "addPlaceholder": "Adaugă URL tracker...",
     "add": "Adaugă",
@@ -133,7 +179,7 @@
     "cancel": "Anulează",
     "remove": "Elimină",
     "ok": "OK",
-    "na": "N/A"
+    "na": "N/D"
   },
   "optionsTab": {
     "bandwidth": "Lățime de bandă",
@@ -168,7 +214,8 @@
     "moveUp": "Mută sus",
     "moveDown": "Mută jos",
     "moveToBottom": "Mută la sfârșit",
-    "remove": "Elimină..."
+    "remove": "Elimină...",
+    "title": "Acțiuni torrent"
   },
   "dialog": {
     "addTorrent": "Adaugă torrent",
@@ -189,7 +236,7 @@
     "add": "Adaugă",
     "test": "Testează conexiunea",
     "browse": "Răsfoiește...",
-    "urlMagnet": "URL / Magnet",
+    "urlMagnet": "URL / link magnet",
     "file": "Fișier",
     "urlOrMagnet": "URL sau link Magnet",
     "urlPlaceholder": "magnet:?xt= sau https://...",
@@ -210,12 +257,15 @@
     "editServer": "Editează server",
     "addServerTitle": "Adaugă server",
     "noServer": "Niciun server",
+    "switcherLabel": "Schimbă serverul",
     "serverName": "Nume",
     "serverNamePlaceholder": "Serverul meu",
     "host": "Gazdă",
     "port": "Port",
     "path": "Cale RPC",
     "useSSL": "Folosește SSL/TLS",
+    "allowSelfSigned": "Acceptă certificat autosemnat",
+    "allowSelfSignedHint": "Dezactivează verificarea certificatului pentru acest server. Activează doar pentru un server de încredere.",
     "authentication": "Autentificare",
     "username": "Utilizator",
     "password": "Parolă",
@@ -228,7 +278,23 @@
     "proxyUsername": "Utilizator proxy",
     "proxyPassword": "Parolă proxy",
     "testSuccess": "Reușit",
-    "testFailed": "Eșuat"
+    "testFailed": "Eșuat",
+    "deleteServer": "Șterge",
+    "deleteConfirm": "Ștergi serverul „{{name}}”?",
+    "cannotDeleteActive": "Deconectează-te mai întâi",
+    "exportServer": "Exportă",
+    "exportAll": "Exportă tot",
+    "importServers": "Importă...",
+    "importSuccess": "{{added}} adăugate, {{skipped}} omise",
+    "importFailed": "Importul a eșuat.",
+    "saveFailed": "Nu s-a putut salva serverul. Verifică valorile și încearcă din nou.",
+    "exportPasswords": "Include parolele în export",
+    "exportPasswordsWarning": "Parolele sunt scrise în fișier ca text simplu. Păstrează fișierul privat.",
+    "webStorageWarning": "În versiunea web, parolele serverelor sunt stocate necriptat în acest browser. Introdu-le doar pe un dispozitiv de încredere.",
+    "passwordStored": "Parolă salvată. Lasă gol pentru a o păstra.",
+    "removeStoredPassword": "Elimină parola salvată",
+    "removeStoredProxyPassword": "Elimină parola proxy salvată",
+    "secretStorageUnencrypted": "Stocarea securizată nu este disponibilă pe acest sistem: parolele salvate sunt păstrate necriptat pe disc."
   },
   "settings": {
     "applied": "Setările au fost aplicate",
@@ -281,7 +347,7 @@
     "enableLpd": "Activează LPD",
     "peerLimits": "Limite peeri",
     "global": "Global:",
-    "perTorrent": "Per torrent:",
+    "perTorrent": "Pe torrent:",
     "blocklist": "Listă de blocare",
     "enableBlocklist": "Activează lista de blocare",
     "blocklistUrl": "URL listă de blocare",
@@ -331,23 +397,179 @@
     "showNotifications": "Afișează notificări la finalizare",
     "display": "Afișare",
     "relativeDates": "Folosește date relative",
-    "confirmOnAdd": "Afișează confirmare la adăugarea torrentelor",
     "watchFolder": "Folder de monitorizare",
     "watchFolderEnabled": "Monitorizează un folder pentru fișiere .torrent",
     "watchFolderPlaceholder": "/cale/către/folder",
     "deleteWatchedTorrent": "Șterge fișierul .torrent după adăugare",
-    "pathMappings": "Mapări de căi (La distanță → Local)",
-    "pathMappingsAdd": "Adaugă",
-    "pathMappingsHelp": "Mapează căile daemonului de la distanță la căi locale pentru acțiunea \"Deschide folder\".",
-    "remotePath": "Cale la distanță",
-    "localPath": "Cale locală"
+    "speedPresets": "Presetări de viteză",
+    "speedPresetsHelp": "Valori rapide pentru limita de viteză (KB/s) în fereastra pop-up din bara de stare.",
+    "addPreset": "Adaugă",
+    "backup": "Copie de siguranță și restaurare",
+    "exportBackup": "Exportă copia de siguranță",
+    "importBackup": "Importă o copie de siguranță",
+    "exportBackupHelp": "Exportă toate serverele și preferințele într-un fișier JSON.",
+    "importSuccess": "Copia de siguranță a fost restaurată.",
+    "saveFailed": "Preferințele nu au putut fi salvate. Verificați valorile și încercați din nou.",
+    "invalidValues": "Intervalul de reîmprospătare trebuie să fie de cel puțin 250 ms, iar presetările de viteză trebuie să fie numere.",
+    "importFailed": "Importul a eșuat.",
+    "removePreset": "Elimină presetarea de viteză"
+  },
+  "columnMenu": {
+    "setupColumns": "Configurează coloanele"
   },
   "notification": {
-    "downloadComplete": "Descărcare finalizată"
+    "downloadComplete": "Descărcare finalizată",
+    "actionFailed": "Acțiunea a eșuat: {{error}}",
+    "refreshFailed": "Torrentele nu au putut fi reîmprospătate: {{error}}",
+    "statsRefreshFailed": "Nu s-au putut actualiza statisticile serverului: {{error}}",
+    "unknownError": "Eroare necunoscută",
+    "dismiss": "Închide",
+    "columnsSaveFailed": "Nu s-a putut salva aranjamentul coloanelor.",
+    "serversLoadFailed": "Nu s-a putut încărca lista de servere.",
+    "serverRemoveFailed": "Nu s-a putut elimina serverul.",
+    "exportFailed": "Nu s-a putut exporta configurația.",
+    "prefsLoadFailed": "Nu s-au putut încărca preferințele tale.",
+    "pickerFailed": "Nu s-a putut deschide selectorul de fișiere sau foldere.",
+    "fileReadFailed": "Nu s-a putut citi fișierul selectat.",
+    "renameFailed": "Nu s-a putut redenumi torrentul.",
+    "withReason": "{{message}} ({{reason}})",
+    "launchFailed": "Nu s-a putut deschide fișierul sau linkul cu care a fost pornit Seedora."
   },
   "filesTab": {
     "clickToChangePriority": "Clic pentru a schimba prioritatea",
     "doNotDownload": "Nu descărca",
     "download": "Descarcă"
+  },
+  "errorBoundary": {
+    "title": "Ceva nu a mers bine",
+    "description": "Aplicația a întâmpinat o eroare neașteptată. Puteți încerca din nou sau reîncărca fereastra.",
+    "retry": "Încearcă din nou",
+    "reload": "Reîncarcă"
+  },
+  "format": {
+    "done": "Gata",
+    "justNow": "Chiar acum",
+    "perSecond": "{{size}}/s",
+    "unit": {
+      "b": "B",
+      "kb": "KB",
+      "mb": "MB",
+      "gb": "GB",
+      "tb": "TB",
+      "pb": "PB"
+    },
+    "duration": {
+      "days": "{{n}} z",
+      "hours": "{{n}} h",
+      "minutes": "{{n}} min",
+      "seconds": "{{n}} s"
+    }
+  },
+  "native": {
+    "menu": {
+      "file": "Fișier",
+      "edit": "Editare",
+      "view": "Vizualizare",
+      "torrent": "Torrent",
+      "tools": "Instrumente",
+      "help": "Ajutor",
+      "preferences": "Preferințe…",
+      "addTorrent": "Adaugă torrent…",
+      "addMagnet": "Adaugă link magnet…",
+      "toggleFilter": "Comută bara laterală de filtre",
+      "toggleDetails": "Comută panoul de detalii",
+      "start": "Pornește",
+      "stop": "Oprește",
+      "verify": "Verifică",
+      "reannounce": "Reanunță",
+      "startAll": "Pornește toate",
+      "stopAll": "Oprește toate",
+      "remove": "Elimină…",
+      "serverSettings": "Setări server…",
+      "rpcSpec": "Specificația RPC Transmission",
+      "reportIssue": "Raportează o problemă",
+      "about": "Despre {{appName}}",
+      "hide": "Ascunde {{appName}}",
+      "hideOthers": "Ascunde celelalte",
+      "unhide": "Afișează tot",
+      "quit": "Ieși din {{appName}}",
+      "close": "Închide fereastra",
+      "undo": "Anulează",
+      "redo": "Refă",
+      "cut": "Decupează",
+      "copy": "Copiază",
+      "paste": "Lipește",
+      "selectAll": "Selectează tot",
+      "reload": "Reîncarcă",
+      "forceReload": "Forțează reîncărcarea",
+      "resetZoom": "Dimensiune reală",
+      "zoomIn": "Mărește",
+      "zoomOut": "Micșorează",
+      "toggleFullscreen": "Comută ecranul complet"
+    },
+    "tray": {
+      "activeTransfers_one": "{{count}} transfer activ",
+      "activeTransfers_other": "{{count}} de transferuri active",
+      "enableAltSpeed": "Activează viteza alternativă",
+      "disableAltSpeed": "Dezactivează viteza alternativă",
+      "showWindow": "Afișează fereastra",
+      "quit": "Ieși"
+    },
+    "scriptGuard": {
+      "title": "Modifici setările de scripturi ale daemonului?",
+      "message": "Seedora urmează să modifice setări care fac daemonul Transmission să ruleze un program pe serverul său.",
+      "detail": "{{changes}}\n\nContinuă doar dacă ai făcut tu această modificare.",
+      "allow": "Permite",
+      "cancel": "Anulează",
+      "declined": "Modificarea setărilor de scripturi a fost refuzată."
+    },
+    "exportSecrets": {
+      "title": "Incluzi parolele în copia de rezervă?",
+      "message": "Fișierul de rezervă va conține parolele serverelor și proxy-urilor tale în text clar. Oricine poate citi fișierul le poate folosi.",
+      "allow": "Include parolele",
+      "cancel": "Anulează",
+      "declined": "Exportul parolelor a fost refuzat."
+    },
+    "configError": {
+      "title": "Problemă de configurare",
+      "corrupt": "Seedora nu a putut citi fișierul de configurare și a pornit cu setările implicite. Fișierul ilizibil a fost salvat ca:\n{{path}}",
+      "unreadable": "Seedora nu poate citi fișierul de configurare. Fișierul a fost lăsat neatins, iar modificările nu vor fi salvate până la rezolvarea problemei:\n{{path}}",
+      "passwordsLocked": "Parola salvată pentru aceste servere nu a putut fi decriptată (breloc-ul sistemului poate fi blocat sau resetat): {{names}}. Deschide fiecare server în Seedora și introdu din nou parola."
+    }
+  },
+  "errors": {
+    "web": {
+      "INVALID_INPUT": "Cerere nevalidă.",
+      "NO_SESSION": "Niciun server nu este activ. Selectează un server și încearcă din nou.",
+      "SESSION_UNAVAILABLE": "Sesiunea nu a putut fi restaurată. Verifică dacă cookie-urile sunt activate.",
+      "RATE_LIMITED": "Prea multe cereri. Încearcă din nou în scurt timp.",
+      "HOST_NOT_ALLOWED": "Această gazdă nu este permisă.",
+      "DNS_FAILED": "Numele gazdei nu a putut fi rezolvat.",
+      "CONNECTION_FAILED": "Nu s-a putut conecta la server.",
+      "TIMEOUT": "Serverul nu a răspuns la timp.",
+      "TLS_FAILED": "Conexiunea securizată a eșuat.",
+      "UNEXPECTED_REDIRECT": "Serverul a răspuns cu o redirecționare.",
+      "RESPONSE_TOO_LARGE": "Răspunsul serverului este prea mare.",
+      "AUTH_FAILED": "Autentificarea a eșuat. Verifică numele de utilizator și parola.",
+      "HTTP_ERROR": "Serverul a răspuns cu o eroare.",
+      "SESSION_ID_REJECTED": "Serverul a respins ID-ul sesiunii.",
+      "RPC_ERROR": "Serverul a raportat o eroare.",
+      "SERVER_MISCONFIGURED": "Serverul web nu este configurat corect.",
+      "SERVER_NOT_FOUND": "Serverul nu a fost găsit.",
+      "IMPORT_INVALID": "Importul a eșuat: fișierul nu este o copie de siguranță Seedora validă."
+    },
+    "rpc": {
+      "TLS_UNTRUSTED": "Certificatul serverului nu este de încredere.",
+      "TLS_EXPIRED": "Certificatul serverului a expirat.",
+      "TLS_HOSTNAME": "Certificatul serverului nu se potrivește cu numele gazdei.",
+      "NETWORK": "Serverul nu a putut fi contactat.",
+      "TOO_LARGE": "Răspunsul serverului este prea mare.",
+      "AUTH": "Autentificarea a eșuat. Verifică numele de utilizator și parola.",
+      "INVALID_RESPONSE": "Serverul nu a răspuns ca un daemon Transmission.",
+      "SESSION": "Serverul a refuzat handshake-ul sesiunii.",
+      "RPC_FAILURE": "Serverul a raportat o eroare.",
+      "NO_CONNECTION": "Niciun server nu este conectat.",
+      "UNKNOWN": "A apărut o eroare necunoscută."
+    }
   }
 }

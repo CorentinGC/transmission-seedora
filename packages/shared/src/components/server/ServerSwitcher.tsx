@@ -3,8 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Server, Plus, ChevronDown, Pencil, Trash2, Download, Upload } from 'lucide-react';
 import { useServerStore } from '../../stores/server-store';
 import { ServerFormDialog } from './ServerFormDialog';
+import { ExportPasswordsOption } from './ExportPasswordsOption';
 import type { ServerConfig } from '../../types';
 import { useApi } from '../../platform/api-context';
+import { useNotificationStore } from '../../stores/notification-store';
+import { runConfigExport } from '../../lib/config-export';
 
 export function ServerSwitcher() {
   const { t } = useTranslation();
@@ -20,20 +23,14 @@ export function ServerSwitcher() {
   const [editServer, setEditServer] = useState<ServerConfig | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [importMsg, setImportMsg] = useState<string | null>(null);
+  const [includePasswords, setIncludePasswords] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const api = useApi();
-
-  // Web fallback: download JSON as file
-  const downloadJson = (data: unknown, filename: string) => {
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeMenu = () => {
+    setOpen(false);
+    setConfirmDelete(null);
   };
+  const api = useApi();
 
   useEffect(() => {
     fetchServers();
@@ -60,31 +57,21 @@ export function ServerSwitcher() {
     }
   };
 
+  const exportJson = (options: Parameters<typeof api.configExport>[0], filename: string) =>
+    runConfigExport(api, { ...options, includePasswords }, filename);
+
   const handleExportServer = async (server: ServerConfig, e: React.MouseEvent) => {
     e.stopPropagation();
-    const res = await api.configExport({ servers: true, serverIds: [server.id] });
-    if (res.success && res.data) {
-      const filename = `${server.name.replace(/[^a-zA-Z0-9]/g, '-')}.json`;
-      if (api.dialogSaveFile) {
-        await api.dialogSaveFile({ defaultPath: filename }, JSON.stringify(res.data, null, 2));
-      } else {
-        downloadJson(res.data, filename);
-      }
-    }
     setOpen(false);
+    await exportJson({ servers: true, serverIds: [server.id] }, `${server.name.replace(/[^a-zA-Z0-9]/g, '-')}.json`);
   };
 
   const handleExportAll = async () => {
-    const res = await api.configExport({ servers: true });
-    if (res.success && res.data) {
-      if (api.dialogSaveFile) {
-        await api.dialogSaveFile({ defaultPath: 'seedora-servers.json' }, JSON.stringify(res.data, null, 2));
-      } else {
-        downloadJson(res.data, 'seedora-servers.json');
-      }
-    }
     setOpen(false);
+    await exportJson({ servers: true }, 'seedora-servers.json');
   };
+
+  const notifyImportFailed = () => useNotificationStore.getState().notify('server.importFailed');
 
   const handleImport = async () => {
     if (api.dialogOpenFile) {
@@ -101,10 +88,11 @@ export function ServerSwitcher() {
           setImportMsg(t('server.importSuccess', { added: d.serversAdded, skipped: d.serversSkipped }));
           await fetchServers();
           setTimeout(() => setImportMsg(null), 3000);
+        } else {
+          notifyImportFailed();
         }
       } catch {
-        setImportMsg('Import failed');
-        setTimeout(() => setImportMsg(null), 3000);
+        notifyImportFailed();
       }
       setOpen(false);
     } else {
@@ -121,13 +109,17 @@ export function ServerSwitcher() {
       const data = JSON.parse(text);
       const importRes = await api.configImport(data);
       if (importRes.success) {
-        setImportMsg(t('server.importSuccess', { added: '?', skipped: 0 }));
+        const counts = importRes.data as { serversAdded: number; serversSkipped: number } | undefined;
+        setImportMsg(
+          t('server.importSuccess', { added: counts?.serversAdded ?? 0, skipped: counts?.serversSkipped ?? 0 }),
+        );
         await fetchServers();
         setTimeout(() => setImportMsg(null), 3000);
+      } else {
+        notifyImportFailed();
       }
     } catch {
-      setImportMsg('Import failed');
-      setTimeout(() => setImportMsg(null), 3000);
+      notifyImportFailed();
     }
     // Reset input so same file can be re-selected
     e.target.value = '';
@@ -137,86 +129,126 @@ export function ServerSwitcher() {
   return (
     <div className="relative">
       {/* Hidden file input for web import fallback */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".json"
-        className="hidden"
-        onChange={handleFileInputChange}
-      />
+      <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleFileInputChange} />
       <button
-        className="flex items-center gap-1.5 h-7 px-2 rounded hover:bg-accent text-sm"
-        onClick={() => setOpen(!open)}
+        ref={triggerRef}
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        className="flex items-center gap-1.5 h-7 pointer-coarse:h-11 px-2 rounded hover:bg-accent text-sm"
+        onClick={() => (open ? closeMenu() : setOpen(true))}
       >
-        <Server size={14} />
-        <span className="max-w-32 truncate">
-          {activeServer?.name ?? t('server.noServer')}
-        </span>
+        <Server size={14} aria-hidden="true" />
+        <span className="max-w-32 truncate">{activeServer?.name ?? t('server.noServer')}</span>
         <span
           className={`w-2 h-2 rounded-full ${
             connectionStatus === 'connected'
-              ? 'bg-green-500'
+              ? 'bg-success'
               : connectionStatus === 'error'
-                ? 'bg-red-500'
-                : 'bg-gray-400'
+                ? 'bg-destructive-text'
+                : 'bg-muted-foreground'
           }`}
+          aria-hidden="true"
         />
-        <ChevronDown size={12} />
+        <span className="sr-only">
+          {connectionStatus === 'connected'
+            ? t('statusBar.connected')
+            : connectionStatus === 'connecting'
+              ? t('statusBar.connecting')
+              : connectionStatus === 'error'
+                ? t('statusBar.connectionError')
+                : t('statusBar.disconnected')}
+        </span>
+        <ChevronDown size={12} aria-hidden="true" />
       </button>
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => { setOpen(false); setConfirmDelete(null); }} />
-          <div className="absolute top-full left-0 mt-1 w-72 rounded-md border bg-popover shadow-lg z-50">
+          <div role="presentation" className="fixed inset-0 z-40" onClick={closeMenu} />
+          {/* Escape and focus-leave handling only; every control inside is a native button or input. */}
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+          <div
+            role="dialog"
+            aria-label={t('server.switcherLabel')}
+            className="absolute top-full left-0 mt-1 w-72 max-w-[calc(100vw-1rem)] rounded-md border bg-popover shadow-lg z-50"
+            onBlur={(e) => {
+              const next = e.relatedTarget;
+              if (next instanceof Node && !e.currentTarget.contains(next) && next !== triggerRef.current) closeMenu();
+            }}
+            onKeyDown={(e) => {
+              if (e.key !== 'Escape') return;
+              e.stopPropagation();
+              closeMenu();
+              triggerRef.current?.focus();
+            }}
+          >
             {servers.map((server) => (
               <div
                 key={server.id}
-                className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent cursor-pointer ${
+                className={`flex items-center gap-2 px-3 text-sm hover:bg-accent ${
                   server.id === activeServerId ? 'bg-accent' : ''
                 }`}
-                onClick={() => {
-                  setActiveServer(server.id);
-                  setOpen(false);
-                  setConfirmDelete(null);
-                }}
               >
-                <Server size={14} className="shrink-0" />
-                <span className="flex-1 truncate">{server.name}</span>
-                <span className="text-xs text-muted-foreground shrink-0">
-                  {server.host}:{server.port}
-                </span>
+                <button
+                  type="button"
+                  aria-current={server.id === activeServerId ? 'true' : undefined}
+                  className="flex min-w-0 flex-1 items-center gap-2 py-2 pointer-coarse:py-3 text-left"
+                  onClick={() => {
+                    setActiveServer(server.id);
+                    closeMenu();
+                  }}
+                >
+                  <Server size={14} className="shrink-0" aria-hidden="true" />
+                  <span className="flex-1 truncate" title={server.name}>
+                    {server.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {server.host}:{server.port}
+                  </span>
+                </button>
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
-                    className="p-0.5 rounded hover:bg-primary/10"
+                    type="button"
+                    className="p-0.5 pointer-coarse:p-3 rounded hover:bg-primary/10"
                     onClick={(e) => handleExportServer(server, e)}
                     title={t('server.exportServer')}
+                    aria-label={`${t('server.exportServer')}: ${server.name}`}
                   >
-                    <Download size={12} />
+                    <Download size={12} aria-hidden="true" />
                   </button>
                   <button
-                    className="p-0.5 rounded hover:bg-primary/10"
+                    type="button"
+                    className="p-0.5 pointer-coarse:p-3 rounded hover:bg-primary/10"
                     onClick={(e) => handleEdit(server, e)}
                     title={t('server.editServer')}
+                    aria-label={`${t('server.editServer')}: ${server.name}`}
                   >
-                    <Pencil size={12} />
+                    <Pencil size={12} aria-hidden="true" />
                   </button>
                   <button
-                    className={`p-0.5 rounded ${
+                    type="button"
+                    className={`p-0.5 pointer-coarse:p-3 rounded ${
                       confirmDelete === server.id
-                        ? 'text-red-500 bg-red-500/10'
-                        : 'hover:bg-red-500/10 hover:text-red-500'
+                        ? 'text-destructive-text bg-destructive/10'
+                        : 'hover:bg-destructive/10 hover:text-destructive-text'
                     }`}
                     onClick={(e) => handleDelete(server, e)}
                     title={t('server.deleteServer')}
+                    aria-label={
+                      confirmDelete === server.id
+                        ? t('server.deleteConfirm', { name: server.name })
+                        : `${t('server.deleteServer')}: ${server.name}`
+                    }
                   >
-                    <Trash2 size={12} />
+                    <Trash2 size={12} aria-hidden="true" />
                   </button>
                 </div>
               </div>
             ))}
             <div className="border-t" />
             <button
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent"
+              type="button"
+              className="w-full flex items-center gap-2 px-3 py-2 pointer-coarse:py-3 text-sm hover:bg-accent"
               onClick={() => {
                 setOpen(false);
                 setShowForm(true);
@@ -227,7 +259,8 @@ export function ServerSwitcher() {
             </button>
             <div className="flex items-center border-t">
               <button
-                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs hover:bg-accent text-muted-foreground"
+                type="button"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 pointer-coarse:py-3 text-xs hover:bg-accent text-muted-foreground"
                 onClick={handleExportAll}
               >
                 <Download size={12} />
@@ -235,18 +268,20 @@ export function ServerSwitcher() {
               </button>
               <div className="w-px h-5 bg-border" />
               <button
-                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs hover:bg-accent text-muted-foreground"
+                type="button"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 pointer-coarse:py-3 text-xs hover:bg-accent text-muted-foreground"
                 onClick={handleImport}
               >
                 <Upload size={12} />
                 {t('server.importServers')}
               </button>
             </div>
-            {importMsg && (
-              <div className="px-3 py-1.5 text-xs text-green-600 bg-green-500/10 border-t">
-                {importMsg}
-              </div>
-            )}
+            <ExportPasswordsOption
+              className="px-3 py-2 border-t"
+              checked={includePasswords}
+              onChange={setIncludePasswords}
+            />
+            {importMsg && <div className="px-3 py-1.5 text-xs text-success bg-success/10 border-t">{importMsg}</div>}
           </div>
         </>
       )}
@@ -258,6 +293,7 @@ export function ServerSwitcher() {
             setShowForm(false);
             setEditServer(null);
             fetchServers();
+            triggerRef.current?.focus();
           }}
         />
       )}

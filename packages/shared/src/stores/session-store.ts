@@ -1,7 +1,10 @@
 import { create } from 'zustand';
+import i18n from 'i18next';
 import type { SessionSettings, SessionStats } from '../types/session';
 import { keysToCarmel, keysToKebab } from '../key-utils';
 import { getPlatformApi } from '../platform/api-store';
+import { currentServerEpoch, isServerEpochCurrent } from '../lib/server-epoch';
+import { notifyFailure } from './notification-store';
 
 export interface FreeSpaceDetail {
   path: string;
@@ -15,9 +18,11 @@ interface SessionStore {
   totalSpace: number | null;
   freeSpaceDetails: FreeSpaceDetail[] | null;
 
-  fetchSettings: () => Promise<void>;
+  /** Resolves with the error text when the refresh failed, null on success or when the response is stale. */
+  fetchSettings: () => Promise<string | null>;
   updateSettings: (changes: Record<string, unknown>) => Promise<boolean>;
-  fetchStats: () => Promise<void>;
+  /** Resolves with the error text when the refresh failed, null on success or when the response is stale. */
+  fetchStats: () => Promise<string | null>;
   fetchFreeSpace: (path: string) => Promise<void>;
   fetchFreeSpaceDetails: (paths: string[]) => Promise<void>;
   toggleAltSpeed: () => Promise<void>;
@@ -35,9 +40,15 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   freeSpaceDetails: null,
 
   fetchSettings: async () => {
-    const res = await getPlatformApi().rpcSessionGet();
-    if (res.success && res.data) {
-      set({ settings: keysToCarmel<SessionSettings>(res.data) });
+    const epoch = currentServerEpoch();
+    try {
+      const res = await getPlatformApi().rpcSessionGet();
+      if (!isServerEpochCurrent(epoch)) return null;
+      if (!res.success) return res.error ?? i18n.t('details.requestFailed');
+      if (res.data) set({ settings: keysToCarmel<SessionSettings>(res.data) });
+      return null;
+    } catch (err) {
+      return err instanceof Error ? err.message : i18n.t('details.requestFailed');
     }
   },
 
@@ -50,15 +61,22 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
 
   fetchStats: async () => {
-    const res = await getPlatformApi().rpcSessionStats();
-    if (res.success && res.data) {
-      set({ stats: keysToCarmel<SessionStats>(res.data) });
+    const epoch = currentServerEpoch();
+    try {
+      const res = await getPlatformApi().rpcSessionStats();
+      if (!isServerEpochCurrent(epoch)) return null;
+      if (!res.success) return res.error ?? i18n.t('details.requestFailed');
+      if (res.data) set({ stats: keysToCarmel<SessionStats>(res.data) });
+      return null;
+    } catch (err) {
+      return err instanceof Error ? err.message : i18n.t('details.requestFailed');
     }
   },
 
   fetchFreeSpace: async (path) => {
+    const epoch = currentServerEpoch();
     const res = await getPlatformApi().rpcFreeSpace(path);
-    if (res.success && res.data) {
+    if (isServerEpochCurrent(epoch) && res.success && res.data) {
       const data = res.data as { 'size-bytes'?: number; total_size?: number };
       set({
         freeSpace: data['size-bytes'] ?? null,
@@ -68,9 +86,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
 
   fetchFreeSpaceDetails: async (paths) => {
+    const epoch = currentServerEpoch();
     const results: FreeSpaceDetail[] = [];
     for (const p of paths) {
       const res = await getPlatformApi().rpcFreeSpace(p);
+      if (!isServerEpochCurrent(epoch)) return;
       if (res.success && res.data) {
         const data = res.data as { 'size-bytes'?: number; total_size?: number; path?: string };
         const free = data['size-bytes'] ?? data.total_size ?? 0;
@@ -82,7 +102,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   toggleAltSpeed: async () => {
     const current = get().settings?.altSpeedEnabled ?? false;
-    await getPlatformApi().rpcSessionSet({ 'alt-speed-enabled': !current });
+    const res = await getPlatformApi().rpcSessionSet({ 'alt-speed-enabled': !current });
+    if (!res.success) {
+      notifyFailure('notification.actionFailed', res.error, res.code);
+      return;
+    }
     await get().fetchSettings();
   },
 
